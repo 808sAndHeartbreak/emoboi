@@ -414,7 +414,9 @@
         /* 手机竖屏 - 保持5列布局以确保五十音正确分行 */
         @media (max-width: 480px) {
             .nav-center {
-                gap: 4px;
+                display: grid;
+                grid-template-columns: repeat(2, auto);
+                gap: 4px 6px;
             }
             #main-grid {
                 grid-template-columns: repeat(5, 1fr);

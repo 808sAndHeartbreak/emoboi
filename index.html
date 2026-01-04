@@ -207,6 +207,21 @@
             transform: translateY(-50%);
         }
 
+        /* 导航区域黑色半透遮罩 */
+        .nav-container::before {
+            content: "";
+            position: absolute;
+            inset: -20vh 0;
+            background: linear-gradient(to bottom, 
+                transparent 0%, 
+                rgba(0, 0, 0, 0.7) 15%, 
+                rgba(0, 0, 0, 0.85) 50%, 
+                rgba(0, 0, 0, 0.7) 85%, 
+                transparent 100%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
         .nav-item {
             display: flex;
             align-items: center;
@@ -310,7 +325,8 @@
                 top: 1rem;
             }
             .collage-img {
-                opacity: 0.25;
+                opacity: 0.2;
+                transform: scale(0.5) !important;
             }
         }
 
