@@ -1,0 +1,4112 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>SF6 FRAME LAB - 街霸6 帧数计算器</title>
+    <meta name="description" content="Street Fighter 6 帧数压制计算工具，自动计算最优卡帧方案和投技时机">
+    <meta name="keywords" content="SF6, Street Fighter 6, 街霸6, 帧数, Frame Data, 压起身, Meaty, Okizeme">
+    <!-- Open Graph 社交分享 -->
+    <meta property="og:title" content="SF6 FRAME LAB - 帧数计算器">
+    <meta property="og:description" content="Street Fighter 6 压起身帧数计算工具">
+    <meta property="og:type" content="website">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 使用系统字体，无需外部加载 */
+        :root {
+            --theme-primary: #ff007a;
+            --theme-secondary: #00f2ff;
+            --theme-accent: #ffd700;
+            --theme-bg: #0a0a0c;
+            --theme-card-bg: #111114;
+            --theme-card-border: #222;
+        }
+
+        body { 
+            background-color: var(--theme-bg); 
+            color: #fff; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+        
+        .impact-text { 
+            font-family: "Arial Black", "Helvetica Neue", Impact, sans-serif; 
+            text-transform: uppercase; 
+            font-style: italic; 
+        }
+        
+        /* ========== 阶段A：Glitch 动态效果 ========== */
+        /* 主标题 - 常驻发光 + 呼吸效果 */
+        .glitch-hover {
+            position: relative;
+            cursor: default;
+            user-select: none;
+            display: inline-block;
+            /* 常驻柔和发光 */
+            text-shadow: 
+                0 0 10px var(--theme-primary),
+                0 0 20px color-mix(in srgb, var(--theme-primary) 60%, transparent),
+                0 0 30px color-mix(in srgb, var(--theme-primary) 30%, transparent);
+            animation: glow-breathe 3s ease-in-out infinite;
+        }
+        
+        /* 呼吸发光动画 */
+        @keyframes glow-breathe {
+            0%, 100% {
+                text-shadow: 
+                    0 0 8px var(--theme-primary),
+                    0 0 16px color-mix(in srgb, var(--theme-primary) 50%, transparent),
+                    0 0 24px color-mix(in srgb, var(--theme-primary) 25%, transparent);
+            }
+            50% {
+                text-shadow: 
+                    0 0 12px var(--theme-primary),
+                    0 0 25px color-mix(in srgb, var(--theme-primary) 70%, transparent),
+                    0 0 40px color-mix(in srgb, var(--theme-primary) 40%, transparent);
+            }
+        }
+        
+        /* 悬停/切换时：抖动 + 强化发光 */
+        html.loaded .glitch-hover:hover,
+        html.loaded .glitch-hover.glitch-active {
+            animation: glitch-chaotic 1.1s steps(1) infinite !important;
+            text-shadow: 
+                4px 0 var(--theme-primary), 
+                -4px 0 var(--theme-secondary),
+                0 0 30px var(--theme-primary),
+                0 0 60px var(--theme-primary),
+                0 0 100px color-mix(in srgb, var(--theme-primary) 70%, transparent),
+                0 0 150px color-mix(in srgb, var(--theme-primary) 40%, transparent) !important;
+        }
+        
+        /* 悬停离开后立即静止，恢复常驻发光 */
+        html.loaded .glitch-hover:not(:hover):not(.glitch-active) {
+            animation: none !important;
+            transform: none;
+            /* 保留常驻发光，通过继承 .glitch-hover 的 text-shadow */
+        }
+        
+        @keyframes glitch-chaotic {
+            /* 0-91%: 快速抖动闪烁（约1秒） */
+            0% { transform: translate(0) skewX(0); }
+            5% { transform: translate(-4px, 3px) skewX(-3deg); }
+            7% { transform: translate(0) skewX(0); }
+            12% { transform: translate(3px, -2px) skewX(2deg); }
+            14% { transform: translate(0) skewX(0); }
+            20% { transform: translate(-2px, -3px) skewX(-1deg); }
+            22% { transform: translate(0) skewX(0); }
+            28% { transform: translate(5px, 1px) skewX(4deg); }
+            30% { transform: translate(0) skewX(0); }
+            36% { transform: translate(-3px, 2px) skewX(-2deg); }
+            38% { transform: translate(0) skewX(0); }
+            44% { transform: translate(2px, -4px) skewX(3deg); }
+            46% { transform: translate(0) skewX(0); }
+            52% { transform: translate(-1px, 1px) skewX(-1deg); }
+            54% { transform: translate(0) skewX(0); }
+            60% { transform: translate(4px, -1px) skewX(2deg); }
+            62% { transform: translate(0) skewX(0); }
+            68% { transform: translate(-3px, -2px) skewX(-2deg); }
+            70% { transform: translate(0) skewX(0); }
+            76% { transform: translate(2px, 3px) skewX(1deg); }
+            78% { transform: translate(0) skewX(0); }
+            84% { transform: translate(-2px, -1px) skewX(-2deg); }
+            86% { transform: translate(0) skewX(0); }
+            91% { transform: translate(3px, 2px) skewX(1deg); }
+            /* 91-100%: 短暂停顿（约0.1秒） */
+            91%, 100% { transform: translate(0) skewX(0); }
+        }
+        
+        /* 招式名悬停 - 优雅微动效 + 发光 */
+        .glitch-text {
+            cursor: default;
+            display: inline-block;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-size: 0.93em; /* 整体稍小，视觉平衡中文 */
+        }
+        
+        .glitch-text:hover {
+            transform: translateY(-2px);
+            text-shadow: 0 0 15px var(--theme-primary), 0 4px 12px rgba(0, 0, 0, 0.5);
+            filter: brightness(1.15);
+        }
+        
+        /* 帧数数字悬停效果 */
+        .frame-number {
+            cursor: default;
+            display: inline-block;
+        }
+        
+        .frame-number:hover {
+            animation: glitch-number 0.2s ease;
+            color: var(--theme-primary);
+            text-shadow: 0 0 20px var(--theme-primary), 0 0 40px var(--theme-primary);
+        }
+        
+        @keyframes glitch-number {
+            0%, 100% { transform: translate(0); opacity: 1; }
+            33% { transform: translate(2px, -1px); opacity: 0.8; }
+            66% { transform: translate(-2px, 1px); opacity: 0.9; }
+        }
+        
+        /* ========== 第一阶段：New-Brutalism 结构强化 ========== */
+        .trend-card { 
+            background: color-mix(in srgb, var(--theme-primary) 10%, #0a0a0c);
+            border: 3px solid color-mix(in srgb, var(--theme-primary) 40%, #333);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .trend-card:hover { 
+            border-color: var(--theme-primary); 
+            background: color-mix(in srgb, var(--theme-primary) 15%, #0a0a0c);
+            /* New-Brutalism 半硬阴影：有位移 + 轻微模糊 */
+            box-shadow: 6px 6px 0 color-mix(in srgb, var(--theme-primary) 60%, transparent);
+            transform: translate(-2px, -2px);
+        }
+        
+        .trend-card:active {
+            transform: translate(0, 0);
+            box-shadow: 2px 2px 0 color-mix(in srgb, var(--theme-primary) 40%, transparent);
+        }
+
+        .btn-hype {
+            background: var(--theme-secondary);
+            color: #000;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 900;
+        }
+
+        .btn-hype:hover {
+            background: var(--theme-primary);
+            color: #fff;
+            box-shadow: 0 0 25px var(--theme-primary), 0 0 50px color-mix(in srgb, var(--theme-primary) 50%, transparent);
+        }
+        
+        /* 次要按钮 - 暗色主题色 */
+        .btn-secondary {
+            background: color-mix(in srgb, var(--theme-primary) 70%, #000);
+            color: #fff;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 900;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--theme-primary);
+            box-shadow: 0 0 15px color-mix(in srgb, var(--theme-primary) 50%, transparent);
+        }
+        
+        .btn-secondary:active {
+            transform: translateY(2px);
+            filter: brightness(0.9);
+        }
+        
+        /* ========== 第三阶段：物理点击反馈 ========== */
+        .btn-hype:active {
+            transform: translateY(3px);
+            box-shadow: none;
+            filter: brightness(0.85);
+        }
+
+        /* ========== 推荐理由提示框 ========== */
+        .recommend-card {
+            position: relative;
+        }
+        
+        .recommend-tooltip {
+            position: absolute;
+            top: 50%;
+            left: -10px;
+            transform: translate(-100%, -50%);
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.95) 0%, rgba(59, 130, 246, 0.95) 100%);
+            color: #000;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1.6;
+            padding: 8px 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s, transform 0.25s;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+        
+        .recommend-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -6px;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 6px 0 6px 6px;
+            border-color: transparent transparent transparent rgba(59, 130, 246, 0.95);
+        }
+        
+        .recommend-card:hover .recommend-tooltip {
+            opacity: 1;
+            transform: translate(-100%, -50%) translateX(-8px);
+        }
+        
+        /* 移动端优化：提示框显示在上方 */
+        @media (max-width: 1024px) {
+            .recommend-tooltip {
+                top: -10px;
+                left: 50%;
+                transform: translate(-50%, -100%);
+            }
+            
+            .recommend-tooltip::after {
+                top: 100%;
+                right: auto;
+                left: 50%;
+                transform: translateX(-50%);
+                border-width: 6px 6px 0 6px;
+                border-color: rgba(59, 130, 246, 0.95) transparent transparent transparent;
+            }
+            
+            .recommend-card:hover .recommend-tooltip {
+                transform: translate(-50%, -100%) translateY(-8px);
+            }
+        }
+        
+        /* ========== 第五阶段：收藏印章标签 ========== */
+        .favorite-stamp {
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            background: #f59e0b;
+            color: #000;
+            font-size: 9px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 3px 10px;
+            transform: rotate(-8deg);
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* Tab 矩形开关按钮组 */
+        .tab-btn {
+            font-family: "Arial Black", "Helvetica Neue", Impact, sans-serif;
+            font-style: italic;
+            font-size: 0.9rem;
+            color: #555;
+            background: transparent;
+            border: none;
+            padding: 0.55rem 1rem;
+            transition: color 0.25s, transform 0.15s;
+            position: relative;
+        }
+        
+        /* 下划线展开效果 */
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--theme-secondary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+        }
+        
+        .tab-btn:hover:not(.active)::after {
+            width: 70%;
+        }
+        
+        /* 规则类型 Tab 按钮 */
+        .rule-tab-btn {
+            color: #71717a;
+            border-bottom: 2px solid transparent;
+            transition: all 0.25s;
+        }
+        
+        .rule-tab-btn:hover {
+            color: #a1a1aa;
+        }
+        
+        .rule-tab-btn.active {
+            color: var(--theme-secondary);
+            border-bottom-color: var(--theme-secondary);
+        }
+        
+        .tab-btn:hover:not(.active) {
+            color: #aaa;
+        }
+        
+        .tab-btn:active {
+            transform: scale(0.96);
+        }
+
+        .tab-btn.active { 
+            color: #000;
+            font-weight: 900;
+        }
+        
+        .tab-btn.active::after {
+            width: 0;
+        }
+
+        /* JSON 提示区 */
+        .json-hint {
+            background: color-mix(in srgb, var(--theme-secondary) 5%, transparent);
+            border: 1px dashed var(--theme-secondary);
+            padding: 8px;
+            font-size: 11px;
+            color: var(--theme-secondary);
+        }
+
+        /* 角色选择按钮 - Opium/Trap 菱形风格 */
+        .champion-btn {
+            font-family: "Arial Black", "Helvetica Neue", Impact, sans-serif;
+            font-style: italic;
+            font-size: 1.4rem;
+            color: #fff;
+            transition: all 0.3s;
+            background: color-mix(in srgb, var(--theme-primary) 20%, #000);
+            border: 2px solid var(--theme-primary);
+            padding: 0.7rem 1.8rem;
+            position: relative;
+            cursor: pointer;
+            /* 菱形斜切 */
+            clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+            margin-right: auto;
+        }
+        
+        /* 内发光边框效果 */
+        .champion-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.2) 100%);
+            pointer-events: none;
+        }
+        
+        .champion-btn:hover {
+            background: color-mix(in srgb, var(--theme-primary) 40%, #000);
+            border-color: var(--theme-primary);
+            box-shadow: 
+                0 0 20px color-mix(in srgb, var(--theme-primary) 50%, transparent),
+                inset 0 0 15px color-mix(in srgb, var(--theme-primary) 30%, transparent);
+            color: #fff;
+            text-shadow: 0 0 10px var(--theme-primary);
+        }
+        
+        .champion-btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+        
+        .champion-btn .char-icon {
+            transition: transform 0.3s;
+        }
+        
+        .champion-btn:hover .char-icon {
+            transform: scale(1.15);
+        }
+
+        /* 角色选择网格 - 响应式 */
+        .char-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        
+        @media (min-width: 640px) {
+            .char-grid { grid-template-columns: repeat(5, 1fr); }
+        }
+        
+        @media (min-width: 768px) {
+            .char-grid { grid-template-columns: repeat(6, 1fr); }
+        }
+
+        .char-item {
+            aspect-ratio: 1.2;
+            background: #1a1a2e;
+            border: 2px solid #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 6px;
+        }
+        
+        .char-item:hover {
+            border-color: var(--theme-secondary);
+            transform: scale(1.05);
+        }
+        
+        .char-item.selected {
+            border-color: var(--theme-primary);
+            background: var(--theme-card-bg);
+            box-shadow: 0 0 15px color-mix(in srgb, var(--theme-primary) 30%, transparent);
+        }
+        
+        .char-item.no-data { 
+            opacity: 0.3; 
+            cursor: not-allowed;
+            filter: grayscale(0.8);
+        }
+        .char-item.no-data:hover { 
+            opacity: 0.35; 
+            transform: none;
+            border-color: #333;
+        }
+        
+        .char-name {
+            font-family: "Arial Black", "Helvetica Neue", Impact, sans-serif;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+        
+        .char-icon { font-size: 24px; }
+        
+        /* ========== 移动端优化 ========== */
+        /* 触摸设备上移除 hover 变换效果，避免 sticky hover */
+        @media (hover: none) {
+            .char-item:hover { transform: none; }
+            .trend-card:hover { 
+                border-color: color-mix(in srgb, var(--theme-primary) 40%, #333); 
+                background: color-mix(in srgb, var(--theme-primary) 10%, #0a0a0c);
+                box-shadow: none;
+                transform: none;
+            }
+        }
+        
+        /* 移动端始终显示操作按钮（不依赖 hover） */
+        @media (hover: none), (max-width: 640px) {
+            .group .group-hover\:opacity-100 {
+                opacity: 1 !important;
+            }
+            .sm\:opacity-0 {
+                opacity: 0.7 !important;
+            }
+            .sm\:group-hover\/ctx\:opacity-100 {
+                opacity: 1 !important;
+            }
+        }
+        
+        /* 防止 iOS 输入框缩放 */
+        input, textarea, select {
+            font-size: 16px;
+        }
+        @media (min-width: 640px) {
+            input, textarea, select {
+                font-size: inherit;
+            }
+        }
+        
+        /* 优化滚动性能 */
+        .overflow-x-auto, .overflow-y-auto {
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* 防止长按弹出菜单 */
+        button, a {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        /* ========== 可访问性优化 ========== */
+        /* 统一焦点样式 */
+        button:focus-visible, 
+        input:focus-visible, 
+        textarea:focus-visible,
+        select:focus-visible,
+        a:focus-visible,
+        details summary:focus-visible {
+            outline: 2px solid var(--theme-secondary);
+            outline-offset: 2px;
+        }
+        
+        /* 减少动画（用户偏好） */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* 高对比度模式支持 */
+        @media (prefers-contrast: high) {
+            .trend-card {
+                border-width: 3px;
+            }
+            button {
+                border: 2px solid currentColor;
+            }
+        }
+        
+        /* 按钮点击反馈 */
+        button:active:not(:disabled) {
+            transform: scale(0.97);
+        }
+        
+        /* 主题色 Modal 按钮 */
+        .modal-btn-primary {
+            background-color: var(--theme-btn-primary);
+        }
+        .modal-btn-primary:hover {
+            background-color: var(--theme-btn-primary-hover);
+        }
+        .modal-btn-active {
+            background-color: var(--theme-btn-primary);
+        }
+        
+        /* 排序按钮样式 */
+        .sort-btn {
+            background: #18181b;
+            border-color: color-mix(in srgb, var(--theme-secondary) 60%, #333);
+            color: var(--theme-secondary);
+        }
+        .sort-btn:hover {
+            background: color-mix(in srgb, var(--theme-primary) 20%, #18181b);
+            border-color: var(--theme-primary);
+            color: var(--theme-primary);
+        }
+        
+        /* Context 标签样式 */
+        .context-tag {
+            color: var(--theme-primary);
+            background: color-mix(in srgb, var(--theme-secondary) 15%, transparent);
+            border-color: var(--theme-secondary);
+        }
+        
+        /* 预设场景标签样式 - 稍微暗淡一些 */
+        .context-tag-preset {
+            color: #a0a0a0;
+            background: color-mix(in srgb, var(--theme-secondary) 8%, transparent);
+            border-color: #505060;
+        }
+        
+        /* 帧数输入组件 */
+        .adv-input-group {
+            display: flex;
+            border: 1px solid var(--theme-card-border);
+        }
+        .adv-input-group .adv-btn {
+            width: 56px;
+            background: #27272a;
+            color: #a1a1aa;
+            font-size: 1.5rem;
+            font-weight: bold;
+            transition: all 0.15s;
+            user-select: none;
+            border: none;
+        }
+        .adv-input-group .adv-btn:hover {
+            background: #3f3f46;
+            color: white;
+        }
+        .adv-input-group .adv-btn:first-child {
+            border-right: 1px solid var(--theme-card-border);
+        }
+        .adv-input-group .adv-btn:last-child {
+            border-left: 1px solid var(--theme-card-border);
+        }
+        .adv-input-group .adv-input {
+            flex: 1;
+            min-width: 0;
+            background: black;
+            padding: 1rem;
+            font-size: 2.25rem;
+            font-weight: 900;
+            text-align: center;
+            color: var(--theme-input-accent);
+            border: none;
+            outline: none;
+        }
+        .adv-input-group .adv-input::placeholder {
+            color: #52525b;
+        }
+        
+        /* iPhone 安全区域适配 */
+        body {
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        /* Modal 底部安全区域 */
+        .fixed.inset-0 > div {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        /* 页面加载过渡，防止 FOUC */
+        html:not(.loaded) body {
+            opacity: 0;
+        }
+        html.loaded body {
+            opacity: 1;
+            transition: opacity 0.3s ease-out;
+        }
+        
+        /* ========== 标题进入动画 ========== */
+        @keyframes title-glitch-in {
+            0% {
+                opacity: 0;
+                transform: translateX(-20px) skewX(-10deg);
+                filter: blur(10px);
+                clip-path: inset(0 100% 0 0);
+            }
+            30% {
+                opacity: 1;
+                transform: translateX(5px) skewX(5deg);
+                filter: blur(0);
+                clip-path: inset(0 0 0 0);
+            }
+            50% {
+                transform: translateX(-3px) skewX(-2deg);
+                text-shadow: 3px 0 var(--theme-primary), -3px 0 var(--theme-secondary);
+            }
+            70% {
+                transform: translateX(2px) skewX(1deg);
+                text-shadow: -2px 0 var(--theme-primary), 2px 0 var(--theme-secondary);
+            }
+            100% {
+                transform: translateX(0) skewX(0);
+                text-shadow: none;
+            }
+        }
+        
+        html.loaded .title-animate {
+            animation: title-glitch-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        
+        html:not(.loaded) .title-animate {
+            opacity: 0;
+        }
+        
+        /* ========== Tab 矩形开关容器 ========== */
+        .tab-container {
+            position: relative;
+            display: flex;
+            gap: 0;
+            background: #111;
+            padding: 4px;
+            border: 2px solid #333;
+        }
+        
+        /* 滑动高亮指示器 - 矩形 */
+        .tab-indicator {
+            position: absolute;
+            top: 4px;
+            bottom: 4px;
+            background: var(--theme-primary);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 0;
+            box-shadow: 
+                0 0 20px color-mix(in srgb, var(--theme-primary) 60%, transparent),
+                0 0 40px color-mix(in srgb, var(--theme-primary) 30%, transparent);
+        }
+        
+        .tab-btn {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .tab-btn.active {
+            z-index: 2;
+        }
+        
+        /* ========== 封条胶带滚动效果 (Marquee Tape) ========== */
+        /* 单条封条 - 页面顶部，随页面滚动 */
+        .marquee-tape {
+            position: relative;
+            width: 100vw;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: -1rem;
+            margin-bottom: 1.5rem;
+            height: 52px;
+            background: 
+                linear-gradient(90deg, 
+                    transparent 0%, 
+                    rgba(255,255,255,0.05) 25%, 
+                    transparent 50%,
+                    rgba(0,0,0,0.05) 75%,
+                    transparent 100%
+                ),
+                var(--theme-primary);
+            overflow: hidden;
+            z-index: 10;
+            box-shadow: 
+                0 4px 20px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.1),
+                inset 0 -1px 0 rgba(0,0,0,0.2);
+            pointer-events: none;
+            border-bottom: 2px solid rgba(0,0,0,0.3);
+        }
+        
+        @media (min-width: 768px) {
+            .marquee-tape {
+                margin-top: -2.5rem;
+            }
+        }
+        
+        .marquee-track {
+            display: flex;
+            animation: marquee-scroll 20s linear infinite;
+            white-space: nowrap;
+        }
+        
+        .marquee-content {
+            display: flex;
+            align-items: center;
+            height: 52px;
+        }
+        
+        .marquee-content span {
+            font-family: "Arial Black", Impact, sans-serif;
+            font-size: 28px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #000;
+            padding: 0 50px;
+        }
+        
+        .marquee-content span::after {
+            content: "✦";
+            margin-left: 50px;
+            opacity: 0.5;
+            font-size: 22px;
+        }
+        
+        @keyframes marquee-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        
+        /* 第二条胶带 - 隐藏 */
+        .marquee-tape-2 {
+            display: none;
+        }
+        
+        /* 页面内容正常布局 */
+        .main-content {
+            padding-top: 20px;
+        }
+        
+        .marquee-track-reverse {
+            display: flex;
+            animation: marquee-scroll-reverse 35s linear infinite;
+            white-space: nowrap;
+        }
+        
+        .marquee-content-2 {
+            display: flex;
+            align-items: center;
+            height: 44px;
+        }
+        
+        .marquee-content-2 span {
+            font-family: "Arial Black", Impact, sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #000;
+            padding: 0 50px;
+        }
+        
+        .marquee-content-2 span::after {
+            content: "✦";
+            margin-left: 50px;
+            opacity: 0.3;
+        }
+        
+        @keyframes marquee-scroll-reverse {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0); }
+        }
+        
+        /* ========== 阶段F：背景氛围层 ========== */
+        .ambient-layer {
+            position: fixed;
+            inset: 0;
+            z-index: -8;
+            pointer-events: none;
+            opacity: 0.4;
+            background: 
+                radial-gradient(ellipse 80% 50% at 20% 80%, var(--theme-primary), transparent 50%),
+                radial-gradient(ellipse 60% 40% at 80% 20%, var(--theme-secondary), transparent 50%);
+            animation: ambient-drift 20s ease-in-out infinite alternate;
+            filter: blur(80px);
+        }
+        
+        @keyframes ambient-drift {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translate(-5%, 3%) scale(1.1);
+                opacity: 0.5;
+            }
+            100% {
+                transform: translate(5%, -3%) scale(1);
+                opacity: 0.35;
+            }
+        }
+        
+        /* ========== 阶段G：页面过渡动画 ========== */
+        /* 卡片入场动画 */
+        .card-enter {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: card-fade-in 0.4s ease forwards;
+        }
+        
+        @keyframes card-fade-in {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Tab 内容切换动画 */
+        .view-transition {
+            animation: view-fade-in 0.3s ease;
+        }
+        
+        @keyframes view-fade-in {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+    <!-- 背景氛围层 -->
+    <div class="ambient-layer"></div>
+    
+    <!-- 角色背景图层 -->
+    <div id="bgOverlay" class="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-0 transition-opacity duration-500" style="background-position: center 20%;"></div>
+    <div class="fixed inset-0 -z-10 bg-gradient-to-b from-black/70 via-black/85 to-black"></div>
+    
+    <!-- 封条胶带滚动效果 (Fixed 定位，横向无限) -->
+    <div class="marquee-tape" id="marqueeTape1" onclick="openCharacterModal()" style="cursor: pointer;" title="点击切换角色">
+        <div class="marquee-track">
+            <div class="marquee-content" id="marqueeContent1"></div>
+            <div class="marquee-content" id="marqueeContent1Clone"></div>
+        </div>
+    </div>
+    <div class="marquee-tape-2">
+        <div class="marquee-track-reverse">
+            <div class="marquee-content-2" id="marqueeContent2"></div>
+            <div class="marquee-content-2" id="marqueeContent2Clone"></div>
+        </div>
+    </div>
+    
+    <div class="max-w-6xl mx-auto main-content">
+        <!-- HEADER -->
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-16 border-b-2 border-zinc-800 pb-6">
+                <div class="flex flex-col">
+                <div class="flex items-center gap-3">
+                    <h1 class="impact-text text-4xl sm:text-5xl tracking-tighter title-animate glitch-hover">SF6 FRAME LAB</h1>
+                    <button onclick="openHelpModal()" class="group px-2.5 py-1 bg-gradient-to-r from-cyan-600/20 to-pink-600/20 border border-cyan-500/50 hover:border-cyan-400 text-cyan-400 hover:text-cyan-300 text-xs font-bold tracking-wider uppercase transition-all hover:shadow-[0_0_15px_rgba(0,255,255,0.3)] flex items-center gap-1" title="使用说明">
+                        <span class="text-sm">?</span>
+                        <span>说明</span>
+                    </button>
+                </div>
+                <span class="text-zinc-500 font-bold text-xs tracking-widest mt-1">made by Yuetian</span>
+            </div>
+            <nav class="flex items-end gap-6 sm:gap-8 w-full sm:w-auto">
+                <button onclick="openCharacterModal()" class="champion-btn tracking-widest uppercase flex items-center gap-2">
+                    <span class="char-icon text-lg" id="currentCharIcon">🥋</span>
+                    <span>角色</span>
+                </button>
+                <div class="flex gap-4 sm:gap-8 tab-container relative ml-auto sm:ml-0" id="tabContainer">
+                    <button onclick="switchTab('notes')" id="tab-notes" class="tab-btn active uppercase tracking-widest text-base sm:text-xl pb-2">方案</button>
+                    <button onclick="switchTab('library')" id="tab-library" class="tab-btn uppercase tracking-widest text-base sm:text-xl pb-2">数据</button>
+                    <div class="tab-indicator" id="tabIndicator"></div>
+                </div>
+            </nav>
+        </header>
+
+        <!-- VIEW: 方案 -->
+        <div id="view-notes" class="space-y-6 pt-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                <h2 class="impact-text text-3xl sm:text-4xl font-black" style="color: var(--theme-secondary);">卡帧策略</h2>
+                <div class="flex gap-2">
+                    <button onclick="resetToDefault()" class="px-4 py-3 text-xs bg-zinc-800 text-zinc-500 hover:bg-zinc-700 hover:text-white transition-all font-bold">重置</button>
+                    <button onclick="openNoteModal()" class="btn-hype px-6 sm:px-8 py-3 text-sm font-bold">+ 新增场景</button>
+                </div>
+            </div>
+            <!-- 搜索框和排序按钮 -->
+            <div class="mb-6 flex gap-3">
+                <div class="flex-1 relative">
+                    <input type="text" id="solutionSearch" 
+                        class="w-full bg-black border border-zinc-700 p-3 pr-10 text-sm text-white placeholder-zinc-600 focus:border-cyan-500 focus:outline-none transition-colors"
+                        placeholder="搜索帧数 (如 32) 或情境 (如 升龙)..."
+                        aria-label="搜索场景"
+                        oninput="debounce(filterSolutions)(); updateClearBtn()">
+                    <button id="clearSearchBtn" onclick="clearSearch()" 
+                        class="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-white text-xl p-1 hidden transition-colors"
+                        title="清除搜索">×</button>
+                </div>
+                <button onclick="toggleSortOrder()" id="sortOrderBtn" 
+                    class="sort-btn px-4 py-3 border transition-all flex items-center gap-2 text-sm font-bold"
+                    title="切换排序方向">
+                    <span id="sortOrderIcon">↑</span>
+                    <span id="sortOrderText" class="hidden sm:inline">帧数</span>
+                </button>
+            </div>
+            <div id="noteListContainer" class="grid grid-cols-1 gap-6"></div>
+        </div>
+
+        <!-- VIEW: 数据 -->
+        <div id="view-library" class="hidden space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-4 bg-zinc-900 p-6 border border-zinc-800">
+                    <!-- 新增招式按钮 -->
+                    <button onclick="openAddMoveModal()" class="btn-secondary w-full py-2 mb-4 text-sm font-bold">
+                        + 新增招式
+                    </button>
+                    
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="impact-text text-2xl font-black" style="color: var(--theme-primary);">批量导入</h3>
+                        <button onclick="loadTemplate()" class="text-xs text-zinc-500 hover:text-cyan-400 underline transition-colors">
+                            JSON 格式
+                        </button>
+                    </div>
+
+                    <textarea id="rawPaste" class="w-full h-40 bg-black border border-zinc-700 p-4 text-xs font-mono text-cyan-500 resize-none" placeholder='粘贴 JSON 数据...'></textarea>
+                    <button onclick="importJson()" class="btn-secondary w-full mt-4 py-2 text-sm font-bold">批量导入</button>
+                    <button onclick="resetMovesToDefault()" class="w-full mt-2 py-2 bg-zinc-800 text-zinc-500 text-xs font-bold hover:bg-blue-900 hover:text-white transition-all">重置预设</button>
+                </div>
+                <div class="lg:col-span-8 overflow-x-auto relative">
+                    <!-- 移动端滚动提示 -->
+                    <div class="lg:hidden text-[10px] text-zinc-600 text-right mb-1 italic">← 左右滑动查看 →</div>
+                    <table class="w-full text-left min-w-[500px]">
+                        <thead class="text-zinc-600 text-[10px] font-black uppercase tracking-widest border-b border-zinc-800">
+                            <tr>
+                                <th class="p-4">Name</th>
+                                <th class="p-4 text-center">Start</th>
+                                <th class="p-4 text-center">Active</th>
+                                <th class="p-4 text-center">Recov</th>
+                                <th class="p-4 text-center">Hit</th>
+                                <th class="p-4 text-center">Blk</th>
+                                <th class="p-4 w-10"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="moveTableBody" class="text-sm font-bold"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 规则区域 -->
+            <div class="mt-8 p-4 bg-zinc-900/50 border border-zinc-800/50">
+                <div class="flex justify-between items-center mb-3">
+                    <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest">过滤规则</h4>
+                    <button onclick="openRuleModal()" class="text-[10px] px-3 py-1.5 bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-all font-bold">+ 添加规则</button>
+                </div>
+                <div id="rulesContainer" class="space-y-1 text-xs"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Add Scenario -->
+    <div id="noteModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true" aria-labelledby="noteModalTitle">
+        <div class="bg-zinc-900 border w-full max-w-md p-6 sm:p-8 max-h-[90vh] overflow-y-auto" style="border-color: var(--theme-card-border);">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="noteModalTitle" class="impact-text text-3xl sm:text-4xl font-black" style="color: var(--theme-modal-title);">新增场景</h2>
+                <button onclick="closeModal()" class="text-zinc-500 hover:text-white text-3xl sm:text-2xl p-2 -m-2" title="关闭">&times;</button>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-[10px] font-black uppercase mb-2 text-zinc-500">Advantage Frames (初始有利帧)</label>
+                    <div class="adv-input-group">
+                        <button type="button" onclick="adjustAdv(-1)" class="adv-btn">−</button>
+                        <input type="text" id="inputAdv" inputmode="numeric" pattern="[0-9]*" maxlength="2"
+                            class="adv-input" placeholder="40" oninput="sanitizeAdvInput(); updateExpectOptions()">
+                        <button type="button" onclick="adjustAdv(1)" class="adv-btn">+</button>
+                    </div>
+                    <p class="text-[10px] text-zinc-600 mt-1">范围 1~99</p>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black uppercase mb-2 text-zinc-500">Scenario Context (情境说明)</label>
+                    <input type="text" id="inputContext" class="w-full bg-black border p-4 font-bold text-white" style="border-color: var(--theme-card-border);" placeholder="例如：2HK放倒">
+                </div>
+                
+                <!-- 期望后续 - 进阶选项 -->
+                <details id="expectDetails" class="border bg-zinc-900/50" style="border-color: var(--theme-card-border);">
+                    <summary class="px-4 py-3 cursor-pointer text-zinc-500 hover:text-zinc-300 text-sm font-bold transition-colors select-none">
+                        ▶ 期望后续 (进阶)
+                    </summary>
+                    <div class="p-4 border-t space-y-4" style="border-color: var(--theme-card-border);">
+                        <!-- 模式选择 -->
+                        <div class="flex gap-2">
+                            <button type="button" onclick="setExpectMode('remain')" id="expectModeRemain" class="flex-1 py-2 text-xs font-bold transition-all text-white" style="background-color: var(--theme-btn-primary);">指定剩余帧数</button>
+                            <button type="button" onclick="setExpectMode('move')" id="expectModeMove" class="flex-1 py-2 text-xs font-bold transition-all bg-zinc-800 text-zinc-400 hover:text-white">指定压制招式</button>
+                        </div>
+                        
+                        <!-- 模式A：指定剩余帧数 -->
+                        <div id="expectRemainPanel" class="space-y-3">
+                            <div>
+                                <label class="block text-[10px] font-black uppercase mb-1 text-zinc-500">期望剩余帧数</label>
+                                <input type="number" id="inputExpectRemain" class="w-full bg-black border p-3 text-xl font-black" style="border-color: var(--theme-card-border); color: var(--theme-input-accent);" placeholder="如 5" oninput="calculateExpectPlan()">
+                                <p class="text-[10px] text-zinc-600 mt-1">系统将计算如何卡帧到剩余这个帧数</p>
+                            </div>
+                        </div>
+                        
+                        <!-- 模式B：指定压制招式 -->
+                        <div id="expectMovePanel" class="space-y-3 hidden">
+                            <div>
+                                <label class="block text-[10px] font-black uppercase mb-1 text-zinc-500">选择压制招式</label>
+                                <select id="inputExpectMove" class="w-full bg-black border p-3 text-sm font-bold" style="border-color: var(--theme-card-border); color: var(--theme-input-accent);" onchange="calculateExpectPlan()">
+                                    <option value="">-- 选择招式 --</option>
+                                </select>
+                                <p class="text-[10px] text-zinc-600 mt-1">系统将计算如何卡帧使该招式能偷至少 1 帧</p>
+                            </div>
+                        </div>
+                        
+                        <!-- 计算结果预览 -->
+                        <div id="expectResult" class="hidden">
+                            <div class="text-[10px] font-black uppercase mb-2 text-zinc-500">计算结果</div>
+                            <div id="expectResultContent" class="bg-black/50 border p-3 text-sm" style="border-color: var(--theme-card-border);"></div>
+                        </div>
+                    </div>
+                </details>
+                
+                <div class="flex gap-2">
+                    <button onclick="saveNote()" class="flex-1 text-white py-3 font-bold text-sm transition-all modal-btn-primary">计算方案</button>
+                    <button onclick="closeModal()" class="px-4 py-3 bg-zinc-800 text-zinc-400 font-bold text-sm hover:text-white transition-all">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Character Select -->
+    <div id="charModal" class="fixed inset-0 bg-black/95 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true" aria-labelledby="charModalTitle">
+        <div class="bg-zinc-900 border w-full max-w-3xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto" style="border-color: var(--theme-card-border);">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="charModalTitle" class="impact-text text-2xl sm:text-3xl font-black" style="color: var(--theme-modal-title);">选择角色</h2>
+                <button onclick="closeCharModal()" class="text-zinc-500 hover:text-white text-3xl sm:text-2xl p-2 -m-2" title="关闭">&times;</button>
+            </div>
+            <div class="char-grid" id="charGrid"></div>
+            <div class="mt-6 p-4 bg-black/50 border border-zinc-800">
+                <p class="text-zinc-500 text-xs">
+                    <span class="text-green-500">●</span> 已有数据 &nbsp;&nbsp;
+                    <span class="text-zinc-600">●</span> 暂无数据 (可手动导入)
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Add Rule -->
+    <div id="ruleModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true" aria-labelledby="ruleModalTitle">
+        <div class="bg-zinc-900 border w-full max-w-md p-6 max-h-[90vh] overflow-y-auto" style="border-color: var(--theme-card-border);">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="ruleModalTitle" class="impact-text text-2xl sm:text-3xl font-black" style="color: var(--theme-modal-title);">添加规则</h2>
+                <button onclick="closeRuleModal()" class="text-zinc-500 hover:text-white text-3xl sm:text-2xl p-2 -m-2" title="关闭">&times;</button>
+            </div>
+            
+            <!-- 规则类型选择 Tab -->
+            <div class="flex gap-2 mb-4 border-b border-zinc-800">
+                <button onclick="switchRuleTab('disable')" id="ruleTab-disable" class="rule-tab-btn active px-4 py-2 text-xs font-bold transition-colors">
+                    禁用压制
+                </button>
+                <button onclick="switchRuleTab('combo')" id="ruleTab-combo" class="rule-tab-btn px-4 py-2 text-xs font-bold transition-colors">
+                    禁用组合
+                </button>
+                <button onclick="switchRuleTab('prefer')" id="ruleTab-prefer" class="rule-tab-btn px-4 py-2 text-xs font-bold transition-colors">
+                    倾向压制
+                </button>
+            </div>
+            
+            <!-- 禁用压制规则表单 -->
+            <div id="ruleForm-disable" class="space-y-4">
+                <p class="text-zinc-500 text-xs mb-4">禁止特定招式用于卡帧或压制。</p>
+                <div>
+                    <label class="block text-[10px] font-black uppercase mb-1 text-zinc-500">选择招式</label>
+                    <select id="inputDisableMove" class="w-full bg-black border p-3 text-sm font-bold text-white" style="border-color: var(--theme-card-border);">
+                        <option value="">-- 请选择招式 --</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black uppercase mb-1 text-zinc-500">禁用场景</label>
+                    <select id="inputDisableUsage" class="w-full bg-black border p-3 text-sm text-white" style="border-color: var(--theme-card-border);">
+                        <option value="kill">用于卡帧</option>
+                        <option value="meaty_after_kill">用于卡帧后的压制</option>
+                        <option value="meaty_direct">用于直接压制</option>
+                    </select>
+                    <div class="mt-2 text-[10px] text-zinc-600" id="disableUsageHint">
+                        禁止此招式用于消耗有利帧
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black uppercase mb-1 text-zinc-500">说明 (可选)</label>
+                    <input type="text" id="inputDisableDesc" class="w-full bg-black border p-3 text-sm text-zinc-400" style="border-color: var(--theme-card-border);" placeholder="例如: 容易被反击">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button onclick="saveDisableRule()" class="flex-1 text-white py-3 font-bold text-sm transition-all modal-btn-primary">保存规则</button>
+                    <button onclick="closeRuleModal()" class="px-4 py-3 bg-zinc-800 text-zinc-400 font-bold text-sm hover:text-white transition-all">取消</button>
+                </div>
+            </div>
+            
+            <!-- 禁用组合规则表单 -->
+            <div id="ruleForm-combo" class="space-y-4 hidden">
+                <p class="text-zinc-500 text-xs mb-4">禁止两个招式连续使用（间隔使用不受影响）。</p>
+                <div>
+                    <label class="block text-[10px] font-black uppercase mb-1 text-zinc-500">招式 1</label>
+                    <select id="inputComboMove1" class="w-full bg-black border p-3 text-sm font-bold text-white" style="border-color: var(--theme-card-border);">
+                        <option value="">-- 请选择招式 --</option>
+                    </select>
+                </div>
+                <div class="text-center text-zinc-600 text-xs">× 禁止连续使用 ×</div>
+                <div>
+                    <label class="block text-[10px] font-black uppercase mb-1 text-zinc-500">招式 2</label>
+                    <select id="inputComboMove2" class="w-full bg-black border p-3 text-sm font-bold text-white" style="border-color: var(--theme-card-border);">
+                        <option value="">-- 请选择招式 --</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black uppercase mb-1 text-zinc-500">说明 (可选)</label>
+                    <input type="text" id="inputComboDesc" class="w-full bg-black border p-3 text-sm text-zinc-400" style="border-color: var(--theme-card-border);" placeholder="例如: 连招不稳定">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button onclick="saveComboRule()" class="flex-1 text-white py-3 font-bold text-sm transition-all modal-btn-primary">保存规则</button>
+                    <button onclick="closeRuleModal()" class="px-4 py-3 bg-zinc-800 text-zinc-400 font-bold text-sm hover:text-white transition-all">取消</button>
+                </div>
+            </div>
+            
+            <!-- 倾向压制规则表单 -->
+            <div id="ruleForm-prefer" class="space-y-4 hidden">
+                <p class="text-zinc-500 text-xs mb-4">让特定招式的压制方案优先推荐（从备选提升到推荐区）。</p>
+                <div>
+                    <label class="block text-[10px] font-black uppercase mb-1 text-zinc-500">选择招式</label>
+                    <select id="inputPreferMove" class="w-full bg-black border p-3 text-sm font-bold text-white" style="border-color: var(--theme-card-border);">
+                        <option value="">-- 请选择招式 --</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black uppercase mb-1 text-zinc-500">理由 (可选)</label>
+                    <input type="text" id="inputPreferDesc" class="w-full bg-black border p-3 text-sm text-zinc-400" style="border-color: var(--theme-card-border);" placeholder="例如: 伤害高、确认简单">
+                </div>
+                <div class="text-[10px] text-cyan-400 bg-cyan-900/20 border border-cyan-800/50 p-2">
+                    💡 该规则会将使用此招式作为压制的方案从备选区提升到推荐区
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button onclick="savePreferRule()" class="flex-1 text-white py-3 font-bold text-sm transition-all modal-btn-primary">保存规则</button>
+                    <button onclick="closeRuleModal()" class="px-4 py-3 bg-zinc-800 text-zinc-400 font-bold text-sm hover:text-white transition-all">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Add Move -->
+    <div id="addMoveModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true" aria-labelledby="addMoveModalTitle">
+        <div class="bg-zinc-900 border w-full max-w-md p-6 sm:p-8 max-h-[90vh] overflow-y-auto" style="border-color: var(--theme-card-border);">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="addMoveModalTitle" class="impact-text text-3xl sm:text-4xl font-black" style="color: var(--theme-modal-title);">新增招式</h2>
+                <button onclick="closeAddMoveModal()" class="text-zinc-500 hover:text-white text-3xl sm:text-2xl p-2 -m-2" title="关闭">&times;</button>
+            </div>
+            <div class="space-y-4">
+                <!-- 招式类型选择 -->
+                <div>
+                    <label class="block text-[10px] font-black uppercase mb-2 text-zinc-500">招式类型</label>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="setMoveType('normal')" id="moveTypeNormal" class="flex-1 py-2 text-xs font-bold transition-all text-white" style="background-color: var(--theme-btn-primary);">普通招式</button>
+                        <button type="button" onclick="setMoveType('throw')" id="moveTypeThrow" class="flex-1 py-2 text-xs font-bold transition-all bg-zinc-800 text-zinc-400 hover:text-white">投技</button>
+                        <button type="button" onclick="setMoveType('dash')" id="moveTypeDash" class="flex-1 py-2 text-xs font-bold transition-all bg-zinc-800 text-zinc-400 hover:text-white">Dash</button>
+                    </div>
+                </div>
+                
+                <!-- 招式名称 -->
+                <div>
+                    <label class="block text-[10px] font-black uppercase mb-1 text-zinc-500">招式名称</label>
+                    <input type="text" id="inputMoveName" class="w-full bg-black border p-3 text-lg font-bold text-white uppercase" style="border-color: var(--theme-card-border);" placeholder="例如: 5HP, 2MK">
+                </div>
+                
+                <!-- 普通招式/投技的帧数据 -->
+                <div id="moveFrameFields" class="space-y-3">
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase mb-1 text-zinc-500">Startup</label>
+                            <input type="number" id="inputMoveStartup" class="w-full bg-black border p-2 text-center font-mono text-white" style="border-color: var(--theme-card-border);" placeholder="7">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black uppercase mb-1 text-zinc-500">Active</label>
+                            <input type="text" id="inputMoveActive" class="w-full bg-black border p-2 text-center font-mono text-white" style="border-color: var(--theme-card-border);" placeholder="7-9">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black uppercase mb-1 text-zinc-500">Recovery</label>
+                            <input type="number" id="inputMoveRecovery" class="w-full bg-black border p-2 text-center font-mono text-white" style="border-color: var(--theme-card-border);" placeholder="15">
+                        </div>
+                    </div>
+                    <div id="moveHitBlockFields" class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase mb-1 text-zinc-500">Hit (命中)</label>
+                            <input type="number" id="inputMoveHit" class="w-full bg-black border p-2 text-center font-mono text-cyan-400" style="border-color: var(--theme-card-border);" placeholder="+5">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black uppercase mb-1 text-zinc-500">Block (打防)</label>
+                            <input type="number" id="inputMoveBlock" class="w-full bg-black border p-2 text-center font-mono text-pink-400" style="border-color: var(--theme-card-border);" placeholder="-2">
+                        </div>
+                    </div>
+                    <div id="moveKnockdownField">
+                        <label class="flex items-center gap-2 text-sm text-zinc-400 cursor-pointer">
+                            <input type="checkbox" id="inputMoveKnockdown" class="w-4 h-4 accent-red-500">
+                            <span>击倒技 (Knockdown)</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Dash 的帧数据 -->
+                <div id="moveDashFields" class="hidden">
+                    <div>
+                        <label class="block text-[10px] font-black uppercase mb-1 text-zinc-500">Dash 总帧数</label>
+                        <input type="number" id="inputMoveDashFrames" class="w-full bg-black border p-3 text-center font-mono text-white text-lg" style="border-color: var(--theme-card-border);" placeholder="19">
+                    </div>
+                </div>
+                
+                <div class="flex gap-2 pt-3">
+                    <button onclick="saveNewMove()" class="flex-1 text-white py-3 font-bold text-sm transition-all modal-btn-primary">添加招式</button>
+                    <button onclick="closeAddMoveModal()" class="px-4 py-3 bg-zinc-800 text-zinc-400 font-bold text-sm hover:text-white transition-all">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Help -->
+    <div id="helpModal" class="fixed inset-0 bg-black/95 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
+        <div class="bg-zinc-900 border w-full max-w-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto" style="border-color: var(--theme-card-border);">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="helpModalTitle" class="impact-text text-2xl sm:text-3xl font-black" style="color: var(--theme-modal-title);">使用说明</h2>
+                <button onclick="closeHelpModal()" class="text-zinc-500 hover:text-white text-3xl sm:text-2xl p-2 -m-2" title="关闭">&times;</button>
+            </div>
+            <div class="space-y-6 text-zinc-300 text-sm leading-relaxed">
+                <section>
+                    <h3 class="text-lg font-bold text-white mb-2">📌 这是什么？</h3>
+                    <p>SF6 FRAME LAB 是一款卡帧套路压制计算工具，帮助找到最优的<strong class="text-cyan-400">卡帧压制</strong>组合方案。</p>
+                </section>
+                
+                <section>
+                    <h3 class="text-lg font-bold text-white mb-2">🎮 如何使用</h3>
+                    <ol class="list-decimal list-inside space-y-3 text-zinc-400">
+                        <li><strong class="text-white">选择角色</strong> - 点击 <span class="text-cyan-400">CHAMPION</span> 按钮切换角色</li>
+                        <li>
+                            <strong class="text-white">查看卡帧策略</strong> - <span class="text-cyan-400">方案</span> 页签展示各种击倒情境下的最优方案
+                            <p class="text-zinc-500 text-xs mt-1 ml-5">*使用搜索框查找特定帧数或场景，点击排序按钮切换排序方向</p>
+                            <p class="text-zinc-500 text-xs ml-5">*点击 <span class="text-yellow-400">☆</span> 收藏喜欢的方案，点击 <span class="text-zinc-400">_</span> 最小化到备选区</p>
+                        </li>
+                        <li>
+                            <strong class="text-white">新增场景</strong> - 点击 <span class="text-cyan-400">+ 新增场景</span> 输入有利帧数，系统自动计算
+                            <p class="text-zinc-500 text-xs mt-1 ml-5">*可展开「期望后续」指定剩余帧数或压制招式，系统验证可行性</p>
+                        </li>
+                        <li>
+                            <strong class="text-white">管理帧数据</strong> - <span class="text-cyan-400">数据</span> 页签可查看/导入角色招式数据
+                            <p class="text-zinc-500 text-xs mt-1 ml-5">*管理组合规则：<span class="text-zinc-400">全局</span> 规则全角色生效，其他规则仅当前角色</p>
+                        </li>
+                    </ol>
+                </section>
+                
+                <section>
+                    <h3 class="text-lg font-bold text-white mb-2">💡 方案解读</h3>
+                    <ul class="space-y-2 text-zinc-400">
+                        <li><span class="text-yellow-500">卡帧招式</span> → 用来消耗多余的有利帧</li>
+                        <li><span class="text-white">压制招式</span> → 对手起身时攻击命中的招式</li>
+                        <li><span class="text-cyan-400">H +X</span> / <span class="text-white">H 0</span> / <span class="text-rose-400">H -X</span> → 命中时的帧数优势</li>
+                        <li><span class="text-cyan-400">B +X</span> / <span class="text-white">B 0</span> / <span class="text-rose-400">B -X</span> →打防时的帧数优势</li>
+                        <li><span class="text-emerald-400">偷 XF</span> → 比正常更早命中，多偷的帧数</li>
+                    </ul>
+                </section>
+                
+                <section>
+                    <h3 class="text-lg font-bold text-white mb-2">⚙️ 规则管理</h3>
+                    <p class="text-zinc-400 mb-2">在<span class="text-cyan-400">数据</span>页签可添加自定义规则：</p>
+                    <ul class="space-y-2 text-zinc-400 text-sm">
+                        <li><span class="text-red-400">禁用招式</span> → 禁止某招式用于卡帧、压制或直接压制</li>
+                        <li><span class="text-red-400">禁止组合</span> → 禁止两个招式连续使用（如 5LP × 5LP）</li>
+                        <li><span class="text-green-400">偏好压制</span> → 优先推荐某招式作为压制招式</li>
+                    </ul>
+                    <p class="text-zinc-500 text-xs mt-2">*<span class="text-zinc-400">全局</span>规则（如 LP+LP）对所有角色生效且不可删除</p>
+                </section>
+                
+                <section>
+                    <h3 class="text-lg font-bold text-white mb-2">📝 写在最后</h3>
+                    <p class="text-zinc-400">本网页仍处于测试早期版本，如有反馈和建议，请B站私信 <strong class="text-cyan-400">Cold_Visions</strong>，十分感谢！</p>
+                </section>
+                
+                <div class="pt-4 border-t border-zinc-800 text-center text-zinc-600 text-xs">
+                    Made by Yuetian
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 角色数据存储（全局变量，由各角色JS文件填充） -->
+    <script>const CHARACTER_DATA = {};</script>
+    <!-- 加载角色数据文件 -->
+    <script src="data/ryu.js"></script>
+    <script src="data/blanka.js"></script>
+
+    <script>
+        // ==================== 配置常量 ====================
+        const CONFIG = {
+            // SF6 全角色列表
+            ALL_CHARACTERS: [
+                "RYU", "LUKE", "KEN", "CHUN-LI", "GUILE", "KIMBERLY",
+                "JURI", "JAMIE", "BLANKA", "DHALSIM", "E.HONDA", "DEE JAY",
+                "MANON", "MARISA", "JP", "ZANGIEF", "LILY", "CAMMY",
+                "RASHID", "A.K.I.", "ED", "GOUKI", "VEGA", "TERRY",
+                "MAI", "ELENA", "SAGAT", "C.VIPER"
+            ],
+            // 已有JSON数据的角色
+            CHARACTERS_WITH_DATA: ["RYU", "BLANKA"],
+            // 全局规则（适用于所有角色，不可编辑）
+            GLOBAL_RULES: [
+                {
+                    id: "global_lp_lp",
+                    pattern1: "LP",
+                    pattern2: "LP",
+                    description: "轻拳不会和轻拳组合（连点取消不能精准卡帧）"
+                },
+                {
+                    id: "global_2lp_2lp",
+                    pattern1: "2LP",
+                    pattern2: "2LP",
+                    description: "下轻拳不会和下轻拳组合（连点取消不能精准卡帧）"
+                },
+                {
+                    id: "global_2lp_lp",
+                    pattern1: "2LP",
+                    pattern2: "LP",
+                    description: "下轻拳不会和轻拳组合（连点取消不能精准卡帧）"
+                },
+                {
+                    id: "global_lp_2lp",
+                    pattern1: "LP",
+                    pattern2: "2LP",
+                    description: "轻拳不会和下轻拳组合（连点取消不能精准卡帧）"
+                }
+            ],
+            // 角色图标映射
+            CHAR_ICONS: {
+                "RYU": "🥋", "LUKE": "🥊", "KEN": "🔥", "CHUN-LI": "💃", "GUILE": "✈️", "KIMBERLY": "🎤",
+                "JURI": "🦋", "JAMIE": "🍸", "BLANKA": "⚡", "DHALSIM": "🧘", "E.HONDA": "🏯", "DEE JAY": "🎵",
+                "MANON": "🩰", "MARISA": "🗿", "JP": "🎩", "ZANGIEF": "🐻", "LILY": "🪶", "CAMMY": "🐱",
+                "RASHID": "🌪️", "A.K.I.": "🐍", "ED": "👊", "GOUKI": "👹", "VEGA": "🦂", "TERRY": "🧢",
+                "MAI": "🌸", "ELENA": "🌺", "SAGAT": "🐯", "C.VIPER": "🕶️"
+            },
+            // localStorage 键名前缀
+            STORAGE_KEY: "sf6_frame_lab",
+            // 角色主题配色方案
+            CHAR_THEMES: {
+                "RYU": {
+                    primary: "#6b2020",      // 暗棕红/深咖啡红
+                    secondary: "#d4a574",    // 道服米色（副主题色）
+                    accent: "#1a1a1a",       // 水墨黑
+                    modalTitle: "#a04040",   // Modal 标题（暗棕红）
+                    btnPrimary: "#6b2020",   // 主按钮暗棕红
+                    btnPrimaryHover: "#4a1515",
+                    inputAccent: "#a04040",  // 输入框强调暗棕红
+                    cardBg: "#1a1210",       // 深棕红背景
+                    cardBorder: "#3d2218",   // 棕红边框
+                    bgImage: "asset/ryu_ss01.jpg"
+                },
+                "BLANKA": {
+                    primary: "#228b22",      // 丛林绿（森林绿）
+                    secondary: "#ffd700",    // 闪电黄（金黄色）
+                    accent: "#f97316",       // 毛发橙
+                    modalTitle: "#32cd32",   // Modal 标题酸橙绿
+                    btnPrimary: "#228b22",   // 主按钮丛林绿
+                    btnPrimaryHover: "#1a6b1a",
+                    inputAccent: "#32cd32",   // 输入框强调绿
+                    cardBg: "#141c14",       // 深绿背景
+                    cardBorder: "#2a4a2a",   // 绿色边框
+                    bgImage: "asset/blanka_ss01.jpg"
+                },
+                // 默认主题（用于无特定主题的角色）
+                "_DEFAULT": {
+                    primary: "#ff007a",
+                    secondary: "#00f2ff",
+                    accent: "#ffd700",
+                    modalTitle: "#ec4899",   // Modal 标题粉
+                    btnPrimary: "#db2777",   // 主按钮粉
+                    btnPrimaryHover: "#be185d",
+                    inputAccent: "#f472b6",  // 输入框强调粉
+                    cardBg: "#141416",
+                    cardBorder: "#2a2a2e",
+                    bgImage: null
+                }
+            }
+        };
+
+        // ==================== 应用状态 ====================
+        const state = {
+            currentCharacter: "RYU",
+            moveLibrary: [],
+            notes: [],
+            // 角色数据缓存：{ moves: [], scenarios: [] }
+            characterCache: {},
+            // 收藏的方案 { "charName:adv:planKey": true }
+            favorites: {},
+            // 最小化的方案 { "charName:adv:planKey": true }
+            minimized: {},
+            // 排序方向：'asc' 从小到大，'desc' 从大到小
+            sortOrder: 'asc',
+            // 角色专属规则 { charName: [rules] }
+            characterRules: {}
+        };
+
+        // ==================== 工具函数 ====================
+        // HTML 转义，防止 XSS
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // 显示操作提示（轻量级 toast）
+        function showToast(message, type = 'success') {
+            // 移除已有的 toast
+            const existing = document.getElementById('toast');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.id = 'toast';
+            toast.className = `fixed bottom-20 left-1/2 -translate-x-1/2 px-4 py-2 rounded text-sm font-bold z-50 transition-all duration-300 ${
+                type === 'success' ? 'bg-green-600 text-white' : 
+                type === 'error' ? 'bg-red-600 text-white' : 
+                'bg-zinc-700 text-white'
+            }`;
+            toast.textContent = message;
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(-50%) translateY(10px)';
+            
+            document.body.appendChild(toast);
+            
+            // 显示动画
+            requestAnimationFrame(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+            });
+            
+            // 自动消失
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 1500);
+        }
+        
+        // 搜索防抖
+        let searchDebounceTimer = null;
+        function debounce(func, delay = 150) {
+            return function(...args) {
+                clearTimeout(searchDebounceTimer);
+                searchDebounceTimer = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+        
+        function getCharIcon(char) {
+            return CONFIG.CHAR_ICONS[char] || "👤";
+        }
+        
+        // 应用角色主题色
+        function applyTheme(char) {
+            const theme = CONFIG.CHAR_THEMES[char] || CONFIG.CHAR_THEMES["_DEFAULT"];
+            const root = document.documentElement;
+            
+            root.style.setProperty('--theme-primary', theme.primary);
+            root.style.setProperty('--theme-secondary', theme.secondary);
+            root.style.setProperty('--theme-accent', theme.accent);
+            root.style.setProperty('--theme-card-bg', theme.cardBg);
+            root.style.setProperty('--theme-card-border', theme.cardBorder);
+            root.style.setProperty('--theme-modal-title', theme.modalTitle);
+            root.style.setProperty('--theme-btn-primary', theme.btnPrimary);
+            root.style.setProperty('--theme-btn-primary-hover', theme.btnPrimaryHover);
+            root.style.setProperty('--theme-input-accent', theme.inputAccent);
+            
+            // 应用背景图
+            const bgOverlay = document.getElementById('bgOverlay');
+            if (theme.bgImage) {
+                bgOverlay.style.backgroundImage = `url('${theme.bgImage}')`;
+                bgOverlay.style.opacity = '1';
+            } else {
+                bgOverlay.style.backgroundImage = 'none';
+                bgOverlay.style.opacity = '0';
+            }
+            
+            console.log(`[主题] 应用 ${char} 主题:`, theme);
+        }
+
+        // 解析active字符串为段数组（支持多段如 "10-14,20-23"）
+        function parseActiveRanges(activeStr) {
+            if (typeof activeStr === 'number') return [{ start: activeStr, end: activeStr }];
+            if (typeof activeStr !== 'string') return [{ start: 0, end: 0 }];
+            
+            return activeStr.split(',').map(segment => {
+                const parts = segment.trim().split('-').map(Number);
+                return {
+                    start: parts[0],
+                    end: parts.length === 2 ? parts[1] : parts[0]
+                };
+            });
+        }
+
+        // 获取最后一个active帧（用于计算卡帧招式的总耗时）
+        function getLastActiveFrame(activeStr) {
+            const ranges = parseActiveRanges(activeStr);
+            return Math.max(...ranges.map(r => r.end));
+        }
+
+        // 检查targetFrame是否命中某个active段，返回命中信息或null
+        function checkActiveHit(activeStr, targetFrame) {
+            const ranges = parseActiveRanges(activeStr);
+            for (const range of ranges) {
+                if (range.start <= targetFrame && targetFrame <= range.end) {
+                    return {
+                        hitAtActive: targetFrame - range.start + 1,
+                        stolen: targetFrame - range.start,
+                        rangeStart: range.start,
+                        rangeEnd: range.end
+                    };
+                }
+            }
+            return null; // 未命中任何active段
+        }
+
+        // ==================== localStorage 存取 ====================
+        function getStorageKey(char, type) {
+            return `${CONFIG.STORAGE_KEY}_${char}_${type}`;
+        }
+        
+        function getGlobalStorageKey(type) {
+            return `${CONFIG.STORAGE_KEY}_global_${type}`;
+        }
+
+        // ========== 当前角色存储 ==========
+        function saveCurrentCharacter(char) {
+            try {
+                localStorage.setItem(getGlobalStorageKey('currentCharacter'), char);
+            } catch (e) {
+                console.warn('保存当前角色失败:', e);
+            }
+        }
+        
+        function loadCurrentCharacter() {
+            try {
+                return localStorage.getItem(getGlobalStorageKey('currentCharacter')) || 'RYU';
+            } catch (e) {
+                return 'RYU';
+            }
+        }
+
+        // ========== 招式数据存储 ==========
+        function saveMoves(char, moves) {
+            try {
+                // 只保存用户修改过的数据（与预设不同）
+                localStorage.setItem(getStorageKey(char, 'moves'), JSON.stringify(moves));
+            } catch (e) {
+                console.warn('保存招式数据失败:', e);
+            }
+        }
+        
+        function loadMovesFromStorage(char) {
+            try {
+                const saved = localStorage.getItem(getStorageKey(char, 'moves'));
+                if (saved) {
+                    return JSON.parse(saved);
+                }
+            } catch (e) {
+                console.warn('读取招式数据失败:', e);
+            }
+            return null;
+        }
+        
+        function clearSavedMoves(char) {
+            localStorage.removeItem(getStorageKey(char, 'moves'));
+        }
+
+        // ========== Scenarios 存储 ==========
+        // 保存角色的 scenarios 到 localStorage (只存储用户自定义的部分)
+        function saveScenarios(char, allScenarios) {
+            try {
+                // 分离出用户自定义的场景（带有 isUserAdded 标记的）
+                const userScenarios = allScenarios.filter(s => s.isUserAdded === true);
+                localStorage.setItem(getStorageKey(char, 'scenarios'), JSON.stringify(userScenarios));
+            } catch (e) {
+                console.warn('保存 scenario 失败:', e);
+            }
+        }
+
+        // 获取角色的预设 scenarios (从JSON缓存)
+        function getDefaultScenarios(char) {
+            const cache = state.characterCache[char];
+            return cache?.scenarios ? [...cache.scenarios] : [];
+        }
+        
+        // 获取角色的预设 moves (从JSON缓存)
+        function getDefaultMoves(char) {
+            const data = CHARACTER_DATA[char];
+            return data?.moves ? [...data.moves] : [];
+        }
+
+        // 加载角色的 scenarios，合并预设 + 用户自定义
+        function loadScenariosFromStorage(char) {
+            try {
+                const saved = localStorage.getItem(getStorageKey(char, 'scenarios'));
+                if (saved) {
+                    const userScenarios = JSON.parse(saved);
+                    // 确保用户场景都有 isUserAdded 标记
+                    userScenarios.forEach(s => s.isUserAdded = true);
+                    return userScenarios;
+                }
+            } catch (e) {
+                console.warn('读取 scenario 失败:', e);
+            }
+            return []; // 返回空数组表示没有用户自定义
+        }
+
+        // 加载完整的 scenarios：预设 + 用户自定义
+        function loadAllScenarios(char) {
+            const defaultScenarios = getDefaultScenarios(char);
+            const userScenarios = loadScenariosFromStorage(char);
+            return [...defaultScenarios, ...userScenarios];
+        }
+
+        // 重置角色 scenarios 为预设（清除用户自定义）
+        function resetScenarios(char) {
+            localStorage.removeItem(getStorageKey(char, 'scenarios'));
+            return getDefaultScenarios(char);
+        }
+        
+        // 重置角色 moves 为预设
+        function resetMoves(char) {
+            clearSavedMoves(char);
+            return getDefaultMoves(char);
+        }
+
+        // ========== 规则存储 ==========
+        // 保存角色专属规则
+        function saveCharacterRules(char, rules) {
+            try {
+                localStorage.setItem(getStorageKey(char, 'rules'), JSON.stringify(rules));
+            } catch (e) {
+                console.warn('保存规则失败:', e);
+            }
+        }
+        
+        // 加载角色专属规则
+        function loadCharacterRules(char) {
+            try {
+                const saved = localStorage.getItem(getStorageKey(char, 'rules'));
+                if (saved) {
+                    return JSON.parse(saved);
+                }
+            } catch (e) {
+                console.warn('读取规则失败:', e);
+            }
+            return [];
+        }
+        
+        // 获取当前角色的所有规则（全局 + 角色专属）
+        function getAllRulesForCharacter(char) {
+            const globalRules = CONFIG.GLOBAL_RULES.map(r => ({ ...r, isGlobal: true }));
+            const charRules = (state.characterRules[char] || []).map(r => ({ ...r, isGlobal: false }));
+            return [...globalRules, ...charRules];
+        }
+        
+        // 检查招式是否被禁用（用于特定用途）
+        function isMoveDisabled(move, usage, rules) {
+            if (!move) return false;
+            const moveName = (move.name || '').toUpperCase();
+            
+            for (const rule of rules) {
+                if (rule.type === 'disable' && rule.moveName && rule.usage === usage) {
+                    if (moveName === rule.moveName.toUpperCase()) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        
+        // 检查两个招式是否被规则禁止组合
+        function isComboForbidden(move1, move2, rules) {
+            if (!move1 || !move2) return false;
+            const name1 = (move1.name || '').toUpperCase();
+            const name2 = (move2.name || '').toUpperCase();
+            
+            for (const rule of rules) {
+                // 禁用组合规则
+                if (rule.type === 'combo' && rule.move1 && rule.move2) {
+                    const m1 = rule.move1.toUpperCase();
+                    const m2 = rule.move2.toUpperCase();
+                    // 双向检查
+                    if ((name1 === m1 && name2 === m2) || (name1 === m2 && name2 === m1)) {
+                        return true;
+                    }
+                }
+                // 兼容旧的 pattern 规则（关键词匹配）
+                else if (rule.pattern1 && rule.pattern2) {
+                    const p1 = rule.pattern1.toUpperCase();
+                    const p2 = rule.pattern2.toUpperCase();
+                    if ((name1.includes(p1) && name2.includes(p2)) ||
+                        (name1.includes(p2) && name2.includes(p1))) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        
+        // ========== 收藏/最小化状态存储 ==========
+        function saveFavorites() {
+            try {
+                localStorage.setItem(getGlobalStorageKey('favorites'), JSON.stringify(state.favorites));
+            } catch (e) {
+                console.warn('保存收藏状态失败:', e);
+            }
+        }
+        
+        function loadFavorites() {
+            try {
+                const saved = localStorage.getItem(getGlobalStorageKey('favorites'));
+                return saved ? JSON.parse(saved) : {};
+            } catch (e) {
+                return {};
+            }
+        }
+        
+        function saveMinimized() {
+            try {
+                localStorage.setItem(getGlobalStorageKey('minimized'), JSON.stringify(state.minimized));
+            } catch (e) {
+                console.warn('保存最小化状态失败:', e);
+            }
+        }
+        
+        function loadMinimized() {
+            try {
+                const saved = localStorage.getItem(getGlobalStorageKey('minimized'));
+                return saved ? JSON.parse(saved) : {};
+            } catch (e) {
+                return {};
+            }
+        }
+
+        // ==================== 核心计算逻辑 ====================
+        // 获取偷帧数的颜色类（与 Hit/Block 帧数一致）
+        function getStolenColorClass(stolen) {
+            if (stolen >= 3) return 'text-green-400';      // 偷3帧以上，深绿
+            if (stolen >= 1) return 'text-emerald-400';    // 偷1-2帧，浅绿
+            return 'text-yellow-400';                       // 偷0帧，黄色
+        }
+        
+        // 获取帧数优势的颜色类
+        function getFrameColorClass(frames) {
+            if (frames > 0) return 'text-cyan-400';         // 正帧，浅蓝
+            if (frames === 0) return 'text-white';          // 0帧，白色
+            return 'text-rose-400';                         // 负帧，玫瑰红
+        }
+        
+        // 检测压制招式的攻击等级：heavy / medium / light / other
+        function getMoveStrength(move) {
+            if (!move || !move.name) return 'other';
+            const name = move.name.toUpperCase();
+            // 重攻击：HP, HK（包括带方向的如 6HP, 4HK 等）
+            if (name.includes('HP') || name.includes('HK')) return 'heavy';
+            // 中攻击：MP, MK
+            if (name.includes('MP') || name.includes('MK')) return 'medium';
+            // 轻攻击：LP, LK
+            if (name.includes('LP') || name.includes('LK')) return 'light';
+            return 'other';
+        }
+        
+        // 获取方案的压制招式等级
+        function getPlanStrength(plan) {
+            return getMoveStrength(plan.meatyMove);
+        }
+
+        function calculateBestPlan(adv) {
+            const possiblePlans = [];
+            // 获取当前角色的所有规则
+            const rules = getAllRulesForCharacter(state.currentCharacter);
+            
+            // ========== 方案A: 直接压制（不需要卡帧）==========
+            // 对方在 adv+1 帧起身，检查是否有招式的 active 能覆盖
+            const directTargetFrame = adv + 1;
+            
+            state.moveLibrary
+                .filter(m => !m.isDash && m.active)
+                .filter(m => !isMoveDisabled(m, 'meaty_direct', rules))  // 过滤被禁用的直接压制招式
+                .forEach(meatyMove => {
+                    // 使用新的多段active检查函数
+                    const hitInfo = checkActiveHit(meatyMove.active, directTargetFrame);
+                    
+                    if (hitInfo) {
+                        // 投技特殊处理：没有 hit/block 概念
+                        const isThrowPlan = meatyMove.isThrow === true;
+                        
+                        possiblePlans.push({
+                            isDirect: true,  // 标记为直接压制
+                            isThrow: isThrowPlan,  // 标记是否为投技方案
+                            killMove: null,
+                            killTotal: 0,
+                            remain: adv,
+                            meatyMove,
+                            stolen: hitInfo.stolen,
+                            finalHit: isThrowPlan ? null : (meatyMove.hit || 0) + hitInfo.stolen,
+                            finalBlock: isThrowPlan ? null : (meatyMove.block || 0) + hitInfo.stolen
+                        });
+                    }
+                });
+            
+            // ========== 方案B: 卡帧后压制 ==========
+            state.moveLibrary.forEach(killMove => {
+                // 检查是否被禁用用于卡帧
+                if (isMoveDisabled(killMove, 'kill', rules)) return;
+                
+                // Dash 只能卡帧，没有 active 判断
+                if (killMove.isDash) {
+                    const killTotal = killMove.dashFrames || 19;
+                    if (killTotal >= adv) return;
+                    
+                    const remain = adv - killTotal;
+                    const targetFrame = remain + 1;
+                    
+                    // Dash 后接压制招式
+                    state.moveLibrary
+                        .filter(m => !m.isDash && m.active)
+                        .filter(m => !isMoveDisabled(m, 'meaty_after_kill', rules))  // 过滤被禁用的卡帧后压制招式
+                        .forEach(meatyMove => {
+                            const hitInfo = checkActiveHit(meatyMove.active, targetFrame);
+                            if (hitInfo) {
+                                const isThrowPlan = meatyMove.isThrow === true;
+                                possiblePlans.push({
+                                    isDirect: false,
+                                    isThrow: isThrowPlan,
+                                    killMove,
+                                    killMove2: null,  // 单步卡帧无第二步
+                                    killTotal,
+                                    killTotal2: 0,
+                                    remain,
+                                    meatyMove,
+                                    stolen: hitInfo.stolen,
+                                    finalHit: isThrowPlan ? null : (meatyMove.hit || 0) + hitInfo.stolen,
+                                    finalBlock: isThrowPlan ? null : (meatyMove.block || 0) + hitInfo.stolen
+                                });
+                            }
+                        });
+                    return;
+                }
+                
+                if (!killMove.active) return;
+                
+                // 普通招式卡帧
+                const lastActive = getLastActiveFrame(killMove.active);
+                const killTotal = lastActive + killMove.recovery;
+
+                if (killTotal >= adv) return;
+
+                const remain = adv - killTotal;
+                const targetFrame = remain + 1;
+                
+                state.moveLibrary
+                    .filter(m => !m.isDash && m.active)
+                    .filter(m => !isMoveDisabled(m, 'meaty_after_kill', rules))  // 过滤被禁用的卡帧后压制招式
+                    .forEach(meatyMove => {
+                        const hitInfo = checkActiveHit(meatyMove.active, targetFrame);
+                        
+                        if (hitInfo) {
+                            // 使用规则系统检查是否禁止组合
+                            if (isComboForbidden(killMove, meatyMove, rules)) {
+                                return;
+                            }
+                            
+                            const isThrowPlan = meatyMove.isThrow === true;
+                            possiblePlans.push({
+                                isDirect: false,
+                                isThrow: isThrowPlan,
+                                killMove,
+                                killMove2: null,  // 单步卡帧无第二步
+                                killTotal,
+                                killTotal2: 0,
+                                remain,
+                                meatyMove,
+                                stolen: hitInfo.stolen,
+                                finalHit: isThrowPlan ? null : (meatyMove.hit || 0) + hitInfo.stolen,
+                                finalBlock: isThrowPlan ? null : (meatyMove.block || 0) + hitInfo.stolen
+                            });
+                        }
+                    });
+            });
+
+            // ========== 方案C: 两步卡帧后压制 ==========
+            state.moveLibrary.forEach(killMove1 => {
+                // 检查第一步是否被禁用用于卡帧
+                if (isMoveDisabled(killMove1, 'kill', rules)) return;
+                
+                // 计算第一步卡帧消耗
+                let killTotal1;
+                if (killMove1.isDash) {
+                    killTotal1 = killMove1.dashFrames || 19;
+                } else if (killMove1.active) {
+                    const lastActive1 = getLastActiveFrame(killMove1.active);
+                    killTotal1 = lastActive1 + killMove1.recovery;
+                } else {
+                    return;
+                }
+                
+                if (killTotal1 >= adv) return;
+                const remain1 = adv - killTotal1;
+                
+                // 遍历第二步卡帧招式
+                state.moveLibrary.forEach(killMove2 => {
+                    // 检查第二步是否被禁用用于卡帧
+                    if (isMoveDisabled(killMove2, 'kill', rules)) return;
+                    
+                    // 计算第二步卡帧消耗
+                    let killTotal2;
+                    if (killMove2.isDash) {
+                        killTotal2 = killMove2.dashFrames || 19;
+                    } else if (killMove2.active) {
+                        const lastActive2 = getLastActiveFrame(killMove2.active);
+                        killTotal2 = lastActive2 + killMove2.recovery;
+                    } else {
+                        return;
+                    }
+                    
+                    if (killTotal2 >= remain1) return;
+                    const remain2 = remain1 - killTotal2;
+                    const targetFrame2 = remain2 + 1;
+                    
+                    // 使用规则系统检查第一步+第二步是否禁止组合
+                    if (isComboForbidden(killMove1, killMove2, rules)) {
+                        return;
+                    }
+                    
+                    // 找压制招式
+                    state.moveLibrary
+                        .filter(m => !m.isDash && m.active)
+                        .filter(m => !isMoveDisabled(m, 'meaty_after_kill', rules))  // 过滤被禁用的卡帧后压制招式
+                        .forEach(meatyMove => {
+                            const hitInfo = checkActiveHit(meatyMove.active, targetFrame2);
+                            
+                            if (hitInfo) {
+                                // 使用规则系统检查第二步+压制是否禁止组合
+                                if (isComboForbidden(killMove2, meatyMove, rules)) {
+                                    return;
+                                }
+                                
+                                const isThrowPlan = meatyMove.isThrow === true;
+                                possiblePlans.push({
+                                    isDirect: false,
+                                    isThrow: isThrowPlan,
+                                    killMove: killMove1,
+                                    killMove2: killMove2,  // 两步卡帧
+                                    killTotal: killTotal1,
+                                    killTotal2: killTotal2,
+                                    remain: remain2,
+                                    meatyMove,
+                                    stolen: hitInfo.stolen,
+                                    finalHit: isThrowPlan ? null : (meatyMove.hit || 0) + hitInfo.stolen,
+                                    finalBlock: isThrowPlan ? null : (meatyMove.block || 0) + hitInfo.stolen
+                                });
+                            }
+                        });
+                });
+            });
+
+            // 按 finalBlock 降序，再按 finalHit 降序（投技方案排在普通方案之后）
+            return possiblePlans.sort((a, b) => {
+                // 投技方案统一放后面
+                if (a.isThrow !== b.isThrow) return a.isThrow ? 1 : -1;
+                // 非投技方案：按 block > hit 排序
+                if (!a.isThrow && !b.isThrow) {
+                    if (b.finalBlock !== a.finalBlock) return b.finalBlock - a.finalBlock;
+                    return b.finalHit - a.finalHit;
+                }
+                // 投技方案：直接压制优先
+                return (b.isDirect ? 1 : 0) - (a.isDirect ? 1 : 0);
+            });
+        }
+
+        // ==================== 数据加载 ====================
+        // 从全局 CHARACTER_DATA 加载角色数据（由外部 .js 文件填充）
+        function loadCharacterData(char) {
+            console.log(`[加载] 角色: ${char}`);
+            
+            // 1. 优先从 localStorage 加载用户保存的数据
+            const savedMoves = loadMovesFromStorage(char);
+            if (savedMoves && savedMoves.length > 0) {
+                console.log(`[localStorage] 使用用户保存的招式数据: ${savedMoves.length} 个`);
+                state.moveLibrary = savedMoves;
+                state.characterCache[char] = {
+                    moves: savedMoves,
+                    scenarios: CHARACTER_DATA[char]?.scenarios || []
+                };
+                return true;
+            }
+            
+            // 2. 检查内存缓存
+            if (state.characterCache[char]?.moves?.length > 0) {
+                console.log(`[缓存] 使用缓存数据`);
+                state.moveLibrary = [...state.characterCache[char].moves];
+                return true;
+            }
+
+            // 3. 从全局变量读取（由 <script src="xxx.js"> 加载）
+            const data = CHARACTER_DATA[char];
+            
+            if (data && data.moves) {
+                state.characterCache[char] = {
+                    moves: [...data.moves],
+                    scenarios: data.scenarios ? [...data.scenarios] : []
+                };
+                state.moveLibrary = [...data.moves];
+                console.log(`[成功] 加载预设 ${data.moves.length} 个招式, ${data.scenarios?.length || 0} 个场景`);
+                return true;
+            } else {
+                console.warn(`[警告] 未找到 ${char} 的数据，请确保已加载对应的 .js 文件`);
+                state.moveLibrary = [];
+                state.characterCache[char] = { moves: [], scenarios: [] };
+                return false;
+            }
+        }
+
+        // ==================== 角色切换 ====================
+        function selectCharacter(char) {
+            // 检查是否有数据，无数据角色不可选
+            const hasData = CONFIG.CHARACTERS_WITH_DATA.includes(char);
+            if (!hasData) {
+                console.log(`[角色] ${char} 暂无数据，无法选择`);
+                return; // 阻止选择
+            }
+            
+            state.currentCharacter = char;
+            
+            // 保存当前角色选择到 localStorage
+            saveCurrentCharacter(char);
+            
+            // 应用角色主题
+            applyTheme(char);
+            
+            // 更新UI - 只更新图标
+            document.getElementById('currentCharIcon').textContent = getCharIcon(char);
+            
+            // 加载角色数据 (moves + scenarios)
+            loadCharacterData(char);
+            
+            // 加载 scenarios: 预设 + 用户自定义
+            state.notes = loadAllScenarios(char);
+            
+            // 加载角色专属规则
+            state.characterRules[char] = loadCharacterRules(char);
+            
+            // 更新封条滚动内容
+            updateMarqueeTape();
+            
+            closeCharModal();
+            renderAll();
+            
+            // 自动触发标题 Glitch 效果 0.5 秒
+            triggerTitleGlitch();
+        }
+        
+        // 触发标题 Glitch 效果
+        function triggerTitleGlitch() {
+            const title = document.querySelector('.glitch-hover');
+            if (title) {
+                title.classList.add('glitch-active');
+                setTimeout(() => {
+                    title.classList.remove('glitch-active');
+                }, 500);
+            }
+        }
+
+        function initCharacterGrid() {
+            const grid = document.getElementById('charGrid');
+            grid.innerHTML = CONFIG.ALL_CHARACTERS.map(char => {
+                const hasData = CONFIG.CHARACTERS_WITH_DATA.includes(char);
+                const isSelected = char === state.currentCharacter;
+                
+                // 无数据角色不添加点击事件
+                const clickHandler = hasData ? `onclick="selectCharacter('${char}')"` : '';
+                
+                return `
+                    <div class="char-item ${isSelected ? 'selected' : ''} ${!hasData ? 'no-data' : ''}" 
+                         ${clickHandler}
+                         title="${hasData ? '点击选择' : '暂无数据'}">
+                        <div class="char-icon">${getCharIcon(char)}</div>
+                        <div class="char-name">${char}</div>
+                        <div class="text-[8px] ${hasData ? 'text-green-500' : 'text-zinc-600'} mt-1">
+                            ${hasData ? '数据' : '无'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== 渲染函数 ====================
+        // 生成方案唯一标识（用于去重）
+        function getPlanKey(plan) {
+            if (!plan) return '';
+            const kill1Name = plan.killMove ? plan.killMove.name : 'DIRECT';
+            const kill2Name = plan.killMove2 ? plan.killMove2.name : '';
+            return `${kill1Name}|${kill2Name}|${plan.meatyMove.name}`;
+        }
+
+        // 生成推荐理由说明文本
+        function getRecommendReasons(plan, reasons) {
+            if (!reasons || reasons.length === 0) return '';
+            
+            const reasonTexts = {
+                'best_block': '🛡️ 打防收益最优',
+                'best_hit': '⚔️ 命中收益最优',
+                'best_nonheavy_block': '🎯 中/弱攻击打防最优',
+                'best_nonheavy_hit': '🎯 中/弱攻击命中最优',
+                'most_stolen': '⏱️ 偷帧最多',
+                'throw': '🤼 投技方案',
+                'mixup': '🎲 打投二择',
+                'favorite': '⭐ 用户收藏',
+                'prefer': '👍 用户规则倾向压制'  // 动态添加招式名
+            };
+            
+            // 过滤规则：如果同时满足1和3，只显示1；同时满足2和4，只显示2
+            let filteredReasons = [...reasons];
+            if (reasons.includes('best_block') && reasons.includes('best_nonheavy_block')) {
+                filteredReasons = filteredReasons.filter(r => r !== 'best_nonheavy_block');
+            }
+            if (reasons.includes('best_hit') && reasons.includes('best_nonheavy_hit')) {
+                filteredReasons = filteredReasons.filter(r => r !== 'best_nonheavy_hit');
+            }
+            
+            return filteredReasons.map(r => {
+                if (r.startsWith('prefer:')) {
+                    const moveName = r.split(':')[1];
+                    return `👍 用户规则倾向压制：${moveName}`;
+                }
+                return reasonTexts[r] || '';
+            }).filter(t => t).join('\n');
+        }
+
+        // 渲染主要方案（紧凑版，带收藏和最小化按钮）
+        function renderMainPlan(plan, label, adv, reasons = []) {
+            if (!plan) return '';
+            
+            const planKey = getPlanKey(plan);
+            const isFavorite = isPlanFavorite(adv, planKey);
+            const isThrow = plan.isThrow;
+            const accentColor = 'text-white';
+            
+            // 生成推荐理由提示
+            const recommendReasons = getRecommendReasons(plan, reasons);
+            const tooltipHtml = recommendReasons ? `<div class="recommend-tooltip">${recommendReasons.replace(/\n/g, '<br>')}</div>` : '';
+            
+            // 收藏时使用金色边框
+            const borderColor = isFavorite ? 'border-yellow-500' : 'border-zinc-800';
+            const bgColor = isFavorite ? 'bg-yellow-900/10' : 'bg-zinc-900/50';
+            
+            let stepsHtml;
+            
+            const stolenColor = getStolenColorClass(plan.stolen);
+            
+            if (plan.isDirect) {
+                // 直接压制/投
+                stepsHtml = `<div class="text-center">
+                       <div class="text-[9px] text-zinc-600 uppercase mb-1">直接${isThrow ? '投' : ''} (${plan.remain}F)</div>
+                       <div class="impact-text text-4xl sm:text-5xl font-black ${accentColor} leading-none glitch-text">${plan.meatyMove.name}</div>
+                       ${!isThrow ? `<div class="text-xs mt-1"><span class="text-zinc-500">偷</span><span class="${stolenColor} font-bold">${plan.stolen}F</span></div>` : ''}
+                   </div>`;
+            } else if (plan.killMove2) {
+                // 两步卡帧
+                const remain1 = adv - plan.killTotal;
+                stepsHtml = `<div class="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+                       <div class="text-center min-w-[55px]">
+                           <div class="impact-text text-xl sm:text-2xl font-black text-white leading-none">${plan.killMove.name}</div>
+                           <div class="text-[9px] text-zinc-500">-${plan.killTotal}F</div>
+                       </div>
+                       <div class="text-zinc-600 text-lg">→</div>
+                       <div class="text-center min-w-[55px]">
+                           <div class="impact-text text-xl sm:text-2xl font-black text-white leading-none">${plan.killMove2.name}</div>
+                           <div class="text-[9px] text-zinc-500">-${plan.killTotal2}F</div>
+                       </div>
+                       <div class="text-zinc-600 text-lg">→</div>
+                       <div class="text-center min-w-[55px]">
+                           <div class="impact-text text-xl sm:text-2xl font-black ${accentColor} leading-none glitch-text">${plan.meatyMove.name}</div>
+                           ${!isThrow ? `<div class="text-[9px]"><span class="text-zinc-500">偷</span><span class="${stolenColor} font-bold">${plan.stolen}F</span></div>` : ''}
+                       </div>
+                   </div>`;
+            } else {
+                // 一步卡帧
+                stepsHtml = `<div class="flex items-center justify-center gap-3 sm:gap-5">
+                       <div class="text-center min-w-[70px]">
+                           <div class="impact-text text-2xl sm:text-4xl font-black text-white leading-none">${plan.killMove.name}</div>
+                           <div class="text-[10px] text-zinc-500">-${plan.killTotal}F</div>
+                       </div>
+                       <div class="text-center">
+                           <div class="text-zinc-600 text-xl sm:text-2xl">→</div>
+                           <div class="text-[9px] text-yellow-500">${plan.remain}F</div>
+                       </div>
+                       <div class="text-center min-w-[70px]">
+                           <div class="impact-text text-2xl sm:text-4xl font-black ${accentColor} leading-none glitch-text">${plan.meatyMove.name}</div>
+                           ${!isThrow ? `<div class="text-[10px]"><span class="text-zinc-500">偷</span><span class="${stolenColor} font-bold">${plan.stolen}F</span></div>` : ''}
+                       </div>
+                   </div>`;
+            }
+
+            // 投技显示"放倒"，普通招式显示 Hit/Block
+            const hitColor = getFrameColorClass(plan.finalHit);
+            const blockColor = getFrameColorClass(plan.finalBlock);
+            const statsHtml = isThrow 
+                ? `<span class="text-zinc-400 text-xs">放倒</span>`
+                : `<span class="text-sm text-zinc-500">H</span><span class="text-lg font-bold ${hitColor} ml-1">${plan.finalHit >= 0 ? '+' : ''}${plan.finalHit}</span>
+                   <span class="text-sm text-zinc-500 ml-3">B</span><span class="text-lg font-bold ${blockColor} ml-1">${plan.finalBlock >= 0 ? '+' : ''}${plan.finalBlock}</span>`;
+
+            // 收藏星和最小化按钮
+            const starIcon = isFavorite ? '★' : '☆';
+            const starClass = isFavorite ? 'text-yellow-400' : 'text-zinc-600 hover:text-yellow-400';
+            
+            // 收藏印章
+            const stampHtml = isFavorite ? '<div class="favorite-stamp">FAVE</div>' : '';
+            
+            // 方案标签（如"打投择"）
+            const labelHtml = label ? `<div class="absolute top-1 left-1 sm:top-2 sm:left-2 text-[9px] font-bold px-1.5 py-0.5 bg-amber-600/80 text-white uppercase">${label}</div>` : '';
+
+            return `
+                <div class="mb-3 p-4 border ${borderColor} ${bgColor} relative group overflow-visible recommend-card">
+                    ${stampHtml}
+                    ${labelHtml}
+                    ${tooltipHtml}
+                    <div class="absolute top-1 right-1 sm:top-2 sm:right-2 flex gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+                        <button onclick="toggleFavorite(${adv}, '${planKey}')" class="${starClass} text-xl sm:text-lg p-2 sm:p-1 transition-colors" title="收藏">${starIcon}</button>
+                        <button onclick="minimizePlan(${adv}, '${planKey}')" class="text-zinc-600 hover:text-zinc-400 text-base sm:text-sm p-2 sm:p-1 transition-colors" title="折叠至备选">▼</button>
+                    </div>
+                    <div class="mb-2">
+                        ${stepsHtml}
+                    </div>
+                    <div class="text-center border-t border-zinc-800/50 pt-2">
+                        ${statsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 渲染备选方案（可展开详情，带最大化按钮）
+        function renderAltPlan(plan, adv) {
+            if (!plan) return '';
+            
+            const planKey = getPlanKey(plan);
+            const isFavorite = isPlanFavorite(adv, planKey);
+            
+            let desc;
+            if (plan.isDirect) {
+                desc = `直接 ${plan.meatyMove.name}`;
+            } else if (plan.killMove2) {
+                desc = `${plan.killMove.name} → ${plan.killMove2.name} → ${plan.meatyMove.name}`;
+            } else {
+                desc = `${plan.killMove.name} → ${plan.meatyMove.name}`;
+            }
+            
+            // 生成展开后的详情
+            let detailHtml = renderAltPlanDetail(plan, adv);
+            
+            // 收藏星样式
+            const starIcon = isFavorite ? '★' : '☆';
+            const starClass = isFavorite ? 'text-yellow-400' : 'text-zinc-600 hover:text-yellow-400';
+            const rowBg = isFavorite ? 'bg-yellow-900/10' : '';
+
+            const stolenColorAlt = getStolenColorClass(plan.stolen);
+            
+            return `
+                <details class="border-b border-zinc-800/50 ${rowBg}">
+                    <summary class="flex items-center justify-between py-2 cursor-pointer hover:bg-zinc-800/30 transition-colors group">
+                        <span class="text-sm text-zinc-400">${desc}</span>
+                        <div class="flex gap-1 sm:gap-2 text-sm font-bold items-center">
+                            <span class="${stolenColorAlt} text-xs sm:text-sm">偷${plan.stolen}F</span>
+                            <span class="${getFrameColorClass(plan.finalHit)} text-xs sm:text-sm">H${plan.finalHit >= 0 ? '+' : ''}${plan.finalHit}</span>
+                            <span class="${getFrameColorClass(plan.finalBlock)} text-xs sm:text-sm">B${plan.finalBlock >= 0 ? '+' : ''}${plan.finalBlock}</span>
+                            <button onclick="event.stopPropagation(); toggleFavorite(${adv}, '${planKey}')" class="${starClass} transition-colors p-1.5 sm:p-1 text-base sm:text-sm" title="收藏">${starIcon}</button>
+                            <button onclick="event.stopPropagation(); maximizePlan(${adv}, '${planKey}')" class="text-zinc-600 hover:text-zinc-400 transition-colors p-1.5 sm:p-1 text-base sm:text-sm" title="置顶显示">▲</button>
+                        </div>
+                    </summary>
+                    <div class="py-2 px-2 bg-zinc-800/20">
+                        ${detailHtml}
+                    </div>
+                </details>
+            `;
+        }
+        
+        // 渲染备选方案展开详情
+        function renderAltPlanDetail(plan, adv) {
+            const isThrow = plan.isThrow;
+            const stolenColorDetail = getStolenColorClass(plan.stolen);
+            
+            let stepsHtml;
+            
+            if (plan.isDirect) {
+                stepsHtml = `<div class="text-center">
+                       <div class="text-[10px] text-zinc-600 uppercase mb-2">直接${isThrow ? '投' : '压制'} (剩余 ${plan.remain}F)</div>
+                       <div class="impact-text text-3xl sm:text-4xl font-black text-white leading-none">${plan.meatyMove.name}</div>
+                       ${!isThrow ? `<div class="text-sm mt-2"><span class="text-zinc-500">偷</span><span class="${stolenColorDetail} font-bold">${plan.stolen}F</span></div>` : ''}
+                   </div>`;
+            } else if (plan.killMove2) {
+                const remain1 = adv - plan.killTotal;
+                stepsHtml = `<div class="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+                       <div class="text-center min-w-[60px]">
+                           <div class="text-[9px] text-zinc-600 uppercase mb-1">卡帧①</div>
+                           <div class="impact-text text-xl sm:text-2xl font-black text-white leading-none">${plan.killMove.name}</div>
+                           <div class="text-[10px] text-zinc-500 mt-1">-${plan.killTotal}F</div>
+                       </div>
+                       <div class="text-center">
+                           <div class="text-zinc-600 text-lg">→</div>
+                           <div class="text-[9px] text-yellow-500">${remain1}F</div>
+                       </div>
+                       <div class="text-center min-w-[60px]">
+                           <div class="text-[9px] text-zinc-600 uppercase mb-1">卡帧②</div>
+                           <div class="impact-text text-xl sm:text-2xl font-black text-white leading-none">${plan.killMove2.name}</div>
+                           <div class="text-[10px] text-zinc-500 mt-1">-${plan.killTotal2}F</div>
+                       </div>
+                       <div class="text-center">
+                           <div class="text-zinc-600 text-lg">→</div>
+                           <div class="text-[9px] text-yellow-500">${plan.remain}F</div>
+                       </div>
+                       <div class="text-center min-w-[60px]">
+                           <div class="text-[9px] text-zinc-500 uppercase mb-1">${isThrow ? '投' : '压制'}</div>
+                           <div class="impact-text text-xl sm:text-2xl font-black text-white leading-none">${plan.meatyMove.name}</div>
+                           ${!isThrow ? `<div class="text-[10px] mt-1"><span class="text-zinc-500">偷</span><span class="${stolenColorDetail} font-bold">${plan.stolen}F</span></div>` : ''}
+                       </div>
+                   </div>`;
+            } else {
+                stepsHtml = `<div class="flex items-center justify-center gap-3 sm:gap-5">
+                       <div class="text-center min-w-[70px]">
+                           <div class="text-[9px] text-zinc-600 uppercase mb-1">卡帧</div>
+                           <div class="impact-text text-2xl sm:text-3xl font-black text-white leading-none">${plan.killMove.name}</div>
+                           <div class="text-xs text-zinc-500 mt-1">-${plan.killTotal}F</div>
+                       </div>
+                       <div class="text-center">
+                           <div class="text-zinc-600 text-xl">→</div>
+                           <div class="text-[10px] text-yellow-500">剩${plan.remain}F</div>
+                       </div>
+                       <div class="text-center min-w-[70px]">
+                           <div class="text-[9px] text-zinc-500 uppercase mb-1">${isThrow ? '投' : '压制'}</div>
+                           <div class="impact-text text-2xl sm:text-3xl font-black text-white leading-none">${plan.meatyMove.name}</div>
+                           ${!isThrow ? `<div class="text-xs mt-1"><span class="text-zinc-500">偷</span><span class="${stolenColorDetail} font-bold">${plan.stolen}F</span></div>` : ''}
+                       </div>
+                   </div>`;
+            }
+
+            const statsHtml = isThrow 
+                ? `<div class="text-center text-zinc-400 text-xs font-bold mt-3">
+                       放倒
+                   </div>`
+                : `<div class="flex justify-center gap-6 mt-3">
+                       <div class="text-center">
+                           <span class="text-xs text-zinc-600 uppercase">Hit</span>
+                           <span class="text-xl font-black ${getFrameColorClass(plan.finalHit)} ml-1">${plan.finalHit >= 0 ? '+' : ''}${plan.finalHit}</span>
+                       </div>
+                       <div class="text-center">
+                           <span class="text-xs text-zinc-600 uppercase">Block</span>
+                           <span class="text-xl font-black ${getFrameColorClass(plan.finalBlock)} ml-1">${plan.finalBlock >= 0 ? '+' : ''}${plan.finalBlock}</span>
+                       </div>
+                   </div>`;
+
+            return `
+                <div class="py-2">
+                    ${stepsHtml}
+                    ${statsHtml}
+                </div>
+            `;
+        }
+        
+        // 渲染投技备选方案（可展开详情）
+        function renderAltThrowPlan(plan, adv) {
+            if (!plan) return '';
+            
+            const planKey = getPlanKey(plan);
+            const isFavorite = isPlanFavorite(adv, planKey);
+            
+            let desc;
+            if (plan.isDirect) {
+                desc = `直接 ${plan.meatyMove.name}`;
+            } else if (plan.killMove2) {
+                desc = `${plan.killMove.name} → ${plan.killMove2.name} → ${plan.meatyMove.name}`;
+            } else {
+                desc = `${plan.killMove.name} → ${plan.meatyMove.name}`;
+            }
+            
+            let detailHtml = renderAltPlanDetail(plan, adv);
+            
+            const starIcon = isFavorite ? '★' : '☆';
+            const starClass = isFavorite ? 'text-yellow-400' : 'text-zinc-600 hover:text-yellow-400';
+            const rowBg = isFavorite ? 'bg-yellow-900/10' : '';
+
+            return `
+                <details class="border-b border-zinc-800/50 ${rowBg}">
+                    <summary class="flex items-center justify-between py-2 cursor-pointer hover:bg-zinc-800/30 transition-colors">
+                        <span class="text-sm text-zinc-400">${desc}</span>
+                        <div class="flex gap-1 sm:gap-2 items-center">
+                            <span class="text-[10px] sm:text-xs text-zinc-500">${plan.remain}F</span>
+                            <button onclick="event.stopPropagation(); toggleFavorite(${adv}, '${planKey}')" class="${starClass} transition-colors p-1.5 sm:p-1 text-base sm:text-sm" title="收藏">${starIcon}</button>
+                            <button onclick="event.stopPropagation(); maximizePlan(${adv}, '${planKey}')" class="text-zinc-600 hover:text-zinc-400 transition-colors p-1.5 sm:p-1 text-base sm:text-sm" title="置顶显示">▲</button>
+                        </div>
+                    </summary>
+                    <div class="py-2 px-2 bg-zinc-800/20">
+                        ${detailHtml}
+                    </div>
+                </details>
+            `;
+        }
+
+        // 搜索过滤函数
+        function filterSolutions() {
+            renderNotes();
+        }
+        
+        // 清除搜索
+        function clearSearch() {
+            const input = document.getElementById('solutionSearch');
+            input.value = '';
+            updateClearBtn();
+            filterSolutions();
+        }
+        
+        // 更新清除按钮显示状态
+        function updateClearBtn() {
+            const input = document.getElementById('solutionSearch');
+            const btn = document.getElementById('clearSearchBtn');
+            if (input.value.trim()) {
+                btn.classList.remove('hidden');
+            } else {
+                btn.classList.add('hidden');
+            }
+        }
+        
+        // 切换排序方向
+        function toggleSortOrder() {
+            state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc';
+            updateSortOrderUI();
+            renderNotes();
+        }
+        
+        // 更新排序按钮 UI
+        function updateSortOrderUI() {
+            const icon = document.getElementById('sortOrderIcon');
+            const btn = document.getElementById('sortOrderBtn');
+            if (state.sortOrder === 'asc') {
+                icon.textContent = '↑';
+                btn.title = '当前：从小到大，点击切换';
+            } else {
+                icon.textContent = '↓';
+                btn.title = '当前：从大到小，点击切换';
+            }
+        }
+        
+        // 切换收藏状态
+        function toggleFavorite(adv, planKey) {
+            const stateKey = `${state.currentCharacter}:${adv}:${planKey}`;
+            state.favorites[stateKey] = !state.favorites[stateKey];
+            if (!state.favorites[stateKey]) delete state.favorites[stateKey]; // 清理 false 值
+            saveFavorites();
+            renderNotes();
+        }
+        
+        // 最小化方案（移到备选列表）
+        function minimizePlan(adv, planKey) {
+            const stateKey = `${state.currentCharacter}:${adv}:${planKey}`;
+            state.minimized[stateKey] = true;
+            saveMinimized();
+            renderNotes();
+        }
+        
+        // 最大化方案（从备选移到主显示）
+        function maximizePlan(adv, planKey) {
+            const stateKey = `${state.currentCharacter}:${adv}:${planKey}`;
+            delete state.minimized[stateKey];
+            saveMinimized();
+            renderNotes();
+        }
+        
+        // 检查方案是否被最小化
+        function isPlanMinimized(adv, planKey) {
+            return state.minimized[`${state.currentCharacter}:${adv}:${planKey}`] === true;
+        }
+        
+        // 检查方案是否被收藏
+        function isPlanFavorite(adv, planKey) {
+            return state.favorites[`${state.currentCharacter}:${adv}:${planKey}`] === true;
+        }
+        
+        function renderNotes() {
+            const container = document.getElementById('noteListContainer');
+            const searchInput = document.getElementById('solutionSearch');
+            const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
+            
+            if (state.moveLibrary.length === 0) {
+                container.innerHTML = `
+                    <div class="trend-card p-8 text-center">
+                        <div class="text-zinc-600 text-lg mb-2">📭 暂无 ${state.currentCharacter} 的帧数据</div>
+                        <div class="text-zinc-700 text-sm">请前往 数据 页签导入数据</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // ========== 按 adv 分组，合并相同帧数的 context ==========
+            const advGroups = {};
+            state.notes.forEach((note, idx) => {
+                if (!advGroups[note.adv]) {
+                    advGroups[note.adv] = { adv: note.adv, contexts: [], indices: [] };
+                }
+                advGroups[note.adv].contexts.push(note.context);
+                advGroups[note.adv].indices.push(idx);
+            });
+            
+            // 按 adv 排序（根据排序方向）
+            let sortedGroups = Object.values(advGroups).sort((a, b) => {
+                return state.sortOrder === 'asc' ? a.adv - b.adv : b.adv - a.adv;
+            });
+            
+            // ========== 搜索过滤 ==========
+            if (searchTerm) {
+                sortedGroups = sortedGroups.filter(group => {
+                    // 匹配帧数
+                    if (String(group.adv).includes(searchTerm)) return true;
+                    // 匹配任意 context
+                    if (group.contexts.some(ctx => ctx.toLowerCase().includes(searchTerm))) return true;
+                    return false;
+                });
+            }
+            
+            // 无匹配结果
+            if (sortedGroups.length === 0) {
+                // 区分无数据和搜索无结果
+                const isEmptyNotes = state.notes.length === 0;
+                container.innerHTML = isEmptyNotes ? `
+                    <div class="trend-card p-8 text-center">
+                        <div class="text-zinc-600 text-lg mb-2">📋 暂无 Scenario</div>
+                        <div class="text-zinc-700 text-sm">点击 + 新增场景 添加有利帧情境</div>
+                    </div>
+                ` : `
+                    <div class="trend-card p-8 text-center">
+                        <div class="text-zinc-600 text-lg mb-2">🔍 未找到匹配的 Scenario</div>
+                        <div class="text-zinc-700 text-sm">尝试其他搜索词，或清空搜索框查看全部</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = sortedGroups.map((group, cardIndex) => {
+                const allPlans = calculateBestPlan(group.adv);
+                
+                // 分离投技方案和普通方案
+                // 投技条件：剩余 4-5 帧时投技 active 可覆盖（投技 startup=5, active=5-7）
+                const throwPlans = allPlans.filter(p => p.isThrow && p.remain >= 4 && p.remain <= 5);
+                const normalPlans = allPlans.filter(p => !p.isThrow && p.finalBlock > 0);
+                
+                // 渲染左侧有利帧信息区（合并多个 context，每个带删除按钮）
+                const contextsHtml = group.indices.map((idx, i) => {
+                    const ctx = group.contexts[i];
+                    const note = state.notes[idx];
+                    const isPreset = !note.isUserAdded;
+                    const deleteTitle = isPreset ? "此为预设场景，删除后可通过重置恢复" : "删除此用户场景";
+                    const contextClass = isPreset ? "context-tag-preset" : "context-tag";
+                    return `<div class="flex items-center gap-2 group/ctx">
+                        <div class="text-sm font-black uppercase tracking-wide px-2 py-1 border-l-2 flex-1 ${contextClass}">${escapeHtml(ctx)}</div>
+                        <button onclick="removeNote(${idx})" class="text-zinc-600 hover:text-red-500 text-base sm:text-sm p-2 sm:p-1 sm:opacity-0 sm:group-hover/ctx:opacity-100 transition-all" title="${deleteTitle}">✕</button>
+                    </div>`;
+                }).join('');
+                
+                const leftPanel = `
+                    <div class="flex flex-col min-w-[160px] items-start lg:border-r border-zinc-800 pr-6">
+                        <div class="impact-text text-4xl sm:text-5xl leading-none frame-number" style="color: var(--theme-secondary);">+${group.adv}F</div>
+                        <div class="flex flex-col gap-1 mt-3">
+                            ${contextsHtml}
+                        </div>
+                    </div>
+                `;
+                
+                // 无任何可用方案
+                if (normalPlans.length === 0 && throwPlans.length === 0) {
+                    return `
+                        <div class="trend-card p-6 flex flex-col lg:flex-row items-center gap-6">
+                            ${leftPanel}
+                            <div class="flex-1 text-zinc-600 font-bold italic">未找到有利压制方案</div>
+                        </div>
+                    `;
+                }
+
+                const mainKeys = new Set();  // 主显示区的方案
+                const planReasons = new Map();  // 记录每个方案的推荐理由
+                let mainHtml = '';
+                
+                // 检查方案是否被最小化
+                const isMinimized = (plan) => isPlanMinimized(group.adv, getPlanKey(plan));
+                
+                // 过滤掉被最小化的方案
+                const availableNormal = normalPlans.filter(p => !isMinimized(p));
+                const availableThrow = throwPlans.filter(p => !isMinimized(p));
+                
+                // 添加方案到主显示区（自动去重，记录推荐理由）
+                const addMainPlan = (plan, label = '', reason = '') => {
+                    if (!plan) return false;
+                    const key = getPlanKey(plan);
+                    
+                    // 如果已存在，追加理由
+                    if (mainKeys.has(key)) {
+                        if (reason && !planReasons.get(key).includes(reason)) {
+                            planReasons.get(key).push(reason);
+                        }
+                        return false;
+                    }
+                    
+                    mainKeys.add(key);
+                    planReasons.set(key, reason ? [reason] : []);
+                    return true;
+                };
+
+                // ========== 1. finalBlock 最高的方案 ==========
+                if (availableNormal.length > 0) {
+                    const bestBlockPlan = [...availableNormal].sort((a, b) => {
+                        const aFav = isPlanFavorite(group.adv, getPlanKey(a)) ? 1 : 0;
+                        const bFav = isPlanFavorite(group.adv, getPlanKey(b)) ? 1 : 0;
+                        if (bFav !== aFav) return bFav - aFav;
+                        if (b.finalBlock !== a.finalBlock) return b.finalBlock - a.finalBlock;
+                        return b.finalHit - a.finalHit;
+                    })[0];
+                    addMainPlan(bestBlockPlan, '', 'best_block');
+                }
+
+                // ========== 2. finalHit 最高的方案 ==========
+                if (availableNormal.length > 0) {
+                    const bestHitPlan = [...availableNormal].sort((a, b) => {
+                        const aFav = isPlanFavorite(group.adv, getPlanKey(a)) ? 1 : 0;
+                        const bFav = isPlanFavorite(group.adv, getPlanKey(b)) ? 1 : 0;
+                        if (bFav !== aFav) return bFav - aFav;
+                        if (b.finalHit !== a.finalHit) return b.finalHit - a.finalHit;
+                        return b.finalBlock - a.finalBlock;
+                    })[0];
+                    addMainPlan(bestHitPlan, '', 'best_hit');
+                }
+
+                // ========== 3. 中/弱攻击中 finalBlock 最优 ==========
+                const nonHeavyPlans = availableNormal.filter(p => {
+                    const strength = getPlanStrength(p);
+                    return strength === 'medium' || strength === 'light' || strength === 'other';
+                });
+                if (nonHeavyPlans.length > 0) {
+                    const bestNonHeavyBlock = [...nonHeavyPlans].sort((a, b) => {
+                        const aFav = isPlanFavorite(group.adv, getPlanKey(a)) ? 1 : 0;
+                        const bFav = isPlanFavorite(group.adv, getPlanKey(b)) ? 1 : 0;
+                        if (bFav !== aFav) return bFav - aFav;
+                        if (b.finalBlock !== a.finalBlock) return b.finalBlock - a.finalBlock;
+                        return b.finalHit - a.finalHit;
+                    })[0];
+                    addMainPlan(bestNonHeavyBlock, '', 'best_nonheavy_block');
+                }
+
+                // ========== 4. 中/弱攻击中 finalHit 最优 ==========
+                if (nonHeavyPlans.length > 0) {
+                    const bestNonHeavyHit = [...nonHeavyPlans].sort((a, b) => {
+                        const aFav = isPlanFavorite(group.adv, getPlanKey(a)) ? 1 : 0;
+                        const bFav = isPlanFavorite(group.adv, getPlanKey(b)) ? 1 : 0;
+                        if (bFav !== aFav) return bFav - aFav;
+                        if (b.finalHit !== a.finalHit) return b.finalHit - a.finalHit;
+                        return b.finalBlock - a.finalBlock;
+                    })[0];
+                    addMainPlan(bestNonHeavyHit, '', 'best_nonheavy_hit');
+                }
+
+                // ========== 5. 偷帧最多的方案 ==========
+                if (availableNormal.length > 0) {
+                    const bestStolenPlan = [...availableNormal].sort((a, b) => {
+                        const aFav = isPlanFavorite(group.adv, getPlanKey(a)) ? 1 : 0;
+                        const bFav = isPlanFavorite(group.adv, getPlanKey(b)) ? 1 : 0;
+                        if (bFav !== aFav) return bFav - aFav;
+                        if (b.stolen !== a.stolen) return b.stolen - a.stolen;
+                        if (b.finalBlock !== a.finalBlock) return b.finalBlock - a.finalBlock;
+                        return b.finalHit - a.finalHit;
+                    })[0];
+                    addMainPlan(bestStolenPlan, '', 'most_stolen');
+                }
+
+                // ========== 6. 投技方案 ==========
+                let hasShownThrow = false;
+                if (availableThrow.length > 0) {
+                    // 投技方案按收藏优先，直接优先，然后按 remain 越小越优先
+                    const sortedThrow = [...availableThrow].sort((a, b) => {
+                        const aFav = isPlanFavorite(group.adv, getPlanKey(a)) ? 1 : 0;
+                        const bFav = isPlanFavorite(group.adv, getPlanKey(b)) ? 1 : 0;
+                        if (bFav !== aFav) return bFav - aFav;
+                        if (b.isDirect !== a.isDirect) return (b.isDirect ? 1 : 0) - (a.isDirect ? 1 : 0);
+                        return a.remain - b.remain;
+                    });
+                    
+                    const bestThrow = sortedThrow[0];
+                    if (addMainPlan(bestThrow, '', 'throw')) {
+                        hasShownThrow = true;
+                    }
+                }
+
+                // ========== 6'. 零帧打投择方案：当没有正收益的普通方案在主显示区，但有投技时，显示 Block=0 的方案形成打投择 ==========
+                const hasNormalMainPlan = normalPlans.some(p => mainKeys.has(getPlanKey(p)));
+                if (!hasNormalMainPlan && hasShownThrow) {
+                    // 从 allPlans 中找出所有 finalBlock === 0 的非投技方案且未被最小化的
+                    const zeroBlockPlans = allPlans.filter(p => !p.isThrow && p.finalBlock === 0 && !isMinimized(p));
+                    if (zeroBlockPlans.length > 0) {
+                        // 按攻击等级排序：重 > 中 > 轻
+                        const strengthOrder = { heavy: 0, medium: 1, light: 2, other: 3 };
+                        const sortedZeroPlans = [...zeroBlockPlans].sort((a, b) => {
+                            const aStrength = strengthOrder[getPlanStrength(a)] ?? 3;
+                            const bStrength = strengthOrder[getPlanStrength(b)] ?? 3;
+                            if (aStrength !== bStrength) return aStrength - bStrength;
+                            // 同等级按 finalHit 排序
+                            return b.finalHit - a.finalHit;
+                        });
+                        
+                        // 显示所有 0 帧方案（打投择配合）
+                        sortedZeroPlans.forEach(plan => {
+                            addMainPlan(plan, '打投择', 'mixup');
+                        });
+                    }
+                }
+                
+                // 获取当前角色的所有规则
+                const rules = getAllRulesForCharacter(state.currentCharacter);
+                
+                // ========== 7. 用户倾向压制规则 ==========
+                // 查找使用了倾向招式的方案，从备选提升到推荐
+                const preferRules = rules.filter(r => r.type === 'prefer');
+                preferRules.forEach(rule => {
+                    const preferMoveName = rule.moveName.toUpperCase();
+                    // 在备选中查找使用该招式作为压制的方案（满足偷帧≥1且finalBlock≥1）
+                    const preferPlans = normalPlans.filter(p => 
+                        !mainKeys.has(getPlanKey(p)) &&
+                        !isMinimized(p) &&
+                        p.meatyMove && 
+                        p.meatyMove.name.toUpperCase() === preferMoveName &&
+                        p.stolen >= 1 &&
+                        p.finalBlock >= 1
+                    );
+                    
+                    // 如果找到，添加最优的几个
+                    if (preferPlans.length > 0) {
+                        const sorted = [...preferPlans].sort((a, b) => {
+                            if (b.finalBlock !== a.finalBlock) return b.finalBlock - a.finalBlock;
+                            return b.finalHit - a.finalHit;
+                        });
+                        // 最多添加前2个最优方案
+                        sorted.slice(0, 2).forEach(plan => {
+                            addMainPlan(plan, '', `prefer:${rule.moveName}`);
+                        });
+                    }
+                });
+                
+                // ========== 8. 用户收藏方案 ==========
+                // 查找被收藏但还没在推荐区的方案
+                allPlans.forEach(plan => {
+                    if (!mainKeys.has(getPlanKey(plan)) && 
+                        !isMinimized(plan) && 
+                        isPlanFavorite(group.adv, getPlanKey(plan))) {
+                        // 非投技方案需要满足偷帧≥1且finalBlock≥1
+                        if (plan.isThrow || (plan.stolen >= 1 && plan.finalBlock >= 1)) {
+                            addMainPlan(plan, '', 'favorite');
+                        }
+                    }
+                });
+                
+                // ========== 最终渲染：按记录的理由渲染所有方案 ==========
+                mainHtml = '';
+                mainKeys.forEach(key => {
+                    // 从 allPlans 中找回方案对象
+                    const plan = allPlans.find(p => getPlanKey(p) === key);
+                    if (plan) {
+                        const reasons = planReasons.get(key) || [];
+                        const label = reasons.includes('mixup') ? '打投择' : '';
+                        mainHtml += renderMainPlan(plan, label, group.adv, reasons);
+                    }
+                });
+
+                // ========== 4. 备选方案折叠区 ==========
+                // 备选方案 = 不在主显示区的所有方案（包括被最小化的）
+                // 筛选条件：偷帧≥1 且 finalBlock≥1
+                const altNormalPlans = normalPlans.filter(p => 
+                    !mainKeys.has(getPlanKey(p)) && 
+                    p.stolen >= 1 && 
+                    p.finalBlock >= 1
+                );
+                const altThrowPlans = throwPlans.filter(p => !mainKeys.has(getPlanKey(p)));
+                
+                let altHtml = '';
+                
+                // 普通备选方案
+                if (altNormalPlans.length > 0) {
+                    const altContent = altNormalPlans.map(plan => renderAltPlan(plan, group.adv)).join('');
+                    altHtml += `
+                        <details class="mt-2">
+                            <summary class="text-[11px] text-zinc-600 cursor-pointer hover:text-zinc-400 transition-colors py-2">
+                                ▶ ${altNormalPlans.length} 个备选打击方案 (Block > 0)
+                            </summary>
+                            <div class="mt-2 bg-zinc-900/50 p-3 border border-zinc-800">
+                                ${altContent}
+                            </div>
+                        </details>
+                    `;
+                }
+                
+                // 投技备选方案
+                if (altThrowPlans.length > 0) {
+                    const altThrowContent = altThrowPlans.map(plan => renderAltThrowPlan(plan, group.adv)).join('');
+                    
+                    altHtml += `
+                        <details class="mt-2">
+                            <summary class="text-[11px] text-zinc-600 cursor-pointer hover:text-zinc-400 transition-colors py-2">
+                                ▶ ${altThrowPlans.length} 个其他投技路线
+                            </summary>
+                            <div class="mt-2 bg-zinc-900/50 p-3 border border-zinc-800">
+                                ${altThrowContent}
+                            </div>
+                        </details>
+                    `;
+                }
+
+                return `
+                    <div class="trend-card card-enter p-6" style="animation-delay: ${cardIndex * 0.05}s">
+                        <div class="flex flex-col lg:flex-row gap-6">
+                            ${leftPanel}
+                            <div class="flex-1">
+                                ${mainHtml}
+                                ${altHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderLibrary() {
+            const body = document.getElementById('moveTableBody');
+            
+            if (state.moveLibrary.length === 0) {
+                body.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="p-8 text-center text-zinc-600">
+                            暂无数据，请粘贴 JSON 导入 ${state.currentCharacter} 的帧数据
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // 获取原始预设数据的招式名称列表，用于判断是否可删除
+            const defaultMoves = getDefaultMoves(state.currentCharacter);
+            const defaultMoveNames = new Set(defaultMoves.map(m => m.name.toUpperCase()));
+
+            body.innerHTML = state.moveLibrary.map((m, idx) => {
+                // 判断是否为用户添加的招式（可删除）
+                const isUserAdded = m.isUserAdded || !defaultMoveNames.has(m.name.toUpperCase());
+                const deleteBtn = isUserAdded 
+                    ? `<button onclick="removeMove(${idx})" class="text-zinc-700 hover:text-red-500 transition-colors p-2 -m-1 text-base" title="删除">✕</button>`
+                    : '';
+                const userBadge = isUserAdded 
+                    ? '<span class="ml-1 text-[9px] px-1 py-0.5 bg-emerald-900/50 text-emerald-400 rounded">NEW</span>' 
+                    : '';
+                
+                // 特殊处理 Dash 招式
+                if (m.isDash) {
+                    return `
+                        <tr class="border-b border-zinc-900 hover:bg-zinc-800/20">
+                            <td class="p-4 text-zinc-300">${m.name}${userBadge} <span class="text-[10px] text-zinc-500">DASH</span></td>
+                            <td class="p-4 text-center font-mono text-zinc-500" colspan="3">${m.dashFrames || 19}F 总帧数 (仅卡帧用)</td>
+                            <td class="p-4 text-center font-mono text-zinc-600">-</td>
+                            <td class="p-4 text-center font-mono text-zinc-600">-</td>
+                            <td class="p-4 text-right">${deleteBtn}</td>
+                        </tr>
+                    `;
+                }
+                
+                // 特殊处理投技
+                if (m.isThrow) {
+                    return `
+                        <tr class="border-b border-zinc-900 hover:bg-zinc-800/20">
+                            <td class="p-4 text-zinc-300">${m.name}${userBadge} <span class="text-[10px] text-zinc-500">THROW</span></td>
+                            <td class="p-4 text-center font-mono text-zinc-500">${m.startup}</td>
+                            <td class="p-4 text-center font-mono text-zinc-500">${m.active}</td>
+                            <td class="p-4 text-center font-mono text-zinc-500">${m.recovery}</td>
+                            <td class="p-4 text-center font-mono text-zinc-600">-</td>
+                            <td class="p-4 text-center font-mono text-zinc-600">-</td>
+                            <td class="p-4 text-right">${deleteBtn}</td>
+                        </tr>
+                    `;
+                }
+                
+                // 普通招式
+                const knockdownBadge = m.isKnockdown 
+                    ? '<span class="ml-1 text-[9px] px-1 py-0.5 bg-red-900/50 text-red-400 rounded">KD</span>' 
+                    : '';
+                    
+                return `
+                    <tr class="border-b border-zinc-900 hover:bg-zinc-800/20">
+                        <td class="p-4 text-zinc-300">${m.name}${userBadge}${knockdownBadge}</td>
+                        <td class="p-4 text-center font-mono text-zinc-500">${m.startup}</td>
+                        <td class="p-4 text-center font-mono text-zinc-500">${m.active}</td>
+                        <td class="p-4 text-center font-mono text-zinc-500">${m.recovery}</td>
+                        <td class="p-4 text-center font-mono ${getFrameColorClass(m.hit)}">${m.hit >= 0 ? '+' : ''}${m.hit}</td>
+                        <td class="p-4 text-center font-mono ${getFrameColorClass(m.block)}">${m.block >= 0 ? '+' : ''}${m.block}</td>
+                        <td class="p-4 text-right">${deleteBtn}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderAll() {
+            renderNotes();
+            renderLibrary();
+            renderRules();
+        }
+
+        // ==================== 事件处理 ====================
+        function openCharacterModal() { 
+            initCharacterGrid();
+            document.getElementById('charModal').classList.remove('hidden'); 
+        }
+        
+        function closeCharModal() { 
+            document.getElementById('charModal').classList.add('hidden'); 
+        }
+        
+        function openHelpModal() {
+            document.getElementById('helpModal').classList.remove('hidden');
+        }
+        
+        function closeHelpModal() {
+            document.getElementById('helpModal').classList.add('hidden');
+        }
+        
+        function openRuleModal() {
+            // 填充招式下拉列表
+            populateMoveSelects();
+            // 默认显示禁用压制tab
+            switchRuleTab('disable');
+            document.getElementById('ruleModal').classList.remove('hidden');
+        }
+        
+        function closeRuleModal() {
+            document.getElementById('ruleModal').classList.add('hidden');
+            // 清空所有输入
+            document.getElementById('inputDisableMove').value = '';
+            document.getElementById('inputDisableUsage').value = 'kill';
+            document.getElementById('inputDisableDesc').value = '';
+            document.getElementById('inputComboMove1').value = '';
+            document.getElementById('inputComboMove2').value = '';
+            document.getElementById('inputComboDesc').value = '';
+            document.getElementById('inputPreferMove').value = '';
+            document.getElementById('inputPreferDesc').value = '';
+        }
+        
+        // 切换规则类型 tab
+        function switchRuleTab(type) {
+            // 更新 tab 按钮状态
+            document.querySelectorAll('.rule-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`ruleTab-${type}`).classList.add('active');
+            
+            // 显示/隐藏表单
+            document.getElementById('ruleForm-disable').classList.toggle('hidden', type !== 'disable');
+            document.getElementById('ruleForm-combo').classList.toggle('hidden', type !== 'combo');
+            document.getElementById('ruleForm-prefer').classList.toggle('hidden', type !== 'prefer');
+        }
+        
+        // 填充招式下拉列表
+        function populateMoveSelects() {
+            const moves = state.moveLibrary.map(m => m.name).sort();
+            
+            // 禁用压制规则的下拉
+            const disableSelect = document.getElementById('inputDisableMove');
+            disableSelect.innerHTML = '<option value="">-- 请选择招式 --</option>' +
+                moves.map(m => `<option value="${m}">${m}</option>`).join('');
+            
+            // 禁用组合规则的两个下拉
+            const comboSelect1 = document.getElementById('inputComboMove1');
+            const comboSelect2 = document.getElementById('inputComboMove2');
+            const optionsHtml = '<option value="">-- 请选择招式 --</option>' +
+                moves.map(m => `<option value="${m}">${m}</option>`).join('');
+            comboSelect1.innerHTML = optionsHtml;
+            comboSelect2.innerHTML = optionsHtml;
+            
+            // 倾向压制规则的下拉
+            const preferSelect = document.getElementById('inputPreferMove');
+            preferSelect.innerHTML = '<option value="">-- 请选择招式 --</option>' +
+                moves.map(m => `<option value="${m}">${m}</option>`).join('');
+        }
+        
+        // 保存禁用压制规则
+        function saveDisableRule() {
+            const moveName = document.getElementById('inputDisableMove').value.trim();
+            const usage = document.getElementById('inputDisableUsage').value;
+            const description = document.getElementById('inputDisableDesc').value.trim();
+            
+            if (!moveName) {
+                showToast('请选择招式', 'error');
+                return;
+            }
+            
+            const usageLabels = {
+                'kill': '用于卡帧',
+                'meaty_after_kill': '用于卡帧后压制',
+                'meaty_direct': '用于直接压制'
+            };
+            
+            const newRule = {
+                id: `rule_${Date.now()}`,
+                type: 'disable',
+                moveName,
+                usage,
+                description: description || `禁止 ${moveName} ${usageLabels[usage]}`
+            };
+            
+            // 添加到角色专属规则
+            if (!state.characterRules[state.currentCharacter]) {
+                state.characterRules[state.currentCharacter] = [];
+            }
+            state.characterRules[state.currentCharacter].push(newRule);
+            
+            // 保存到 localStorage
+            saveCharacterRules(state.currentCharacter, state.characterRules[state.currentCharacter]);
+            
+            closeRuleModal();
+            renderRules();
+            renderNotes(); // 重新计算方案
+            showToast('规则已添加');
+        }
+        
+        // 保存禁用组合规则
+        function saveComboRule() {
+            const move1 = document.getElementById('inputComboMove1').value.trim();
+            const move2 = document.getElementById('inputComboMove2').value.trim();
+            const description = document.getElementById('inputComboDesc').value.trim();
+            
+            if (!move1 || !move2) {
+                showToast('请选择两个招式', 'error');
+                return;
+            }
+            
+            if (move1 === move2) {
+                showToast('请选择不同的招式', 'error');
+                return;
+            }
+            
+            const newRule = {
+                id: `rule_${Date.now()}`,
+                type: 'combo',
+                move1,
+                move2,
+                description: description || `${move1} × ${move2} 禁止连续使用`
+            };
+            
+            // 添加到角色专属规则
+            if (!state.characterRules[state.currentCharacter]) {
+                state.characterRules[state.currentCharacter] = [];
+            }
+            state.characterRules[state.currentCharacter].push(newRule);
+            
+            // 保存到 localStorage
+            saveCharacterRules(state.currentCharacter, state.characterRules[state.currentCharacter]);
+            
+            closeRuleModal();
+            renderRules();
+            renderNotes(); // 重新计算方案
+            showToast('规则已添加');
+        }
+        
+        // 保存倾向压制规则
+        function savePreferRule() {
+            const moveName = document.getElementById('inputPreferMove').value.trim();
+            const description = document.getElementById('inputPreferDesc').value.trim();
+            
+            if (!moveName) {
+                showToast('请选择招式', 'error');
+                return;
+            }
+            
+            const newRule = {
+                id: `rule_${Date.now()}`,
+                type: 'prefer',
+                moveName,
+                description: description || `倾向使用 ${moveName} 进行压制`
+            };
+            
+            // 添加到角色专属规则
+            if (!state.characterRules[state.currentCharacter]) {
+                state.characterRules[state.currentCharacter] = [];
+            }
+            state.characterRules[state.currentCharacter].push(newRule);
+            
+            // 保存到 localStorage
+            saveCharacterRules(state.currentCharacter, state.characterRules[state.currentCharacter]);
+            
+            closeRuleModal();
+            renderRules();
+            renderNotes(); // 重新计算方案
+            showToast('规则已添加');
+        }
+        
+        function saveRule() {
+            const pattern1 = document.getElementById('inputPattern1').value.trim().toUpperCase();
+            const pattern2 = document.getElementById('inputPattern2').value.trim().toUpperCase();
+            const description = document.getElementById('inputRuleDesc').value.trim();
+            
+            if (!pattern1 || !pattern2) {
+                alert('请填写两个招式关键词');
+                return;
+            }
+            
+            // 检查是否与现有规则重复（包括全局规则）
+            const allRules = getAllRulesForCharacter(state.currentCharacter);
+            const isDuplicate = allRules.some(r => {
+                const p1 = r.pattern1.toUpperCase();
+                const p2 = r.pattern2.toUpperCase();
+                // 双向匹配检查
+                return (p1 === pattern1 && p2 === pattern2) || (p1 === pattern2 && p2 === pattern1);
+            });
+            
+            if (isDuplicate) {
+                alert('该规则已存在');
+                return;
+            }
+            
+            const newRule = {
+                id: `rule_${Date.now()}`,
+                pattern1,
+                pattern2,
+                description: description || `${pattern1} × ${pattern2} 禁止组合`
+            };
+            
+            // 添加到角色专属规则
+            if (!state.characterRules[state.currentCharacter]) {
+                state.characterRules[state.currentCharacter] = [];
+            }
+            state.characterRules[state.currentCharacter].push(newRule);
+            
+            // 保存到 localStorage
+            saveCharacterRules(state.currentCharacter, state.characterRules[state.currentCharacter]);
+            
+            closeRuleModal();
+            renderRules();
+            renderNotes(); // 重新计算方案
+            showToast('规则已添加');
+        }
+        
+        function removeRule(ruleId) {
+            const rules = state.characterRules[state.currentCharacter] || [];
+            const idx = rules.findIndex(r => r.id === ruleId);
+            if (idx !== -1) {
+                rules.splice(idx, 1);
+                saveCharacterRules(state.currentCharacter, rules);
+                renderRules();
+                renderNotes();
+            }
+        }
+        
+        // ==================== 新增招式弹窗 ====================
+        let currentMoveType = 'normal';  // normal, throw, dash
+        
+        function openAddMoveModal() {
+            currentMoveType = 'normal';
+            updateMoveTypeUI();
+            document.getElementById('addMoveModal').classList.remove('hidden');
+            document.getElementById('inputMoveName').focus();
+        }
+        
+        function closeAddMoveModal() {
+            document.getElementById('addMoveModal').classList.add('hidden');
+            // 清空所有输入
+            document.getElementById('inputMoveName').value = '';
+            document.getElementById('inputMoveStartup').value = '';
+            document.getElementById('inputMoveActive').value = '';
+            document.getElementById('inputMoveRecovery').value = '';
+            document.getElementById('inputMoveHit').value = '';
+            document.getElementById('inputMoveBlock').value = '';
+            document.getElementById('inputMoveKnockdown').checked = false;
+            document.getElementById('inputMoveDashFrames').value = '';
+        }
+        
+        function setMoveType(type) {
+            currentMoveType = type;
+            updateMoveTypeUI();
+        }
+        
+        function updateMoveTypeUI() {
+            const normalBtn = document.getElementById('moveTypeNormal');
+            const throwBtn = document.getElementById('moveTypeThrow');
+            const dashBtn = document.getElementById('moveTypeDash');
+            const frameFields = document.getElementById('moveFrameFields');
+            const dashFields = document.getElementById('moveDashFields');
+            const hitBlockFields = document.getElementById('moveHitBlockFields');
+            const knockdownField = document.getElementById('moveKnockdownField');
+            
+            // 重置按钮样式
+            [normalBtn, throwBtn, dashBtn].forEach(btn => {
+                btn.style.backgroundColor = '';
+                btn.className = 'flex-1 py-2 text-xs font-bold transition-all bg-zinc-800 text-zinc-400 hover:text-white';
+            });
+            
+            // 设置选中按钮样式
+            const selectedBtn = currentMoveType === 'normal' ? normalBtn : 
+                               currentMoveType === 'throw' ? throwBtn : dashBtn;
+            selectedBtn.style.backgroundColor = 'var(--theme-btn-primary)';
+            selectedBtn.className = 'flex-1 py-2 text-xs font-bold transition-all text-white';
+            
+            // 显示/隐藏字段
+            if (currentMoveType === 'dash') {
+                frameFields.classList.add('hidden');
+                dashFields.classList.remove('hidden');
+            } else {
+                frameFields.classList.remove('hidden');
+                dashFields.classList.add('hidden');
+                
+                // 投技隐藏 Hit/Block 和 Knockdown 选项
+                if (currentMoveType === 'throw') {
+                    hitBlockFields.classList.add('hidden');
+                    knockdownField.classList.add('hidden');
+                } else {
+                    hitBlockFields.classList.remove('hidden');
+                    knockdownField.classList.remove('hidden');
+                }
+            }
+        }
+        
+        function saveNewMove() {
+            const name = document.getElementById('inputMoveName').value.trim().toUpperCase();
+            
+            if (!name) {
+                alert('请输入招式名称');
+                return;
+            }
+            
+            // 检查是否重复
+            const exists = state.moveLibrary.some(m => m.name.toUpperCase() === name);
+            if (exists) {
+                alert('该招式已存在');
+                return;
+            }
+            
+            let newMove;
+            
+            if (currentMoveType === 'dash') {
+                const dashFrames = parseInt(document.getElementById('inputMoveDashFrames').value);
+                if (!dashFrames || dashFrames <= 0) {
+                    alert('请输入有效的 Dash 帧数');
+                    return;
+                }
+                newMove = {
+                    name,
+                    isDash: true,
+                    dashFrames,
+                    isUserAdded: true  // 标记为用户添加
+                };
+            } else {
+                const startup = parseInt(document.getElementById('inputMoveStartup').value);
+                const active = document.getElementById('inputMoveActive').value.trim();
+                const recovery = parseInt(document.getElementById('inputMoveRecovery').value);
+                
+                if (!startup || startup <= 0) {
+                    alert('请输入有效的 Startup');
+                    return;
+                }
+                if (!active) {
+                    alert('请输入 Active 帧（如: 7-9 或 5-7,12-14）');
+                    return;
+                }
+                if (!recovery || recovery < 0) {
+                    alert('请输入有效的 Recovery');
+                    return;
+                }
+                
+                // 验证 active 格式
+                const activeRegex = /^\d+(-\d+)?(,\d+(-\d+)?)*$/;
+                if (!activeRegex.test(active)) {
+                    alert('Active 格式不正确，请使用如 7-9 或 5-7,12-14 的格式');
+                    return;
+                }
+                
+                if (currentMoveType === 'throw') {
+                    newMove = {
+                        name,
+                        startup,
+                        active,
+                        recovery,
+                        isThrow: true,
+                        isKnockdown: true,
+                        isUserAdded: true
+                    };
+                } else {
+                    const hit = parseInt(document.getElementById('inputMoveHit').value) || 0;
+                    const block = parseInt(document.getElementById('inputMoveBlock').value) || 0;
+                    const isKnockdown = document.getElementById('inputMoveKnockdown').checked;
+                    
+                    newMove = {
+                        name,
+                        startup,
+                        active,
+                        recovery,
+                        hit,
+                        block,
+                        isKnockdown,
+                        isUserAdded: true
+                    };
+                }
+            }
+            
+            // 添加到招式库
+            state.moveLibrary.push(newMove);
+            
+            // 更新缓存
+            if (state.characterCache[state.currentCharacter]) {
+                state.characterCache[state.currentCharacter].moves = [...state.moveLibrary];
+            }
+            
+            // 保存到 localStorage
+            saveMoves(state.currentCharacter, state.moveLibrary);
+            
+            closeAddMoveModal();
+            renderAll();
+            showToast(`已添加 ${name}`);
+        }
+        
+        function renderRules() {
+            const container = document.getElementById('rulesContainer');
+            if (!container) return;
+            
+            const allRules = getAllRulesForCharacter(state.currentCharacter);
+            
+            if (allRules.length === 0) {
+                container.innerHTML = '<div class="text-zinc-600 italic">暂无规则</div>';
+                return;
+            }
+            
+            container.innerHTML = allRules.map(rule => {
+                const isGlobal = rule.isGlobal;
+                const tagClass = isGlobal ? 'bg-zinc-700 text-zinc-400' : 'bg-cyan-900/50 text-cyan-400';
+                const tagText = isGlobal ? '全局' : state.currentCharacter;
+                const deleteBtn = isGlobal ? '' : `<button onclick="removeRule('${rule.id}')" class="text-zinc-600 hover:text-red-500 transition-colors p-2 -m-1 text-base" title="删除规则">✕</button>`;
+                
+                // 根据规则类型渲染不同的内容
+                let content = '';
+                let typeLabel = '';
+                let typeColor = '';
+                
+                if (rule.type === 'disable') {
+                    // 禁用压制规则
+                    const usageLabels = {
+                        'kill': '卡帧',
+                        'meaty_after_kill': '卡帧后压制',
+                        'meaty_direct': '直接压制'
+                    };
+                    typeLabel = '禁用';
+                    typeColor = 'text-red-400';
+                    content = `
+                        <span class="${typeColor} font-bold">${escapeHtml(rule.moveName)}</span>
+                        <span class="text-zinc-600 mx-1">→</span>
+                        <span class="text-zinc-400">禁止${usageLabels[rule.usage] || rule.usage}</span>
+                    `;
+                } else if (rule.type === 'combo') {
+                    // 禁用组合规则
+                    typeLabel = '禁用';
+                    typeColor = 'text-red-400';
+                    content = `
+                        <span class="${typeColor} font-mono">${escapeHtml(rule.move1)}</span>
+                        <span class="text-zinc-600 mx-1">×</span>
+                        <span class="${typeColor} font-mono">${escapeHtml(rule.move2)}</span>
+                    `;
+                } else if (rule.type === 'prefer') {
+                    // 倾向压制规则
+                    typeLabel = '倾向';
+                    typeColor = 'text-green-400';
+                    content = `
+                        <span class="${typeColor} font-bold">${escapeHtml(rule.moveName)}</span>
+                        <span class="text-zinc-400 ml-2">优先推荐为压制招式</span>
+                    `;
+                } else {
+                    // 旧的 pattern 规则（兼容）
+                    typeLabel = '禁用';
+                    typeColor = 'text-red-400';
+                    content = `
+                        <span class="text-zinc-300 font-mono">${escapeHtml(rule.pattern1)}</span>
+                        <span class="text-zinc-600 mx-1">×</span>
+                        <span class="text-zinc-300 font-mono">${escapeHtml(rule.pattern2)}</span>
+                    `;
+                }
+                
+                return `
+                    <div class="flex items-center justify-between py-1.5 px-2 bg-zinc-800/30 border-l-2 ${isGlobal ? 'border-zinc-600' : 'border-cyan-600'}">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-[9px] px-1.5 py-0.5 ${tagClass} uppercase tracking-wide">${tagText}</span>
+                            <span class="text-[9px] px-1.5 py-0.5 bg-zinc-700/50 ${typeColor} uppercase">${typeLabel}</span>
+                            ${content}
+                            ${rule.description ? `<span class="text-zinc-500 text-xs ml-2">— ${escapeHtml(rule.description)}</span>` : ''}
+                        </div>
+                        ${deleteBtn}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // ==================== 期望后续功能 ====================
+        // 当前期望模式：'remain' 或 'move'
+        let expectMode = 'remain';
+        // 当前计算出的期望方案
+        let currentExpectPlan = null;
+        
+        function setExpectMode(mode) {
+            expectMode = mode;
+            
+            // 更新按钮样式
+            const remainBtn = document.getElementById('expectModeRemain');
+            const moveBtn = document.getElementById('expectModeMove');
+            const remainPanel = document.getElementById('expectRemainPanel');
+            const movePanel = document.getElementById('expectMovePanel');
+            
+            if (mode === 'remain') {
+                remainBtn.className = 'flex-1 py-2 text-xs font-bold transition-all modal-btn-active text-white';
+                moveBtn.className = 'flex-1 py-2 text-xs font-bold transition-all bg-zinc-800 text-zinc-400 hover:text-white';
+                remainPanel.classList.remove('hidden');
+                movePanel.classList.add('hidden');
+            } else {
+                remainBtn.className = 'flex-1 py-2 text-xs font-bold transition-all bg-zinc-800 text-zinc-400 hover:text-white';
+                moveBtn.className = 'flex-1 py-2 text-xs font-bold transition-all modal-btn-active text-white';
+                remainPanel.classList.add('hidden');
+                movePanel.classList.remove('hidden');
+            }
+            
+            // 清除之前的结果
+            currentExpectPlan = null;
+            document.getElementById('expectResult').classList.add('hidden');
+            
+            // 重新计算
+            calculateExpectPlan();
+        }
+        
+        // 调整有利帧数值（+/- 按钮）
+        function adjustAdv(delta) {
+            const input = document.getElementById('inputAdv');
+            let currentVal = parseInt(input.value);
+            
+            // 如果输入框为空，从 placeholder 值开始
+            if (isNaN(currentVal) || input.value === '') {
+                currentVal = 40; // placeholder 默认值
+            }
+            
+            const newVal = currentVal + delta;
+            
+            // 范围限制：1~99
+            if (newVal < 1 || newVal > 99) {
+                return; // 超出范围，不执行
+            }
+            
+            input.value = newVal;
+            updateExpectOptions();
+        }
+        
+        // 清理输入，只允许数字且范围 1~99
+        function sanitizeAdvInput() {
+            const input = document.getElementById('inputAdv');
+            // 移除非数字字符
+            let val = input.value.replace(/[^0-9]/g, '');
+            
+            // 限制最大两位数
+            if (val.length > 2) {
+                val = val.slice(0, 2);
+            }
+            
+            // 如果输入的数字超过99，截断为99
+            if (parseInt(val) > 99) {
+                val = '99';
+            }
+            
+            // 移除前导零（但保留单独的 0 以便继续输入）
+            if (val.length > 1 && val.startsWith('0')) {
+                val = val.replace(/^0+/, '');
+            }
+            
+            input.value = val;
+        }
+        
+        // 更新期望选项（当有利帧变化时）
+        function updateExpectOptions() {
+            // 更新招式下拉框选项
+            const select = document.getElementById('inputExpectMove');
+            select.innerHTML = '<option value="">-- 选择招式 --</option>';
+            
+            // 只显示有 active 且不是 dash/throw 的招式
+            const availableMoves = state.moveLibrary.filter(m => m.active && !m.isDash && !m.isThrow);
+            availableMoves.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.name;
+                opt.textContent = `${m.name} (startup ${m.startup}, active ${m.active})`;
+                select.appendChild(opt);
+            });
+            
+            // 重新计算期望方案
+            calculateExpectPlan();
+        }
+        
+        // 计算期望方案
+        function calculateExpectPlan() {
+            const adv = parseInt(document.getElementById('inputAdv').value);
+            const resultDiv = document.getElementById('expectResult');
+            const resultContent = document.getElementById('expectResultContent');
+            
+            if (!adv || adv <= 0) {
+                resultDiv.classList.add('hidden');
+                currentExpectPlan = null;
+                return;
+            }
+            
+            let plan = null;
+            
+            if (expectMode === 'remain') {
+                const targetRemain = parseInt(document.getElementById('inputExpectRemain').value);
+                if (!targetRemain || targetRemain <= 0 || targetRemain >= adv) {
+                    resultDiv.classList.add('hidden');
+                    currentExpectPlan = null;
+                    return;
+                }
+                plan = findFrameKillPlan(adv, targetRemain);
+            } else {
+                const moveName = document.getElementById('inputExpectMove').value;
+                if (!moveName) {
+                    resultDiv.classList.add('hidden');
+                    currentExpectPlan = null;
+                    return;
+                }
+                const move = state.moveLibrary.find(m => m.name === moveName);
+                if (!move) {
+                    resultDiv.classList.add('hidden');
+                    currentExpectPlan = null;
+                    return;
+                }
+                plan = findMoveKillPlan(adv, move);
+            }
+            
+            currentExpectPlan = plan;
+            resultDiv.classList.remove('hidden');
+            
+            if (plan) {
+                resultContent.innerHTML = renderExpectPlanPreview(plan);
+            } else {
+                resultContent.innerHTML = `<div class="text-red-400 font-bold">❌ 没有对应卡帧解决方案</div>
+                    <div class="text-zinc-500 text-xs mt-1">无论一步还是两步卡帧都无法达成此目标</div>`;
+            }
+        }
+        
+        // 查找能卡帧到指定剩余帧数的方案
+        function findFrameKillPlan(adv, targetRemain) {
+            const neededKill = adv - targetRemain;
+            if (neededKill <= 0) return null;
+            
+            const rules = getAllRulesForCharacter(state.currentCharacter);
+            
+            // 方案A：一步卡帧
+            for (const killMove of state.moveLibrary) {
+                let killTotal;
+                if (killMove.isDash) {
+                    killTotal = killMove.dashFrames || 19;
+                } else if (killMove.active) {
+                    const lastActive = getLastActiveFrame(killMove.active);
+                    killTotal = lastActive + killMove.recovery;
+                } else {
+                    continue;
+                }
+                
+                if (killTotal === neededKill) {
+                    return {
+                        type: 'single',
+                        killMove,
+                        killTotal,
+                        remain: targetRemain,
+                        displayMeaty: `+${targetRemain}F`
+                    };
+                }
+            }
+            
+            // 方案C：两步卡帧
+            for (const killMove1 of state.moveLibrary) {
+                let killTotal1;
+                if (killMove1.isDash) {
+                    killTotal1 = killMove1.dashFrames || 19;
+                } else if (killMove1.active) {
+                    const lastActive1 = getLastActiveFrame(killMove1.active);
+                    killTotal1 = lastActive1 + killMove1.recovery;
+                } else {
+                    continue;
+                }
+                
+                if (killTotal1 >= neededKill) continue;
+                
+                for (const killMove2 of state.moveLibrary) {
+                    // 检查规则禁止
+                    if (isComboForbidden(killMove1, killMove2, rules)) continue;
+                    
+                    let killTotal2;
+                    if (killMove2.isDash) {
+                        killTotal2 = killMove2.dashFrames || 19;
+                    } else if (killMove2.active) {
+                        const lastActive2 = getLastActiveFrame(killMove2.active);
+                        killTotal2 = lastActive2 + killMove2.recovery;
+                    } else {
+                        continue;
+                    }
+                    
+                    if (killTotal1 + killTotal2 === neededKill) {
+                        return {
+                            type: 'double',
+                            killMove: killMove1,
+                            killMove2,
+                            killTotal: killTotal1,
+                            killTotal2,
+                            remain: targetRemain,
+                            displayMeaty: `+${targetRemain}F`
+                        };
+                    }
+                }
+            }
+            
+            return null;
+        }
+        
+        // 查找能用指定招式压制（偷至少1帧）的卡帧方案
+        function findMoveKillPlan(adv, targetMove) {
+            const rules = getAllRulesForCharacter(state.currentCharacter);
+            const bestPlans = [];
+            
+            // 检查各种可能的剩余帧数，从大到小（偷帧越多越好）
+            const ranges = parseActiveRanges(targetMove.active);
+            const firstActiveStart = ranges[0].start;
+            const lastActiveEnd = ranges[ranges.length - 1].end;
+            
+            // 计算可能的剩余帧范围：让 remain+1 落在 active 范围内
+            // remain+1 >= firstActiveStart 且 remain+1 <= lastActiveEnd
+            // 即 remain >= firstActiveStart - 1 且 remain <= lastActiveEnd - 1
+            // 但我们要偷至少1帧，即 remain+1 > firstActiveStart，即 remain >= firstActiveStart
+            for (let remain = firstActiveStart; remain <= lastActiveEnd - 1; remain++) {
+                const targetFrame = remain + 1;
+                const hitInfo = checkActiveHit(targetMove.active, targetFrame);
+                
+                if (hitInfo && hitInfo.stolen >= 1) {
+                    const neededKill = adv - remain;
+                    
+                    // 特殊情况：不需要卡帧，直接压制
+                    if (neededKill === 0) {
+                        bestPlans.push({
+                            type: 'direct',
+                            remain: remain,
+                            meatyMove: targetMove,
+                            stolen: hitInfo.stolen,
+                            finalHit: (targetMove.hit || 0) + hitInfo.stolen,
+                            finalBlock: (targetMove.block || 0) + hitInfo.stolen,
+                            displayMeaty: targetMove.name
+                        });
+                        continue;
+                    }
+                    
+                    // 尝试找到卡帧方案
+                    const plan = findFrameKillPlan(adv, remain);
+                    if (plan) {
+                        bestPlans.push({
+                            ...plan,
+                            meatyMove: targetMove,
+                            stolen: hitInfo.stolen,
+                            finalHit: (targetMove.hit || 0) + hitInfo.stolen,
+                            finalBlock: (targetMove.block || 0) + hitInfo.stolen,
+                            displayMeaty: targetMove.name
+                        });
+                    }
+                }
+            }
+            
+            // 按偷帧数降序排序，返回最优方案
+            if (bestPlans.length === 0) return null;
+            bestPlans.sort((a, b) => b.stolen - a.stolen);
+            return bestPlans[0];
+        }
+        
+        // 渲染期望方案预览
+        function renderExpectPlanPreview(plan) {
+            let stepsHtml = '';
+            
+            if (plan.type === 'direct') {
+                stepsHtml = `<div class="text-center">
+                    <span class="text-zinc-500">直接</span>
+                    <span class="text-cyan-400 font-black text-xl ml-2">${plan.displayMeaty}</span>
+                </div>`;
+            } else if (plan.type === 'single') {
+                stepsHtml = `<div class="flex items-center justify-center gap-2">
+                    <span class="text-white font-bold">${plan.killMove.name}</span>
+                    <span class="text-zinc-600">(-${plan.killTotal}F)</span>
+                    <span class="text-zinc-500">→</span>
+                    <span class="text-cyan-400 font-black text-xl">${plan.displayMeaty}</span>
+                </div>`;
+            } else if (plan.type === 'double') {
+                stepsHtml = `<div class="flex items-center justify-center gap-2 flex-wrap">
+                    <span class="text-white font-bold">${plan.killMove.name}</span>
+                    <span class="text-zinc-600">(-${plan.killTotal}F)</span>
+                    <span class="text-zinc-500">→</span>
+                    <span class="text-white font-bold">${plan.killMove2.name}</span>
+                    <span class="text-zinc-600">(-${plan.killTotal2}F)</span>
+                    <span class="text-zinc-500">→</span>
+                    <span class="text-cyan-400 font-black text-xl">${plan.displayMeaty}</span>
+                </div>`;
+            }
+            
+            // 如果有招式信息，显示帧数优势
+            let statsHtml = '';
+            if (plan.meatyMove) {
+                const stolenColorPreview = getStolenColorClass(plan.stolen);
+                const hitColorPreview = getFrameColorClass(plan.finalHit);
+                const blockColorPreview = getFrameColorClass(plan.finalBlock);
+                statsHtml = `<div class="mt-2 pt-2 border-t border-zinc-700 text-center text-xs">
+                    <span class="text-zinc-500">偷</span><span class="${stolenColorPreview} font-bold ml-1">${plan.stolen}F</span>
+                    <span class="text-zinc-500 ml-3">H</span><span class="${hitColorPreview} font-bold ml-1">${plan.finalHit >= 0 ? '+' : ''}${plan.finalHit}</span>
+                    <span class="text-zinc-500 ml-3">B</span><span class="${blockColorPreview} font-bold ml-1">${plan.finalBlock >= 0 ? '+' : ''}${plan.finalBlock}</span>
+                </div>`;
+            }
+            
+            return `<div class="text-green-400 font-bold mb-2">✓ 找到可行方案</div>${stepsHtml}${statsHtml}`;
+        }
+        
+        function openNoteModal() { 
+            // 重置期望后续状态
+            expectMode = 'remain';
+            currentExpectPlan = null;
+            document.getElementById('expectDetails').removeAttribute('open');
+            document.getElementById('inputExpectRemain').value = '';
+            document.getElementById('inputExpectMove').value = '';
+            document.getElementById('expectResult').classList.add('hidden');
+            setExpectMode('remain');
+            
+            // 更新招式下拉框
+            updateExpectOptions();
+            
+            document.getElementById('noteModal').classList.remove('hidden'); 
+            document.getElementById('inputAdv').focus();
+        }
+        
+        function closeModal() { 
+            document.getElementById('noteModal').classList.add('hidden');
+            // 清理状态
+            currentExpectPlan = null;
+        }
+
+        function switchTab(tab) {
+            const viewNotes = document.getElementById('view-notes');
+            const viewLibrary = document.getElementById('view-library');
+            
+            // 移除之前的动画类
+            viewNotes.classList.remove('view-transition');
+            viewLibrary.classList.remove('view-transition');
+            
+            viewNotes.classList.toggle('hidden', tab !== 'notes');
+            viewLibrary.classList.toggle('hidden', tab !== 'library');
+            document.getElementById('tab-notes').classList.toggle('active', tab === 'notes');
+            document.getElementById('tab-library').classList.toggle('active', tab === 'library');
+            
+            // 添加入场动画
+            requestAnimationFrame(() => {
+                if (tab === 'notes') viewNotes.classList.add('view-transition');
+                else viewLibrary.classList.add('view-transition');
+            });
+            
+            // 更新滑动指示器位置
+            updateTabIndicator(tab);
+        }
+        
+        function updateTabIndicator(tab) {
+            const indicator = document.getElementById('tabIndicator');
+            const activeTab = document.getElementById(`tab-${tab}`);
+            if (indicator && activeTab) {
+                indicator.style.left = activeTab.offsetLeft + 'px';
+                indicator.style.width = activeTab.offsetWidth + 'px';
+            }
+        }
+
+        function saveNote() {
+            const adv = parseInt(document.getElementById('inputAdv').value);
+            const ctx = document.getElementById('inputContext').value.trim();
+            
+            if (!adv || adv < 1 || adv > 99) {
+                alert('请输入有效的有利帧数 (1~99)');
+                return;
+            }
+            
+            // 合理范围检查（超过70帧的有利很少见）
+            if (adv > 70) {
+                if (!confirm(`+${adv}F 是一个非常大的有利帧数，确定要添加吗？`)) {
+                    return;
+                }
+            }
+            
+            // 检查是否启用了期望后续功能
+            const expectDetailsOpen = document.getElementById('expectDetails').hasAttribute('open');
+            if (expectDetailsOpen) {
+                // 检查用户是否输入了期望
+                let hasExpectInput = false;
+                if (expectMode === 'remain') {
+                    hasExpectInput = !!document.getElementById('inputExpectRemain').value;
+                } else {
+                    hasExpectInput = !!document.getElementById('inputExpectMove').value;
+                }
+                
+                // 如果用户输入了期望但没有可行方案，阻止添加
+                if (hasExpectInput && !currentExpectPlan) {
+                    alert('期望后续没有可行的卡帧方案，请修改期望或折叠期望后续选项后再添加');
+                    return;
+                }
+            }
+            
+            state.notes.push({ adv, context: ctx || "自定义场景", isUserAdded: true });
+            saveScenarios(state.currentCharacter, state.notes); // 只保存用户自定义的部分
+            document.getElementById('inputAdv').value = '';
+            document.getElementById('inputContext').value = '';
+            closeModal();
+            renderNotes();
+            showToast(`已添加 +${adv}F 场景`);
+        }
+
+        function removeNote(idx) {
+            const note = state.notes[idx];
+            const isPreset = !note.isUserAdded;
+            
+            // 如果是预设场景，给出提示
+            if (isPreset) {
+                if (!confirm(`确定要删除预设场景 "${note.context}" 吗？\n\n此场景可通过"重置"按钮恢复。`)) {
+                    return;
+                }
+            }
+            
+            state.notes.splice(idx, 1);
+            saveScenarios(state.currentCharacter, state.notes); // 只保存用户自定义的部分
+            renderNotes();
+            
+            const tipMsg = isPreset ? '已隐藏预设场景（可通过重置恢复）' : '已删除场景';
+            showToast(tipMsg);
+        }
+
+        function resetToDefault() {
+            const userCount = state.notes.filter(n => n.isUserAdded).length;
+            const confirmMsg = userCount > 0 
+                ? `重置 ${state.currentCharacter} 的 Scenarios 为预设值？\n（将清除 ${userCount} 个用户自定义场景，保留所有预设场景）`
+                : `重置 ${state.currentCharacter} 的 Scenarios 为预设值？`;
+            
+            if (confirm(confirmMsg)) {
+                state.notes = resetScenarios(state.currentCharacter);
+                renderNotes();
+                showToast('已重置为预设场景');
+            }
+        }
+        
+        function removeMove(idx) { 
+            state.moveLibrary.splice(idx, 1);
+            // 同步更新缓存
+            if (state.characterCache[state.currentCharacter]) {
+                state.characterCache[state.currentCharacter].moves = [...state.moveLibrary];
+            }
+            // 保存到 localStorage
+            saveMoves(state.currentCharacter, state.moveLibrary);
+            renderAll(); 
+        }
+
+        function clearLibrary() {
+            if (confirm(`确定清空 ${state.currentCharacter} 的所有帧数据？`)) {
+                state.moveLibrary = [];
+                if (state.characterCache[state.currentCharacter]) {
+                    state.characterCache[state.currentCharacter].moves = [];
+                }
+                // 清除 localStorage 中的保存
+                clearSavedMoves(state.currentCharacter);
+                renderAll();
+            }
+        }
+        
+        function resetMovesToDefault() {
+            if (confirm(`重置 ${state.currentCharacter} 的招式数据为预设值？`)) {
+                state.moveLibrary = resetMoves(state.currentCharacter);
+                if (state.characterCache[state.currentCharacter]) {
+                    state.characterCache[state.currentCharacter].moves = [...state.moveLibrary];
+                }
+                renderAll();
+            }
+        }
+
+        function loadTemplate() {
+            const template = `[
+  {"name": "5MP", "startup": 6, "active": "6-9", "recovery": 15, "hit": 5, "block": 0},
+  {"name": "5LP", "startup": 4, "active": "4-6", "recovery": 7, "hit": 4, "block": -1}
+]`;
+            document.getElementById('rawPaste').value = template;
+            document.getElementById('rawPaste').focus();
+        }
+
+        function importJson() {
+            const input = document.getElementById('rawPaste').value.trim();
+            if (!input) {
+                alert('请先粘贴 JSON 数据');
+                return;
+            }
+            
+            try {
+                const data = JSON.parse(input);
+                const newMoves = Array.isArray(data) ? data : [data];
+                
+                // 验证数据格式
+                for (const move of newMoves) {
+                    if (!move.name || move.startup === undefined) {
+                        throw new Error('数据格式错误：缺少 name 或 startup 字段');
+                    }
+                }
+                
+                state.moveLibrary = [...state.moveLibrary, ...newMoves];
+                
+                // 去重 (基于 name)
+                const seen = new Set();
+                state.moveLibrary = state.moveLibrary.filter(m => {
+                    if (seen.has(m.name)) return false;
+                    seen.add(m.name);
+                    return true;
+                });
+                
+                // 更新缓存
+                if (state.characterCache[state.currentCharacter]) {
+                    state.characterCache[state.currentCharacter].moves = [...state.moveLibrary];
+                }
+                
+                // 保存到 localStorage
+                saveMoves(state.currentCharacter, state.moveLibrary);
+                
+                document.getElementById('rawPaste').value = '';
+                renderAll();
+                showToast(`已导入 ${newMoves.length} 个招式`);
+            } catch (e) {
+                showToast('JSON 格式错误', 'error');
+                console.error('JSON 解析错误:', e);
+            }
+        }
+
+        // ==================== 键盘事件 ====================
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeCharModal();
+                closeHelpModal();
+                closeRuleModal();
+                closeAddMoveModal();
+            }
+            // Enter 键保存
+            if (e.key === 'Enter') {
+                if (!document.getElementById('noteModal').classList.contains('hidden')) {
+                    saveNote();
+                } else if (!document.getElementById('ruleModal').classList.contains('hidden')) {
+                    saveRule();
+                } else if (!document.getElementById('addMoveModal').classList.contains('hidden')) {
+                    saveNewMove();
+                }
+            }
+        });
+
+        // ==================== 初始化 ====================
+        window.onload = function() {
+            console.log('=== SF6 FRAME LAB 初始化 ===');
+            
+            // 设置禁用场景说明监听器
+            const usageSelect = document.getElementById('inputDisableUsage');
+            const hintDiv = document.getElementById('disableUsageHint');
+            
+            if (usageSelect && hintDiv) {
+                usageSelect.addEventListener('change', () => {
+                    const hints = {
+                        'kill': '禁止此招式用于消耗有利帧',
+                        'meaty_after_kill': '禁止此招式在卡帧后作为压制招式',
+                        'meaty_direct': '禁止此招式直接压制（不卡帧）'
+                    };
+                    hintDiv.textContent = hints[usageSelect.value] || '';
+                });
+            }
+            
+            // 0. 从 localStorage 恢复上次选择的角色
+            let savedCharacter = loadCurrentCharacter();
+            // 确保保存的角色有数据，否则回退到RYU
+            if (!CONFIG.CHARACTERS_WITH_DATA.includes(savedCharacter)) {
+                savedCharacter = 'RYU';
+            }
+            state.currentCharacter = savedCharacter;
+            document.getElementById('currentCharIcon').textContent = getCharIcon(savedCharacter);
+            
+            // 应用角色主题
+            applyTheme(savedCharacter);
+            console.log(`[角色] 恢复上次选择: ${savedCharacter}`);
+            
+            console.log(`CHARACTER_DATA 已加载角色:`, Object.keys(CHARACTER_DATA));
+            
+            // 1. 加载角色数据 (优先 localStorage，其次全局变量 CHARACTER_DATA)
+            const loadSuccess = loadCharacterData(state.currentCharacter);
+            console.log(`数据加载${loadSuccess ? '成功' : '失败'}`);
+            
+            // 2. 加载scenarios: 预设 + 用户自定义
+            state.notes = loadAllScenarios(state.currentCharacter);
+            console.log(`[Scenarios] 加载完成: 预设 ${getDefaultScenarios(state.currentCharacter).length} 个 + 用户自定义 ${loadScenariosFromStorage(state.currentCharacter).length} 个`);
+            
+            // 3. 加载角色专属规则
+            state.characterRules[state.currentCharacter] = loadCharacterRules(state.currentCharacter);
+            console.log(`[Rules] 加载 ${state.characterRules[state.currentCharacter].length} 个角色规则`);
+            
+            // 4. 加载收藏和最小化状态
+            state.favorites = loadFavorites();
+            state.minimized = loadMinimized();
+            console.log(`[UI] 加载 ${Object.keys(state.favorites).length} 个收藏, ${Object.keys(state.minimized).length} 个最小化`);
+            
+            console.log(`最终状态: ${state.moveLibrary.length} 招式, ${state.notes.length} 场景`);
+            console.log('=== 初始化完成 ===');
+            
+            updateSortOrderUI();
+            renderAll();
+            
+            // 初始化 Tab 指示器位置
+            setTimeout(() => updateTabIndicator('notes'), 100);
+            
+            // 初始化封条滚动内容
+            updateMarqueeTape();
+            
+            // 标记加载完成，启用页面过渡
+            requestAnimationFrame(() => {
+                document.documentElement.classList.add('loaded');
+            });
+        };
+        
+        // 初始化/更新封条滚动效果
+        function updateMarqueeTape() {
+            const charName = state.currentCharacter;
+            const charIcon = getCharIcon(charName);
+            
+            // 封条内容：emoji + 角色名，交替显示
+            const repeatCount = 12;
+            const content = Array(repeatCount).fill(`<span>${charIcon} ${charName}</span>`).join('');
+            
+            document.getElementById('marqueeContent1').innerHTML = content;
+            document.getElementById('marqueeContent1Clone').innerHTML = content;
+            document.getElementById('marqueeContent2').innerHTML = content;
+            document.getElementById('marqueeContent2Clone').innerHTML = content;
+        }
+    </script>
+</body>
+</html>

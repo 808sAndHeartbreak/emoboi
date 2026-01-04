@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMOBOI | ℮ <3</title>
+    <meta name="description" content="EMOBOI - A collaborative multimedia archive for the disconnected.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Archivo+Black&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --acid-lime: #bcfe2d;
+            --deep-black: #050505;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--deep-black);
+            color: white;
+            font-family: 'Syne', sans-serif;
+            cursor: none;
+        }
+
+        ::selection {
+            background: var(--acid-lime);
+            color: black;
+        }
+
+        /* ========== 背景效果 ========== */
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 50% 30%, rgba(188, 254, 45, 0.03) 0%, transparent 50%),
+                url('https://www.transparenttextures.com/patterns/stardust.png');
+            z-index: -1;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9990;
+            opacity: 0.06;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, rgba(188, 254, 45, 0.02), transparent);
+            pointer-events: none;
+            z-index: 9989;
+            animation: scanline 6s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100px); }
+            100% { transform: translateY(100vh); }
+        }
+
+        /* ========== 自定义光标 ========== */
+        #cursor-dot {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            will-change: transform;
+        }
+
+        #cursor-ring {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            will-change: transform;
+            transition: width 0.2s, height 0.2s, border-color 0.2s, background-color 0.2s;
+        }
+
+        #cursor-ring.hover {
+            width: 60px;
+            height: 60px;
+            border-color: var(--acid-lime);
+            background-color: rgba(188, 254, 45, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            #cursor-dot, #cursor-ring { display: none; }
+            body { cursor: auto; }
+        }
+
+        /* ========== 预加载器 ========== */
+        #preloader {
+            position: fixed;
+            inset: 0;
+            background: black;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        #preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-icon {
+            width: 48px;
+            height: 48px;
+            border: 2px solid var(--acid-lime);
+            animation: loaderSpin 1s linear infinite;
+        }
+
+        @keyframes loaderSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ========== 故障文本效果 ========== */
+        .glitch-text {
+            font-family: 'Major Mono Display', monospace;
+            position: relative;
+            text-shadow: 
+                0.05em 0 0 rgba(255, 0, 85, 0.7),
+                -0.025em -0.05em 0 rgba(188, 254, 45, 0.7),
+                0.025em 0.05em 0 rgba(0, 170, 255, 0.7);
+            animation: glitch 600ms infinite;
+        }
+
+        @keyframes glitch {
+            0%, 14% { text-shadow: 0.05em 0 0 rgba(255,0,85,0.7), -0.05em -0.025em 0 rgba(188,254,45,0.7), -0.025em 0.05em 0 rgba(0,170,255,0.7); }
+            15%, 49% { text-shadow: -0.05em -0.025em 0 rgba(255,0,85,0.7), 0.025em 0.025em 0 rgba(188,254,45,0.7), -0.05em -0.05em 0 rgba(0,170,255,0.7); }
+            50%, 99% { text-shadow: 0.025em 0.05em 0 rgba(255,0,85,0.7), 0.05em 0 0 rgba(188,254,45,0.7), 0 -0.05em 0 rgba(0,170,255,0.7); }
+        }
+
+        /* ========== 纵向切片导航 (参考 样式参考.html) ========== */
+        .nav-container {
+            display: flex;
+            flex-direction: column;
+            width: 90vw;
+            max-width: 1400px;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.2rem 6%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+            transition: flex 0.6s cubic-bezier(0.16, 1, 0.3, 1), padding 0.4s ease;
+            text-decoration: none;
+            color: white;
+            white-space: nowrap;
+        }
+
+        .nav-item:last-child {
+            border-bottom: none;
+        }
+
+        .nav-item:hover {
+            flex: 1.5;
+            padding: 1.8rem 8%;
+        }
+
+        /* 切片背景填充 */
+        .nav-bg {
+            position: absolute;
+            inset: 0;
+            background: white;
+            transform: translateX(-100%);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 0;
+        }
+
+        .nav-item:hover .nav-bg {
+            transform: translateX(0);
+        }
+
+        .nav-content {
+            position: relative;
+            z-index: 10;
+            mix-blend-mode: difference;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .nav-item h2 {
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -0.05em;
+            transition: transform 0.5s ease, font-style 0.5s ease;
+            font-family: 'Syne', sans-serif;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .nav-item:hover h2 {
+            font-style: italic;
+            transform: translateX(15px) scale(1.02);
+        }
+
+        .pinyin {
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            opacity: 0.8;
+            text-transform: uppercase;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 640px) {
+            .nav-item h2 { font-size: 1.5rem; }
+            .nav-item { padding: 1rem 5%; }
+        }
+
+        /* ========== 跑马灯 (加速) ========== */
+        .marquee-track {
+            display: flex;
+            white-space: nowrap;
+            animation: marqueeScroll 12s linear infinite;
+        }
+
+        .marquee-track-bottom {
+            display: flex;
+            white-space: nowrap;
+            animation: marqueeScroll 10s linear infinite;
+        }
+
+        @keyframes marqueeScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* ========== 浮动装饰 ========== */
+        .floating-ascii {
+            position: fixed;
+            font-size: 10px;
+            opacity: 0.15;
+            pointer-events: none;
+            white-space: pre;
+            color: #888;
+            font-family: 'Space Mono', monospace;
+            z-index: 1;
+        }
+
+        /* ========== 主标题 (缩小) ========== */
+        .main-title {
+            font-size: clamp(2rem, 8vw, 5rem);
+            line-height: 0.9;
+            filter: drop-shadow(0 0 20px rgba(188, 254, 45, 0.2));
+        }
+
+        /* ========== 工具类 ========== */
+        .mono { font-family: 'Space Mono', monospace; }
+    </style>
+</head>
+<body>
+
+    <!-- 自定义光标 -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- 背景层 -->
+    <div class="bg-overlay"></div>
+    <div class="noise-overlay"></div>
+    <div class="scanline"></div>
+
+    <!-- 预加载器 -->
+    <div id="preloader">
+        <div class="loader-icon mb-6"></div>
+        <p class="mono text-[10px] tracking-[0.4em] text-zinc-500 animate-pulse">LOADING_EMOBOI_OS...</p>
+    </div>
+
+    <!-- 浮动 ASCII 装饰 -->
+    <div class="floating-ascii" style="top: 100px; left: 30px;">
+†††††††††††††
+†  EMOBOI   †
+†††††††††††††</div>
+
+    <div class="floating-ascii" style="bottom: 100px; right: 30px;">
+(╯°□°）╯︵ ┻━┻
+[SYSTEM_DRAINED]</div>
+
+    <div class="floating-ascii" style="top: 45%; left: 15px;">
+░▒▓█ DRAIN █▓▒░</div>
+
+    <!-- 底部跑马灯 -->
+    <div class="fixed bottom-0 w-full bg-white text-black py-1.5 overflow-hidden z-50 text-xs font-bold uppercase tracking-wider">
+        <div class="marquee-track">
+            <span class="px-8">EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ </span>
+            <span class="px-8">EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ </span>
+            <span class="px-8">EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ </span>
+            <span class="px-8">EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ </span>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="fixed top-8 left-0 w-full z-40 px-6 flex justify-between items-center" style="mix-blend-mode: difference;">
+        <div class="flex items-center gap-3">
+            <img src="Ecco2k-E.jpg" alt="E" class="w-9 h-9 object-contain">
+            <span class="font-black tracking-tighter text-xl hidden sm:block">EMOBOI.COM</span>
+        </div>
+        <button id="menu-btn" class="p-2 border border-zinc-700 hover:bg-white hover:text-black transition-all">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+    </nav>
+
+    <!-- 全屏菜单 -->
+    <div id="fullscreen-menu" class="fixed inset-0 bg-black z-[45] hidden items-center justify-center">
+        <button id="close-menu" class="absolute top-6 right-6 p-2 border border-zinc-700 hover:bg-white hover:text-black transition-all">
+            <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+        <div class="flex flex-col gap-6 text-center">
+            <a href="sf6/" onclick="closeMenu()" class="text-4xl md:text-7xl font-black italic tracking-tighter hover:text-lime-400 transition-colors uppercase">SF6 FRAME LAB</a>
+            <a href="gojuon/" onclick="closeMenu()" class="text-4xl md:text-7xl font-black italic tracking-tighter hover:text-lime-400 transition-colors uppercase">GOJUON</a>
+            <a href="javascript:void(0)" onclick="closeMenu(); alert('开发中')" class="text-4xl md:text-7xl font-black italic tracking-tighter hover:text-lime-400 transition-colors uppercase">MY GALLERY</a>
+            <a href="javascript:void(0)" onclick="closeMenu(); alert('开发中')" class="text-4xl md:text-7xl font-black italic tracking-tighter hover:text-lime-400 transition-colors uppercase">I AM MUSIC</a>
+        </div>
+    </div>
+
+    <!-- ==================== HERO SECTION (全屏) ==================== -->
+    <section id="hero" class="relative h-screen flex flex-col items-center justify-center px-6">
+        <!-- 背景圆环装饰 -->
+        <div class="absolute inset-0 z-0 overflow-hidden opacity-10 pointer-events-none">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vw] border border-white/30 rounded-full" style="animation: pulse 4s ease-in-out infinite;"></div>
+        </div>
+
+        <!-- SVG 星形装饰 (增强可见性) -->
+        <div class="fixed top-1/2 left-0 -translate-y-1/2 opacity-20 pointer-events-none hidden lg:block">
+            <svg width="120" height="240" viewBox="0 0 100 200">
+                <path d="M50 0 L55 40 L90 45 L55 55 L50 90 L45 55 L10 45 L45 40 Z" fill="white" />
+                <path d="M50 110 L55 150 L90 155 L55 165 L50 200 L45 165 L10 155 L45 150 Z" fill="white" />
+            </svg>
+        </div>
+
+        <div class="relative z-10 text-center flex flex-col items-center" style="margin-top: -5vh;">
+            <!-- 主标题 -->
+            <h1 class="main-title glitch-text mb-6 select-none" id="main-logo">
+                EMO<br>BOI
+            </h1>
+
+            <!-- 4个核心入口 - 纵向切片导航 -->
+            <nav class="nav-container">
+                <a href="sf6/" class="nav-item">
+                    <div class="nav-bg"></div>
+                    <div class="nav-content">
+                        <h2>街霸6</h2>
+                        <div class="pinyin">SF6 Frame Lab</div>
+                    </div>
+                </a>
+                <a href="gojuon/" class="nav-item">
+                    <div class="nav-bg"></div>
+                    <div class="nav-content">
+                        <h2>五十音</h2>
+                        <div class="pinyin">Gojuon</div>
+                    </div>
+                </a>
+                <a href="javascript:void(0)" onclick="alert('开发中')" class="nav-item">
+                    <div class="nav-bg"></div>
+                    <div class="nav-content">
+                        <h2>画廊</h2>
+                        <div class="pinyin">My Gallery</div>
+                    </div>
+                </a>
+                <a href="javascript:void(0)" onclick="alert('开发中')" class="nav-item">
+                    <div class="nav-bg"></div>
+                    <div class="nav-content">
+                        <h2>音乐</h2>
+                        <div class="pinyin">I Am Music</div>
+                    </div>
+                </a>
+            </nav>
+        </div>
+
+
+        <!-- 底部版权信息 (参考 shouye.html 样式: Syne 字体) -->
+        <footer class="fixed bottom-10 w-full px-8 z-10" style="font-family: 'Syne', sans-serif;">
+            <div class="text-[10px] uppercase tracking-widest text-gray-500">
+                Design by Chaos // ℮ <br>
+                © 2026 emoboi.com
+            </div>
+        </footer>
+    </section>
+
+    <script>
+        // ==================== 自定义光标 ====================
+        const cursorDot = document.getElementById('cursor-dot');
+        const cursorRing = document.getElementById('cursor-ring');
+        
+        let mouseX = 0, mouseY = 0;
+        let dotX = 0, dotY = 0;
+        let ringX = 0, ringY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateCursor() {
+            dotX += (mouseX - dotX) * 0.3;
+            dotY += (mouseY - dotY) * 0.3;
+            ringX += (mouseX - ringX) * 0.15;
+            ringY += (mouseY - ringY) * 0.15;
+
+            cursorDot.style.transform = `translate3d(${dotX - 5}px, ${dotY - 5}px, 0)`;
+            cursorRing.style.transform = `translate3d(${ringX - 20}px, ${ringY - 20}px, 0)`;
+
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // 悬停交互
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mouseenter', () => cursorRing.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursorRing.classList.remove('hover'));
+        });
+
+        // ==================== 预加载器 ====================
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+                lucide.createIcons();
+            }, 800);
+        });
+
+        // ==================== 菜单 ====================
+        const menuBtn = document.getElementById('menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu');
+        const fullscreenMenu = document.getElementById('fullscreen-menu');
+
+        menuBtn.addEventListener('click', () => {
+            fullscreenMenu.style.display = 'flex';
+        });
+
+        closeMenuBtn.addEventListener('click', closeMenu);
+
+        function closeMenu() {
+            fullscreenMenu.style.display = 'none';
+        }
+
+        // ==================== 主标题随机抖动 ====================
+        const mainLogo = document.getElementById('main-logo');
+        setInterval(() => {
+            if (Math.random() > 0.96) {
+                mainLogo.style.transform = `translate(${Math.random()*8-4}px, ${Math.random()*8-4}px) skew(${Math.random()*6-3}deg)`;
+                setTimeout(() => {
+                    mainLogo.style.transform = 'none';
+                }, 60);
+            }
+        }, 120);
+    </script>
+</body>
+</html>

@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY GALLERY | EMOBOI</title>
+    <meta name="description" content="EMOBOI Visual Gallery - Personal curated image collection">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Archivo+Black&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --acid-lime: #bcfe2d;
+            --deep-black: #050505;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--deep-black);
+            color: white;
+            font-family: 'Syne', sans-serif;
+            overflow-x: hidden;
+            cursor: none;
+            min-height: 100vh;
+        }
+
+        ::selection {
+            background: var(--acid-lime);
+            color: black;
+        }
+
+        /* ========== 背景效果 ========== */
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 50% 30%, rgba(188, 254, 45, 0.02) 0%, transparent 50%),
+                url('https://www.transparenttextures.com/patterns/stardust.png');
+            z-index: -1;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9990;
+            opacity: 0.05;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        /* ========== 自定义光标 ========== */
+        #cursor-dot {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            will-change: transform;
+        }
+
+        #cursor-ring {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            will-change: transform;
+            transition: width 0.2s, height 0.2s, border-color 0.2s, background-color 0.2s;
+        }
+
+        #cursor-ring.hover {
+            width: 80px;
+            height: 80px;
+            border-color: var(--acid-lime);
+            background-color: rgba(188, 254, 45, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            #cursor-dot, #cursor-ring { display: none; }
+            body { cursor: auto; }
+        }
+
+        /* ========== Section 标题 ========== */
+        .section-title {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: -0.05em;
+            line-height: 0.9;
+        }
+
+        /* ========== 分类卡片 (SUB_LEVELS 样式) ========== */
+        .category-card {
+            position: relative;
+            background: black;
+            padding: 2rem;
+            height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            border: 1px solid #1a1a1a;
+        }
+
+        .category-card:hover {
+            background: var(--acid-lime);
+            color: black;
+        }
+
+        .category-card .bg-number {
+            position: absolute;
+            bottom: -1.5rem;
+            right: -0.5rem;
+            font-size: 10rem;
+            font-weight: 900;
+            font-style: italic;
+            opacity: 0.03;
+            pointer-events: none;
+            transition: opacity 0.4s;
+            line-height: 1;
+        }
+
+        .category-card:hover .bg-number {
+            opacity: 0.15;
+        }
+
+        .category-card.active {
+            background: var(--acid-lime);
+            color: black;
+        }
+
+        .category-card.active .bg-number {
+            opacity: 0.15;
+        }
+
+        /* ========== 画廊网格 ========== */
+        .gallery-grid {
+            column-count: 1;
+            column-gap: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .gallery-grid { column-count: 2; }
+        }
+
+        @media (min-width: 1024px) {
+            .gallery-grid { column-count: 3; }
+        }
+
+        @media (min-width: 1280px) {
+            .gallery-grid { column-count: 4; }
+        }
+
+        .gallery-item {
+            break-inside: avoid;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+            background: #111;
+            cursor: pointer;
+            opacity: 1;
+            transition: opacity 0.4s, transform 0.4s;
+        }
+
+        .gallery-item.hidden {
+            display: none;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: grayscale(0.7) contrast(1.1);
+            transition: all 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            filter: grayscale(0) contrast(1);
+            transform: scale(1.03);
+        }
+
+        .gallery-item .overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .gallery-item:hover .overlay {
+            opacity: 1;
+        }
+
+        .gallery-item .info {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        .gallery-item:hover .info {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* ========== Lightbox ========== */
+        #lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        #lightbox.active {
+            display: flex;
+        }
+
+        #lightbox img {
+            max-width: 90vw;
+            max-height: 85vh;
+            object-fit: contain;
+        }
+
+        #lightbox .close-btn {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            width: 48px;
+            height: 48px;
+            background: white;
+            color: black;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #lightbox .close-btn:hover {
+            background: var(--acid-lime);
+            transform: rotate(90deg);
+        }
+
+        #lightbox .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #lightbox .nav-btn:hover {
+            background: var(--acid-lime);
+            color: black;
+            border-color: var(--acid-lime);
+        }
+
+        #lightbox .nav-btn.prev { left: 2rem; }
+        #lightbox .nav-btn.next { right: 2rem; }
+
+        #lightbox .img-info {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        /* ========== 滚动条 ========== */
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-track { background: black; }
+        ::-webkit-scrollbar-thumb { background: #333; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--acid-lime); }
+
+        /* ========== 回到顶部按钮 ========== */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 48px;
+            height: 48px;
+            background: white;
+            color: black;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 40;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            background: var(--acid-lime);
+            transform: scale(1.1);
+        }
+
+        /* ========== 工具类 ========== */
+        .mono { font-family: 'Space Mono', monospace; }
+    </style>
+</head>
+<body>
+
+    <!-- 自定义光标 -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- 背景层 -->
+    <div class="bg-overlay"></div>
+    <div class="noise-overlay"></div>
+
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 w-full z-40 px-6 py-4 flex justify-between items-center bg-black/80 backdrop-blur-sm border-b border-zinc-900">
+        <a href="../" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <div class="w-8 h-8 bg-white text-black font-black flex items-center justify-center text-lg">E</div>
+            <span class="font-black tracking-tighter text-lg hidden sm:block">EMOBOI.COM</span>
+        </a>
+        <div class="flex items-center gap-6">
+            <span class="mono text-[10px] text-lime-400 uppercase hidden md:block">MY GALLERY</span>
+            <a href="../" class="p-2 border border-zinc-700 hover:bg-white hover:text-black transition-all flex items-center gap-2 text-sm">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span class="hidden sm:inline">返回首页</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <main class="pt-24 pb-16 px-6">
+        <div class="max-w-7xl mx-auto">
+            <!-- 标题区域 -->
+            <header class="mb-12">
+                <span class="mono text-xs text-lime-400">01 // VISUAL ARCHIVE</span>
+                <h1 class="section-title mt-4">
+                    SUB_<br>LEVELS
+                </h1>
+                <p class="mono text-xs text-zinc-600 max-w-md mt-4 uppercase leading-relaxed">
+                    Personal curated image collection. The eye is a camera. Each category is a fragment of the overall psyche.
+                </p>
+            </header>
+
+            <!-- 分类卡片 (SUB_LEVELS 样式) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-px bg-zinc-800 mb-16" id="category-cards">
+                <div class="category-card active" data-category="all" onclick="filterGallery('all')">
+                    <div class="flex justify-between items-start z-10">
+                        <span class="mono text-[10px] border border-current px-2 py-1 uppercase">All Images</span>
+                        <i data-lucide="grid-3x3" class="w-8 h-8 opacity-50"></i>
+                    </div>
+                    <div class="z-10">
+                        <h3 class="text-3xl md:text-4xl font-black italic tracking-tighter">ALL_ARCHIVE</h3>
+                        <p class="mono text-xs opacity-60 mt-2 uppercase">View complete collection</p>
+                    </div>
+                    <span class="bg-number">00</span>
+                </div>
+
+                <div class="category-card" data-category="aesthetic" onclick="filterGallery('aesthetic')">
+                    <div class="flex justify-between items-start z-10">
+                        <span class="mono text-[10px] border border-current px-2 py-1 uppercase">Aesthetic</span>
+                        <i data-lucide="sparkles" class="w-8 h-8 opacity-50"></i>
+                    </div>
+                    <div class="z-10">
+                        <h3 class="text-3xl md:text-4xl font-black italic tracking-tighter">AESTHETIC</h3>
+                        <p class="mono text-xs opacity-60 mt-2 uppercase">Visual beauty & mood</p>
+                    </div>
+                    <span class="bg-number">01</span>
+                </div>
+
+                <div class="category-card" data-category="dark" onclick="filterGallery('dark')">
+                    <div class="flex justify-between items-start z-10">
+                        <span class="mono text-[10px] border border-current px-2 py-1 uppercase">Dark</span>
+                        <i data-lucide="moon" class="w-8 h-8 opacity-50"></i>
+                    </div>
+                    <div class="z-10">
+                        <h3 class="text-3xl md:text-4xl font-black italic tracking-tighter">VOID_DARK</h3>
+                        <p class="mono text-xs opacity-60 mt-2 uppercase">Shadows & silhouettes</p>
+                    </div>
+                    <span class="bg-number">02</span>
+                </div>
+
+                <div class="category-card" data-category="cyber" onclick="filterGallery('cyber')">
+                    <div class="flex justify-between items-start z-10">
+                        <span class="mono text-[10px] border border-current px-2 py-1 uppercase">Cyber</span>
+                        <i data-lucide="zap" class="w-8 h-8 opacity-50"></i>
+                    </div>
+                    <div class="z-10">
+                        <h3 class="text-3xl md:text-4xl font-black italic tracking-tighter">CYBER_NET</h3>
+                        <p class="mono text-xs opacity-60 mt-2 uppercase">Digital & futuristic</p>
+                    </div>
+                    <span class="bg-number">03</span>
+                </div>
+
+                <div class="category-card" data-category="nature" onclick="filterGallery('nature')">
+                    <div class="flex justify-between items-start z-10">
+                        <span class="mono text-[10px] border border-current px-2 py-1 uppercase">Nature</span>
+                        <i data-lucide="leaf" class="w-8 h-8 opacity-50"></i>
+                    </div>
+                    <div class="z-10">
+                        <h3 class="text-3xl md:text-4xl font-black italic tracking-tighter">ORGANIC</h3>
+                        <p class="mono text-xs opacity-60 mt-2 uppercase">Earth & elements</p>
+                    </div>
+                    <span class="bg-number">04</span>
+                </div>
+
+                <div class="category-card" data-category="portrait" onclick="filterGallery('portrait')">
+                    <div class="flex justify-between items-start z-10">
+                        <span class="mono text-[10px] border border-current px-2 py-1 uppercase">Portrait</span>
+                        <i data-lucide="user" class="w-8 h-8 opacity-50"></i>
+                    </div>
+                    <div class="z-10">
+                        <h3 class="text-3xl md:text-4xl font-black italic tracking-tighter">FACE_DATA</h3>
+                        <p class="mono text-xs opacity-60 mt-2 uppercase">Human expressions</p>
+                    </div>
+                    <span class="bg-number">05</span>
+                </div>
+            </div>
+
+            <!-- 当前分类指示 -->
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-px bg-lime-400"></div>
+                    <span class="mono text-xs text-zinc-500 uppercase" id="current-category">SHOWING: ALL</span>
+                </div>
+                <span class="mono text-[10px] text-zinc-600" id="image-count">0 IMAGES</span>
+            </div>
+
+            <!-- 画廊网格 -->
+            <div class="gallery-grid" id="gallery">
+                <!-- 示例图片 -->
+                <div class="gallery-item" data-category="aesthetic">
+                    <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1000" alt="PHASE_01" loading="lazy">
+                    <div class="overlay"></div>
+                    <div class="info">
+                        <span class="bg-black px-2 py-1 text-[10px] mono tracking-widest">PHASE_01</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item" data-category="dark">
+                    <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=1000" alt="STATIC_ERROR" loading="lazy">
+                    <div class="overlay"></div>
+                    <div class="info">
+                        <span class="bg-black px-2 py-1 text-[10px] mono tracking-widest">STATIC_ERROR</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item" data-category="cyber">
+                    <img src="https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=1000" alt="ACID_RAIN" loading="lazy">
+                    <div class="overlay"></div>
+                    <div class="info">
+                        <span class="bg-black px-2 py-1 text-[10px] mono tracking-widest">ACID_RAIN</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item" data-category="dark">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000" alt="DARK_MATTER" loading="lazy">
+                    <div class="overlay"></div>
+                    <div class="info">
+                        <span class="bg-black px-2 py-1 text-[10px] mono tracking-widest">DARK_MATTER</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item" data-category="cyber">
+                    <img src="https://images.unsplash.com/photo-1515462277126-2dd0c162007a?q=80&w=1000" alt="NEON_SOUL" loading="lazy">
+                    <div class="overlay"></div>
+                    <div class="info">
+                        <span class="bg-black px-2 py-1 text-[10px] mono tracking-widest">NEON_SOUL</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item" data-category="aesthetic">
+                    <img src="https://images.unsplash.com/photo-1633167606207-d840b5070fc2?q=80&w=1000" alt="CYBER_PUNK" loading="lazy">
+                    <div class="overlay"></div>
+                    <div class="info">
+                        <span class="bg-black px-2 py-1 text-[10px] mono tracking-widest">CYBER_PUNK</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item" data-category="portrait">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000" alt="VOID_PORTRAIT" loading="lazy">
+                    <div class="overlay"></div>
+                    <div class="info">
+                        <span class="bg-black px-2 py-1 text-[10px] mono tracking-widest">VOID_PORTRAIT</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item" data-category="nature">
+                    <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1000" alt="SOUND_WAVE" loading="lazy">
+                    <div class="overlay"></div>
+                    <div class="info">
+                        <span class="bg-black px-2 py-1 text-[10px] mono tracking-widest">SOUND_WAVE</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item" data-category="cyber">
+                    <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1000" alt="MATRIX_CODE" loading="lazy">
+                    <div class="overlay"></div>
+                    <div class="info">
+                        <span class="bg-black px-2 py-1 text-[10px] mono tracking-widest">MATRIX_CODE</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 添加更多图片的提示 -->
+            <div class="mt-12 text-center">
+                <p class="mono text-[10px] text-zinc-700 uppercase">
+                    * 将图片放入目录，在代码中添加 gallery-item 元素并设置 data-category 属性
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Lightbox -->
+    <div id="lightbox">
+        <button class="close-btn" onclick="closeLightbox()">
+            <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+        <button class="nav-btn prev" onclick="prevImage()">
+            <i data-lucide="chevron-left" class="w-6 h-6"></i>
+        </button>
+        <button class="nav-btn next" onclick="nextImage()">
+            <i data-lucide="chevron-right" class="w-6 h-6"></i>
+        </button>
+        <img id="lightbox-img" src="" alt="">
+        <div class="img-info">
+            <span id="lightbox-title" class="mono text-sm"></span>
+            <p id="lightbox-counter" class="mono text-[10px] text-zinc-500 mt-1"></p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 border-t border-zinc-900">
+        <div class="max-w-7xl mx-auto flex flex-col items-center">
+            <h2 class="text-[8vw] font-black italic tracking-tighter opacity-10 select-none leading-none">EMOBOI</h2>
+            
+            <div class="flex gap-8 mt-6 font-bold uppercase italic text-sm">
+                <a href="#" class="hover:text-lime-400 transition-colors">Instagram</a>
+                <a href="#" class="hover:text-lime-400 transition-colors">X.com</a>
+                <a href="#" class="hover:text-lime-400 transition-colors">Email</a>
+            </div>
+
+            <div class="mt-12 w-full flex flex-col md:flex-row justify-between items-center gap-4 mono text-[9px] text-zinc-600 uppercase">
+                <div class="text-center md:text-left">
+                    <p>Design by Chaos // ℮</p>
+                    <p>© 2026 emoboi.com</p>
+                </div>
+                <p>DOMAIN: EMOBOI.COM</p>
+                <p class="flex items-center gap-2">
+                    DESIGNED BY <i data-lucide="heart" class="w-3 h-3 text-red-500 fill-red-500"></i> FOR THE BROKEN
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <i data-lucide="arrow-up" class="w-5 h-5"></i>
+    </button>
+
+    <script>
+        // ==================== 自定义光标 ====================
+        const cursorDot = document.getElementById('cursor-dot');
+        const cursorRing = document.getElementById('cursor-ring');
+        
+        let mouseX = 0, mouseY = 0;
+        let dotX = 0, dotY = 0;
+        let ringX = 0, ringY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateCursor() {
+            dotX += (mouseX - dotX) * 0.3;
+            dotY += (mouseY - dotY) * 0.3;
+            ringX += (mouseX - ringX) * 0.15;
+            ringY += (mouseY - ringY) * 0.15;
+
+            cursorDot.style.transform = `translate3d(${dotX - 5}px, ${dotY - 5}px, 0)`;
+            cursorRing.style.transform = `translate3d(${ringX - 20}px, ${ringY - 20}px, 0)`;
+
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // 悬停交互
+        document.querySelectorAll('button, a, .gallery-item, .category-card').forEach(el => {
+            el.addEventListener('mouseenter', () => cursorRing.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursorRing.classList.remove('hover'));
+        });
+
+        // ==================== 分类筛选 ====================
+        const categoryCards = document.querySelectorAll('.category-card');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        const currentCategoryEl = document.getElementById('current-category');
+        const imageCountEl = document.getElementById('image-count');
+
+        let currentFilter = 'all';
+
+        function filterGallery(category) {
+            currentFilter = category;
+            
+            // 更新卡片状态
+            categoryCards.forEach(card => {
+                if (card.dataset.category === category) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+
+            // 筛选图片
+            let visibleCount = 0;
+            galleryItems.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    item.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+
+            // 更新显示信息
+            currentCategoryEl.textContent = `SHOWING: ${category.toUpperCase()}`;
+            imageCountEl.textContent = `${visibleCount} IMAGES`;
+
+            // 滚动到画廊区域
+            document.getElementById('gallery').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ==================== Lightbox ====================
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxTitle = document.getElementById('lightbox-title');
+        const lightboxCounter = document.getElementById('lightbox-counter');
+
+        let currentImageIndex = 0;
+        let visibleImages = [];
+
+        function updateVisibleImages() {
+            visibleImages = Array.from(document.querySelectorAll('.gallery-item:not(.hidden)'));
+        }
+
+        galleryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                updateVisibleImages();
+                currentImageIndex = visibleImages.indexOf(item);
+                showImage(currentImageIndex);
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        function showImage(index) {
+            const item = visibleImages[index];
+            const img = item.querySelector('img');
+            const title = item.querySelector('.info span').textContent;
+            
+            lightboxImg.src = img.src;
+            lightboxTitle.textContent = title;
+            lightboxCounter.textContent = `${index + 1} / ${visibleImages.length}`;
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function prevImage() {
+            currentImageIndex = (currentImageIndex - 1 + visibleImages.length) % visibleImages.length;
+            showImage(currentImageIndex);
+        }
+
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % visibleImages.length;
+            showImage(currentImageIndex);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('active')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') prevImage();
+            if (e.key === 'ArrowRight') nextImage();
+        });
+
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) closeLightbox();
+        });
+
+        // ==================== 回到顶部按钮 ====================
+        const backToTopBtn = document.getElementById('back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+
+        // ==================== 初始化 ====================
+        window.addEventListener('load', () => {
+            lucide.createIcons();
+            updateVisibleImages();
+            imageCountEl.textContent = `${galleryItems.length} IMAGES`;
+        });
+    </script>
+</body>
+</html>

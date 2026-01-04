@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I AM MUSIC | EMOBOI</title>
+    <meta name="description" content="EMOBOI Music Player - Personal music collection">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Archivo+Black&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --acid-lime: #bcfe2d;
+            --deep-black: #050505;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--deep-black);
+            color: white;
+            font-family: 'Syne', sans-serif;
+            overflow-x: hidden;
+            cursor: none;
+            min-height: 100vh;
+        }
+
+        ::selection {
+            background: var(--acid-lime);
+            color: black;
+        }
+
+        /* ========== 背景效果 ========== */
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 30% 50%, rgba(188, 254, 45, 0.05) 0%, transparent 50%),
+                url('https://www.transparenttextures.com/patterns/stardust.png');
+            z-index: -1;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9990;
+            opacity: 0.05;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        /* ========== 自定义光标 ========== */
+        #cursor-dot {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            will-change: transform;
+        }
+
+        #cursor-ring {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            will-change: transform;
+            transition: width 0.2s, height 0.2s, border-color 0.2s, background-color 0.2s;
+        }
+
+        #cursor-ring.hover {
+            width: 60px;
+            height: 60px;
+            border-color: var(--acid-lime);
+            background-color: rgba(188, 254, 45, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            #cursor-dot, #cursor-ring { display: none; }
+            body { cursor: auto; }
+        }
+
+        /* ========== Section 标题 ========== */
+        .section-title {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: -0.05em;
+            line-height: 0.9;
+        }
+
+        /* ========== 音乐播放器 ========== */
+        .vinyl {
+            border: 1px solid #333;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .vinyl.spinning {
+            animation: vinylSpin 4s linear infinite;
+        }
+
+        @keyframes vinylSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .track-item {
+            transition: all 0.3s;
+            border-left: 2px solid transparent;
+            padding-left: 1rem;
+        }
+
+        .track-item:hover {
+            color: white;
+            border-left-color: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.02);
+        }
+
+        .track-item.active {
+            color: var(--acid-lime);
+            border-left-color: var(--acid-lime);
+            background: rgba(188, 254, 45, 0.05);
+        }
+
+        /* ========== 进度条 ========== */
+        .progress-bar {
+            position: relative;
+            height: 6px;
+            background: #222;
+            border-radius: 3px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--acid-lime);
+            width: 0%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px rgba(188, 254, 45, 0.5);
+        }
+
+        /* ========== 音量条 ========== */
+        .volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 80px;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--acid-lime);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* ========== 滚动条 ========== */
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-track { background: black; }
+        ::-webkit-scrollbar-thumb { background: #333; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--acid-lime); }
+
+        /* ========== 回到顶部按钮 ========== */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 48px;
+            height: 48px;
+            background: white;
+            color: black;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 40;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            background: var(--acid-lime);
+            transform: scale(1.1);
+        }
+
+        /* ========== 工具类 ========== */
+        .mono { font-family: 'Space Mono', monospace; }
+    </style>
+</head>
+<body>
+
+    <!-- 自定义光标 -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- 背景层 -->
+    <div class="bg-overlay"></div>
+    <div class="noise-overlay"></div>
+
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 w-full z-40 px-6 py-4 flex justify-between items-center bg-black/80 backdrop-blur-sm border-b border-zinc-900">
+        <a href="../" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <div class="w-8 h-8 bg-white text-black font-black flex items-center justify-center text-lg">E</div>
+            <span class="font-black tracking-tighter text-lg hidden sm:block">EMOBOI.COM</span>
+        </a>
+        <div class="flex items-center gap-6">
+            <span class="mono text-[10px] text-lime-400 uppercase hidden md:block">I AM MUSIC</span>
+            <a href="../" class="p-2 border border-zinc-700 hover:bg-white hover:text-black transition-all flex items-center gap-2 text-sm">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span class="hidden sm:inline">返回首页</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <main class="pt-24 pb-16 px-6 min-h-screen">
+        <div class="max-w-6xl mx-auto">
+            <!-- 标题区域 -->
+            <header class="mb-12 text-center">
+                <span class="mono text-xs text-zinc-500">SONIC VOID</span>
+                <h1 class="section-title mt-4 mb-4">
+                    I AM<br>MUSIC
+                </h1>
+                <p class="mono text-xs text-zinc-600 max-w-md mx-auto uppercase">
+                    Personal frequency collection. Drained sounds for disconnected souls.
+                </p>
+            </header>
+
+            <!-- 播放器主体 -->
+            <div class="grid lg:grid-cols-2 gap-12 items-start">
+                <!-- 唱片视觉 -->
+                <div class="flex flex-col items-center">
+                    <div class="relative w-full max-w-md aspect-square mb-8">
+                        <div id="vinyl" class="vinyl w-full h-full bg-zinc-900 flex items-center justify-center relative">
+                            <div class="w-1/3 h-1/3 bg-black rounded-full border-4 border-zinc-800 flex items-center justify-center">
+                                <div class="w-6 h-6 bg-lime-400 rounded-full"></div>
+                            </div>
+                            <div class="absolute inset-0 opacity-10 bg-[repeating-radial-gradient(circle,transparent_0,transparent_4px,#000_4px,#000_8px)]"></div>
+                        </div>
+                        <!-- 唱针 -->
+                        <div id="tonearm" class="absolute top-0 right-0 w-1/2 h-3 bg-zinc-700 origin-left transition-transform duration-500 rounded-full" style="transform: rotate(-20deg) translateY(3rem);"></div>
+                    </div>
+
+                    <!-- 当前播放信息 -->
+                    <div class="text-center w-full max-w-md">
+                        <span class="mono text-[10px] text-zinc-600 uppercase">Now Playing</span>
+                        <h2 id="track-title" class="text-3xl md:text-4xl font-black italic tracking-tighter uppercase mt-2">—</h2>
+                        <p id="track-artist" class="text-lg text-lime-400 font-bold italic uppercase mt-1">—</p>
+                    </div>
+
+                    <!-- 进度条 -->
+                    <div class="w-full max-w-md mt-6 space-y-2">
+                        <div id="progress-bar" class="progress-bar">
+                            <div id="progress-fill" class="progress-fill"></div>
+                        </div>
+                        <div class="flex justify-between mono text-[10px] text-zinc-600">
+                            <span id="current-time">0:00</span>
+                            <span id="duration">0:00</span>
+                        </div>
+                    </div>
+
+                    <!-- 控制按钮 -->
+                    <div class="flex items-center gap-6 mt-6">
+                        <button id="prev-btn" class="text-zinc-600 hover:text-white transition-colors">
+                            <i data-lucide="skip-back" class="w-7 h-7"></i>
+                        </button>
+                        <button id="play-btn" class="w-16 h-16 bg-white text-black rounded-full flex items-center justify-center hover:bg-lime-400 transition-all hover:scale-110">
+                            <i data-lucide="play" class="w-7 h-7 ml-1" id="play-icon"></i>
+                        </button>
+                        <button id="next-btn" class="text-zinc-600 hover:text-white transition-colors">
+                            <i data-lucide="skip-forward" class="w-7 h-7"></i>
+                        </button>
+                    </div>
+
+                    <!-- 音量控制 -->
+                    <div class="flex items-center gap-3 mt-4">
+                        <button id="volume-btn" class="text-zinc-600 hover:text-white transition-colors">
+                            <i data-lucide="volume-2" class="w-5 h-5" id="volume-icon"></i>
+                        </button>
+                        <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="80">
+                    </div>
+                </div>
+
+                <!-- 播放列表 -->
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-black italic uppercase tracking-tight">Playlist</h3>
+                        <span class="mono text-[10px] text-zinc-600" id="track-count">0 TRACKS</span>
+                    </div>
+
+                    <div class="space-y-1 max-h-[500px] overflow-y-auto pr-2" id="playlist">
+                        <!-- 动态生成 -->
+                    </div>
+
+                    <!-- 添加音乐说明 -->
+                    <div class="mt-8 p-4 border border-zinc-800 bg-zinc-900/50">
+                        <p class="mono text-[10px] text-zinc-500 uppercase leading-relaxed">
+                            * 将 MP3 文件放入 /music/ 目录<br>
+                            * 在代码中更新 playlist 数组<br>
+                            * 支持格式: MP3, WAV, OGG, AAC
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 border-t border-zinc-900">
+        <div class="max-w-6xl mx-auto flex flex-col items-center">
+            <h2 class="text-[8vw] font-black italic tracking-tighter opacity-10 select-none leading-none">EMOBOI</h2>
+            
+            <div class="flex gap-8 mt-6 font-bold uppercase italic text-sm">
+                <a href="#" class="hover:text-lime-400 transition-colors">Instagram</a>
+                <a href="#" class="hover:text-lime-400 transition-colors">X.com</a>
+                <a href="#" class="hover:text-lime-400 transition-colors">Email</a>
+            </div>
+
+            <div class="mt-12 w-full flex flex-col md:flex-row justify-between items-center gap-4 mono text-[9px] text-zinc-600 uppercase">
+                <div class="text-center md:text-left">
+                    <p>Design by Chaos // ℮</p>
+                    <p>© 2026 emoboi.com</p>
+                </div>
+                <p>DOMAIN: EMOBOI.COM</p>
+                <p class="flex items-center gap-2">
+                    DESIGNED BY <i data-lucide="heart" class="w-3 h-3 text-red-500 fill-red-500"></i> FOR THE BROKEN
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <i data-lucide="arrow-up" class="w-5 h-5"></i>
+    </button>
+
+    <!-- 隐藏的 Audio 元素 -->
+    <audio id="audio-player" preload="metadata"></audio>
+
+    <script>
+        // ==================== 自定义光标 ====================
+        const cursorDot = document.getElementById('cursor-dot');
+        const cursorRing = document.getElementById('cursor-ring');
+        
+        let mouseX = 0, mouseY = 0;
+        let dotX = 0, dotY = 0;
+        let ringX = 0, ringY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateCursor() {
+            dotX += (mouseX - dotX) * 0.3;
+            dotY += (mouseY - dotY) * 0.3;
+            ringX += (mouseX - ringX) * 0.15;
+            ringY += (mouseY - ringY) * 0.15;
+
+            cursorDot.style.transform = `translate3d(${dotX - 5}px, ${dotY - 5}px, 0)`;
+            cursorRing.style.transform = `translate3d(${ringX - 20}px, ${ringY - 20}px, 0)`;
+
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // 悬停交互
+        const interactiveElements = document.querySelectorAll('button, a, .track-item, input');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => cursorRing.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursorRing.classList.remove('hover'));
+        });
+
+        // ==================== 音乐播放器 ====================
+        const audio = document.getElementById('audio-player');
+        const vinyl = document.getElementById('vinyl');
+        const tonearm = document.getElementById('tonearm');
+        const playBtn = document.getElementById('play-btn');
+        const playIcon = document.getElementById('play-icon');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const volumeBtn = document.getElementById('volume-btn');
+        const volumeIcon = document.getElementById('volume-icon');
+        const volumeSlider = document.getElementById('volume-slider');
+        const trackTitle = document.getElementById('track-title');
+        const trackArtist = document.getElementById('track-artist');
+        const progressBar = document.getElementById('progress-bar');
+        const progressFill = document.getElementById('progress-fill');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationEl = document.getElementById('duration');
+        const playlistEl = document.getElementById('playlist');
+        const trackCountEl = document.getElementById('track-count');
+
+        // 播放列表配置 - 您可以在这里添加自己的音乐
+        const playlist = [
+            { 
+                title: "Sample Track 1", 
+                artist: "Artist Name",
+                src: "track1.mp3",
+                duration: "3:00"
+            },
+            { 
+                title: "Sample Track 2", 
+                artist: "Artist Name",
+                src: "track2.mp3",
+                duration: "2:45"
+            },
+            { 
+                title: "Sample Track 3", 
+                artist: "Artist Name",
+                src: "track3.mp3",
+                duration: "4:10"
+            }
+        ];
+
+        let currentTrack = 0;
+        let isPlaying = false;
+        let isMuted = false;
+
+        // 初始化
+        function initPlayer() {
+            updateTrackInfo();
+            renderPlaylist();
+            audio.volume = volumeSlider.value / 100;
+            trackCountEl.textContent = `${playlist.length} TRACKS`;
+        }
+
+        // 更新曲目信息
+        function updateTrackInfo() {
+            const track = playlist[currentTrack];
+            trackTitle.textContent = track.title;
+            trackArtist.textContent = track.artist;
+            audio.src = track.src;
+            renderPlaylist();
+        }
+
+        // 渲染播放列表
+        function renderPlaylist() {
+            playlistEl.innerHTML = '';
+            playlist.forEach((track, i) => {
+                const div = document.createElement('div');
+                div.className = `track-item flex justify-between items-center cursor-pointer py-3 ${currentTrack === i ? 'active' : 'text-zinc-600'}`;
+                div.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <span class="mono text-xs w-6">${String(i + 1).padStart(2, '0')}</span>
+                        <div>
+                            <span class="text-base font-bold italic tracking-tighter uppercase block">${track.title}</span>
+                            <span class="mono text-[10px] text-zinc-500">${track.artist}</span>
+                        </div>
+                    </div>
+                    <span class="mono text-[10px]">${track.duration}</span>
+                `;
+                div.addEventListener('click', () => {
+                    currentTrack = i;
+                    updateTrackInfo();
+                    playTrack();
+                });
+                playlistEl.appendChild(div);
+            });
+        }
+
+        // 播放
+        function playTrack() {
+            audio.play().then(() => {
+                isPlaying = true;
+                vinyl.classList.add('spinning');
+                tonearm.style.transform = 'rotate(-5deg) translateY(3rem)';
+                playIcon.setAttribute('data-lucide', 'pause');
+                lucide.createIcons();
+            }).catch(err => {
+                console.log('播放失败，请确保音乐文件存在:', err);
+            });
+        }
+
+        // 暂停
+        function pauseTrack() {
+            audio.pause();
+            isPlaying = false;
+            vinyl.classList.remove('spinning');
+            tonearm.style.transform = 'rotate(-20deg) translateY(3rem)';
+            playIcon.setAttribute('data-lucide', 'play');
+            lucide.createIcons();
+        }
+
+        // 播放/暂停切换
+        playBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                pauseTrack();
+            } else {
+                playTrack();
+            }
+        });
+
+        // 上一曲
+        prevBtn.addEventListener('click', () => {
+            currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
+            updateTrackInfo();
+            if (isPlaying) playTrack();
+        });
+
+        // 下一曲
+        nextBtn.addEventListener('click', () => {
+            currentTrack = (currentTrack + 1) % playlist.length;
+            updateTrackInfo();
+            if (isPlaying) playTrack();
+        });
+
+        // 静音切换
+        volumeBtn.addEventListener('click', () => {
+            isMuted = !isMuted;
+            audio.muted = isMuted;
+            volumeIcon.setAttribute('data-lucide', isMuted ? 'volume-x' : 'volume-2');
+            lucide.createIcons();
+        });
+
+        // 音量滑块
+        volumeSlider.addEventListener('input', (e) => {
+            audio.volume = e.target.value / 100;
+            if (audio.volume === 0) {
+                volumeIcon.setAttribute('data-lucide', 'volume-x');
+            } else {
+                volumeIcon.setAttribute('data-lucide', 'volume-2');
+            }
+            lucide.createIcons();
+        });
+
+        // 进度条更新
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration) {
+                const progress = (audio.currentTime / audio.duration) * 100;
+                progressFill.style.width = progress + '%';
+                currentTimeEl.textContent = formatTime(audio.currentTime);
+            }
+        });
+
+        // 加载元数据时更新时长
+        audio.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(audio.duration);
+        });
+
+        // 播放结束时自动下一曲
+        audio.addEventListener('ended', () => {
+            currentTrack = (currentTrack + 1) % playlist.length;
+            updateTrackInfo();
+            playTrack();
+        });
+
+        // 点击进度条跳转
+        progressBar.addEventListener('click', (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            audio.currentTime = percent * audio.duration;
+        });
+
+        // 格式化时间
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // ==================== 回到顶部按钮 ====================
+        const backToTopBtn = document.getElementById('back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+
+        // ==================== 初始化 ====================
+        window.addEventListener('load', () => {
+            lucide.createIcons();
+            initPlayer();
+        });
+    </script>
+</body>
+</html>
+

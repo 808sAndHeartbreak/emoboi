@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="日语五十音图学习工具 - 包含平假名、片假名、罗马字及字源对照">
+    <meta name="theme-color" content="#080808">
+    <title>五十音 | Gojūon</title>
+    <style>
+        :root {
+            --bg-deep: #080808;
+            --ink-black: #000000;
+            --drain-white: #ffffff; 
+            --text-soft: #dddddd;    
+            --grid-line: #222222; 
+            --toxic-cyan: #aafff0;
+            --acid-purple: #d0aaff;
+            --romaji-base: #666666; 
+            --ui-border: #333;
+            --glitch-speed: 0.2s;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+
+        @keyframes glitch-text {
+            0% { text-shadow: 2px 0 var(--acid-purple), -2px 0 var(--toxic-cyan); }
+            25% { text-shadow: -2px 0 var(--acid-purple), 2px 0 var(--toxic-cyan); }
+            50% { text-shadow: 2px -2px var(--acid-purple), -1px 2px var(--toxic-cyan); }
+            100% { text-shadow: 2px 0 var(--acid-purple), -2px 0 var(--toxic-cyan); }
+        }
+
+        @keyframes float-ethereal {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+            100% { transform: translateY(0); }
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+                url("data:image/svg+xml,%3Csvg viewBox='0%200%20200%20200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            color: var(--drain-white);
+            font-family: "Impact", "Arial Black", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* 桌面端自定义光标 */
+        @media (hover: hover) and (pointer: fine) {
+            body {
+                cursor: url('defaultcursor.png') 16 16, crosshair;
+            }
+            .toggle-btn, .char-unit, .header-title {
+                cursor: url('cursor_hover.png') 16 16, pointer;
+            }
+        }
+
+        /* CRT扫描线效果 */
+        body::before {
+            content: "";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: 
+                linear-gradient(rgba(10, 10, 20, 0) 50%, rgba(0, 0, 0, 0.2) 50%),
+                radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.5) 100%);
+            background-size: 100% 4px, cover;
+            pointer-events: none;
+            opacity: 0.4;
+            z-index: 9999;
+        }
+
+        /* ========== Header ========== */
+        .header-bar {
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-title {
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            font-size: clamp(28px, 6vw, 48px);
+            color: #fff;
+            line-height: 1;
+            margin: 0;
+            transition: all var(--glitch-speed);
+        }
+
+        .header-title:hover {
+            animation: glitch-text var(--glitch-speed) infinite linear;
+            color: var(--toxic-cyan);
+        }
+
+        /* ========== Controls ========== */
+        .control-panel {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .toggle-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--ui-border);
+            color: #777;
+            font-family: monospace;
+            font-size: 11px;
+            padding: 5px 10px;
+            letter-spacing: 0.1em;
+            transition: all 0.3s ease;
+            position: relative;
+            min-width: 60px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .toggle-btn.active {
+            color: #fff;
+            border-color: var(--toxic-cyan);
+            background: rgba(170, 255, 240, 0.08);
+            text-shadow: 0 0 8px var(--toxic-cyan);
+        }
+
+        .toggle-btn::after {
+            content: "";
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 2px;
+            background: var(--toxic-cyan);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .toggle-btn.active::after {
+            transform: scaleX(1);
+        }
+
+        /* 触摸设备按钮优化 */
+        @media (hover: none) {
+            .toggle-btn {
+                padding: 8px 12px;
+                min-width: 55px;
+            }
+            .toggle-btn:active {
+                transform: scale(0.95);
+                background: rgba(170, 255, 240, 0.15);
+            }
+        }
+
+        /* ========== Main Grid ========== */
+        #main-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            border-left: 1px solid var(--grid-line);
+            border-top: 1px solid var(--grid-line);
+        }
+
+        .kana-cell {
+            border-right: 1px solid var(--grid-line);
+            border-bottom: 1px solid var(--grid-line);
+            max-height: 120px;
+            padding: 6px 10px 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            background: var(--ink-black);
+            transition: background 0.3s ease, outline 0.3s ease;
+            outline: 1px solid transparent;
+            outline-offset: -1px;
+            overflow: hidden;
+        }
+
+        .kana-cell:not(.empty):hover,
+        .kana-cell:not(.empty):focus-within {
+            background: #0d0d14;
+            outline: 1px solid rgba(170, 204, 255, 0.3);
+            z-index: 10;
+        }
+
+        /* ========== Cell Content ========== */
+        .cell-romaji {
+            font-family: "Courier New", monospace;
+            font-size: clamp(0.8rem, 2.5vw, 1.2rem);
+            color: var(--romaji-base);
+            font-weight: 900;
+            line-height: 1;
+            transition: all 0.25s ease;
+            transform-origin: left center;
+        }
+
+        .kana-cell:hover .cell-romaji,
+        .cell-romaji.romaji-active {
+            color: var(--acid-purple) !important;
+            text-shadow: 0 0 12px var(--acid-purple);
+            transform: scale(1.15);
+        }
+
+        .kana-focus-zone {
+            flex: 1;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 5px;
+            animation: float-ethereal 4s infinite ease-in-out;
+        }
+
+        .char-unit {
+            font-size: clamp(1.8rem, 7vw, 3rem);
+            font-weight: 900;
+            color: var(--text-soft);
+            user-select: none;
+            font-family: "Hiragino Mincho ProN", "MS Mincho", "Yu Mincho", serif;
+            display: inline-block;
+            transform: translateY(0) scale(1);
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                        color 0.2s ease, 
+                        filter 0.25s ease;
+        }
+
+        .char-unit:hover, .char-unit.linked-active {
+            color: var(--toxic-cyan) !important;
+            transform: translateY(-5px) scale(1.15);
+            filter: drop-shadow(0 0 15px var(--toxic-cyan));
+            z-index: 100;
+        }
+
+        /* 触摸设备假名交互 */
+        @media (hover: none) {
+            .char-unit:active {
+                color: var(--toxic-cyan) !important;
+                transform: scale(1.1) !important;
+                filter: drop-shadow(0 0 15px var(--toxic-cyan));
+            }
+        }
+
+        .cell-origin {
+            font-family: "Hiragino Sans", "Microsoft YaHei", sans-serif;
+            font-size: clamp(11px, 2.5vw, 15px);
+            color: #444;
+            display: flex;
+            justify-content: space-between;
+            padding-top: 3px;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        .origin-part {
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .origin-active, .origin-part:hover {
+            color: var(--toxic-cyan) !important;
+            transform: translateY(-2px) scale(1.12);
+            text-shadow: 0 0 8px var(--toxic-cyan);
+        }
+
+        .hidden-content {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            filter: blur(8px);
+            transform: translateY(10px) scale(0.8) !important;
+        }
+
+        .kana-cell.empty {
+            background-color: #030303;
+            background-image: radial-gradient(#111 0.5px, transparent 0.5px);
+            background-size: 20px 20px;
+            opacity: 0.2;
+        }
+
+        footer {
+            height: 20px;
+            border-top: 1px solid var(--grid-line);
+        }
+
+        /* ========== 响应式布局 ========== */
+        
+        /* 平板竖屏 */
+        @media (max-width: 768px) {
+            .header-bar {
+                padding: 6px 10px;
+            }
+            .header-title {
+                font-size: clamp(24px, 5vw, 36px);
+            }
+            .toggle-btn {
+                font-size: 10px;
+                padding: 4px 8px;
+                min-width: 50px;
+            }
+            .kana-cell {
+                max-height: 100px;
+            }
+        }
+
+        /* 手机竖屏 - 改为3列布局 */
+        @media (max-width: 480px) {
+            #main-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .kana-cell {
+                max-height: 110px;
+                padding: 5px 8px 4px;
+            }
+            .control-panel {
+                gap: 4px;
+            }
+            .toggle-btn {
+                min-width: 45px;
+                padding: 5px 6px;
+                font-size: 9px;
+                letter-spacing: 0.05em;
+            }
+        }
+
+        /* 小手机 */
+        @media (max-width: 360px) {
+            .header-bar {
+                padding: 5px 8px;
+            }
+            .header-title {
+                font-size: 22px;
+            }
+            .toggle-btn {
+                min-width: 40px;
+                padding: 4px 5px;
+                font-size: 8px;
+            }
+            .kana-cell {
+                max-height: 95px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header-bar">
+        <h1 class="header-title">五十音</h1>
+        <div class="control-panel">
+            <button class="toggle-btn active" data-target="cell-romaji">ROMAN</button>
+            <button class="toggle-btn active" data-target="hira">HIRA</button>
+            <button class="toggle-btn active" data-target="kata">KATA</button>
+            <button class="toggle-btn active" data-target="cell-origin">ORIGIN</button>
+        </div>
+    </header>
+
+    <main id="main-grid"></main>
+
+    <footer></footer>
+
+    <script>
+    // 五十音图数据 - 完整11行 (a~n)
+    // 布局: 5列 × 11行 = 55格
+    const kanaData = [
+        // あ行 (a)
+        { r: 'a',  h: 'あ', k: 'ア', o1: '安', o2: '阿' },
+        { r: 'i',  h: 'い', k: 'イ', o1: '以', o2: '伊' },
+        { r: 'u',  h: 'う', k: 'ウ', o1: '宇', o2: '宇' },
+        { r: 'e',  h: 'え', k: 'エ', o1: '衣', o2: '江' },
+        { r: 'o',  h: 'お', k: 'オ', o1: '於', o2: '於' },
+        // か行 (ka)
+        { r: 'ka', h: 'か', k: 'カ', o1: '加', o2: '加' },
+        { r: 'ki', h: 'き', k: 'キ', o1: '幾', o2: '幾' },
+        { r: 'ku', h: 'く', k: 'ク', o1: '久', o2: '久' },
+        { r: 'ke', h: 'け', k: 'ケ', o1: '計', o2: '介' },
+        { r: 'ko', h: 'こ', k: 'コ', o1: '己', o2: '己' },
+        // さ行 (sa)
+        { r: 'sa', h: 'さ', k: 'サ', o1: '左', o2: '散' },
+        { r: 'shi',h: 'し', k: 'シ', o1: '之', o2: '之' },
+        { r: 'su', h: 'す', k: 'ス', o1: '寸', o2: '須' },
+        { r: 'se', h: 'せ', k: 'セ', o1: '世', o2: '世' },
+        { r: 'so', h: 'そ', k: 'ソ', o1: '曽', o2: '曽' },
+        // た行 (ta)
+        { r: 'ta', h: 'た', k: 'タ', o1: '太', o2: '多' },
+        { r: 'chi',h: 'ち', k: 'チ', o1: '知', o2: '千' },
+        { r: 'tsu',h: 'つ', k: 'ツ', o1: '川', o2: '川' },
+        { r: 'te', h: 'て', k: 'テ', o1: '天', o2: '天' },
+        { r: 'to', h: 'と', k: 'ト', o1: '止', o2: '止' },
+        // な行 (na)
+        { r: 'na', h: 'な', k: 'ナ', o1: '奈', o2: '奈' },
+        { r: 'ni', h: 'に', k: 'ニ', o1: '仁', o2: '二' },
+        { r: 'nu', h: 'ぬ', k: 'ヌ', o1: '奴', o2: '奴' },
+        { r: 'ne', h: 'ね', k: 'ネ', o1: '祢', o2: '祢' },
+        { r: 'no', h: 'の', k: 'ノ', o1: '乃', o2: '乃' },
+        // は行 (ha)
+        { r: 'ha', h: 'は', k: 'ハ', o1: '波', o2: '八' },
+        { r: 'hi', h: 'ひ', k: 'ヒ', o1: '比', o2: '比' },
+        { r: 'fu', h: 'ふ', k: 'フ', o1: '不', o2: '不' },
+        { r: 'he', h: 'へ', k: 'ヘ', o1: '部', o2: '部' },
+        { r: 'ho', h: 'ほ', k: 'ホ', o1: '保', o2: '保' },
+        // ま行 (ma)
+        { r: 'ma', h: 'ま', k: 'マ', o1: '末', o2: '万' },
+        { r: 'mi', h: 'み', k: 'ミ', o1: '美', o2: '三' },
+        { r: 'mu', h: 'む', k: 'ム', o1: '武', o2: '牟' },
+        { r: 'me', h: 'め', k: 'メ', o1: '女', o2: '女' },
+        { r: 'mo', h: 'も', k: 'モ', o1: '毛', o2: '毛' },
+        // や行 (ya) - yi, ye 不存在
+        { r: 'ya', h: 'や', k: 'ヤ', o1: '也', o2: '也' },
+        null,
+        { r: 'yu', h: 'ゆ', k: 'ユ', o1: '由', o2: '由' },
+        null,
+        { r: 'yo', h: 'よ', k: 'ヨ', o1: '与', o2: '與' },
+        // ら行 (ra)
+        { r: 'ra', h: 'ら', k: 'ラ', o1: '良', o2: '良' },
+        { r: 'ri', h: 'り', k: 'リ', o1: '利', o2: '利' },
+        { r: 'ru', h: 'る', k: 'ル', o1: '留', o2: '流' },
+        { r: 're', h: 'れ', k: 'レ', o1: '礼', o2: '礼' },
+        { r: 'ro', h: 'ろ', k: 'ロ', o1: '呂', o2: '呂' },
+        // わ行 (wa) - wi, wu, we 不存在
+        { r: 'wa', h: 'わ', k: 'ワ', o1: '和', o2: '和' },
+        null,
+        null,
+        null,
+        { r: 'wo', h: 'を', k: 'ヲ', o1: '遠', o2: '乎' },
+        // ん行 (n) - 独立成行，最左侧
+        { r: 'n',  h: 'ん', k: 'ン', o1: '無', o2: '尔' },
+        null,
+        null,
+        null,
+        null
+    ];
+
+    // 页面初始化
+    document.addEventListener('DOMContentLoaded', () => {
+        // 绑定控制按钮点击
+        document.querySelectorAll('.control-panel .toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.classList.toggle('active');
+                syncDisplay();
+            });
+        });
+        
+        renderGrid();
+    });
+
+    // 五十音图渲染逻辑 - 渲染全部数据
+    function renderGrid() {
+        const gridEl = document.getElementById('main-grid');
+        gridEl.innerHTML = '';
+        kanaData.forEach(item => gridEl.appendChild(createCell(item)));
+        syncDisplay();
+    }
+
+    function createCell(item) {
+        const cell = document.createElement('div');
+        if (!item) {
+            cell.className = 'kana-cell empty';
+            return cell;
+        }
+        cell.className = 'kana-cell';
+        cell.innerHTML = `
+            <div class="cell-romaji">${item.r}</div>
+            <div class="kana-focus-zone">
+                <span class="char-unit hira" tabindex="0">${item.h}</span>
+                <span class="char-unit kata" tabindex="0">${item.k}</span>
+            </div>
+            <div class="cell-origin">
+                <span class="origin-part o1">${item.o1}</span>
+                <span class="origin-part o2">${item.o2}</span>
+            </div>`;
+
+        const hira = cell.querySelector('.hira');
+        const kata = cell.querySelector('.kata');
+        const o1 = cell.querySelector('.o1');
+        const o2 = cell.querySelector('.o2');
+        const romaji = cell.querySelector('.cell-romaji');
+
+        // 绑定交互（支持鼠标和触摸）
+        const bindInteraction = (trigger, target, romajiEl) => {
+            const activate = () => {
+                target.classList.add('origin-active', 'linked-active');
+                romajiEl.classList.add('romaji-active');
+            };
+            const deactivate = () => {
+                target.classList.remove('origin-active', 'linked-active');
+                romajiEl.classList.remove('romaji-active');
+            };
+            
+            // 鼠标事件
+            trigger.addEventListener('mouseenter', activate);
+            trigger.addEventListener('mouseleave', deactivate);
+            
+            // 触摸事件
+            trigger.addEventListener('touchstart', activate, { passive: true });
+            trigger.addEventListener('touchend', deactivate, { passive: true });
+            
+            // 键盘可访问性
+            trigger.addEventListener('focus', activate);
+            trigger.addEventListener('blur', deactivate);
+        };
+
+        bindInteraction(hira, o1, romaji);
+        bindInteraction(kata, o2, romaji);
+        bindInteraction(o1, hira, romaji);
+        bindInteraction(o2, kata, romaji);
+        
+        return cell;
+    }
+
+    function syncDisplay() {
+        const buttons = document.querySelectorAll('.control-panel .toggle-btn');
+        buttons.forEach(btn => {
+            const targetClass = btn.getAttribute('data-target');
+            const isActive = btn.classList.contains('active');
+            document.querySelectorAll('.' + targetClass).forEach(el => {
+                el.classList.toggle('hidden-content', !isActive);
+            });
+        });
+    }
+    </script>
+</body>
+</html>
