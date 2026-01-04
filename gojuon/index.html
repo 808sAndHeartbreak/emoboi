@@ -423,7 +423,7 @@
             }
         }
 
-        /* 手机竖屏 - 改为3列布局 */
+        /* 手机竖屏 - 保持5列布局以确保五十音正确分行 */
         @media (max-width: 480px) {
             .top-nav {
                 flex-wrap: wrap;
@@ -443,12 +443,21 @@
                 display: none;
             }
             #main-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(5, 1fr);
                 margin-top: 70px;
             }
             .kana-cell {
-                max-height: 110px;
-                padding: 5px 8px 4px;
+                max-height: 90px;
+                padding: 4px 3px 3px;
+            }
+            .char-unit {
+                font-size: clamp(1.4rem, 5vw, 2rem);
+            }
+            .cell-romaji {
+                font-size: clamp(0.6rem, 2vw, 0.9rem);
+            }
+            .cell-origin {
+                font-size: clamp(9px, 2vw, 12px);
             }
             .toggle-btn {
                 min-width: 50px;
@@ -458,7 +467,7 @@
             }
         }
 
-        /* 小手机 */
+        /* 小手机 - 继续保持5列 */
         @media (max-width: 360px) {
             .nav-btn {
                 width: 28px;
@@ -477,7 +486,17 @@
                 font-size: 8px;
             }
             .kana-cell {
-                max-height: 95px;
+                max-height: 80px;
+                padding: 3px 2px 2px;
+            }
+            .char-unit {
+                font-size: clamp(1.2rem, 4.5vw, 1.6rem);
+            }
+            .cell-romaji {
+                font-size: clamp(0.55rem, 1.8vw, 0.8rem);
+            }
+            .cell-origin {
+                font-size: clamp(8px, 1.8vw, 10px);
             }
         }
     </style>

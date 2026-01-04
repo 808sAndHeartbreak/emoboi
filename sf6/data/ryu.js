@@ -31,11 +31,12 @@ CHARACTER_DATA["RYU"] = {
     { "adv": 34, "context": "中升龙" },
     { "adv": 37, "context": "重升龙" },
     { "adv": 38, "context": "轻升龙" },
-    { "adv": 39, "context": "浮空绿冲重升龙" },
-    { "adv": 39, "context": "浮空轻波掌-下重脚" },
+    { "adv": 39, "context": "浮空-重升龙" },
+    { "adv": 39, "context": "浮空-下重脚" },
     { "adv": 38, "context": "前重脚-旋风脚" },
     { "adv": 40, "context": "下重脚 (2HK)" },
     { "adv": 40, "context": "中驴踢" },
+    { "adv": 42, "context": "浮空-重驴踢" },
     { "adv": 47, "context": "下重脚确反 (2HK)" }
   ]
 };

@@ -20,5 +20,5 @@ python -m http.server 8000
 
 ---
 
-*Design by 天 // ℮*  
+*Design by 天*  
 *© 2026 emoboi.com*
