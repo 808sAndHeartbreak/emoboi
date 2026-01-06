@@ -1367,12 +1367,6 @@
                 <button onclick="closeCharModal()" class="text-zinc-500 hover:text-white text-3xl sm:text-2xl p-2 -m-2" title="关闭">&times;</button>
             </div>
             <div class="char-grid" id="charGrid"></div>
-            <div class="mt-6 p-4 bg-black/50 border border-zinc-800">
-                <p class="text-zinc-500 text-xs">
-                    <span class="text-green-500">●</span> 已有数据 &nbsp;&nbsp;
-                    <span class="text-zinc-600">●</span> 暂无数据 (可手动导入)
-                </p>
-            </div>
         </div>
     </div>
 
@@ -1676,8 +1670,8 @@
             ],
             // 角色图标映射
             CHAR_ICONS: {
-                "RYU": "🥋", "LUKE": "🥊", "KEN": "🔥", "CHUN-LI": "💃", "GUILE": "✈️", "KIMBERLY": "🎤",
-                "JURI": "🦋", "JAMIE": "🍸", "BLANKA": "⚡", "DHALSIM": "🧘", "E.HONDA": "🏯", "DEE JAY": "🎵",
+                "RYU": "🥋", "LUKE": "🥊", "KEN": "🔥", "CHUN-LI": "🦵", "GUILE": "✈️", "KIMBERLY": "🥷",
+                "JURI": "🦋", "JAMIE": "🍸", "BLANKA": "⚡", "DHALSIM": "🧘", "E.HONDA": "🤼", "DEE JAY": "🎵",
                 "MANON": "🩰", "MARISA": "🗿", "JP": "🎩", "ZANGIEF": "🐻", "LILY": "🪶", "CAMMY": "🐱",
                 "RASHID": "🌪️", "A.K.I.": "🐍", "ED": "👊", "GOUKI": "👹", "VEGA": "🦂", "TERRY": "🧢",
                 "MAI": "🌸", "ELENA": "🌺", "SAGAT": "🐯", "C.VIPER": "🕶️"
@@ -2353,6 +2347,24 @@
                 });
             });
 
+            // ========== 标记两步卡帧是否可交换顺序 ==========
+            // 检测每个两步卡帧方案，如果反向组合也存在，则标记为可交换
+            possiblePlans.forEach(plan => {
+                if (plan.killMove2) {
+                    // 检查是否存在反向组合（killMove2 → killMove1 → 同样的压制）
+                    const hasReverse = possiblePlans.some(otherPlan => 
+                        otherPlan.killMove2 &&
+                        otherPlan !== plan &&
+                        otherPlan.killMove.name === plan.killMove2.name &&
+                        otherPlan.killMove2.name === plan.killMove.name &&
+                        otherPlan.meatyMove.name === plan.meatyMove.name &&
+                        otherPlan.remain === plan.remain
+                    );
+                    // 标记是否可交换
+                    plan.isCommutative = hasReverse;
+                }
+            });
+
             // 按 finalBlock 降序，再按 finalHit 降序（投技方案排在普通方案之后）
             return possiblePlans.sort((a, b) => {
                 // 投技方案统一放后面
@@ -2475,9 +2487,6 @@
                          title="${hasData ? '点击选择' : '暂无数据'}">
                         <div class="char-icon">${getCharIcon(char)}</div>
                         <div class="char-name">${char}</div>
-                        <div class="text-[8px] ${hasData ? 'text-green-500' : 'text-zinc-600'} mt-1">
-                            ${hasData ? '数据' : '无'}
-                        </div>
                     </div>
                 `;
             }).join('');
@@ -2577,6 +2586,8 @@
             } else if (plan.killMove2) {
                 // 两步卡帧
                 const remain1 = adv - plan.killTotal;
+                const separator = plan.isCommutative ? '+' : '→';  // 可交换用+，有顺序限制用→
+                
                 // 安全跳时最后显示"安全跳"而不是招式名
                 const finalDisplay = safeJumpLabel 
                     ? `<div class="impact-text text-xl sm:text-2xl font-black ${safeJumpColor} leading-none">${safeJumpLabel}</div>`
@@ -2588,7 +2599,10 @@
                            <div class="impact-text text-xl sm:text-2xl font-black text-white leading-none">${plan.killMove.name}</div>
                            <div class="text-[9px] text-zinc-500">-${plan.killTotal}F</div>
                        </div>
-                       <div class="text-zinc-600 text-lg">→</div>
+                       <div class="text-center">
+                           <div class="text-zinc-600 text-lg">${separator}</div>
+                           <div class="text-[9px] text-yellow-500">${remain1}F</div>
+                       </div>
                        <div class="text-center min-w-[55px]">
                            <div class="impact-text text-xl sm:text-2xl font-black text-white leading-none">${plan.killMove2.name}</div>
                            <div class="text-[9px] text-zinc-500">-${plan.killTotal2}F</div>
@@ -2669,7 +2683,8 @@
             if (plan.isDirect) {
                 desc = `直接 ${plan.meatyMove.name}`;
             } else if (plan.killMove2) {
-                desc = `${plan.killMove.name} → ${plan.killMove2.name} → ${plan.meatyMove.name}`;
+                const separator = plan.isCommutative ? '+' : '→';
+                desc = `${plan.killMove.name} ${separator} ${plan.killMove2.name} → ${plan.meatyMove.name}`;
             } else {
                 desc = `${plan.killMove.name} → ${plan.meatyMove.name}`;
             }
@@ -2718,6 +2733,8 @@
                    </div>`;
             } else if (plan.killMove2) {
                 const remain1 = adv - plan.killTotal;
+                const separator = plan.isCommutative ? '+' : '→';
+                
                 stepsHtml = `<div class="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
                        <div class="text-center min-w-[60px]">
                            <div class="text-[9px] text-zinc-600 uppercase mb-1">卡帧①</div>
@@ -2725,7 +2742,7 @@
                            <div class="text-[10px] text-zinc-500 mt-1">-${plan.killTotal}F</div>
                        </div>
                        <div class="text-center">
-                           <div class="text-zinc-600 text-lg">→</div>
+                           <div class="text-zinc-600 text-lg">${separator}</div>
                            <div class="text-[9px] text-yellow-500">${remain1}F</div>
                        </div>
                        <div class="text-center min-w-[60px]">
@@ -2796,7 +2813,8 @@
             if (plan.isDirect) {
                 desc = `直接 ${plan.meatyMove.name}`;
             } else if (plan.killMove2) {
-                desc = `${plan.killMove.name} → ${plan.killMove2.name} → ${plan.meatyMove.name}`;
+                const separator = plan.isCommutative ? '+' : '→';
+                desc = `${plan.killMove.name} ${separator} ${plan.killMove2.name} → ${plan.meatyMove.name}`;
             } else {
                 desc = `${plan.killMove.name} → ${plan.meatyMove.name}`;
             }
@@ -3494,7 +3512,19 @@
                     if (remain < 2 || remain > 5) continue;
                     
                     // 生成卡帧描述
-                    const killDesc = plan.killMove2 ? `${plan.killMove.name} → ${plan.killMove2.name}` : plan.killMove.name;
+                    let killDesc;
+                    if (plan.killMove2) {
+                        // 如果可交换，排序后用 "+" 连接（避免重复）
+                        if (plan.isCommutative) {
+                            const names = [plan.killMove.name, plan.killMove2.name].sort();
+                            killDesc = names.join(' + ');
+                        } else {
+                            // 不可交换，保留顺序用 "→"
+                            killDesc = `${plan.killMove.name} → ${plan.killMove2.name}`;
+                        }
+                    } else {
+                        killDesc = plan.killMove.name;
+                    }
                     
                     // 避免同一帧数的重复卡帧方式
                     if (!remainPlans[remain].includes(killDesc)) {
@@ -3565,11 +3595,16 @@
                         ${item.contexts.map(ctx => `<span class="text-xs px-2.5 py-1 bg-zinc-700/80 text-zinc-200 font-bold">${escapeHtml(ctx)}</span>`).join('')}
                     </div>`;
                     
-                    // 多种卡帧方式用"或"连接，箭头用浅灰色
+                    // 多种卡帧方式用"或"连接，两步卡帧根据符号判断
                     const killDescsHtml = item.killDescs.map(desc => {
-                        if (desc.includes(' → ')) {
+                        if (desc.includes(' + ')) {
+                            // 可交换的两步卡帧用 "+" 连接
+                            const parts = desc.split(' + ');
+                            return parts.map(p => `<span class="text-white font-black text-lg">${p}</span>`).join('<span class="text-yellow-500 mx-1 font-bold">+</span>');
+                        } else if (desc.includes(' → ')) {
+                            // 有顺序限制的两步卡帧用 "→" 连接
                             const parts = desc.split(' → ');
-                            return parts.map(p => `<span class="text-white font-black text-lg">${p}</span>`).join('<span class="text-zinc-600 mx-1">→</span>');
+                            return parts.map(p => `<span class="text-white font-black text-lg">${p}</span>`).join('<span class="text-zinc-600 mx-1 font-bold">→</span>');
                         }
                         return `<span class="text-white font-black text-lg">${desc}</span>`;
                     }).join('<span class="text-zinc-500 mx-2">或</span>');
@@ -3591,9 +3626,14 @@
             if (withoutContext.length > 0) {
                 const noContextItems = withoutContext.map(item => {
                     const killDescsHtml = item.killDescs.map(desc => {
-                        if (desc.includes(' → ')) {
+                        if (desc.includes(' + ')) {
+                            // 可交换的两步卡帧用 "+"
+                            const parts = desc.split(' + ');
+                            return parts.map(p => `<span class="text-zinc-300 font-bold">${p}</span>`).join('<span class="text-yellow-600 mx-1 font-bold">+</span>');
+                        } else if (desc.includes(' → ')) {
+                            // 有顺序限制的两步卡帧用 "→"
                             const parts = desc.split(' → ');
-                            return parts.map(p => `<span class="text-zinc-300 font-bold">${p}</span>`).join('<span class="text-zinc-600 mx-1">→</span>');
+                            return parts.map(p => `<span class="text-zinc-300 font-bold">${p}</span>`).join('<span class="text-zinc-600 mx-1 font-bold">→</span>');
                         }
                         return `<span class="text-zinc-300 font-bold">${desc}</span>`;
                     }).join('<span class="text-zinc-500 mx-1">或</span>');
@@ -4284,6 +4324,9 @@
             
             // 方案A：一步卡帧
             for (const killMove of state.moveLibrary) {
+                // 检查是否被禁用用于卡帧
+                if (isMoveDisabled(killMove, 'kill', rules)) continue;
+                
                 let killTotal;
                 if (killMove.isDash) {
                     killTotal = killMove.dashFrames || 19;
@@ -4307,6 +4350,9 @@
             
             // 方案C：两步卡帧
             for (const killMove1 of state.moveLibrary) {
+                // 检查第一步是否被禁用用于卡帧
+                if (isMoveDisabled(killMove1, 'kill', rules)) continue;
+                
                 let killTotal1;
                 if (killMove1.isDash) {
                     killTotal1 = killMove1.dashFrames || 19;
@@ -4320,7 +4366,10 @@
                 if (killTotal1 >= neededKill) continue;
                 
                 for (const killMove2 of state.moveLibrary) {
-                    // 检查规则禁止
+                    // 检查第二步是否被禁用用于卡帧
+                    if (isMoveDisabled(killMove2, 'kill', rules)) continue;
+                    
+                    // 检查规则禁止组合
                     if (isComboForbidden(killMove1, killMove2, rules)) continue;
                     
                     let killTotal2;
@@ -4373,29 +4422,35 @@
                     
                     // 特殊情况：不需要卡帧，直接压制
                     if (neededKill === 0) {
-                        bestPlans.push({
-                            type: 'direct',
-                            remain: remain,
-                            meatyMove: targetMove,
-                            stolen: hitInfo.stolen,
-                            finalHit: (targetMove.hit || 0) + hitInfo.stolen,
-                            finalBlock: (targetMove.block || 0) + hitInfo.stolen,
-                            displayMeaty: targetMove.name
-                        });
+                        // 检查是否被禁用于直接压制
+                        if (!isMoveDisabled(targetMove, 'meaty_direct', rules)) {
+                            bestPlans.push({
+                                type: 'direct',
+                                remain: remain,
+                                meatyMove: targetMove,
+                                stolen: hitInfo.stolen,
+                                finalHit: (targetMove.hit || 0) + hitInfo.stolen,
+                                finalBlock: (targetMove.block || 0) + hitInfo.stolen,
+                                displayMeaty: targetMove.name
+                            });
+                        }
                         continue;
                     }
                     
                     // 尝试找到卡帧方案
                     const plan = findFrameKillPlan(adv, remain);
                     if (plan) {
-                        bestPlans.push({
-                            ...plan,
-                            meatyMove: targetMove,
-                            stolen: hitInfo.stolen,
-                            finalHit: (targetMove.hit || 0) + hitInfo.stolen,
-                            finalBlock: (targetMove.block || 0) + hitInfo.stolen,
-                            displayMeaty: targetMove.name
-                        });
+                        // 检查targetMove是否被禁用于卡帧后压制
+                        if (!isMoveDisabled(targetMove, 'meaty_after_kill', rules)) {
+                            bestPlans.push({
+                                ...plan,
+                                meatyMove: targetMove,
+                                stolen: hitInfo.stolen,
+                                finalHit: (targetMove.hit || 0) + hitInfo.stolen,
+                                finalBlock: (targetMove.block || 0) + hitInfo.stolen,
+                                displayMeaty: targetMove.name
+                            });
+                        }
                     }
                 }
             }
@@ -4423,6 +4478,7 @@
                     <span class="text-cyan-400 font-black text-xl">${plan.displayMeaty}</span>
                 </div>`;
             } else if (plan.type === 'double') {
+                const remain1 = plan.killTotal;  // 第一步后的剩余
                 stepsHtml = `<div class="flex items-center justify-center gap-2 flex-wrap">
                     <span class="text-white font-bold">${plan.killMove.name}</span>
                     <span class="text-zinc-600">(-${plan.killTotal}F)</span>
