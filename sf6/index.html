@@ -361,6 +361,16 @@
             transform: rotate(90deg);
         }
         
+        /* 期望后续箭头旋转 */
+        #expectDetails[open] .expect-arrow {
+            transform: rotate(90deg);
+        }
+        
+        /* 通用折叠箭头旋转 */
+        details[open] .collapse-arrow {
+            transform: rotate(90deg);
+        }
+        
         .tab-btn:hover:not(.active) {
             color: #aaa;
         }
@@ -721,6 +731,169 @@
         }
         .adv-input-group .adv-input::placeholder {
             color: #52525b;
+        }
+        
+        /* 模糊帧数滑动开关 */
+        .fuzzy-switch-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .fuzzy-switch-label {
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: white;
+            transition: all 0.2s;
+        }
+        .fuzzy-switch-label-inactive {
+            color: #52525b;
+        }
+        .fuzzy-switch {
+            width: 36px;
+            height: 20px;
+            background: #27272a;
+            border: 1px solid var(--theme-card-border);
+            border-radius: 10px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .fuzzy-switch-thumb {
+            width: 14px;
+            height: 14px;
+            background: var(--theme-secondary, #ff1493);
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .fuzzy-switch.active {
+            background: var(--theme-fuzzy, #f59e0b);
+            border-color: var(--theme-fuzzy, #f59e0b);
+        }
+        .fuzzy-switch.active .fuzzy-switch-thumb {
+            left: 18px;
+            background: white;
+        }
+        
+        /* 模糊帧数范围输入 */
+        .fuzzy-input-group {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--theme-card-border);
+            background: black;
+        }
+        .fuzzy-input-group .fuzzy-input {
+            flex: 1;
+            min-width: 0;
+            background: transparent;
+            padding: 1rem;
+            font-size: 2rem;
+            font-weight: 900;
+            text-align: center;
+            color: var(--theme-input-accent);
+            border: none;
+            outline: none;
+        }
+        .fuzzy-input-group .fuzzy-input::placeholder {
+            color: #52525b;
+        }
+        .fuzzy-input-group .fuzzy-separator {
+            color: #71717a;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 0 0.5rem;
+        }
+        
+        /* 模糊帧数预览结果 */
+        .fuzzy-preview {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--theme-card-border);
+        }
+        .fuzzy-preview-title {
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #71717a;
+            margin-bottom: 0.75rem;
+        }
+        .fuzzy-preview-item {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: #18181b;
+            border-left: 3px solid var(--theme-btn-primary);
+        }
+        .fuzzy-preview-item:last-child {
+            margin-bottom: 0;
+        }
+        .fuzzy-preview-label {
+            font-size: 0.625rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #71717a;
+            margin-bottom: 0.25rem;
+        }
+        .fuzzy-preview-plan {
+            font-weight: bold;
+            color: white;
+        }
+        .fuzzy-preview-avg {
+            font-size: 0.75rem;
+            color: #a1a1aa;
+            margin-top: 0.25rem;
+        }
+        .fuzzy-preview-detail {
+            font-size: 0.625rem;
+            color: #71717a;
+            margin-top: 0.25rem;
+        }
+        
+        /* 模糊场景卡片 */
+        .fuzzy-scenario-card {
+            border-left: 3px solid var(--theme-fuzzy, #f59e0b);
+        }
+        .fuzzy-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #f59e0b;
+            font-size: 0.625rem;
+            font-weight: bold;
+        }
+        .fuzzy-plan-card {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--theme-card-border);
+            padding: 0.75rem 1rem;
+        }
+        .fuzzy-plan-label {
+            font-size: 0.625rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: var(--theme-fuzzy, #f59e0b);
+            margin-bottom: 0.25rem;
+        }
+        .fuzzy-plan-desc {
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+        .fuzzy-plan-stats {
+            font-size: 0.75rem;
+            color: #a1a1aa;
+            display: flex;
+            gap: 1rem;
+        }
+        .fuzzy-plan-detail {
+            font-size: 0.625rem;
+            color: #71717a;
+            margin-top: 0.25rem;
         }
         
         /* iPhone 安全区域适配 */
@@ -1327,14 +1500,32 @@
             </div>
             <div class="space-y-8">
                 <div>
-                    <label class="block text-sm font-black uppercase mb-3 text-zinc-400">初始有利帧</label>
-                    <div class="adv-input-group">
+                    <div class="flex items-center justify-between mb-3">
+                        <label class="block text-sm font-black uppercase text-zinc-400">初始有利帧</label>
+                        <div class="fuzzy-switch-container" onclick="toggleFuzzyMode()" title="切换精确/模糊模式">
+                            <span class="fuzzy-switch-label" id="fuzzyLabelExact">🎯 精确</span>
+                            <div class="fuzzy-switch" id="fuzzySwitch">
+                                <div class="fuzzy-switch-thumb"></div>
+                            </div>
+                            <span class="fuzzy-switch-label fuzzy-switch-label-inactive" id="fuzzyLabelFuzzy">模糊 🎲</span>
+                        </div>
+                    </div>
+                    <!-- 精确模式输入 -->
+                    <div id="exactInputGroup" class="adv-input-group">
                         <button type="button" onclick="adjustAdv(-1)" class="adv-btn">−</button>
                         <input type="text" id="inputAdv" inputmode="numeric" pattern="[0-9]*" maxlength="2"
                             class="adv-input" placeholder="40" oninput="sanitizeAdvInput(); updateExpectOptions()">
                         <button type="button" onclick="adjustAdv(1)" class="adv-btn">+</button>
                     </div>
-                    <p class="text-xs text-zinc-500 mt-2">范围 1~99</p>
+                    <!-- 模糊模式输入 -->
+                    <div id="fuzzyInputGroup" class="fuzzy-input-group hidden">
+                        <input type="text" id="inputAdvMin" inputmode="numeric" pattern="[0-9]*" maxlength="2"
+                            class="fuzzy-input" placeholder="35" oninput="sanitizeFuzzyInput('inputAdvMin'); calculateFuzzyPreview()">
+                        <span class="fuzzy-separator">~</span>
+                        <input type="text" id="inputAdvMax" inputmode="numeric" pattern="[0-9]*" maxlength="2"
+                            class="fuzzy-input" placeholder="40" oninput="sanitizeFuzzyInput('inputAdvMax'); calculateFuzzyPreview()">
+                    </div>
+                    <p id="advHint" class="text-xs text-zinc-500 mt-2">范围 1~99</p>
                 </div>
                 <div>
                     <label class="block text-sm font-black uppercase mb-3 text-zinc-400">情境说明</label>
@@ -1343,8 +1534,9 @@
                 
                 <!-- 期望后续 - 进阶选项 -->
                 <details id="expectDetails" class="border bg-zinc-900/50" style="border-color: var(--theme-card-border);">
-                    <summary class="px-5 py-4 cursor-pointer text-zinc-400 hover:text-zinc-200 text-base font-bold transition-colors select-none">
-                        ▶ 期望后续 (进阶)
+                    <summary class="px-5 py-4 cursor-pointer text-zinc-400 hover:text-zinc-200 text-base font-bold transition-colors select-none flex items-center gap-2">
+                        <span class="text-zinc-500 text-xs expect-arrow transition-transform duration-200">▶</span>
+                        期望后续 (可选)
                     </summary>
                     <div class="p-5 border-t space-y-5" style="border-color: var(--theme-card-border);">
                         <!-- 模式选择 -->
@@ -1648,6 +1840,7 @@
     <script src="data/ryu.js"></script>
     <script src="data/blanka.js"></script>
     <script src="data/sagat.js"></script>
+    <script src="data/juri.js"></script>
 
     <script>
         // ==================== 配置常量 ====================
@@ -1661,7 +1854,7 @@
                 "MAI", "ELENA", "SAGAT", "C.VIPER"
             ],
             // 已有JSON数据的角色
-            CHARACTERS_WITH_DATA: ["RYU", "BLANKA", "SAGAT"],
+            CHARACTERS_WITH_DATA: ["RYU", "BLANKA", "SAGAT", "JURI"],
             // 安全跳所需帧数（大部分角色42F）
             SAFE_JUMP_FRAMES: {
                 "DEFAULT": 42,
@@ -1701,7 +1894,7 @@
             // 角色图标映射
             CHAR_ICONS: {
                 "RYU": "🥋", "LUKE": "🥊", "KEN": "🔥", "CHUN-LI": "🦵", "GUILE": "✈️", "KIMBERLY": "🥷",
-                "JURI": "🦋", "JAMIE": "🍸", "BLANKA": "⚡", "DHALSIM": "🧘", "E.HONDA": "🤼", "DEE JAY": "🎵",
+                "JURI": "🕷️", "JAMIE": "🍸", "BLANKA": "⚡", "DHALSIM": "🧘", "E.HONDA": "🤼", "DEE JAY": "🎵",
                 "MANON": "🩰", "MARISA": "🗿", "JP": "🎩", "ZANGIEF": "🐻", "LILY": "🪶", "CAMMY": "🐱",
                 "RASHID": "🌪️", "A.K.I.": "🐍", "ED": "👊", "GOUKI": "👹", "VEGA": "🦂", "TERRY": "🧢",
                 "MAI": "🌸", "ELENA": "🌺", "SAGAT": "🐯", "C.VIPER": "🕶️"
@@ -1756,6 +1949,18 @@
                     cardBg: "#0a0a08",       // 纯黑（体现黑色次色调）
                     cardBorder: "#2a2820",   // 暗灰边框
                     bgImage: "asset/sagat_ss01.jpg"
+                },
+                "JURI": {
+                    primary: "#9932cc",      // 深紫色（衣服主色）
+                    secondary: "#ff1493",    // 玫红色（文本高亮，背景飞溅效果）
+                    accent: "#00ced1",       // 青色（指甲、发饰点缀）
+                    modalTitle: "#da70d6",   // 亮紫/兰花紫
+                    btnPrimary: "#8b008b",   // 深玫红紫
+                    btnPrimaryHover: "#6a006a",
+                    inputAccent: "#ff69b4",  // 亮粉色
+                    cardBg: "#150a14",       // 深紫黑
+                    cardBorder: "#3d1a3d",   // 紫色边框
+                    bgImage: "asset/juri_ss01.jpg"
                 },
                 // 默认主题（用于无特定主题的角色）
                 "_DEFAULT": {
@@ -1861,6 +2066,7 @@
             root.style.setProperty('--theme-btn-primary', theme.btnPrimary);
             root.style.setProperty('--theme-btn-primary-hover', theme.btnPrimaryHover);
             root.style.setProperty('--theme-input-accent', theme.inputAccent);
+            root.style.setProperty('--theme-fuzzy', '#f59e0b');  // 模糊场景标签色（固定橙色）
             
             // 应用背景图
             const bgOverlay = document.getElementById('bgOverlay');
@@ -2961,6 +3167,143 @@
             renderNotes();
         }
         
+        // ========== 模糊场景渲染 ==========
+        function renderFuzzyScenario(group, cardIndex) {
+            const minAdv = group.advRange[0];
+            const maxAdv = group.advRange[1];
+            const result = calculateFuzzyBestPlans(minAdv, maxAdv);
+            const note = state.notes[group.idx];
+            const isPreset = !note.isUserAdded;
+            const deleteTitle = isPreset ? "此为预设场景，删除后可通过重置恢复" : "删除此用户场景";
+            
+            // 模糊标签
+            const fuzzyBadge = `<span class="fuzzy-badge" title="模糊帧数场景">🎲 模糊</span>`;
+            
+            // 判断是否展开
+            const isExpanded = state.expandedAdv === `fuzzy_${group.idx}`;
+            
+            // ========== 紧凑列表视图 ==========
+            if (!isExpanded) {
+                let bestPlanDesc = '';
+                if (result.bestByBlock) {
+                    const plan = result.bestByBlock;
+                    bestPlanDesc = plan.killDesc 
+                        ? `${plan.killDesc} → ${plan.meatyMove.name}`
+                        : `直接 ${plan.meatyMove.name}`;
+                } else {
+                    bestPlanDesc = '无符合条件的方案';
+                }
+                
+                return `
+                    <div class="trend-card py-3 px-4 cursor-pointer hover:bg-opacity-80 transition-all fuzzy-scenario-card" onclick="toggleAdvExpand('fuzzy_${group.idx}')" style="animation-delay: ${cardIndex * 0.02}s">
+                        <div class="flex items-center gap-4 flex-wrap">
+                            <span class="impact-text text-2xl font-black min-w-[90px]" style="color: var(--theme-fuzzy);">${minAdv}~${maxAdv}F</span>
+                            ${fuzzyBadge}
+                            <span class="text-zinc-500">→</span>
+                            <span class="text-white font-bold">${bestPlanDesc}</span>
+                            <div class="flex gap-1 ml-auto items-center">
+                                <span class="text-xs px-2 py-0.5 bg-zinc-700/50 text-zinc-300">${escapeHtml(group.context)}</span>
+                                <span class="text-zinc-600 text-xs ml-2">▼</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // ========== 展开的详细视图 ==========
+            const leftPanel = `
+                <div class="flex flex-col min-w-[160px] items-start lg:border-r border-zinc-800 pr-6">
+                    <div class="impact-text text-4xl sm:text-5xl leading-none frame-number" style="color: var(--theme-fuzzy);">${minAdv}~${maxAdv}F</div>
+                    <div class="mt-2">${fuzzyBadge}</div>
+                    <div class="flex flex-col gap-1 mt-3">
+                        <div class="flex items-center gap-2 group/ctx">
+                            <div class="text-sm font-black uppercase tracking-wide px-2 py-1 border-l-2 flex-1 ${isPreset ? 'context-tag-preset' : 'context-tag'}">${escapeHtml(group.context)}</div>
+                            <button onclick="event.stopPropagation(); removeNote(${group.idx})" class="text-zinc-600 hover:text-red-500 text-base sm:text-sm p-2 sm:p-1 sm:opacity-0 sm:group-hover/ctx:opacity-100 transition-all" title="${deleteTitle}">✕</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 无任何可用方案
+            if (!result.bestByBlock && !result.bestByHit) {
+                return `
+                    <div class="trend-card fuzzy-scenario-card">
+                        <div onclick="toggleAdvExpand('fuzzy_${group.idx}')" class="px-5 py-3 cursor-pointer text-zinc-300 hover:text-white text-sm font-bold transition-colors select-none flex items-center gap-2 border-b" style="border-color: var(--theme-card-border);">
+                            <span class="text-zinc-500 text-xs">▼</span>
+                            收起 ${minAdv}~${maxAdv}F 详细方案
+                        </div>
+                        <div class="p-6 flex flex-col lg:flex-row items-center gap-6">
+                            ${leftPanel}
+                            <div class="flex-1 text-zinc-600 font-bold italic">
+                                未找到符合条件的压制方案<br>
+                                <span class="text-xs text-zinc-700">约束: ①不被4帧抢 ②不挥空</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 渲染方案列表
+            let plansHtml = '';
+            const allValidPlans = result.allPlans || [];
+            
+            if (allValidPlans.length <= 2) {
+                // ≤2 个方案，直接显示全部
+                plansHtml = allValidPlans.map((plan, i) => renderFuzzyPlanCard(plan, i === 0 ? '推荐' : '')).join('');
+            } else {
+                // >2 个方案，显示两个最优
+                if (result.bestByBlock) {
+                    plansHtml += renderFuzzyPlanCard(result.bestByBlock, '🛡️ 防御最优');
+                }
+                if (result.bestByHit && result.bestByHit.key !== result.bestByBlock?.key) {
+                    plansHtml += renderFuzzyPlanCard(result.bestByHit, '⚔️ 命中最优');
+                }
+                plansHtml += `<div class="text-xs text-zinc-600 mt-2">共 ${allValidPlans.length} 个符合条件的方案</div>`;
+            }
+            
+            return `
+                <div class="trend-card fuzzy-scenario-card">
+                    <div onclick="toggleAdvExpand('fuzzy_${group.idx}')" class="px-5 py-3 cursor-pointer text-zinc-300 hover:text-white text-sm font-bold transition-colors select-none flex items-center gap-2 border-b" style="border-color: var(--theme-card-border);">
+                        <span class="text-zinc-500 text-xs">▼</span>
+                        收起 ${minAdv}~${maxAdv}F 详细方案
+                    </div>
+                    <div class="p-6 flex flex-col lg:flex-row gap-6">
+                        ${leftPanel}
+                        <div class="flex-1">
+                            <div class="space-y-3">
+                                ${plansHtml}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 渲染单个模糊方案卡片
+        function renderFuzzyPlanCard(plan, label) {
+            const safetyMargin = plan.startup - plan.maxStolen;
+            const planDesc = plan.killDesc 
+                ? `<span class="text-zinc-400">${plan.killDesc}</span> → <span class="text-white font-bold">${plan.meatyMove.name}</span>`
+                : `直接 <span class="text-white font-bold">${plan.meatyMove.name}</span>`;
+            
+            return `
+                <div class="fuzzy-plan-card">
+                    ${label ? `<div class="fuzzy-plan-label">${label}</div>` : ''}
+                    <div class="fuzzy-plan-content">
+                        <div class="fuzzy-plan-desc">${planDesc}</div>
+                        <div class="fuzzy-plan-stats">
+                            <span>平均 Block: <span class="${getFrameColorClass(plan.avgBlock)}">${plan.avgBlock >= 0 ? '+' : ''}${plan.avgBlock.toFixed(1)}F</span></span>
+                            <span>平均 Hit: <span class="${getFrameColorClass(plan.avgHit)}">${plan.avgHit >= 0 ? '+' : ''}${plan.avgHit.toFixed(1)}F</span></span>
+                        </div>
+                        <div class="fuzzy-plan-detail">
+                            偷帧: ${plan.minStolen}~${plan.maxStolen}F | 
+                            安全余量: <span class="${safetyMargin >= 4 ? 'text-green-400' : 'text-red-400'}">${safetyMargin}F</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
         function renderNotes() {
             const container = document.getElementById('noteListContainer');
             const searchInput = document.getElementById('solutionSearch');
@@ -2977,30 +3320,61 @@
             }
 
             // ========== 按 adv 分组，合并相同帧数的 context ==========
+            // 精确场景分组
             const advGroups = {};
+            // 模糊场景单独处理（不合并）
+            const fuzzyGroups = [];
+            
             state.notes.forEach((note, idx) => {
-                if (!advGroups[note.adv]) {
-                    advGroups[note.adv] = { adv: note.adv, contexts: [], indices: [] };
+                if (note.isFuzzy && note.advRange) {
+                    // 模糊场景
+                    fuzzyGroups.push({
+                        advRange: note.advRange,
+                        context: note.context,
+                        idx: idx,
+                        isFuzzy: true
+                    });
+                } else {
+                    // 精确场景
+                    if (!advGroups[note.adv]) {
+                        advGroups[note.adv] = { adv: note.adv, contexts: [], indices: [], isFuzzy: false };
+                    }
+                    advGroups[note.adv].contexts.push(note.context);
+                    advGroups[note.adv].indices.push(idx);
                 }
-                advGroups[note.adv].contexts.push(note.context);
-                advGroups[note.adv].indices.push(idx);
             });
             
-            // 按 adv 排序（根据排序方向）
-            let sortedGroups = Object.values(advGroups).sort((a, b) => {
-                return state.sortOrder === 'asc' ? a.adv - b.adv : b.adv - a.adv;
+            // 合并精确场景和模糊场景
+            let allGroups = [
+                ...Object.values(advGroups),
+                ...fuzzyGroups
+            ];
+            
+            // 按 adv 排序（模糊场景用范围的起始值排序）
+            allGroups.sort((a, b) => {
+                const advA = a.isFuzzy ? a.advRange[0] : a.adv;
+                const advB = b.isFuzzy ? b.advRange[0] : b.adv;
+                return state.sortOrder === 'asc' ? advA - advB : advB - advA;
             });
             
             // ========== 搜索过滤 ==========
             if (searchTerm) {
-                sortedGroups = sortedGroups.filter(group => {
-                    // 匹配帧数
-                    if (String(group.adv).includes(searchTerm)) return true;
-                    // 匹配任意 context
-                    if (group.contexts.some(ctx => ctx.toLowerCase().includes(searchTerm))) return true;
+                allGroups = allGroups.filter(group => {
+                    if (group.isFuzzy) {
+                        // 模糊场景：匹配范围或 context
+                        if (String(group.advRange[0]).includes(searchTerm) || 
+                            String(group.advRange[1]).includes(searchTerm)) return true;
+                        if (group.context.toLowerCase().includes(searchTerm)) return true;
+                    } else {
+                        // 精确场景：匹配帧数或 context
+                        if (String(group.adv).includes(searchTerm)) return true;
+                        if (group.contexts.some(ctx => ctx.toLowerCase().includes(searchTerm))) return true;
+                    }
                     return false;
                 });
             }
+            
+            let sortedGroups = allGroups;
             
             // 无匹配结果
             if (sortedGroups.length === 0) {
@@ -3021,6 +3395,11 @@
             }
 
             container.innerHTML = sortedGroups.map((group, cardIndex) => {
+                // ========== 模糊场景单独处理 ==========
+                if (group.isFuzzy) {
+                    return renderFuzzyScenario(group, cardIndex);
+                }
+                
                 const allPlans = calculateBestPlan(group.adv);
                 
                 // 分离投技方案和普通方案
@@ -3372,8 +3751,8 @@
                     const altContent = altNormalPlans.map(plan => renderAltPlan(plan, group.adv)).join('');
                     altHtml += `
                         <details class="mt-2">
-                            <summary class="text-[11px] text-zinc-600 cursor-pointer hover:text-zinc-400 transition-colors py-2">
-                                ▶ ${altNormalPlans.length} 个备选打击方案 (Block > 0)
+                            <summary class="text-[11px] text-zinc-600 cursor-pointer hover:text-zinc-400 transition-colors py-2 flex items-center gap-1">
+                                <span class="collapse-arrow transition-transform duration-200">▶</span> ${altNormalPlans.length} 个备选打击方案 (Block > 0)
                             </summary>
                             <div class="mt-2 bg-zinc-900/50 p-3 border border-zinc-800">
                                 ${altContent}
@@ -3388,8 +3767,8 @@
                     
                     altHtml += `
                         <details class="mt-2">
-                            <summary class="text-[11px] text-zinc-600 cursor-pointer hover:text-zinc-400 transition-colors py-2">
-                                ▶ ${altThrowPlans.length} 个其他投技路线
+                            <summary class="text-[11px] text-zinc-600 cursor-pointer hover:text-zinc-400 transition-colors py-2 flex items-center gap-1">
+                                <span class="collapse-arrow transition-transform duration-200">▶</span> ${altThrowPlans.length} 个其他投技路线
                             </summary>
                             <div class="mt-2 bg-zinc-900/50 p-3 border border-zinc-800">
                                 ${altThrowContent}
@@ -3542,16 +3921,13 @@
                     if (remain < 2 || remain > 5) continue;
                     
                     // 生成卡帧描述
+                    // 对于打投择，我们只关心"能卡出特定帧数"，不关心顺序
+                    // 所以统一用排序后的格式避免重复（如 "5LP → 66" 和 "5LP + 66" 视为相同）
                     let killDesc;
                     if (plan.killMove2) {
-                        // 如果可交换，排序后用 "+" 连接（避免重复）
-                        if (plan.isCommutative) {
-                            const names = [plan.killMove.name, plan.killMove2.name].sort();
-                            killDesc = names.join(' + ');
-                        } else {
-                            // 不可交换，保留顺序用 "→"
-                            killDesc = `${plan.killMove.name} → ${plan.killMove2.name}`;
-                        }
+                        // 两步卡帧统一排序后用 "+" 连接
+                        const names = [plan.killMove.name, plan.killMove2.name].sort();
+                        killDesc = names.join(' + ');
                     } else {
                         killDesc = plan.killMove.name;
                     }
@@ -3680,8 +4056,8 @@
                 
                 noContextHtml = `
                     <details class="mt-4">
-                        <summary class="cursor-pointer text-zinc-500 hover:text-zinc-300 text-xs font-bold transition-colors select-none py-2">
-                            ▶ 无对应场景的打投择卡帧方案 (${withoutContext.length})
+                        <summary class="cursor-pointer text-zinc-500 hover:text-zinc-300 text-xs font-bold transition-colors select-none py-2 flex items-center gap-1">
+                            <span class="collapse-arrow transition-transform duration-200">▶</span> 无对应场景的打投择卡帧方案 (${withoutContext.length})
                         </summary>
                         <div class="pt-2">
                             ${noContextItems}
@@ -4188,6 +4564,333 @@
             }).join('');
         }
         
+        // ==================== 模糊帧数功能 ====================
+        // 模糊模式开关状态
+        let fuzzyMode = false;
+        // 模糊模式计算结果
+        let fuzzyPreviewResult = null;
+        
+        // 切换模糊模式
+        function toggleFuzzyMode() {
+            fuzzyMode = !fuzzyMode;
+            const switchEl = document.getElementById('fuzzySwitch');
+            const labelExact = document.getElementById('fuzzyLabelExact');
+            const labelFuzzy = document.getElementById('fuzzyLabelFuzzy');
+            const exactGroup = document.getElementById('exactInputGroup');
+            const fuzzyGroup = document.getElementById('fuzzyInputGroup');
+            const hint = document.getElementById('advHint');
+            const expectDetails = document.getElementById('expectDetails');
+            
+            if (fuzzyMode) {
+                switchEl.classList.add('active');
+                labelExact.classList.add('fuzzy-switch-label-inactive');
+                labelFuzzy.classList.remove('fuzzy-switch-label-inactive');
+                exactGroup.classList.add('hidden');
+                fuzzyGroup.classList.remove('hidden');
+                hint.textContent = '输入帧数范围，系统将计算覆盖所有情况的最优方案';
+                // 隐藏期望后续（模糊模式不支持）
+                expectDetails.classList.add('hidden');
+                // 初始化计算
+                calculateFuzzyPreview();
+            } else {
+                switchEl.classList.remove('active');
+                labelExact.classList.remove('fuzzy-switch-label-inactive');
+                labelFuzzy.classList.add('fuzzy-switch-label-inactive');
+                exactGroup.classList.remove('hidden');
+                fuzzyGroup.classList.add('hidden');
+                hint.textContent = '范围 1~99';
+                // 显示期望后续
+                expectDetails.classList.remove('hidden');
+                // 移除模糊预览
+                removeFuzzyPreview();
+            }
+        }
+        
+        // 清理模糊输入
+        function sanitizeFuzzyInput(inputId) {
+            const input = document.getElementById(inputId);
+            let val = input.value.replace(/[^0-9]/g, '');
+            if (val.length > 2) val = val.slice(0, 2);
+            if (parseInt(val) > 99) val = '99';
+            if (val.length > 1 && val.startsWith('0')) val = val.replace(/^0+/, '');
+            input.value = val;
+        }
+        
+        // 移除模糊预览
+        function removeFuzzyPreview() {
+            const existing = document.getElementById('fuzzyPreviewContainer');
+            if (existing) existing.remove();
+            fuzzyPreviewResult = null;
+        }
+        
+        // 计算模糊帧数预览
+        function calculateFuzzyPreview() {
+            const minAdv = parseInt(document.getElementById('inputAdvMin').value);
+            const maxAdv = parseInt(document.getElementById('inputAdvMax').value);
+            
+            removeFuzzyPreview();
+            
+            if (!minAdv || !maxAdv || minAdv < 1 || maxAdv < 1 || minAdv > maxAdv) {
+                return;
+            }
+            
+            // 限制范围大小（避免计算量过大）
+            if (maxAdv - minAdv > 10) {
+                showFuzzyPreviewError('范围过大，请限制在10帧以内');
+                return;
+            }
+            
+            const result = calculateFuzzyBestPlans(minAdv, maxAdv);
+            fuzzyPreviewResult = result;
+            
+            if (!result.bestByBlock && !result.bestByHit) {
+                showFuzzyPreviewError('没有符合条件的方案<br><span class="text-xs text-zinc-500">约束: ①不被4帧抢(发生-偷帧≥4) ②不挥空</span>');
+                return;
+            }
+            
+            showFuzzyPreviewResult(result, minAdv, maxAdv);
+        }
+        
+        // 显示模糊预览错误
+        function showFuzzyPreviewError(message) {
+            const container = document.createElement('div');
+            container.id = 'fuzzyPreviewContainer';
+            container.className = 'fuzzy-preview';
+            container.innerHTML = `
+                <div class="text-red-400 font-bold text-sm">❌ ${message}</div>
+            `;
+            document.getElementById('fuzzyInputGroup').after(container);
+        }
+        
+        // 显示模糊预览结果
+        function showFuzzyPreviewResult(result, minAdv, maxAdv) {
+            const container = document.createElement('div');
+            container.id = 'fuzzyPreviewContainer';
+            container.className = 'fuzzy-preview';
+            
+            const allValidPlans = result.allPlans || [];
+            let html = `<div class="fuzzy-preview-title">推荐方案 (${minAdv}~${maxAdv}F) - 共${allValidPlans.length}个</div>`;
+            
+            if (allValidPlans.length <= 2) {
+                // ≤2 个方案，显示全部
+                allValidPlans.forEach((plan, i) => {
+                    html += renderFuzzyPreviewItem(plan, i === 0 ? '推荐' : '备选');
+                });
+            } else {
+                // >2 个方案，显示最优两个
+                if (result.bestByBlock) {
+                    html += renderFuzzyPreviewItem(result.bestByBlock, '🛡️ 防御最优');
+                }
+                if (result.bestByHit && result.bestByHit.key !== result.bestByBlock?.key) {
+                    html += renderFuzzyPreviewItem(result.bestByHit, '⚔️ 命中最优');
+                }
+            }
+            
+            container.innerHTML = html;
+            document.getElementById('fuzzyInputGroup').after(container);
+        }
+        
+        // 渲染单个模糊预览项
+        function renderFuzzyPreviewItem(plan, label) {
+            const safetyMargin = plan.startup - plan.maxStolen;
+            return `
+                <div class="fuzzy-preview-item">
+                    <div class="fuzzy-preview-label">${label}</div>
+                    <div class="fuzzy-preview-plan">${formatFuzzyPlan(plan)}</div>
+                    <div class="fuzzy-preview-avg">
+                        平均 Block: <span class="${getFrameColorClass(plan.avgBlock)}">${plan.avgBlock >= 0 ? '+' : ''}${plan.avgBlock.toFixed(1)}F</span>
+                        | Hit: <span class="${getFrameColorClass(plan.avgHit)}">${plan.avgHit >= 0 ? '+' : ''}${plan.avgHit.toFixed(1)}F</span>
+                    </div>
+                    <div class="fuzzy-preview-detail">
+                        偷帧: ${plan.minStolen}~${plan.maxStolen}F | 
+                        安全余量: <span class="${safetyMargin >= 4 ? 'text-green-400' : 'text-red-400'}">${safetyMargin}F</span> (发生${plan.startup}-偷${plan.maxStolen})
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 格式化模糊方案显示
+        function formatFuzzyPlan(plan) {
+            let result = '';
+            if (plan.killDesc) {
+                result += `<span class="text-zinc-400">${plan.killDesc} →</span> `;
+            }
+            result += plan.meatyMove.name;
+            return result;
+        }
+        
+        // ==================== 模糊帧数核心计算 ====================
+        // 计算模糊帧数的最优方案
+        // 约束1: 不被抢 - startup - stolen >= 4（对方最速4帧拳脚抢不到）
+        // 约束2: 不挥空 - 招式active结束前对方一定起身
+        function calculateFuzzyBestPlans(minAdv, maxAdv) {
+            const allPlans = [];
+            const rules = getAllRulesForCharacter(state.currentCharacter);
+            
+            // 获取可用的压制招式（有 active 且不是 dash/throw）
+            const meatyMoves = state.moveLibrary.filter(m => 
+                m.active && !m.isDash && !m.isThrow && !isMoveDisabled(m, 'meaty', rules)
+            );
+            
+            // 获取所有卡帧方案（包括不卡帧、单步卡帧、双步卡帧）
+            const killPlans = generateAllKillPlans(rules);
+            
+            for (const meatyMove of meatyMoves) {
+                const ranges = parseActiveRanges(meatyMove.active);
+                const startup = ranges[0].start;  // 招式发生帧
+                const lastActiveEnd = ranges[ranges.length - 1].end;  // active 最后一帧
+                
+                for (const killPlan of killPlans) {
+                    const killTotal = killPlan.total;
+                    
+                    // 计算剩余帧范围
+                    const minRemain = minAdv - killTotal;
+                    const maxRemain = maxAdv - killTotal;
+                    
+                    // 基础检查：剩余帧必须大于0
+                    if (minRemain <= 0) continue;
+                    
+                    // 约束3: 能命中 - 对方最早起身时 active 已开始
+                    // minRemain + 1 >= startup → minRemain >= startup - 1
+                    if (minRemain < startup - 1) continue;
+                    
+                    // 约束2: 不挥空 - 对方最晚起身时 active 还没结束
+                    // maxRemain + 1 <= lastActiveEnd → maxRemain <= lastActiveEnd - 1
+                    if (maxRemain > lastActiveEnd - 1) continue;
+                    
+                    // 约束1: 不被抢 - 对方起身最晚时 startup - stolen >= 4
+                    // maxStolen = maxRemain + 1 - startup
+                    // startup - maxStolen >= 4
+                    // startup - (maxRemain + 1 - startup) >= 4
+                    // 2 * startup - maxRemain - 1 >= 4
+                    // maxRemain <= 2 * startup - 5
+                    if (maxRemain > 2 * startup - 5) continue;
+                    
+                    // 所有约束通过，计算平均帧数
+                    let totalHit = 0, totalBlock = 0;
+                    
+                    for (let remain = minRemain; remain <= maxRemain; remain++) {
+                        const targetFrame = remain + 1;
+                        const hitInfo = checkActiveHit(meatyMove.active, targetFrame);
+                        
+                        if (hitInfo) {
+                            totalHit += (meatyMove.hit || 0) + hitInfo.stolen;
+                            totalBlock += (meatyMove.block || 0) + hitInfo.stolen;
+                        }
+                    }
+                    
+                    const count = maxRemain - minRemain + 1;
+                    const key = `${killPlan.desc}|${meatyMove.name}`;
+                    
+                    // 计算范围内的偷帧情况（用于显示）
+                    const minStolen = minRemain + 1 - startup;
+                    const maxStolen = maxRemain + 1 - startup;
+                    
+                    allPlans.push({
+                        key,
+                        killPlan,
+                        killDesc: killPlan.desc,
+                        meatyMove,
+                        avgHit: totalHit / count,
+                        avgBlock: totalBlock / count,
+                        minRemain,
+                        maxRemain,
+                        minStolen,
+                        maxStolen,
+                        startup
+                    });
+                }
+            }
+            
+            if (allPlans.length === 0) {
+                return { bestByBlock: null, bestByHit: null };
+            }
+            
+            // 按平均 Block 降序排序
+            const sortedByBlock = [...allPlans].sort((a, b) => b.avgBlock - a.avgBlock);
+            // 按平均 Hit 降序排序
+            const sortedByHit = [...allPlans].sort((a, b) => b.avgHit - a.avgHit);
+            
+            return {
+                bestByBlock: sortedByBlock[0],
+                bestByHit: sortedByHit[0],
+                allPlans
+            };
+        }
+        
+        // 生成所有可能的卡帧方案
+        function generateAllKillPlans(rules) {
+            const plans = [];
+            
+            // 不卡帧（直接压制）
+            plans.push({ total: 0, desc: '', moves: [] });
+            
+            // 单步卡帧
+            for (const killMove of state.moveLibrary) {
+                if (isMoveDisabled(killMove, 'kill', rules)) continue;
+                
+                let killTotal;
+                if (killMove.isDash) {
+                    killTotal = killMove.dashFrames || 19;
+                } else if (killMove.active) {
+                    const lastActive = getLastActiveFrame(killMove.active);
+                    killTotal = lastActive + killMove.recovery;
+                } else {
+                    continue;
+                }
+                
+                plans.push({ 
+                    total: killTotal, 
+                    desc: killMove.name, 
+                    moves: [killMove] 
+                });
+            }
+            
+            // 双步卡帧
+            for (const killMove1 of state.moveLibrary) {
+                if (isMoveDisabled(killMove1, 'kill', rules)) continue;
+                
+                let killTotal1;
+                if (killMove1.isDash) {
+                    killTotal1 = killMove1.dashFrames || 19;
+                } else if (killMove1.active) {
+                    killTotal1 = getLastActiveFrame(killMove1.active) + killMove1.recovery;
+                } else {
+                    continue;
+                }
+                
+                for (const killMove2 of state.moveLibrary) {
+                    if (isMoveDisabled(killMove2, 'kill', rules)) continue;
+                    if (isComboForbidden(killMove1, killMove2, rules)) continue;
+                    
+                    let killTotal2;
+                    if (killMove2.isDash) {
+                        killTotal2 = killMove2.dashFrames || 19;
+                    } else if (killMove2.active) {
+                        killTotal2 = getLastActiveFrame(killMove2.active) + killMove2.recovery;
+                    } else {
+                        continue;
+                    }
+                    
+                    const total = killTotal1 + killTotal2;
+                    // 避免重复（A+B 和 B+A 只保留一个）
+                    const names = [killMove1.name, killMove2.name].sort();
+                    const desc = `${names[0]} + ${names[1]}`;
+                    
+                    // 检查是否已存在相同方案
+                    if (!plans.some(p => p.desc === desc)) {
+                        plans.push({
+                            total,
+                            desc,
+                            moves: [killMove1, killMove2]
+                        });
+                    }
+                }
+            }
+            
+            return plans;
+        }
+        
         // ==================== 期望后续功能 ====================
         // 当前期望模式：'remain' 或 'move'
         let expectMode = 'remain';
@@ -4557,6 +5260,11 @@
             document.getElementById('noteModal').classList.add('hidden');
             // 清理状态
             currentExpectPlan = null;
+            // 重置模糊模式
+            if (fuzzyMode) {
+                toggleFuzzyMode();
+            }
+            removeFuzzyPreview();
         }
 
         function switchTab(tab) {
@@ -4592,8 +5300,61 @@
         }
 
         function saveNote() {
-            const adv = parseInt(document.getElementById('inputAdv').value);
             const ctx = document.getElementById('inputContext').value.trim();
+            
+            // 模糊模式处理
+            if (fuzzyMode) {
+                const minAdv = parseInt(document.getElementById('inputAdvMin').value);
+                const maxAdv = parseInt(document.getElementById('inputAdvMax').value);
+                
+                if (!minAdv || !maxAdv || minAdv < 1 || maxAdv < 1) {
+                    alert('请输入有效的帧数范围 (1~99)');
+                    return;
+                }
+                
+                if (minAdv > maxAdv) {
+                    alert('起始帧数不能大于结束帧数');
+                    return;
+                }
+                
+                if (maxAdv - minAdv > 10) {
+                    alert('帧数范围不能超过10帧');
+                    return;
+                }
+                
+                if (!fuzzyPreviewResult || (!fuzzyPreviewResult.bestByBlock && !fuzzyPreviewResult.bestByHit)) {
+                    alert('没有找到能覆盖整个范围的方案，请调整帧数范围');
+                    return;
+                }
+                
+                // 添加范围内的所有场景
+                const contextPrefix = ctx || `模糊场景 ${minAdv}~${maxAdv}F`;
+                for (let adv = minAdv; adv <= maxAdv; adv++) {
+                    // 检查是否已存在相同帧数的场景
+                    const exists = state.notes.some(n => n.adv === adv && n.context === contextPrefix);
+                    if (!exists) {
+                        state.notes.push({ 
+                            adv, 
+                            context: contextPrefix, 
+                            isUserAdded: true,
+                            isFuzzy: true,  // 标记为模糊场景
+                            fuzzyRange: { min: minAdv, max: maxAdv }
+                        });
+                    }
+                }
+                
+                saveScenarios(state.currentCharacter, state.notes);
+                document.getElementById('inputAdvMin').value = '';
+                document.getElementById('inputAdvMax').value = '';
+                removeFuzzyPreview();
+                closeModal();
+                renderNotes();
+                showToast(`已添加 ${minAdv}~${maxAdv}F 模糊场景`);
+                return;
+            }
+            
+            // 精确模式处理
+            const adv = parseInt(document.getElementById('inputAdv').value);
             
             if (!adv || adv < 1 || adv > 99) {
                 alert('请输入有效的有利帧数 (1~99)');
