@@ -346,8 +346,12 @@
                 top: 1rem;
             }
             .collage-img {
-                opacity: 0.2;
-                transform: scale(0.5) !important;
+                opacity: 0.15 !important;
+                transform: scale(0.4) !important;
+            }
+            /* 移动端隐藏部分图片，避免过于拥挤 */
+            .collage-img:nth-child(n+18) {
+                display: none;
             }
         }
 
@@ -666,7 +670,7 @@
     <!-- 导航栏 -->
     <nav class="fixed top-0 left-0 w-full z-40 px-5 md:px-8 flex justify-between items-center backdrop-blur-md" style="height: 52px; background: linear-gradient(180deg, rgba(10,10,10,0.98) 0%, rgba(5,5,5,0.95) 100%); border-bottom: 1px solid rgba(188,254,45,0.15); box-shadow: 0 1px 20px rgba(0,0,0,0.5), 0 1px 0 rgba(188,254,45,0.08);">
         <div class="flex items-center gap-2 md:gap-3">
-            <img src="asset/Ecco2k-E.jpg" alt="E" class="w-7 h-7 md:w-8 md:h-8 object-contain">
+            <img src="asset/logo-e.jpg" alt="E" class="w-7 h-7 md:w-8 md:h-8 object-contain">
             <span class="font-black tracking-tighter text-base md:text-lg">EMOBOI</span>
         </div>
         <button id="menu-btn" class="p-2.5 border border-zinc-800 hover:bg-white hover:text-black transition-all">
@@ -708,55 +712,123 @@
         EMO<br>BOI
     </div>
 
-    <!-- ========== 拼贴装饰图片 (12张，优化布局) ========== -->
+    <!-- ========== 拼贴装饰图片 (30张，优化布局) ========== -->
     
     <!-- 上方偏右 - 哥特吊灯横幅 -->
     <img src="asset/goth-banner.jpg" alt="goth-banner" class="collage-img" loading="lazy"
-         style="top: 56px; right: 12%; width: 320px; transform: rotate(1deg); opacity: 0.4;">
+         style="top: 56px; right: 12%; width: 320px; transform: rotate(1deg); opacity: 0.5;">
+    
+    <!-- 左上角 - 银时 -->
+    <img src="asset/gintoki.jpg" alt="gintoki" class="collage-img" loading="lazy"
+         style="top: 18%; left: 8%; width: 105px; transform: rotate(-10deg); opacity: 0.42; filter: invert(1);">
     
     <!-- 右侧中间 - 哥特猫 -->
     <img src="asset/goth-cat.jpg" alt="goth-cat" class="collage-img invert" loading="lazy"
-         style="top: 45%; right: 2%; width: 100px; transform: rotate(-8deg); opacity: 0.42;">
+         style="top: 45%; right: 2%; width: 100px; transform: rotate(-8deg); opacity: 0.52;">
     
     <!-- 中上偏左 - 眼中人 -->
     <img src="asset/eye-soul.jpg" alt="eye-soul" class="collage-img" loading="lazy"
-         style="top: 12%; left: 24%; width: 95px; transform: rotate(-5deg); opacity: 0.3; filter: invert(1);">
+         style="top: 12%; left: 24%; width: 95px; transform: rotate(-5deg); opacity: 0.4; filter: invert(1);">
+    
+    <!-- 右上角 - Misa翅膀 -->
+    <img src="asset/misa-wings.png" alt="misa-wings" class="collage-img" loading="lazy"
+         style="top: 15%; right: 5%; width: 115px; transform: rotate(7deg); opacity: 0.45; filter: invert(1);">
     
     <!-- 右下角 - 故障夜神月 -->
     <img src="asset/drained-yagami.jpg" alt="drained-yagami" class="collage-img" loading="lazy"
-         style="bottom: 4%; right: 6%; width: 130px; transform: rotate(6deg); opacity: 0.5;">
+         style="bottom: 4%; right: 6%; width: 130px; transform: rotate(6deg); opacity: 0.6;">
     
     <!-- 左侧中间 - L头发 -->
     <img src="asset/L-hair.jpg" alt="L-hair" class="collage-img" loading="lazy"
-         style="top: 38%; left: 2%; width: 85px; transform: rotate(-12deg); opacity: 0.35; filter: invert(1);">
+         style="top: 38%; left: 2%; width: 85px; transform: rotate(-12deg); opacity: 0.45; filter: invert(1);">
+    
+    <!-- 左中区域 - L和Misa咖啡厅 -->
+    <img src="asset/L-misa-cafe.jpg" alt="l-misa-cafe" class="collage-img" loading="lazy"
+         style="top: 55%; left: 12%; width: 125px; transform: rotate(-5deg); opacity: 0.4; filter: invert(1);">
     
     <!-- 中心偏左 - 我爱罗愛字 -->
     <img src="asset/gaara-ai.jpg" alt="gaara-ai" class="collage-img" loading="lazy"
-         style="top: 48%; left: 38%; width: 100px; transform: rotate(18deg); opacity: 0.28; filter: invert(1);">
+         style="top: 48%; left: 38%; width: 100px; transform: rotate(18deg); opacity: 0.38; filter: invert(1);">
+    
+    <!-- 中上区域 - 骷髅女孩 -->
+    <img src="asset/skeleton-girl.jpg" alt="skeleton-girl" class="collage-img" loading="lazy"
+         style="top: 28%; left: 52%; width: 140px; transform: rotate(-2deg); opacity: 0.35; filter: invert(1);">
     
     <!-- 右上区域 - 小猫剪影 -->
     <img src="asset/kitten.jpg" alt="kitten" class="collage-img" loading="lazy"
-         style="top: 25%; right: 40%; width: 110px; transform: rotate(-8deg); opacity: 0.32; filter: invert(1);">
+         style="top: 25%; right: 40%; width: 110px; transform: rotate(-8deg); opacity: 0.42; filter: invert(1);">
     
     <!-- 中下偏左 - 双猫 -->
     <img src="asset/twin-cats.jpg" alt="twin-cats" class="collage-img" loading="lazy"
-         style="bottom: 30%; left: 26%; width: 90px; transform: rotate(3deg); opacity: 0.28; filter: invert(1);">
+         style="bottom: 30%; left: 26%; width: 90px; transform: rotate(3deg); opacity: 0.38; filter: invert(1);">
+    
+    <!-- 中下区域 - 寄生兽 -->
+    <img src="asset/parasyte.jpg" alt="parasyte" class="collage-img" loading="lazy"
+         style="bottom: 40%; left: 45%; width: 135px; transform: rotate(5deg); opacity: 0.4; filter: invert(1);">
     
     <!-- 中下偏右 - 祈祷男孩 -->
     <img src="asset/drained-pray.jpg" alt="drained-pray" class="collage-img" loading="lazy"
-         style="bottom: 26%; right: 20%; width: 120px; transform: rotate(-3deg); opacity: 0.38;">
+         style="bottom: 26%; right: 20%; width: 120px; transform: rotate(-3deg); opacity: 0.48;">
     
     <!-- 右上区域偏下 - 夜神月 -->
     <img src="asset/light-yagami.jpg" alt="light-yagami" class="collage-img" loading="lazy"
-         style="top: 36%; right: 18%; width: 150px; transform: rotate(4deg); opacity: 0.45;">
+         style="top: 36%; right: 18%; width: 150px; transform: rotate(4deg); opacity: 0.55;">
     
     <!-- 左下角 - Lil Peep -->
     <img src="asset/lil-peep.jpg" alt="lil-peep" class="collage-img" loading="lazy"
-         style="bottom: 8%; left: 2%; width: 100px; transform: rotate(-6deg); opacity: 0.55; filter: grayscale(100%) contrast(1.3);">
+         style="bottom: 8%; left: 2%; width: 100px; transform: rotate(-6deg); opacity: 0.65; filter: grayscale(100%) contrast(1.3);">
     
     <!-- 中心偏右 - 故障天使 -->
     <img src="asset/glitch-angel.jpg" alt="glitch-angel" class="collage-img" loading="lazy"
-         style="bottom: 20%; right: 30%; width: 180px; transform: rotate(3deg); opacity: 0.55;">
+         style="bottom: 20%; right: 30%; width: 180px; transform: rotate(3deg); opacity: 0.65;">
+    
+    <!-- 左上中区域 - Misa条纹 -->
+    <img src="asset/misa-striped.jpg" alt="misa-striped" class="collage-img" loading="lazy"
+         style="top: 22%; left: 15%; width: 95px; transform: rotate(12deg); opacity: 0.4; filter: invert(1);">
+    
+    <!-- 右下中区域 - 像素天使 -->
+    <img src="asset/pixelangel.jpg" alt="pixel-angel" class="collage-img" loading="lazy"
+         style="bottom: 12%; right: 38%; width: 160px; transform: rotate(-4deg); opacity: 0.5;">
+    
+    <!-- 中右区域 - 故障坐着的女孩 -->
+    <img src="asset/glitchsittinggirl.jpg" alt="glitch-girl-sitting" class="collage-img" loading="lazy"
+         style="top: 42%; right: 28%; width: 145px; transform: rotate(2deg); opacity: 0.45; filter: invert(1);">
+    
+    <!-- 第一导航项中间空白 - Misa房间 -->
+    <img src="asset/misa-room.jpg" alt="misa-room" class="collage-img" loading="lazy"
+         style="top: 32%; left: 50%; width: 140px; transform: rotate(-6deg); opacity: 0.35; filter: invert(1);">
+    
+    <!-- 第二导航项右侧空白 - 日语拼贴 -->
+    <img src="asset/nihongo-collage.jpg" alt="nihongo-collage" class="collage-img" loading="lazy"
+         style="top: 47%; right: 35%; width: 155px; transform: rotate(8deg); opacity: 0.32; filter: invert(1);">
+    
+    <!-- 第三导航项中间空白 - L穿I AM MUSIC -->
+    <img src="asset/L-iammusic.jpg" alt="l-iammusic" class="collage-img" loading="lazy"
+         style="top: 62%; left: 48%; width: 130px; transform: rotate(5deg); opacity: 0.38; filter: invert(1);">
+    
+    <!-- 第四导航项左侧空白 - 故障头部 -->
+    <img src="asset/errorhead.jpg" alt="errorhead" class="collage-img" loading="lazy"
+         style="top: 77%; left: 12%; width: 120px; transform: rotate(-9deg); opacity: 0.4; filter: invert(1);">
+    
+    <!-- 第四导航项中间空白 - Kanye和Ryuk -->
+    <img src="asset/kanye&Ryuk.jpg" alt="kanye-ryuk" class="collage-img" loading="lazy"
+         style="top: 77%; left: 52%; width: 165px; transform: rotate(3deg); opacity: 0.42; filter: invert(1);">
+    
+    <!-- 右上中区域 - 故障头晕女孩 -->
+    <img src="asset/dizzygirl.jpg" alt="dizzygirl" class="collage-img" loading="lazy"
+         style="top: 20%; right: 25%; width: 135px; transform: rotate(-7deg); opacity: 0.4; filter: invert(1);">
+    
+    <!-- 左下中区域 - 故障小猫 -->
+    <img src="asset/drained-kitten.jpg" alt="drained-kitten" class="collage-img" loading="lazy"
+         style="bottom: 15%; left: 18%; width: 110px; transform: rotate(10deg); opacity: 0.4; filter: invert(1);">
+    
+    <!-- 中上右区域 - 朋克男孩故障 -->
+    <img src="asset/punkboyglitch.jpg" alt="punk-boy-glitch" class="collage-img" loading="lazy"
+         style="top: 30%; right: 50%; width: 150px; transform: rotate(-5deg); opacity: 0.35; filter: invert(1);">
+    
+    <!-- 中下右区域 - 摇滚男孩 -->
+    <img src="asset/rockstarboy.jpg" alt="rockstar-boy" class="collage-img" loading="lazy"
+         style="bottom: 35%; right: 45%; width: 145px; transform: rotate(7deg); opacity: 0.38; filter: invert(1);">
 
     <!-- ==================== HERO SECTION ==================== -->
     <section id="hero" class="relative h-screen flex flex-col items-center justify-center px-6">
