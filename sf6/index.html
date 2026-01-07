@@ -1554,6 +1554,12 @@
                     <span id="sortOrderIcon">↑</span>
                     <span id="sortOrderText" class="hidden sm:inline">帧数</span>
                 </button>
+                <button onclick="toggleAllDetails()" id="toggleAllDetailsBtn" 
+                    class="sort-btn px-4 py-3 border transition-all flex items-center gap-2 text-sm font-bold"
+                    title="展开所有详情">
+                    <span id="toggleAllIcon">▼</span>
+                    <span id="toggleAllText" class="hidden sm:inline">展开</span>
+                </button>
             </div>
             <div id="noteListContainer" class="grid grid-cols-1 gap-6"></div>
         </div>
@@ -2119,8 +2125,10 @@
             sortOrder: 'asc',
             // 角色专属规则 { charName: [rules] }
             characterRules: {},
-            // 当前展开的有利帧（null 表示全部收起）
-            expandedAdv: null
+            // 当前展开的有利帧（Set，支持多个同时展开）
+            expandedAdvSet: new Set(),
+            // 全局展开详情开关
+            allDetailsExpanded: false
         };
 
         // ==================== 工具函数 ====================
@@ -2795,6 +2803,11 @@
             
             state.currentCharacter = char;
             
+            // 清空展开状态
+            state.expandedAdvSet.clear();
+            state.allDetailsExpanded = false;
+            updateToggleAllBtn();
+            
             // 保存当前角色选择到 localStorage
             saveCurrentCharacter(char);
             
@@ -3299,14 +3312,80 @@
             return state.favorites[`${state.currentCharacter}:${adv}:${planKey}`] === true;
         }
         
-        // 切换有利帧展开/收起
+        // 切换有利帧展开/收起（支持多项同时展开）
         function toggleAdvExpand(adv) {
-            if (state.expandedAdv === adv) {
-                state.expandedAdv = null;  // 收起
+            if (state.expandedAdvSet.has(adv)) {
+                state.expandedAdvSet.delete(adv);  // 收起
+                // 如果有收起的，更新全局状态
+                if (state.allDetailsExpanded) {
+                    state.allDetailsExpanded = false;
+                    updateToggleAllBtn();
+                }
             } else {
-                state.expandedAdv = adv;   // 展开
+                state.expandedAdvSet.add(adv);   // 展开
             }
             renderNotes();
+        }
+        
+        // 切换全部展开/收起
+        function toggleAllDetails() {
+            state.allDetailsExpanded = !state.allDetailsExpanded;
+            if (state.allDetailsExpanded) {
+                // 收集当前所有可见的场景adv
+                const searchInput = document.getElementById('solutionSearch');
+                const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
+                
+                state.notes.forEach((note, idx) => {
+                    if (note.isFuzzy && note.advRange) {
+                        const fuzzyKey = `fuzzy_${idx}`;
+                        // 检查是否符合搜索条件
+                        if (!searchTerm || matchesFuzzySearch(note, searchTerm)) {
+                            state.expandedAdvSet.add(fuzzyKey);
+                        }
+                    } else {
+                        // 检查是否符合搜索条件
+                        if (!searchTerm || matchesExactSearch(note, searchTerm)) {
+                            state.expandedAdvSet.add(note.adv);
+                        }
+                    }
+                });
+            } else {
+                state.expandedAdvSet.clear();
+            }
+            updateToggleAllBtn();
+            renderNotes();
+        }
+        
+        // 检查模糊场景是否匹配搜索
+        function matchesFuzzySearch(note, searchTerm) {
+            const advStr = `${note.advRange[0]}-${note.advRange[1]}`;
+            return advStr.includes(searchTerm) || 
+                   (note.context && note.context.toLowerCase().includes(searchTerm));
+        }
+        
+        // 检查精确场景是否匹配搜索
+        function matchesExactSearch(note, searchTerm) {
+            const advStr = String(note.adv);
+            return advStr.includes(searchTerm) || 
+                   (note.context && note.context.toLowerCase().includes(searchTerm));
+        }
+        
+        // 更新全局展开按钮状态
+        function updateToggleAllBtn() {
+            const btn = document.getElementById('toggleAllDetailsBtn');
+            const icon = document.getElementById('toggleAllIcon');
+            const text = document.getElementById('toggleAllText');
+            if (btn && icon && text) {
+                if (state.allDetailsExpanded) {
+                    icon.textContent = '▲';
+                    text.textContent = '收起';
+                    btn.title = '收起所有详情';
+                } else {
+                    icon.textContent = '▼';
+                    text.textContent = '展开';
+                    btn.title = '展开所有详情';
+                }
+            }
         }
         
         // ========== 模糊场景渲染 ==========
@@ -3322,7 +3401,7 @@
             const fuzzyBadge = `<span class="fuzzy-badge" title="模糊帧数场景">🎲 模糊</span>`;
             
             // 判断是否展开
-            const isExpanded = state.expandedAdv === `fuzzy_${group.idx}`;
+            const isExpanded = state.expandedAdvSet.has(`fuzzy_${group.idx}`);
             
             // ========== 紧凑列表视图 ==========
             if (!isExpanded) {
@@ -3567,7 +3646,7 @@
                 }
                 
                 // 判断是否展开
-                const isExpanded = state.expandedAdv === group.adv;
+                const isExpanded = state.expandedAdvSet.has(group.adv);
                 
                 // ========== 紧凑列表视图 ==========
                 if (!isExpanded) {
