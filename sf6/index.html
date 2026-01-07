@@ -711,11 +711,70 @@
             border-color: var(--theme-secondary);
         }
         
-        /* 预设场景标签样式 - 稍微暗淡一些 */
+        /* 预设场景标签样式 - 提高可见度 */
         .context-tag-preset {
-            color: #a0a0a0;
-            background: color-mix(in srgb, var(--theme-secondary) 8%, transparent);
-            border-color: #505060;
+            color: #d0d0d0;
+            background: color-mix(in srgb, var(--theme-secondary) 12%, transparent);
+            border-color: #606070;
+        }
+        
+        /* 展开状态的场景标签 */
+        .expanded-context-tag {
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        @media (max-width: 640px) {
+            .expanded-context-tag {
+                max-width: 150px;
+            }
+        }
+        
+        /* 折叠状态的场景标签 - 高可见度 */
+        .compact-context-tag {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            background: color-mix(in srgb, var(--theme-primary) 25%, transparent);
+            border: 1px solid color-mix(in srgb, var(--theme-primary) 50%, transparent);
+            color: var(--theme-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        /* 移动端场景标签优化 */
+        @media (max-width: 480px) {
+            .compact-context-tag {
+                font-size: 10px;
+                padding: 2px 6px;
+                max-width: 80px;
+            }
+        }
+        
+        /* 折叠状态方案描述 - 移动端截断 */
+        .compact-plan-desc {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        @media (max-width: 640px) {
+            .compact-plan-desc {
+                max-width: 150px;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .compact-plan-desc {
+                max-width: 100px;
+            }
         }
         
         /* 安全跳标签 - 斜切菱形风格 */
@@ -1546,8 +1605,12 @@
             <div class="mt-8 p-4 bg-zinc-900/50 border border-zinc-800/50">
                 <div class="flex justify-between items-center mb-3">
                     <h4 class="text-sm font-bold text-zinc-400 uppercase tracking-widest">过滤规则</h4>
-                    <button onclick="openRuleModal()" class="text-[10px] px-3 py-1.5 bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-all font-bold">+ 添加规则</button>
+                    <div class="flex gap-2">
+                        <button onclick="clearAllRules()" class="text-[10px] px-3 py-1.5 bg-zinc-800 text-zinc-500 hover:text-red-400 hover:bg-zinc-700 transition-all font-bold">清除全部</button>
+                        <button onclick="openRuleModal()" class="text-[10px] px-3 py-1.5 bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-all font-bold">+ 添加规则</button>
+                    </div>
                 </div>
+                <p class="text-[10px] text-zinc-600 mb-2">*全局规则不可删除 · 角色规则可单独删除</p>
                 <div id="rulesContainer" class="space-y-1 text-xs"></div>
             </div>
         </div>
@@ -2043,7 +2106,7 @@
 
         // ==================== 应用状态 ====================
         const state = {
-            currentCharacter: "RYU",
+            currentCharacter: "JURI",
             moveLibrary: [],
             notes: [],
             // 角色数据缓存：{ moves: [], scenarios: [] }
@@ -2200,9 +2263,9 @@
         
         function loadCurrentCharacter() {
             try {
-                return localStorage.getItem(getGlobalStorageKey('currentCharacter')) || 'RYU';
+                return localStorage.getItem(getGlobalStorageKey('currentCharacter')) || 'JURI';
             } catch (e) {
-                return 'RYU';
+                return 'JURI';
             }
         }
 
@@ -3275,15 +3338,13 @@
                 
                 return `
                     <div class="trend-card py-3 px-4 cursor-pointer hover:bg-opacity-80 transition-all fuzzy-scenario-card" onclick="toggleAdvExpand('fuzzy_${group.idx}')" style="animation-delay: ${cardIndex * 0.02}s">
-                        <div class="flex items-center gap-4 flex-wrap">
-                            <span class="impact-text text-2xl font-black min-w-[90px]" style="color: var(--theme-fuzzy);">${minAdv}~${maxAdv}F</span>
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <span class="impact-text text-xl sm:text-2xl font-black min-w-[80px] sm:min-w-[90px] flex-shrink-0" style="color: var(--theme-fuzzy);">${minAdv}~${maxAdv}F</span>
+                            <span class="compact-context-tag">${escapeHtml(group.context)}</span>
                             ${fuzzyBadge}
-                            <span class="text-zinc-500">→</span>
-                            <span class="text-white font-bold">${bestPlanDesc}</span>
-                            <div class="flex gap-1 ml-auto items-center">
-                                <span class="text-xs px-2 py-0.5 bg-zinc-700/50 text-zinc-300">${escapeHtml(group.context)}</span>
-                                <span class="text-zinc-600 text-xs ml-2">▼</span>
-                            </div>
+                            <span class="text-zinc-600 mx-1 flex-shrink-0">→</span>
+                            <span class="text-white font-bold compact-plan-desc flex-1 min-w-0">${bestPlanDesc}</span>
+                            <span class="text-zinc-600 text-xs ml-2 flex-shrink-0">▼</span>
                         </div>
                     </div>
                 `;
@@ -3291,13 +3352,16 @@
             
             // ========== 展开的详细视图 ==========
             const leftPanel = `
-                <div class="flex flex-col min-w-[160px] items-start lg:border-r border-zinc-800 pr-6">
-                    <div class="impact-text text-4xl sm:text-5xl leading-none frame-number" style="color: var(--theme-fuzzy);">${minAdv}~${maxAdv}F</div>
-                    <div class="mt-2">${fuzzyBadge}</div>
-                    <div class="flex flex-col gap-1 mt-3">
-                        <div class="flex items-center gap-2 group/ctx">
-                            <div class="text-sm font-black uppercase tracking-wide px-2 py-1 border-l-2 flex-1 ${isPreset ? 'context-tag-preset' : 'context-tag'}">${escapeHtml(group.context)}</div>
-                            <button onclick="event.stopPropagation(); removeNote(${group.idx})" class="text-zinc-600 hover:text-red-500 text-base sm:text-sm p-2 sm:p-1 sm:opacity-0 sm:group-hover/ctx:opacity-100 transition-all" title="${deleteTitle}">✕</button>
+                <div class="flex flex-col min-w-0 sm:min-w-[160px] items-start lg:border-r border-zinc-800 lg:pr-6 w-full lg:w-auto">
+                    <div class="flex items-center gap-3 sm:block">
+                        <div class="impact-text text-3xl sm:text-4xl md:text-5xl leading-none frame-number" style="color: var(--theme-fuzzy);">${minAdv}~${maxAdv}F</div>
+                        <div class="sm:hidden">${fuzzyBadge}</div>
+                    </div>
+                    <div class="hidden sm:block mt-2">${fuzzyBadge}</div>
+                    <div class="flex flex-wrap sm:flex-col gap-2 sm:gap-1 mt-2 sm:mt-3 w-full">
+                        <div class="flex items-center gap-1 sm:gap-2 group/ctx">
+                            <div class="expanded-context-tag text-xs sm:text-sm font-black uppercase tracking-wide px-2 py-1 border-l-2 flex-1 ${isPreset ? 'context-tag-preset' : 'context-tag'}">${escapeHtml(group.context)}</div>
+                            <button onclick="event.stopPropagation(); removeNote(${group.idx})" class="text-zinc-600 hover:text-red-500 text-lg sm:text-base p-1.5 sm:p-1 opacity-70 sm:opacity-0 sm:group-hover/ctx:opacity-100 transition-all flex-shrink-0" title="${deleteTitle}">✕</button>
                         </div>
                     </div>
                 </div>
@@ -3307,11 +3371,11 @@
             if (!result.bestByBlock && !result.bestByHit) {
                 return `
                     <div class="trend-card fuzzy-scenario-card">
-                        <div onclick="toggleAdvExpand('fuzzy_${group.idx}')" class="px-5 py-3 cursor-pointer text-zinc-300 hover:text-white text-sm font-bold transition-colors select-none flex items-center gap-2 border-b" style="border-color: var(--theme-card-border);">
+                        <div onclick="toggleAdvExpand('fuzzy_${group.idx}')" class="px-4 sm:px-5 py-3 cursor-pointer text-zinc-300 hover:text-white text-sm font-bold transition-colors select-none flex items-center gap-2 border-b" style="border-color: var(--theme-card-border);">
                             <span class="text-zinc-500 text-xs">▼</span>
                             收起 ${minAdv}~${maxAdv}F 详细方案
                         </div>
-                        <div class="p-6 flex flex-col lg:flex-row items-center gap-6">
+                        <div class="p-4 sm:p-6 flex flex-col lg:flex-row items-center gap-4 sm:gap-6">
                             ${leftPanel}
                             <div class="flex-1 text-zinc-600 font-bold italic">
                                 未找到符合条件的压制方案<br>
@@ -3342,13 +3406,13 @@
             
             return `
                 <div class="trend-card fuzzy-scenario-card">
-                    <div onclick="toggleAdvExpand('fuzzy_${group.idx}')" class="px-5 py-3 cursor-pointer text-zinc-300 hover:text-white text-sm font-bold transition-colors select-none flex items-center gap-2 border-b" style="border-color: var(--theme-card-border);">
+                    <div onclick="toggleAdvExpand('fuzzy_${group.idx}')" class="px-4 sm:px-5 py-3 cursor-pointer text-zinc-300 hover:text-white text-sm font-bold transition-colors select-none flex items-center gap-2 border-b" style="border-color: var(--theme-card-border);">
                         <span class="text-zinc-500 text-xs">▼</span>
                         收起 ${minAdv}~${maxAdv}F 详细方案
                     </div>
-                    <div class="p-6 flex flex-col lg:flex-row gap-6">
+                    <div class="p-4 sm:p-6 flex flex-col lg:flex-row gap-4 sm:gap-6">
                         ${leftPanel}
-                        <div class="flex-1">
+                        <div class="flex-1 min-w-0">
                             <div class="space-y-3">
                                 ${plansHtml}
                             </div>
@@ -3524,24 +3588,28 @@
                         bestPlanDesc = '无有利方案';
                     }
                     
-                    // 紧凑的 context 显示
-                    const compactContexts = group.contexts.slice(0, 2).map(ctx => 
-                        `<span class="text-xs px-2 py-0.5 bg-zinc-700/50 text-zinc-300">${escapeHtml(ctx)}</span>`
-                    ).join('');
-                    const moreContexts = group.contexts.length > 2 ? `<span class="text-xs text-zinc-500">+${group.contexts.length - 2}</span>` : '';
+                    // 紧凑的 context 显示 - 桌面端显示2个，移动端显示1个
+                    // 使用CSS media query控制，这里生成两套HTML
+                    const firstContext = group.contexts[0] ? `<span class="compact-context-tag">${escapeHtml(group.contexts[0])}</span>` : '';
+                    const secondContext = group.contexts[1] ? `<span class="compact-context-tag hidden sm:inline-block">${escapeHtml(group.contexts[1])}</span>` : '';
+                    const moreCount = group.contexts.length - 1;
+                    const moreContextsMobile = moreCount > 0 ? `<span class="text-xs text-zinc-400 ml-1 sm:hidden">+${moreCount}</span>` : '';
+                    const moreContextsDesktop = group.contexts.length > 2 ? `<span class="text-xs text-zinc-400 ml-1 hidden sm:inline">+${group.contexts.length - 2}</span>` : '';
                     
                     return `
                         <div class="trend-card py-3 px-4 cursor-pointer hover:bg-opacity-80 transition-all" onclick="toggleAdvExpand(${group.adv})" style="animation-delay: ${cardIndex * 0.02}s">
-                            <div class="flex items-center gap-4 flex-wrap">
-                                <span class="impact-text text-2xl font-black min-w-[70px]" style="color: var(--theme-secondary);">+${group.adv}F</span>
-                                ${safeJumpCompactHtml}
-                                <span class="text-zinc-500">→</span>
-                                <span class="text-white font-bold">${bestPlanDesc}</span>
-                                <div class="flex gap-1 ml-auto items-center">
-                                    ${compactContexts}
-                                    ${moreContexts}
-                                    <span class="text-zinc-600 text-xs ml-2">▼</span>
+                            <div class="flex items-center gap-2 sm:gap-3">
+                                <span class="impact-text text-xl sm:text-2xl font-black min-w-[60px] sm:min-w-[70px] flex-shrink-0" style="color: var(--theme-secondary);">+${group.adv}F</span>
+                                <div class="flex gap-1 items-center flex-shrink-0">
+                                    ${firstContext}
+                                    ${secondContext}
+                                    ${moreContextsMobile}
+                                    ${moreContextsDesktop}
                                 </div>
+                                ${safeJumpCompactHtml}
+                                <span class="text-zinc-600 mx-1 flex-shrink-0">→</span>
+                                <span class="text-white font-bold compact-plan-desc flex-1 min-w-0">${bestPlanDesc}</span>
+                                <span class="text-zinc-600 text-xs ml-2 flex-shrink-0">▼</span>
                             </div>
                         </div>
                     `;
@@ -3555,17 +3623,20 @@
                     const isPreset = !note.isUserAdded;
                     const deleteTitle = isPreset ? "此为预设场景，删除后可通过重置恢复" : "删除此用户场景";
                     const contextClass = isPreset ? "context-tag-preset" : "context-tag";
-                    return `<div class="flex items-center gap-2 group/ctx">
-                        <div class="text-sm font-black uppercase tracking-wide px-2 py-1 border-l-2 flex-1 ${contextClass}">${escapeHtml(ctx)}</div>
-                        <button onclick="event.stopPropagation(); removeNote(${idx})" class="text-zinc-600 hover:text-red-500 text-base sm:text-sm p-2 sm:p-1 sm:opacity-0 sm:group-hover/ctx:opacity-100 transition-all" title="${deleteTitle}">✕</button>
+                    return `<div class="flex items-center gap-1 sm:gap-2 group/ctx">
+                        <div class="expanded-context-tag text-xs sm:text-sm font-black uppercase tracking-wide px-2 py-1 border-l-2 flex-1 ${contextClass}">${escapeHtml(ctx)}</div>
+                        <button onclick="event.stopPropagation(); removeNote(${idx})" class="text-zinc-600 hover:text-red-500 text-lg sm:text-base p-1.5 sm:p-1 opacity-70 sm:opacity-0 sm:group-hover/ctx:opacity-100 transition-all flex-shrink-0" title="${deleteTitle}">✕</button>
                     </div>`;
                 }).join('');
                 
                 const leftPanel = `
-                    <div class="flex flex-col min-w-[160px] items-start lg:border-r border-zinc-800 pr-6">
-                        <div class="impact-text text-4xl sm:text-5xl leading-none frame-number" style="color: var(--theme-secondary);">+${group.adv}F</div>
-                        ${safeJumpBadgeHtml}
-                        <div class="flex flex-col gap-1 mt-3">
+                    <div class="flex flex-col min-w-0 sm:min-w-[160px] items-start lg:border-r border-zinc-800 lg:pr-6 w-full lg:w-auto">
+                        <div class="flex items-center gap-3 sm:block">
+                            <div class="impact-text text-3xl sm:text-4xl md:text-5xl leading-none frame-number" style="color: var(--theme-secondary);">+${group.adv}F</div>
+                            <div class="sm:hidden">${safeJumpBadgeHtml}</div>
+                        </div>
+                        <div class="hidden sm:block">${safeJumpBadgeHtml}</div>
+                        <div class="flex flex-wrap sm:flex-col gap-2 sm:gap-1 mt-2 sm:mt-3 w-full">
                             ${contextsHtml}
                         </div>
                     </div>
@@ -3858,14 +3929,14 @@
 
                 return `
                     <div class="trend-card">
-                        <div onclick="toggleAdvExpand(${group.adv})" class="px-5 py-3 cursor-pointer text-zinc-300 hover:text-white text-sm font-bold transition-colors select-none flex items-center gap-2 border-b" style="border-color: var(--theme-card-border);">
+                        <div onclick="toggleAdvExpand(${group.adv})" class="px-4 sm:px-5 py-3 cursor-pointer text-zinc-300 hover:text-white text-sm font-bold transition-colors select-none flex items-center gap-2 border-b" style="border-color: var(--theme-card-border);">
                             <span class="text-zinc-500 text-xs">▼</span>
                             收起 +${group.adv}F 详细方案
                         </div>
-                        <div class="p-6">
-                            <div class="flex flex-col lg:flex-row gap-6">
+                        <div class="p-4 sm:p-6">
+                            <div class="flex flex-col lg:flex-row gap-4 sm:gap-6">
                                 ${leftPanel}
-                                <div class="flex-1">
+                                <div class="flex-1 min-w-0">
                                     ${mainHtml}
                                     ${altHtml}
                                 </div>
@@ -4392,11 +4463,32 @@
             const rules = state.characterRules[state.currentCharacter] || [];
             const idx = rules.findIndex(r => r.id === ruleId);
             if (idx !== -1) {
+                const rule = rules[idx];
+                if (!confirm(`确定要删除此规则吗？\n${rule.description || '自定义规则'}`)) {
+                    return;
+                }
                 rules.splice(idx, 1);
                 saveCharacterRules(state.currentCharacter, rules);
                 renderRules();
                 renderNotes();
+                showToast('规则已删除');
             }
+        }
+        
+        function clearAllRules() {
+            const rules = state.characterRules[state.currentCharacter] || [];
+            if (rules.length === 0) {
+                showToast('没有可清除的规则', 'info');
+                return;
+            }
+            if (!confirm(`确定要清除 ${state.currentCharacter} 的所有 ${rules.length} 条自定义规则吗？\n（全局规则不受影响）`)) {
+                return;
+            }
+            state.characterRules[state.currentCharacter] = [];
+            saveCharacterRules(state.currentCharacter, []);
+            renderRules();
+            renderNotes();
+            showToast(`已清除 ${rules.length} 条规则`);
         }
         
         // ==================== 新增招式弹窗 ====================
@@ -5507,6 +5599,17 @@
         }
         
         function removeMove(idx) { 
+            const move = state.moveLibrary[idx];
+            if (!move) return;
+            
+            // 用户添加的招式需要确认
+            if (move.isUserAdded) {
+                if (!confirm(`确定要删除招式 "${move.name}" 吗？`)) {
+                    return;
+                }
+            }
+            
+            const moveName = move.name;
             state.moveLibrary.splice(idx, 1);
             // 同步更新缓存
             if (state.characterCache[state.currentCharacter]) {
@@ -5515,6 +5618,7 @@
             // 保存到 localStorage
             saveMoves(state.currentCharacter, state.moveLibrary);
             renderAll(); 
+            showToast(`已删除 ${moveName}`);
         }
 
         function clearLibrary() {
@@ -5635,9 +5739,9 @@
             
             // 0. 从 localStorage 恢复上次选择的角色
             let savedCharacter = loadCurrentCharacter();
-            // 确保保存的角色有数据，否则回退到RYU
+            // 确保保存的角色有数据，否则回退到JURI
             if (!CONFIG.CHARACTERS_WITH_DATA.includes(savedCharacter)) {
-                savedCharacter = 'RYU';
+                savedCharacter = 'JURI';
             }
             state.currentCharacter = savedCharacter;
             document.getElementById('currentCharIcon').textContent = getCharIcon(savedCharacter);
