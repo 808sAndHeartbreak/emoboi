@@ -1522,7 +1522,6 @@
                             <button onclick="switchMixupTab(5)" id="mixupTab5" class="mixup-tab-btn active px-6 py-3 text-lg font-black transition-colors">5F</button>
                             <button onclick="switchMixupTab(4)" id="mixupTab4" class="mixup-tab-btn px-6 py-3 text-lg font-black transition-colors">4F</button>
                             <button onclick="switchMixupTab(3)" id="mixupTab3" class="mixup-tab-btn px-6 py-3 text-lg font-black transition-colors">3F</button>
-                            <button onclick="switchMixupTab(2)" id="mixupTab2" class="mixup-tab-btn px-6 py-3 text-lg font-black transition-colors">2F</button>
                         </div>
                         
                         <!-- 内容区 -->
@@ -1616,7 +1615,7 @@
                         <button onclick="openRuleModal()" class="text-[10px] px-3 py-1.5 bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-all font-bold">+ 添加规则</button>
                     </div>
                 </div>
-                <p class="text-[10px] text-zinc-600 mb-2">*全局规则不可删除 · 角色规则可单独删除</p>
+                <p class="text-[10px] text-zinc-600 mb-2">*全局规则不可删除 · 预设及自定义规则可删除</p>
                 <div id="rulesContainer" class="space-y-1 text-xs"></div>
             </div>
         </div>
@@ -2023,6 +2022,25 @@
                     description: "轻拳不会和下轻拳组合（连点取消不能精准卡帧）"
                 }
             ],
+            // 角色预设规则（角色专属，不可删除）
+            CHARACTER_PRESET_RULES: {
+                "RYU": [
+                    {
+                        id: "ryu_preset_6hp_meaty",
+                        type: "disable",
+                        moveName: "6HP",
+                        usage: "meaty_after_kill",
+                        description: "两段攻击"
+                    },
+                    {
+                        id: "ryu_preset_5mk_direct",
+                        type: "disable",
+                        moveName: "5MK",
+                        usage: "meaty_direct",
+                        description: "无法取消，不适合用于压制"
+                    }
+                ]
+            },
             // 角色图标映射
             CHAR_ICONS: {
                 "RYU": "🥋", "LUKE": "🥊", "KEN": "🔥", "CHUN-LI": "🦵", "GUILE": "✈️", "KIMBERLY": "🥷",
@@ -2125,6 +2143,8 @@
             sortOrder: 'asc',
             // 角色专属规则 { charName: [rules] }
             characterRules: {},
+            // 已删除的预设规则 { "charName:ruleId": true }
+            deletedPresetRules: {},
             // 当前展开的有利帧（Set，支持多个同时展开）
             expandedAdvSet: new Set(),
             // 全局展开详情开关
@@ -2385,11 +2405,15 @@
             return [];
         }
         
-        // 获取当前角色的所有规则（全局 + 角色专属）
+        // 获取当前角色的所有规则（全局 + 角色预设 + 用户自定义）
         function getAllRulesForCharacter(char) {
-            const globalRules = CONFIG.GLOBAL_RULES.map(r => ({ ...r, isGlobal: true }));
-            const charRules = (state.characterRules[char] || []).map(r => ({ ...r, isGlobal: false }));
-            return [...globalRules, ...charRules];
+            const globalRules = CONFIG.GLOBAL_RULES.map(r => ({ ...r, isGlobal: true, isPreset: true }));
+            // 角色预设规则，过滤掉已删除的
+            const charPresetRules = (CONFIG.CHARACTER_PRESET_RULES[char] || [])
+                .filter(r => !state.deletedPresetRules[`${char}:${r.id}`])
+                .map(r => ({ ...r, isGlobal: false, isPreset: true }));
+            const charRules = (state.characterRules[char] || []).map(r => ({ ...r, isGlobal: false, isPreset: false }));
+            return [...globalRules, ...charPresetRules, ...charRules];
         }
         
         // 检查招式是否被禁用（用于特定用途）
@@ -4136,7 +4160,7 @@
                 const plans = calculateBestPlan(adv);
                 
                 // 收集每个剩余帧数的所有卡帧方式
-                const remainPlans = { 2: [], 3: [], 4: [], 5: [] };
+                const remainPlans = { 3: [], 4: [], 5: [] };
                 
                 for (const plan of plans) {
                     // 跳过投技方案（投技不适合打投择）
@@ -4146,8 +4170,8 @@
                     
                     const remain = plan.remain;
                     
-                    // 只关注 2-5 帧的剩余
-                    if (remain < 2 || remain > 5) continue;
+                    // 只关注 3-5 帧的剩余
+                    if (remain < 3 || remain > 5) continue;
                     
                     // 生成卡帧描述
                     // 对于打投择，我们只关心"能卡出特定帧数"，不关心顺序
@@ -4539,6 +4563,25 @@
         }
         
         function removeRule(ruleId) {
+            // 先检查是否是预设规则
+            const presetRules = CONFIG.CHARACTER_PRESET_RULES[state.currentCharacter] || [];
+            const presetRule = presetRules.find(r => r.id === ruleId);
+            
+            if (presetRule) {
+                // 删除预设规则
+                if (!confirm(`确定要删除此预设规则吗？\n${presetRule.description || '预设规则'}\n\n（可通过"重置"恢复）`)) {
+                    return;
+                }
+                // 记录已删除的预设规则
+                state.deletedPresetRules[`${state.currentCharacter}:${ruleId}`] = true;
+                saveDeletedPresetRules();
+                renderRules();
+                renderNotes();
+                showToast('预设规则已删除');
+                return;
+            }
+            
+            // 删除自定义规则
             const rules = state.characterRules[state.currentCharacter] || [];
             const idx = rules.findIndex(r => r.id === ruleId);
             if (idx !== -1) {
@@ -4552,6 +4595,28 @@
                 renderNotes();
                 showToast('规则已删除');
             }
+        }
+        
+        // 保存已删除的预设规则
+        function saveDeletedPresetRules() {
+            try {
+                localStorage.setItem(`${CONFIG.STORAGE_KEY}_deleted_preset_rules`, JSON.stringify(state.deletedPresetRules));
+            } catch (e) {
+                console.warn('保存已删除预设规则失败:', e);
+            }
+        }
+        
+        // 加载已删除的预设规则
+        function loadDeletedPresetRules() {
+            try {
+                const saved = localStorage.getItem(`${CONFIG.STORAGE_KEY}_deleted_preset_rules`);
+                if (saved) {
+                    return JSON.parse(saved);
+                }
+            } catch (e) {
+                console.warn('加载已删除预设规则失败:', e);
+            }
+            return {};
         }
         
         function clearAllRules() {
@@ -4749,8 +4814,10 @@
             
             container.innerHTML = allRules.map(rule => {
                 const isGlobal = rule.isGlobal;
+                const isPreset = rule.isPreset;
                 const tagClass = isGlobal ? 'bg-zinc-700 text-zinc-400' : 'bg-cyan-900/50 text-cyan-400';
                 const tagText = isGlobal ? '全局' : state.currentCharacter;
+                // 只有全局规则不能删除，角色预设和自定义规则都可以删除
                 const deleteBtn = isGlobal ? '' : `<button onclick="removeRule('${rule.id}')" class="text-zinc-600 hover:text-red-500 transition-colors p-2 -m-1 text-base" title="删除规则">✕</button>`;
                 
                 // 根据规则类型渲染不同的内容
@@ -5681,11 +5748,15 @@
             const move = state.moveLibrary[idx];
             if (!move) return;
             
+            // 预设招式不能删除
+            if (!move.isUserAdded) {
+                showToast('预设招式不可删除');
+                return;
+            }
+            
             // 用户添加的招式需要确认
-            if (move.isUserAdded) {
-                if (!confirm(`确定要删除招式 "${move.name}" 吗？`)) {
-                    return;
-                }
+            if (!confirm(`确定要删除招式 "${move.name}" 吗？`)) {
+                return;
             }
             
             const moveName = move.name;
@@ -5843,7 +5914,11 @@
             state.characterRules[state.currentCharacter] = loadCharacterRules(state.currentCharacter);
             console.log(`[Rules] 加载 ${state.characterRules[state.currentCharacter].length} 个角色规则`);
             
-            // 4. 加载收藏和最小化状态
+            // 4. 加载已删除的预设规则
+            state.deletedPresetRules = loadDeletedPresetRules();
+            console.log(`[Rules] 加载 ${Object.keys(state.deletedPresetRules).length} 个已删除预设规则`);
+            
+            // 5. 加载收藏和最小化状态
             state.favorites = loadFavorites();
             state.minimized = loadMinimized();
             console.log(`[UI] 加载 ${Object.keys(state.favorites).length} 个收藏, ${Object.keys(state.minimized).length} 个最小化`);
