@@ -468,9 +468,13 @@
             border-bottom-color: var(--theme-primary);
         }
         
-        /* 打投择方案箭头旋转 */
-        #mixupDetails[open] .mixup-arrow {
+        /* 打投择方案箭头旋转 - 默认展开状态 */
+        #mixupDetails .mixup-arrow {
             transform: rotate(90deg);
+        }
+        
+        #mixupDetails:not([open]) .mixup-arrow {
+            transform: rotate(0deg);
         }
         
         /* 期望后续箭头旋转 */
@@ -1702,36 +1706,6 @@
                 </div>
             </div>
             
-            <!-- 模块：打投择方案 -->
-            <div class="mb-10">
-                <h3 class="text-xl sm:text-2xl font-black text-zinc-300 mb-2 border-l-4 pl-4" style="border-color: var(--theme-primary);">打投择方案</h3>
-                <p class="text-xs text-zinc-500 mb-4 pl-4">寻找能卡出特定有利帧（打投择时机）的场景 · 范围 6~50F</p>
-                
-                <!-- 折叠区域 -->
-                <details class="trend-card" id="mixupDetails">
-                    <summary class="px-5 py-3 cursor-pointer text-zinc-300 hover:text-white text-sm font-bold transition-colors select-none flex items-center gap-2">
-                        <span class="text-zinc-500 text-xs mixup-arrow transition-transform duration-200">▶</span>
-                        展开查看打投择方案
-                    </summary>
-                    <div class="px-5 pb-5 pt-3 border-t" style="border-color: var(--theme-card-border);">
-                        <!-- Tab 切换 -->
-                        <div class="flex gap-3 mb-4 border-b-2 pb-1" style="border-color: var(--theme-card-border);">
-                            <button onclick="switchMixupTab(5)" id="mixupTab5" class="mixup-tab-btn active px-6 py-3 text-lg font-black transition-colors">5F</button>
-                            <button onclick="switchMixupTab(4)" id="mixupTab4" class="mixup-tab-btn px-6 py-3 text-lg font-black transition-colors">4F</button>
-                            <button onclick="switchMixupTab(3)" id="mixupTab3" class="mixup-tab-btn px-6 py-3 text-lg font-black transition-colors">3F</button>
-                        </div>
-                        
-                        <!-- 内容区 -->
-                        <div id="throwMixupContent" class="min-h-[80px]"></div>
-                    </div>
-                </details>
-            </div>
-            
-            <!-- 模块：压制方案 -->
-            <div>
-                <h3 class="text-xl sm:text-2xl font-black text-zinc-300 mb-4 border-l-4 pl-4" style="border-color: var(--theme-primary);">压制方案</h3>
-            </div>
-            
             <!-- 搜索框和工具栏 - 始终同行 -->
             <div class="mb-6 flex flex-row gap-2 items-center">
                 <div class="flex-1 relative min-w-0">
@@ -1766,7 +1740,37 @@
                 </button>
                 </div>
             </div>
-            <div id="noteListContainer" class="grid grid-cols-1 gap-6"></div>
+            
+            <!-- 模块：压制方案 -->
+            <div class="mb-10">
+                <h3 class="text-xl sm:text-2xl font-black text-zinc-300 mb-4 border-l-4 pl-4" style="border-color: var(--theme-primary);">压制方案</h3>
+                <div id="noteListContainer" class="grid grid-cols-1 gap-6"></div>
+            </div>
+            
+            <!-- 模块：打投择方案 -->
+            <div class="mb-10">
+                <h3 class="text-xl sm:text-2xl font-black text-zinc-300 mb-2 border-l-4 pl-4" style="border-color: var(--theme-primary);">打投择方案</h3>
+                <p class="text-xs text-zinc-500 mb-4 pl-4">寻找能卡出特定有利帧（打投择时机）的场景 · 范围 6~50F</p>
+                
+                <!-- 折叠区域 - 默认展开 -->
+                <details class="trend-card" id="mixupDetails" open>
+                    <summary class="px-5 py-3 cursor-pointer text-zinc-300 hover:text-white text-sm font-bold transition-colors select-none flex items-center gap-2">
+                        <span class="text-zinc-500 text-xs mixup-arrow transition-transform duration-200">▼</span>
+                        <span id="mixupSummaryText">收起打投择方案</span>
+                    </summary>
+                    <div class="px-5 pb-5 pt-3 border-t" style="border-color: var(--theme-card-border);">
+                        <!-- Tab 切换 -->
+                        <div class="flex gap-3 mb-4 border-b-2 pb-1" style="border-color: var(--theme-card-border);">
+                            <button onclick="switchMixupTab(5)" id="mixupTab5" class="mixup-tab-btn active px-6 py-3 text-lg font-black transition-colors">5F</button>
+                            <button onclick="switchMixupTab(4)" id="mixupTab4" class="mixup-tab-btn px-6 py-3 text-lg font-black transition-colors">4F</button>
+                            <button onclick="switchMixupTab(3)" id="mixupTab3" class="mixup-tab-btn px-6 py-3 text-lg font-black transition-colors">3F</button>
+                        </div>
+                        
+                        <!-- 内容区 -->
+                        <div id="throwMixupContent" class="min-h-[80px]"></div>
+                    </div>
+                </details>
+            </div>
             
             <!-- 收藏卡片视图 -->
             <div id="favoritesGridView" class="hidden">
@@ -1814,7 +1818,6 @@
                 
                 <!-- 空状态 -->
                 <div id="favEmptyState" class="hidden text-center py-20">
-                    <div class="text-6xl mb-6" style="color: #facc15; filter: drop-shadow(0 0 15px rgba(250, 204, 21, 0.4));">☆</div>
                     <div class="text-zinc-400 text-xl mb-3 font-bold">还没有收藏任何方案</div>
                     <div class="text-zinc-500">点击方案上的 ☆ 来添加收藏</div>
                 </div>
@@ -2381,6 +2384,27 @@
                     bgImage: null
                 }
             }
+        };
+
+        // ==================== 推荐收藏预设（导演剪辑版） ====================
+        const DIRECTOR_CUTS = {
+            "RYU": {
+                favorites: [
+                    "2MP||5MP|32",
+                    "5LP||投|17",
+                    "5HP||2MP|39",
+                    "66||2MP|27",
+                    "5MK||2MP|37",
+                    "投||2MP|38",
+                    "2LK||投|20",
+                    "DIRECT||2MP|7",
+                    "66||投|23",
+                    "2MP||投|29",
+                    "5HP||2MP|40"
+                ],
+                mixupFavorites: []
+            }
+            // 其他角色暂无推荐，可以根据需要添加
         };
 
         // ==================== 应用状态 ====================
@@ -3627,6 +3651,8 @@
         // 搜索过滤函数
         function filterSolutions() {
             renderNotes();
+            // 同时过滤打投择方案（如果展开）
+            filterMixupSolutions();
         }
         
         // 清除搜索
@@ -3653,6 +3679,8 @@
             state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc';
             updateSortOrderUI();
             renderNotes();
+            // 同时更新打投择方案排序
+            filterMixupSolutions();
         }
         
         // 更新排序按钮 UI
@@ -3922,6 +3950,17 @@
                     mixupFavorites: []
                 };
             }
+            
+            // 添加推荐收藏模板（如果配置中有定义）
+            if (DIRECTOR_CUTS[char] && !state.favoriteTemplates[char].templates['director']) {
+                state.favoriteTemplates[char].templates['director'] = {
+                    id: 'director',
+                    name: '推荐收藏',
+                    type: 'director',
+                    favorites: DIRECTOR_CUTS[char].favorites || [],
+                    mixupFavorites: DIRECTOR_CUTS[char].mixupFavorites || []
+                };
+            }
         }
         
         // 从旧格式迁移收藏数据
@@ -4071,8 +4110,8 @@
             const char = state.currentCharacter;
             const template = state.favoriteTemplates[char]?.templates[templateId];
             
-            // 不能删除"我的收藏"
-            if (templateId === 'my' || !template) {
+            // 不能删除"我的收藏"和"推荐收藏"
+            if (templateId === 'my' || templateId === 'director' || !template) {
                 return false;
             }
             
@@ -4141,8 +4180,15 @@
                         }
                     }
                 });
+                
+                // 联动：自动打开打投择方案
+                const mixupDetails = document.getElementById('mixupDetails');
+                if (mixupDetails) {
+                    mixupDetails.open = true;
+                }
             } else {
                 state.expandedAdvSet.clear();
+                // 收起时不自动关闭打投择，由用户手动控制
             }
             updateToggleAllBtn();
             renderNotes();
@@ -4681,7 +4727,7 @@
                 } else {
                     emptyHtml = `
                     <div class="trend-card p-8 text-center">
-                        <div class="text-zinc-600 text-lg mb-2">🔍 未找到匹配的 Scenario</div>
+                        <div class="text-zinc-600 text-lg mb-2">🔍 未找到匹配的 </div>
                         <div class="text-zinc-700 text-sm">尝试其他搜索词，或清空搜索框查看全部</div>
                     </div>
                 `;
@@ -5257,6 +5303,25 @@
             return results;
         }
         
+        // 过滤打投择方案（配合搜索框）
+        function filterMixupSolutions() {
+            const keyword = document.getElementById('solutionSearch').value.toLowerCase().trim();
+            const mixupDetails = document.getElementById('mixupDetails');
+            
+            // 如果有搜索内容，自动展开打投择方案
+            if (keyword && mixupDetails) {
+                mixupDetails.open = true;
+            }
+            
+            if (!mixupDetails || !mixupDetails.open) {
+                return; // 如果折叠，不处理
+            }
+            
+            // 重新渲染打投择内容（renderThrowMixupContent会读取state中的数据）
+            // 我们需要修改 renderThrowMixupContent 来支持过滤
+            renderThrowMixupContent(keyword);
+        }
+        
         // 切换打投择Tab
         function switchMixupTab(frame) {
             currentMixupTab = frame;
@@ -5275,7 +5340,7 @@
         }
         
         // 渲染打投择内容
-        function renderThrowMixupContent() {
+        function renderThrowMixupContent(filterKeyword = '') {
             const container = document.getElementById('throwMixupContent');
             
             if (state.moveLibrary.length === 0) {
@@ -5284,7 +5349,30 @@
             }
             
             const mixups = calculateThrowMixups();
-            const items = mixups[currentMixupTab];
+            let items = mixups[currentMixupTab];
+            
+            // 应用搜索过滤
+            if (filterKeyword) {
+                items = items.filter(item => {
+                    // 搜索有利帧
+                    const advMatch = String(item.adv).includes(filterKeyword);
+                    // 搜索场景标签
+                    const contextMatch = item.contexts.some(ctx => ctx.toLowerCase().includes(filterKeyword));
+                    // 搜索卡帧方案
+                    const killDescMatch = item.killDescs.some(desc => desc.toLowerCase().includes(filterKeyword));
+                    // 搜索投技帧数
+                    const throwFrameMatch = String(currentMixupTab).includes(filterKeyword);
+                    
+                    return advMatch || contextMatch || killDescMatch || throwFrameMatch;
+                });
+            }
+            
+            // 应用排序（按ADV排序）
+            if (state.sortOrder === 'asc') {
+                items.sort((a, b) => a.adv - b.adv);
+            } else {
+                items.sort((a, b) => b.adv - a.adv);
+            }
             
             // 处理每个item的killDescs，过滤掉被隐藏的
             const processedItems = items.map(item => {
@@ -5410,9 +5498,18 @@
             }
             
             // 顶部提示
-            const countText = withContext.length > 0 
-                ? `✓ 找到 ${withContext.length} 个方案可卡出 ${currentMixupTab}F`
-                : `暂无对应场景的 ${currentMixupTab}F 打投择卡帧方案`;
+            const totalBeforeFilter = mixups[currentMixupTab].length;
+            const filteredCount = items.length;
+            const visibleCount = withContext.length + withoutContext.length;
+            
+            let countText = '';
+            if (filterKeyword) {
+                countText = `🔍 搜索"${escapeHtml(filterKeyword)}"：找到 ${visibleCount} 个 ${currentMixupTab}F 打投择方案`;
+            } else {
+                countText = withContext.length > 0 
+                    ? `✓ 找到 ${withContext.length} 个方案可卡出 ${currentMixupTab}F`
+                    : `暂无对应场景的 ${currentMixupTab}F 打投择卡帧方案`;
+            }
             
             container.innerHTML = `
                 <div class="text-sm mb-4" style="color: var(--theme-primary);">${countText}</div>
@@ -5595,7 +5692,8 @@
             const templateItems = [];
             
             Object.entries(templates).forEach(([id, template]) => {
-                if (id !== 'my') {  // "我的收藏"不可删除
+                // "我的收藏"和"推荐收藏"不可删除
+                if (id !== 'my' && id !== 'director') {
                     const favCount = (template.favorites || []).length + (template.mixupFavorites || []).length;
                     templateItems.push(`
                         <label class="flex items-center gap-3 p-4 bg-zinc-800/50 border border-zinc-700 cursor-pointer hover:bg-zinc-800 transition-colors">
@@ -7467,6 +7565,21 @@
         // ==================== 初始化 ====================
         window.onload = function() {
             console.log('=== SF6 FRAME LAB 初始化 ===');
+            
+            // 设置打投择方案折叠状态监听
+            const mixupDetails = document.getElementById('mixupDetails');
+            if (mixupDetails) {
+                mixupDetails.addEventListener('toggle', function() {
+                    const summaryText = document.getElementById('mixupSummaryText');
+                    if (summaryText) {
+                        if (this.open) {
+                            summaryText.textContent = '收起打投择方案';
+                        } else {
+                            summaryText.textContent = '展开打投择方案';
+                        }
+                    }
+                });
+            }
             
             // 设置禁用场景说明监听器
             const usageSelect = document.getElementById('inputDisableUsage');
