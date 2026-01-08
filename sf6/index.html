@@ -34,6 +34,17 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
         }
         
+        /* SF6 页面 body 顶部间距（header 52px + 封条 44px + 间距） */
+        .sf6-body {
+            padding-top: 110px !important;
+        }
+        
+        @media (max-width: 768px) {
+            .sf6-body {
+                padding-top: 100px !important;
+            }
+        }
+        
         .impact-text { 
             font-family: "Arial Black", "Helvetica Neue", Impact, sans-serif; 
             text-transform: uppercase; 
@@ -1116,15 +1127,14 @@
         }
         
         /* ========== 封条胶带滚动效果 (Marquee Tape) ========== */
-        /* 单条封条 - 页面顶部，随页面滚动 */
+        /* 单条封条 - 紧贴顶部导航栏下方 */
         .marquee-tape {
-            position: relative;
+            position: fixed;
+            top: 52px;
+            left: 0;
+            right: 0;
             width: 100vw;
-            left: 50%;
-            transform: translateX(-50%);
-            margin-top: -1rem;
-            margin-bottom: 1.5rem;
-            height: 52px;
+            height: 44px;
             background: 
                 linear-gradient(90deg, 
                     transparent 0%, 
@@ -1135,7 +1145,7 @@
                 ),
                 var(--theme-primary);
             overflow: hidden;
-            z-index: 10;
+            z-index: 190;
             box-shadow: 
                 0 4px 20px rgba(0,0,0,0.4),
                 inset 0 1px 0 rgba(255,255,255,0.1),
@@ -1149,9 +1159,10 @@
             filter: brightness(1.1);
         }
         
-        @media (min-width: 768px) {
+        @media (max-width: 768px) {
             .marquee-tape {
-                margin-top: -2.5rem;
+                top: 48px;
+                height: 40px;
             }
         }
         
@@ -1165,13 +1176,19 @@
         .marquee-content {
             display: flex;
             align-items: center;
-            height: 52px;
+            height: 44px;
             flex-shrink: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .marquee-content {
+                height: 40px;
+            }
         }
         
         .marquee-content span {
             font-family: "Arial Black", Impact, sans-serif;
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 0.08em;
@@ -1298,38 +1315,112 @@
         .sf6-top-nav {
             position: fixed;
             top: 0;
+            left: 0;
             right: 0;
             z-index: 200;
-            padding: 5px 16px;
+            height: 52px;
+            padding: 0 16px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: space-between;
+            background: linear-gradient(180deg, rgba(10,10,10,0.98) 0%, rgba(5,5,5,0.95) 100%);
+            border-bottom: 1px solid color-mix(in srgb, var(--theme-primary) 30%, transparent);
+            box-shadow: 0 1px 20px rgba(0,0,0,0.5), 0 1px 0 color-mix(in srgb, var(--theme-primary) 15%, transparent);
+            backdrop-filter: blur(10px);
+        }
+        
+        .sf6-nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .sf6-nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        
+        .sf6-nav-logo:hover {
+            opacity: 0.8;
+        }
+        
+        .sf6-nav-logo img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+        }
+        
+        .sf6-nav-logo span {
+            font-weight: 900;
+            font-size: 1rem;
+            letter-spacing: -0.02em;
+            color: #fff;
+        }
+        
+        .sf6-nav-links {
+            display: none;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        @media (min-width: 768px) {
+            .sf6-nav-links {
+                display: flex;
+            }
+        }
+        
+        .sf6-nav-link {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #888;
+            text-decoration: none;
+            padding: 6px 10px;
+            transition: all 0.2s;
+        }
+        
+        .sf6-nav-link:hover {
+            color: #fff;
+        }
+        
+        .sf6-nav-link.current {
+            color: var(--theme-primary);
+        }
+        
+        .sf6-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .sf6-nav-btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 42px;
-            height: 42px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid var(--theme-primary);
+            width: 38px;
+            height: 38px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1.5px solid var(--theme-primary);
             color: var(--theme-primary);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
-            backdrop-filter: blur(8px);
-            clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+            clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
         }
         
         .sf6-nav-btn:hover {
             background: var(--theme-primary);
             color: #000;
-            box-shadow: 0 0 20px var(--theme-primary), 0 0 40px color-mix(in srgb, var(--theme-primary) 50%, transparent);
+            box-shadow: 0 0 15px var(--theme-primary);
         }
         
         .sf6-nav-btn svg {
-            width: 22px;
-            height: 22px;
+            width: 18px;
+            height: 18px;
         }
         
         /* ========== 全屏菜单 ========== */
@@ -1418,31 +1509,60 @@
             width: 15px;
         }
         
+        /* 桌面端隐藏单独的 HOME 按钮（导航链接中已有） */
+        @media (min-width: 768px) {
+            .sf6-nav-home-btn {
+                display: none;
+            }
+        }
+        
         /* 移动端优化 */
         @media (max-width: 768px) {
             .sf6-top-nav {
-                padding: 7px 12px;
+                height: 48px;
+                padding: 0 12px;
+            }
+            .sf6-nav-logo img {
+                width: 24px;
+                height: 24px;
+            }
+            .sf6-nav-logo span {
+                font-size: 0.875rem;
             }
             .sf6-nav-btn {
-                width: 38px;
-                height: 38px;
+                width: 34px;
+                height: 34px;
             }
             .sf6-nav-btn svg {
-                width: 20px;
-                height: 20px;
+                width: 16px;
+                height: 16px;
             }
         }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body class="p-4 md:p-10 sf6-body">
     <!-- 顶部固定导航栏 -->
     <nav class="sf6-top-nav">
-        <a href="../" class="sf6-nav-btn" title="返回主页">
-            <i data-lucide="home"></i>
-        </a>
-        <button class="sf6-nav-btn" id="sf6MenuBtn" title="菜单">
-            <i data-lucide="menu"></i>
-        </button>
+        <div class="sf6-nav-left">
+            <a href="../" class="sf6-nav-logo" title="返回主页">
+                <img src="../asset/logo-e.jpg" alt="E">
+                <span>EMOBOI</span>
+            </a>
+            <div class="sf6-nav-links">
+                <a href="../" class="sf6-nav-link">HOME</a>
+                <a href="./" class="sf6-nav-link current">SF6 FRAME LAB</a>
+                <a href="../gojuon/" class="sf6-nav-link">GOJUON</a>
+                <a href="../gallery/" class="sf6-nav-link">GALLERY</a>
+            </div>
+        </div>
+        <div class="sf6-nav-right">
+            <a href="../" class="sf6-nav-btn sf6-nav-home-btn" title="返回主页">
+                <i data-lucide="home"></i>
+            </a>
+            <button class="sf6-nav-btn" id="sf6MenuBtn" title="菜单">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
     </nav>
     
     <!-- 全屏菜单 -->
@@ -2041,20 +2161,6 @@
             CHARACTER_PRESET_RULES: {
                 "RYU": [
                     {
-                        id: "ryu_preset_6hp_meaty_after",
-                        type: "disable",
-                        moveName: "6HP",
-                        usage: "meaty_after_kill",
-                        description: "两段攻击"
-                    },
-                    {
-                        id: "ryu_preset_6hp_meaty_direct",
-                        type: "disable",
-                        moveName: "6HP",
-                        usage: "meaty_direct",
-                        description: "两段攻击"
-                    },
-                    {
                         id: "ryu_preset_5mk_meaty_after",
                         type: "disable",
                         moveName: "5MK",
@@ -2291,15 +2397,27 @@
         }
 
         // 检查targetFrame是否命中某个active段，返回命中信息或null
+        // 对于两段招式：只有命中最后一段时才计算偷帧，命中第一段时偷帧为0
         function checkActiveHit(activeStr, targetFrame) {
             const ranges = parseActiveRanges(activeStr);
-            for (const range of ranges) {
+            const isMultiHit = ranges.length > 1;  // 是否是多段招式
+            const lastRangeIndex = ranges.length - 1;
+            
+            for (let i = 0; i < ranges.length; i++) {
+                const range = ranges[i];
                 if (range.start <= targetFrame && targetFrame <= range.end) {
+                    const isLastSegment = (i === lastRangeIndex);
+                    // 两段招式：只有最后一段才计算偷帧，第一段偷帧为0
+                    const effectiveStolen = (isMultiHit && !isLastSegment) ? 0 : (targetFrame - range.start);
+                    
                     return {
                         hitAtActive: targetFrame - range.start + 1,
-                        stolen: targetFrame - range.start,
+                        stolen: effectiveStolen,
                         rangeStart: range.start,
-                        rangeEnd: range.end
+                        rangeEnd: range.end,
+                        isMultiHit: isMultiHit,
+                        isLastSegment: isLastSegment,
+                        segmentIndex: i
                     };
                 }
             }
@@ -4532,7 +4650,7 @@
                         <div class="py-3 px-4 ${bgColor} border-l-4 mb-3 relative group ${borderColor}" style="border-left-color: ${hasFav ? '#eab308' : 'var(--theme-primary)'};">
                             <div class="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 flex gap-0.5 sm:gap-1 opacity-80 group-hover:opacity-100">
                                 <button onclick="copyPlanInfo(\`${mixupCopyText}\`)" class="text-zinc-500 hover:text-cyan-400 transition-colors p-2 sm:p-1 text-base sm:text-sm opacity-70 hover:opacity-100" title="复制方案">📋</button>
-                                <button onclick="openMixupEditModal(${item.adv}, ${currentMixupTab})" class="text-zinc-400 hover:text-cyan-400 transition-colors p-2 sm:p-1 text-base sm:text-sm" title="编辑方案">✏️</button>
+                                <button onclick="openMixupEditModal(${item.adv}, ${currentMixupTab})" class="text-zinc-400 hover:text-cyan-400 transition-colors p-2 sm:p-1 text-base sm:text-sm opacity-60 hover:opacity-100" title="编辑方案">✏️</button>
                                 <button onclick="toggleMixupFavoriteAll(${item.adv}, ${currentMixupTab})" class="${favClass} transition-colors p-2 sm:p-1 text-lg sm:text-base" title="${hasFav ? '取消收藏' : '收藏方案'}">${favIcon}</button>
                             </div>
                             <div class="flex items-center gap-3 flex-wrap pr-24 sm:pr-20">
@@ -4580,7 +4698,7 @@
                             </div>
                             <div class="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 flex gap-0.5 opacity-80 group-hover:opacity-100">
                                 <button onclick="copyPlanInfo(\`${mixupCopyText}\`)" class="text-zinc-500 hover:text-cyan-400 transition-colors p-1.5 sm:p-0.5 text-sm sm:text-xs opacity-70 hover:opacity-100" title="复制方案">📋</button>
-                                <button onclick="openMixupEditModal(${item.adv}, ${currentMixupTab})" class="text-zinc-400 hover:text-cyan-400 transition-colors p-1.5 sm:p-0.5 text-sm sm:text-xs" title="编辑方案">✏️</button>
+                                <button onclick="openMixupEditModal(${item.adv}, ${currentMixupTab})" class="text-zinc-400 hover:text-cyan-400 transition-colors p-1.5 sm:p-0.5 text-sm sm:text-xs opacity-60 hover:opacity-100" title="编辑方案">✏️</button>
                                 <button onclick="toggleMixupFavoriteAll(${item.adv}, ${currentMixupTab})" class="${favClass} transition-colors p-1.5 sm:p-0.5 text-sm sm:text-xs" title="${hasFav ? '取消收藏' : '收藏方案'}">${favIcon}</button>
                             </div>
                         </div>
