@@ -42,6 +42,7 @@ CHARACTER_DATA["RYU"] = {
     { "adv": 40, "context": "中驴踢" },
     { "adv": 42, "context": "浮空绿冲-重驴踢" },
     { "adv": 47, "context": "下重脚确反 (2HK)" },
+    { "adv": 40, "context": "版边浮空重升龙" }
   ]
 };
 
