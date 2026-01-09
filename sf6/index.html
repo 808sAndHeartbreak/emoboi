@@ -234,13 +234,14 @@
         }
         
         .fav-card-context {
-            background: var(--theme-primary);
-            color: #000;
+            background: #000;
+            color: #fff;
             font-size: 1rem;
             font-weight: 900;
             padding: 0.5rem 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.02em;
+            border: 2px solid var(--theme-primary);
         }
         
         .fav-card-mixup-tag {
@@ -4360,7 +4361,7 @@
                 meatyGrid.innerHTML = meatyFavs.map(fav => {
                     const contextsHtml = fav.contexts.length > 0 
                         ? fav.contexts.map(ctx => `<span class="fav-card-context">${escapeHtml(ctx)}</span>`).join('')
-                        : '<span class="fav-card-context" style="background: #555; color: #999;">无场景</span>';
+                        : '<span class="fav-card-context" style="background: #000; color: #666; border-color: #222;">无场景</span>';
                     
                     // 解析方案描述：planKey 格式为 "kill1|kill2|meaty"
                     // DIRECT||meaty -> 直接压制
@@ -4407,7 +4408,7 @@
                 mixupGrid.innerHTML = mixupFavs.map(fav => {
                     const contextsHtml = fav.contexts.length > 0 
                         ? fav.contexts.map(ctx => `<span class="fav-card-context">${escapeHtml(ctx)}</span>`).join('')
-                        : '<span class="fav-card-context" style="background: #555; color: #999;">无场景</span>';
+                        : '<span class="fav-card-context" style="background: #000; color: #666; border-color: #222;">无场景</span>';
                     
                     // 解析卡帧描述
                     let planDisplay = fav.killDesc;
@@ -5692,19 +5693,29 @@
             const templateItems = [];
             
             Object.entries(templates).forEach(([id, template]) => {
-                // "我的收藏"和"推荐收藏"不可删除
-                if (id !== 'my' && id !== 'director') {
-                    const favCount = (template.favorites || []).length + (template.mixupFavorites || []).length;
-                    templateItems.push(`
-                        <label class="flex items-center gap-3 p-4 bg-zinc-800/50 border border-zinc-700 cursor-pointer hover:bg-zinc-800 transition-colors">
-                            <input type="checkbox" class="template-delete-checkbox w-5 h-5 accent-red-500 flex-shrink-0" data-template-id="${id}">
+                // "我的收藏"和"推荐收藏"可以重命名，但不可删除
+                const canDelete = id !== 'my' && id !== 'director';
+                const favCount = (template.favorites || []).length + (template.mixupFavorites || []).length;
+                templateItems.push(`
+                    <div class="p-4 bg-zinc-800/50 border border-zinc-700 hover:bg-zinc-800 transition-colors">
+                        <div class="flex items-center gap-3">
+                            ${canDelete ? `
+                                <input type="checkbox" class="template-delete-checkbox w-5 h-5 accent-red-500 flex-shrink-0" data-template-id="${id}">
+                            ` : `
+                                <div class="w-5"></div>
+                            `}
                             <div class="flex-1">
                                 <div class="text-white font-bold">${escapeHtml(template.name)}</div>
                                 <div class="text-xs text-zinc-500 mt-1">${favCount} 个收藏方案</div>
                             </div>
-                        </label>
-                    `);
-                }
+                            <button onclick="openRenameTemplateModal('${id}', '${escapeHtml(template.name).replace(/'/g, "\\'")}')" 
+                                class="text-zinc-400 hover:text-cyan-400 transition-colors p-2 text-sm" 
+                                title="重命名模板">
+                                ✏️
+                            </button>
+                        </div>
+                    </div>
+                `);
             });
             
             const modalHtml = `
@@ -5716,13 +5727,12 @@
                         </div>
                         ${templateItems.length > 0 ? `
                             <div class="mb-4">
-                                <div class="text-sm text-zinc-400 mb-3">选择要删除的模板：</div>
                                 <div class="space-y-2 mb-6">
                                     ${templateItems.join('')}
                                 </div>
                             </div>
                             <div class="flex gap-3">
-                                <button onclick="closeTemplateManageModal()" class="flex-1 px-4 py-2.5 bg-zinc-700 text-zinc-300 hover:bg-zinc-600 transition-colors text-sm font-bold">取消</button>
+                                <button onclick="closeTemplateManageModal()" class="flex-1 px-4 py-2.5 bg-zinc-700 text-zinc-300 hover:bg-zinc-600 transition-colors text-sm font-bold">关闭</button>
                                 <button onclick="confirmDeleteTemplates()" class="flex-1 px-4 py-2.5 bg-red-600 text-white hover:bg-red-500 transition-colors text-sm font-bold">删除选中</button>
                             </div>
                         ` : `
@@ -5740,6 +5750,104 @@
         function closeTemplateManageModal() {
             const modal = document.getElementById('templateManageModal');
             if (modal) modal.remove();
+        }
+        
+        // 打开重命名模板弹窗
+        function openRenameTemplateModal(templateId, currentName) {
+            const modalHtml = `
+                <div id="renameTemplateModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 z-[60]" onclick="if(event.target === this) closeRenameTemplateModal()">
+                    <div class="bg-zinc-900 border-2 w-full max-w-md p-6" style="border-color: var(--theme-primary);">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl font-bold text-white">重命名模板</h2>
+                            <button onclick="closeRenameTemplateModal()" class="text-zinc-500 hover:text-white text-2xl p-2 -m-2" title="关闭">&times;</button>
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-sm text-zinc-400 mb-2">新模板名称：</label>
+                            <input type="text" id="renameTemplateInput" 
+                                class="w-full bg-black border border-zinc-700 px-4 py-3 text-white text-sm focus:border-cyan-500 focus:outline-none transition-colors"
+                                value="${escapeHtml(currentName)}"
+                                placeholder="输入新名称..."
+                                maxlength="30"
+                                onkeydown="if(event.key === 'Enter') confirmRenameTemplate('${templateId}')">
+                            <div class="text-xs text-zinc-500 mt-2">最多30个字符</div>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="closeRenameTemplateModal()" class="flex-1 px-4 py-2.5 bg-zinc-700 text-zinc-300 hover:bg-zinc-600 transition-colors text-sm font-bold">取消</button>
+                            <button onclick="confirmRenameTemplate('${templateId}')" class="flex-1 px-4 py-2.5 bg-cyan-600 text-white hover:bg-cyan-500 transition-colors text-sm font-bold">确认</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // 聚焦并选中输入框文本
+            setTimeout(() => {
+                const input = document.getElementById('renameTemplateInput');
+                if (input) {
+                    input.focus();
+                    input.select();
+                }
+            }, 100);
+        }
+        
+        function closeRenameTemplateModal() {
+            const modal = document.getElementById('renameTemplateModal');
+            if (modal) modal.remove();
+        }
+        
+        // 确认重命名模板
+        function confirmRenameTemplate(templateId) {
+            const input = document.getElementById('renameTemplateInput');
+            const newName = input.value.trim();
+            
+            if (!newName) {
+                alert('模板名称不能为空');
+                input.focus();
+                return;
+            }
+            
+            if (newName.length > 30) {
+                alert('模板名称最多30个字符');
+                input.focus();
+                return;
+            }
+            
+            const char = state.currentCharacter;
+            const template = state.favoriteTemplates[char]?.templates[templateId];
+            
+            if (!template) {
+                alert('模板不存在');
+                closeRenameTemplateModal();
+                return;
+            }
+            
+            // 检查是否与其他模板重名
+            const templates = getAllTemplates();
+            const isDuplicate = Object.entries(templates).some(([id, t]) => 
+                id !== templateId && t.name === newName
+            );
+            
+            if (isDuplicate) {
+                alert('已存在同名模板，请使用其他名称');
+                input.focus();
+                return;
+            }
+            
+            // 重命名模板（只修改name属性，不改变templateId）
+            template.name = newName;
+            saveFavoriteTemplates();
+            
+            // 更新UI
+            updateTemplateSelector();
+            renderFavoritesView();
+            
+            // 关闭两个弹窗
+            closeRenameTemplateModal();
+            closeTemplateManageModal();
+            
+            // 重新打开管理弹窗以显示更新后的名称
+            setTimeout(() => openTemplateManageModal(), 100);
         }
         
         function confirmDeleteTemplates() {
