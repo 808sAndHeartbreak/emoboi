@@ -308,6 +308,41 @@
             letter-spacing: 0.05em;
         }
 
+        .quiz-stats {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .quiz-stat-item {
+            background: rgba(170, 255, 240, 0.08);
+            border: 1px solid var(--ui-border);
+            padding: 8px 16px;
+            border-radius: 4px;
+            color: var(--toxic-cyan);
+            font-weight: bold;
+        }
+
+        .quiz-reset-btn {
+            background: rgba(248, 113, 113, 0.1);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            color: #f87171;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quiz-reset-btn:hover {
+            background: rgba(248, 113, 113, 0.2);
+            border-color: #f87171;
+        }
+
         .quiz-settings {
             display: flex;
             flex-direction: column;
@@ -508,6 +543,32 @@
             font-family: 'Space Mono', monospace;
             font-size: 2rem;
             letter-spacing: 0.1em;
+        }
+
+        .quiz-input-field {
+            width: 100%;
+            max-width: 300px;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--ui-border);
+            color: var(--drain-white);
+            font-family: 'Space Mono', monospace;
+            font-size: 1.4rem;
+            text-align: center;
+            margin-bottom: 20px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-input-field:focus {
+            border-color: var(--toxic-cyan);
+            background: rgba(170, 255, 240, 0.08);
+            box-shadow: 0 0 15px rgba(170, 255, 240, 0.3);
+        }
+
+        .quiz-input-field.kana-input {
+            font-family: "Hiragino Mincho ProN", serif;
+            font-size: 2rem;
         }
 
         .quiz-kana-picker-btn {
@@ -1500,6 +1561,11 @@
             <!-- 设置界面 -->
             <div id="quiz-setup">
                 <h2 class="quiz-title">† 五十音测试 †</h2>
+                <!-- 答题统计 -->
+                <div class="quiz-stats">
+                    <div class="quiz-stat-item" id="quiz-stats-display">0/0</div>
+                    <button class="quiz-reset-btn" id="quiz-reset-stats">重置战绩</button>
+                </div>
                 <div class="quiz-settings">
                     <div class="quiz-setting-group">
                         <label class="quiz-setting-label">假名类型</label>
@@ -1544,8 +1610,8 @@
 
                 <!-- 填空题区域 -->
                 <div class="quiz-fill-area" id="quiz-fill-area" style="display: none;">
-                    <div class="quiz-answer-display" id="quiz-answer-display">_</div>
-                    <button class="quiz-kana-picker-btn" id="open-kana-picker">选择答案</button>
+                    <input type="text" class="quiz-input-field" id="quiz-input" placeholder="输入答案..." autocomplete="off">
+                    <button class="quiz-kana-picker-btn" id="open-kana-picker">或点击选择</button>
                     <div class="quiz-fill-buttons">
                         <button class="quiz-submit-btn" id="quiz-submit">提交答案</button>
                         <button class="quiz-skip-btn" id="quiz-skip">显示答案</button>
@@ -1902,6 +1968,38 @@
     };
     let currentQuestion = null;
     let userAnswer = '';
+    let quizStats = { correct: 0, total: 0 };
+
+    // 从localStorage加载统计数据
+    function loadQuizStats() {
+        const saved = localStorage.getItem('gojuon-quiz-stats');
+        if (saved) {
+            quizStats = JSON.parse(saved);
+            updateStatsDisplay();
+        }
+    }
+
+    // 保存统计数据
+    function saveQuizStats() {
+        localStorage.setItem('gojuon-quiz-stats', JSON.stringify(quizStats));
+    }
+
+    // 更新统计显示
+    function updateStatsDisplay() {
+        const display = document.getElementById('quiz-stats-display');
+        if (display) {
+            display.textContent = `${quizStats.correct}/${quizStats.total}`;
+        }
+    }
+
+    // 重置统计数据
+    function resetQuizStats() {
+        if (confirm('确定要重置战绩吗？')) {
+            quizStats = { correct: 0, total: 0 };
+            saveQuizStats();
+            updateStatsDisplay();
+        }
+    }
 
     function initQuiz() {
         const quizBtn = document.getElementById('quiz-btn');
@@ -1911,10 +2009,18 @@
         const quizSetup = document.getElementById('quiz-setup');
         const quizQuestionArea = document.getElementById('quiz-question-area');
 
+        // 加载统计数据
+        loadQuizStats();
+
         // 打开测试弹窗
         quizBtn.addEventListener('click', () => {
             quizModal.classList.add('active');
             showQuizSetup();
+        });
+
+        // 重置战绩
+        document.getElementById('quiz-reset-stats').addEventListener('click', () => {
+            resetQuizStats();
         });
 
         // 关闭测试弹窗
@@ -1958,6 +2064,13 @@
         // 填空题提交
         document.getElementById('quiz-submit').addEventListener('click', () => {
             checkFillAnswer();
+        });
+
+        // 填空题输入框回车提交
+        document.getElementById('quiz-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                checkFillAnswer();
+            }
         });
 
         // 填空题显示答案
@@ -2052,8 +2165,11 @@
                 quizChoices.style.display = 'none';
                 quizChoiceSkip.style.display = 'none';
                 quizFillArea.style.display = 'block';
-                document.getElementById('quiz-answer-display').textContent = '_';
-                document.getElementById('quiz-answer-display').classList.add('romaji');
+                const inputField = document.getElementById('quiz-input');
+                inputField.value = '';
+                inputField.classList.remove('kana-input');
+                inputField.placeholder = '输入罗马音...';
+                inputField.focus();
             }
         } else {
             // 读音 → 假名
@@ -2070,8 +2186,11 @@
                 quizChoices.style.display = 'none';
                 quizChoiceSkip.style.display = 'none';
                 quizFillArea.style.display = 'block';
-                document.getElementById('quiz-answer-display').textContent = '_';
-                document.getElementById('quiz-answer-display').classList.remove('romaji');
+                const inputField = document.getElementById('quiz-input');
+                inputField.value = '';
+                inputField.classList.add('kana-input');
+                inputField.placeholder = '输入假名...';
+                inputField.focus();
             }
         }
     }
@@ -2157,8 +2276,7 @@
                 btn.style.fontSize = '0.9rem';
                 btn.textContent = item.r;
                 btn.addEventListener('click', () => {
-                    userAnswer = item.r;
-                    document.getElementById('quiz-answer-display').textContent = item.r;
+                    document.getElementById('quiz-input').value = item.r;
                     picker.classList.remove('active');
                 });
                 grid.appendChild(btn);
@@ -2174,8 +2292,7 @@
                     const kana = currentQuestion.kanaType === 'hira' ? item.h : item.k;
                     btn.textContent = kana;
                     btn.addEventListener('click', () => {
-                        userAnswer = kana;
-                        document.getElementById('quiz-answer-display').textContent = kana;
+                        document.getElementById('quiz-input').value = kana;
                         picker.classList.remove('active');
                     });
                 } else {
@@ -2190,20 +2307,26 @@
 
     // 检查填空题答案
     function checkFillAnswer() {
-        if (!userAnswer) {
-            alert('请先选择答案');
+        const inputField = document.getElementById('quiz-input');
+        const inputValue = inputField.value.trim();
+        
+        if (!inputValue) {
+            alert('请先输入答案');
             return;
         }
         
         let correctAnswer;
         if (quizSettings.direction === 'kanaToRomaji') {
             correctAnswer = currentQuestion.romaji;
+            // 罗马音不区分大小写
+            const isCorrect = inputValue.toLowerCase() === correctAnswer.toLowerCase();
+            showResult(isCorrect, correctAnswer);
         } else {
             correctAnswer = currentQuestion.kana;
+            // 假名需要严格匹配
+            const isCorrect = inputValue === correctAnswer;
+            showResult(isCorrect, correctAnswer);
         }
-        
-        const isCorrect = userAnswer === correctAnswer;
-        showResult(isCorrect, correctAnswer);
     }
 
     // 跳过题目，显示答案
@@ -2248,6 +2371,14 @@
             const isCorrect = status === true;
             result.classList.add('active', isCorrect ? 'correct' : 'wrong');
             resultText.textContent = isCorrect ? '正确!' : '错误';
+            
+            // 更新统计数据
+            quizStats.total++;
+            if (isCorrect) {
+                quizStats.correct++;
+            }
+            saveQuizStats();
+            updateStatsDisplay();
             
             if (!isCorrect) {
                 correctAnswerEl.innerHTML = `正确答案: <span>${correctAnswer}</span>`;
