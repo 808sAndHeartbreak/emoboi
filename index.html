@@ -89,25 +89,6 @@
             50% { opacity: 0.85; }
         }
 
-        /* ========== 光晕脉动 ========== */
-        .ambient-glow {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            width: 80vw;
-            height: 80vh;
-            transform: translate(-50%, -50%);
-            background: radial-gradient(ellipse at center, rgba(188, 254, 45, 0.03) 0%, transparent 60%);
-            pointer-events: none;
-            z-index: 1;
-            animation: glowPulse 8s ease-in-out infinite;
-        }
-
-        @keyframes glowPulse {
-            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.1); }
-        }
-
         /* ========== 自定义光标 ========== */
         #cursor-dot {
             position: fixed;
@@ -121,6 +102,10 @@
             z-index: 9999;
             mix-blend-mode: difference;
             will-change: transform;
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            perspective: 1000px;
+            transition: all 0.15s ease-out;
         }
 
         #cursor-ring {
@@ -134,14 +119,44 @@
             pointer-events: none;
             z-index: 9998;
             will-change: transform;
-            transition: width 0.2s, height 0.2s, border-color 0.2s, background-color 0.2s;
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            perspective: 1000px;
+            transition: all 0.15s ease-out;
         }
 
         #cursor-ring.hover {
-            width: 60px;
-            height: 60px;
+            width: 65px;
+            height: 65px;
+            border-width: 2px;
             border-color: var(--acid-lime);
-            background-color: rgba(188, 254, 45, 0.1);
+            background-color: rgba(188, 254, 45, 0.22);
+            box-shadow: 
+                0 0 20px rgba(188, 254, 45, 0.4),
+                inset 0 0 15px rgba(188, 254, 45, 0.15);
+            animation: subtlePulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes subtlePulse {
+            0%, 100% { 
+                transform: translate3d(var(--ring-x), var(--ring-y), 0) scale(1);
+                opacity: 1;
+            }
+            50% { 
+                transform: translate3d(var(--ring-x), var(--ring-y), 0) scale(0.92);
+                opacity: 0.85;
+            }
+        }
+
+        #cursor-dot.hover {
+            width: 13px;
+            height: 13px;
+            background: #9d4edd;
+            mix-blend-mode: normal;
+            box-shadow: 
+                0 0 12px rgba(157, 78, 221, 0.8),
+                0 0 20px rgba(157, 78, 221, 0.4),
+                0 0 30px rgba(157, 78, 221, 0.2);
         }
 
         @media (max-width: 768px) {
@@ -159,7 +174,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.5s, visibility 0.5s;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
         }
 
         #preloader.hidden {
@@ -167,16 +182,56 @@
             visibility: hidden;
         }
 
-        .loader-icon {
-            width: 48px;
-            height: 48px;
-            border: 2px solid var(--acid-lime);
-            animation: loaderSpin 1s linear infinite;
+        .loader-symbol {
+            font-family: 'Times New Roman', Georgia, serif;
+            font-size: clamp(5rem, 15vw, 10rem);
+            font-weight: 300;
+            color: white;
+            letter-spacing: 0.1em;
+            animation: symbolPulse 2s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
         }
 
-        @keyframes loaderSpin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        @keyframes symbolPulse {
+            0%, 100% { 
+                opacity: 0.3;
+                transform: scale(1);
+                filter: blur(0px);
+            }
+            50% { 
+                opacity: 1;
+                transform: scale(1.05);
+                filter: blur(0px);
+            }
+        }
+
+        /* 偶尔的故障闪烁 */
+        .loader-symbol::before {
+            content: '℮';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: rgba(188, 254, 45, 0.5);
+            animation: glitchShift 3s ease-in-out infinite;
+        }
+
+        @keyframes glitchShift {
+            0%, 90%, 100% { 
+                transform: translate(0, 0);
+                opacity: 0;
+            }
+            92% { 
+                transform: translate(-3px, 1px);
+                opacity: 0.8;
+            }
+            94% { 
+                transform: translate(2px, -1px);
+                opacity: 0.6;
+            }
+            96% {
+                transform: translate(-1px, 2px);
+                opacity: 0.4;
+            }
         }
 
         /* ========== 故障文本效果 ========== */
@@ -285,7 +340,7 @@
             font-weight: 900;
             line-height: 1;
             letter-spacing: -0.04em;
-            transition: transform 0.5s ease, font-style 0.3s ease;
+            transition: transform 0.5s ease;
             font-family: 'Syne', sans-serif;
             white-space: nowrap;
         }
@@ -303,7 +358,6 @@
             font-family: 'Syne', sans-serif;
             font-weight: 800;
             white-space: nowrap;
-            transition: font-style 0.3s ease;
         }
 
         .nav-item:hover .pinyin {
@@ -325,8 +379,12 @@
                 top: 1rem;
             }
             .collage-img {
-                opacity: 0.2;
-                transform: scale(0.5) !important;
+                opacity: 0.15 !important;
+                transform: scale(0.4) !important;
+            }
+            /* 移动端隐藏部分图片，避免过于拥挤 */
+            .collage-img:nth-child(n+18) {
+                display: none;
             }
         }
 
@@ -381,6 +439,7 @@
             text-align: right;
             letter-spacing: 0.05em;
             animation: logoBreathe 5s ease-in-out infinite;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
         }
 
         @keyframes logoBreathe {
@@ -482,6 +541,25 @@
 
         .collage-img.invert {
             filter: invert(1) contrast(1.2);
+        }
+
+        /* ========== 全屏菜单样式 ========== */
+        .menu-link {
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-link:hover .menu-index {
+            color: var(--acid-lime);
+        }
+        
+        .menu-link .menu-index {
+            transition: color 0.3s ease;
+        }
+
+        .group:hover .group-hover\:text-lime-400 {
+            color: #a3e635;
         }
 
         /* ========== 工具类 ========== */
@@ -593,14 +671,12 @@
 
     <!-- 背景层 -->
     <div class="bg-overlay"></div>
-    <div class="ambient-glow"></div>
     <div class="noise-overlay"></div>
     <div class="scanline"></div>
 
     <!-- 预加载器 -->
     <div id="preloader">
-        <div class="loader-icon mb-6"></div>
-        <p class="mono text-[10px] tracking-[0.4em] text-zinc-500 animate-pulse">LOADING_EMOBOI_OS...</p>
+        <div class="loader-symbol" style="position: relative;">℮</div>
     </div>
 
     <!-- 浮动 ASCII 装饰 -->
@@ -617,7 +693,7 @@
 ░▒▓█ DRAIN █▓▒░</div>
 
     <!-- 底部跑马灯 -->
-    <div class="fixed bottom-0 w-full bg-white text-black py-1.5 overflow-hidden z-50 text-xs font-bold uppercase tracking-wider">
+    <div class="fixed bottom-0 w-full py-1.5 overflow-hidden z-50 text-xs font-bold uppercase tracking-wider" style="background: rgba(30, 30, 30, 0.85); color: #555; border-top: 1px solid rgba(255,255,255,0.06);">
         <div class="marquee-track">
             <span class="marquee-content">EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ </span>
             <span class="marquee-content">EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ </span>
@@ -627,7 +703,7 @@
     <!-- 导航栏 -->
     <nav class="fixed top-0 left-0 w-full z-40 px-5 md:px-8 flex justify-between items-center backdrop-blur-md" style="height: 52px; background: linear-gradient(180deg, rgba(10,10,10,0.98) 0%, rgba(5,5,5,0.95) 100%); border-bottom: 1px solid rgba(188,254,45,0.15); box-shadow: 0 1px 20px rgba(0,0,0,0.5), 0 1px 0 rgba(188,254,45,0.08);">
         <div class="flex items-center gap-2 md:gap-3">
-            <img src="asset/Ecco2k-E.jpg" alt="E" class="w-7 h-7 md:w-8 md:h-8 object-contain">
+            <img src="asset/logo-e.jpg" alt="E" class="w-7 h-7 md:w-8 md:h-8 object-contain">
             <span class="font-black tracking-tighter text-base md:text-lg">EMOBOI</span>
         </div>
         <button id="menu-btn" class="p-2.5 border border-zinc-800 hover:bg-white hover:text-black transition-all">
@@ -636,15 +712,31 @@
     </nav>
 
     <!-- 全屏菜单 -->
-    <div id="fullscreen-menu" class="fixed inset-0 bg-black z-[45] hidden items-center justify-center">
-        <button id="close-menu" class="absolute top-6 right-6 p-2 border border-zinc-700 hover:bg-white hover:text-black transition-all">
+    <div id="fullscreen-menu" class="fixed inset-0 hidden items-center justify-center" style="background: rgba(0,0,0,0.97); z-index: 9995;">
+        <!-- 背景装饰大字 -->
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
+            <span class="menu-bg-text" style="font-family: 'Archivo Black', 'Arial Black', sans-serif; font-size: clamp(20vw, 35vw, 45vw); font-style: italic; color: rgba(255,255,255,0.02); letter-spacing: -0.05em; line-height: 0.8;">MENU</span>
+        </div>
+        <button id="close-menu" class="absolute top-6 right-6 p-2 border border-zinc-700 hover:bg-white hover:text-black transition-all" style="z-index: 10;">
             <i data-lucide="x" class="w-6 h-6"></i>
         </button>
-        <div class="flex flex-col gap-6 text-center">
-            <a href="sf6/" onclick="closeMenu()" class="text-4xl md:text-7xl font-black italic tracking-tighter hover:text-lime-400 transition-colors uppercase">SF6 FRAME LAB</a>
-            <a href="gojuon/" onclick="closeMenu()" class="text-4xl md:text-7xl font-black italic tracking-tighter hover:text-lime-400 transition-colors uppercase">GOJUON</a>
-            <a href="gallery/" onclick="closeMenu()" class="text-4xl md:text-7xl font-black italic tracking-tighter hover:text-lime-400 transition-colors uppercase">MY GALLERY</a>
-            <a href="javascript:void(0)" onclick="closeMenu(); alert('开发中')" class="text-4xl md:text-7xl font-black italic tracking-tighter hover:text-lime-400 transition-colors uppercase">I AM MUSIC</a>
+        <div class="flex flex-col gap-4 text-center relative" style="z-index: 5;">
+            <a href="sf6/" onclick="closeMenu()" class="menu-link group flex items-center justify-center gap-4">
+                <span class="menu-index mono text-zinc-600 text-sm">01</span>
+                <span class="text-4xl md:text-7xl font-black italic tracking-tighter group-hover:text-lime-400 transition-colors uppercase">SF6 FRAME LAB</span>
+            </a>
+            <a href="gojuon/" onclick="closeMenu()" class="menu-link group flex items-center justify-center gap-4">
+                <span class="menu-index mono text-zinc-600 text-sm">02</span>
+                <span class="text-4xl md:text-7xl font-black italic tracking-tighter group-hover:text-lime-400 transition-colors uppercase">GOJUON</span>
+            </a>
+            <a href="gallery/" onclick="closeMenu()" class="menu-link group flex items-center justify-center gap-4">
+                <span class="menu-index mono text-zinc-600 text-sm">03</span>
+                <span class="text-4xl md:text-7xl font-black italic tracking-tighter group-hover:text-lime-400 transition-colors uppercase">MY GALLERY</span>
+            </a>
+            <a href="javascript:void(0)" onclick="closeMenu(); alert('开发中')" class="menu-link group flex items-center justify-center gap-4">
+                <span class="menu-index mono text-zinc-600 text-sm">04</span>
+                <span class="text-4xl md:text-7xl font-black italic tracking-tighter group-hover:text-lime-400 transition-colors uppercase">I AM MUSIC</span>
+            </a>
         </div>
     </div>
 
@@ -653,55 +745,118 @@
         EMO<br>BOI
     </div>
 
-    <!-- ========== 拼贴装饰图片 (12张，优化布局) ========== -->
+    <!-- ========== 拼贴装饰图片 (27张，优化布局 - 左中右均衡分布) ========== -->
     
-    <!-- 上方偏右 - 哥特吊灯横幅 -->
+    <!-- 上方横幅 - 哥特吊灯横幅 -->
     <img src="asset/goth-banner.jpg" alt="goth-banner" class="collage-img" loading="lazy"
-         style="top: 56px; right: 12%; width: 320px; transform: rotate(1deg); opacity: 0.4;">
+         style="top: 56px; left: 50%; transform: translateX(-50%) rotate(1deg); width: 340px; opacity: 0.48;">
     
-    <!-- 右侧中间 - 哥特猫 -->
-    <img src="asset/goth-cat.jpg" alt="goth-cat" class="collage-img invert" loading="lazy"
-         style="top: 45%; right: 2%; width: 100px; transform: rotate(-8deg); opacity: 0.42;">
+    <!-- === 左侧区域 === -->
+    <!-- 左上角 - 混沌武士仁 -->
+    <img src="asset/amuraichamploo-jin.jpg" alt="jin" class="collage-img" loading="lazy"
+         style="top: 14%; left: 5%; width: 105px; transform: rotate(-10deg); opacity: 0.42; filter: invert(1);">
     
-    <!-- 中上偏左 - 眼中人 -->
+    <!-- 左上中 - 眼中人 -->
     <img src="asset/eye-soul.jpg" alt="eye-soul" class="collage-img" loading="lazy"
-         style="top: 12%; left: 24%; width: 95px; transform: rotate(-5deg); opacity: 0.3; filter: invert(1);">
+         style="top: 10%; left: 18%; width: 95px; transform: rotate(-5deg); opacity: 0.4; filter: invert(1);">
     
-    <!-- 右下角 - 故障夜神月 -->
-    <img src="asset/drained-yagami.jpg" alt="drained-yagami" class="collage-img" loading="lazy"
-         style="bottom: 4%; right: 6%; width: 130px; transform: rotate(6deg); opacity: 0.5;">
+    <!-- 左上中区域 - Misa条纹 -->
+    <img src="asset/deathnote-misa-striped.jpg" alt="misa-striped" class="collage-img" loading="lazy"
+         style="top: 28%; left: 12%; width: 95px; transform: rotate(12deg); opacity: 0.4; filter: invert(1);">
     
     <!-- 左侧中间 - L头发 -->
-    <img src="asset/L-hair.jpg" alt="L-hair" class="collage-img" loading="lazy"
-         style="top: 38%; left: 2%; width: 85px; transform: rotate(-12deg); opacity: 0.35; filter: invert(1);">
+    <img src="asset/deathnote-l-hair.jpg" alt="L-hair" class="collage-img" loading="lazy"
+         style="top: 42%; left: 3%; width: 85px; transform: rotate(-12deg); opacity: 0.45; filter: invert(1);">
     
-    <!-- 中心偏左 - 我爱罗愛字 -->
-    <img src="asset/gaara-ai.jpg" alt="gaara-ai" class="collage-img" loading="lazy"
-         style="top: 48%; left: 38%; width: 100px; transform: rotate(18deg); opacity: 0.28; filter: invert(1);">
+    <!-- 左侧偏下 - 我爱罗愛字 -->
+    <img src="asset/naruto-gaara-ai.jpg" alt="gaara-ai" class="collage-img" loading="lazy"
+         style="top: 48%; left: 13%; width: 100px; transform: rotate(18deg); opacity: 0.38; filter: invert(1);">
     
-    <!-- 右上区域 - 小猫剪影 -->
-    <img src="asset/kitten.jpg" alt="kitten" class="collage-img" loading="lazy"
-         style="top: 25%; right: 40%; width: 110px; transform: rotate(-8deg); opacity: 0.32; filter: invert(1);">
+    <!-- 左下区域 - 双猫 -->
+    <img src="asset/cat-twin.jpg" alt="twin-cats" class="collage-img" loading="lazy"
+         style="bottom: 28%; left: 6%; width: 90px; transform: rotate(3deg); opacity: 0.38; filter: invert(1);">
     
-    <!-- 中下偏左 - 双猫 -->
-    <img src="asset/twin-cats.jpg" alt="twin-cats" class="collage-img" loading="lazy"
-         style="bottom: 30%; left: 26%; width: 90px; transform: rotate(3deg); opacity: 0.28; filter: invert(1);">
-    
-    <!-- 中下偏右 - 祈祷男孩 -->
-    <img src="asset/drained-pray.jpg" alt="drained-pray" class="collage-img" loading="lazy"
-         style="bottom: 26%; right: 20%; width: 120px; transform: rotate(-3deg); opacity: 0.38;">
-    
-    <!-- 右上区域偏下 - 夜神月 -->
-    <img src="asset/light-yagami.jpg" alt="light-yagami" class="collage-img" loading="lazy"
-         style="top: 36%; right: 18%; width: 150px; transform: rotate(4deg); opacity: 0.45;">
+    <!-- 左中下区域 - L和Misa咖啡厅 -->
+    <img src="asset/deathnote-l-misa-cafe.jpg" alt="l-misa-cafe" class="collage-img" loading="lazy"
+         style="bottom: 16%; left: 16%; width: 125px; transform: rotate(-5deg); opacity: 0.4; filter: invert(1);">
     
     <!-- 左下角 - Lil Peep -->
-    <img src="asset/lil-peep.jpg" alt="lil-peep" class="collage-img" loading="lazy"
-         style="bottom: 8%; left: 2%; width: 100px; transform: rotate(-6deg); opacity: 0.55; filter: grayscale(100%) contrast(1.3);">
+    <img src="asset/artist-lil-peep.jpg" alt="lil-peep" class="collage-img" loading="lazy"
+         style="bottom: 5%; left: 3%; width: 100px; transform: rotate(-6deg); opacity: 0.65; filter: grayscale(100%) contrast(1.3);">
     
-    <!-- 中心偏右 - 故障天使 -->
+    <!-- === 中间区域 === -->
+    <!-- 上方中左 - 骷髅女孩 -->
+    <img src="asset/skeleton-girl.jpg" alt="skeleton-girl" class="collage-img" loading="lazy"
+         style="top: 16%; left: 38%; width: 98px; transform: rotate(-2deg); opacity: 0.35; filter: invert(1);">
+    
+    <!-- 上方中右 - 朋克男孩故障 -->
+    <img src="asset/punk-boy-glitch.jpg" alt="punk-boy-glitch" class="collage-img" loading="lazy"
+         style="top: 22%; right: 38%; width: 105px; transform: rotate(-5deg); opacity: 0.35; filter: invert(1);">
+    
+    <!-- 中间偏上 - 日语拼贴 -->
+    <img src="asset/nihongo-collage.jpg" alt="nihongo-collage" class="collage-img" loading="lazy"
+         style="top: 38%; left: 45%; width: 155px; transform: rotate(8deg); opacity: 0.32; filter: invert(1);">
+    
+    <!-- 中间 - 寄生兽 -->
+    <img src="asset/parasyte-izumi.jpg" alt="parasyte" class="collage-img" loading="lazy"
+         style="top: 52%; left: 38%; width: 95px; transform: rotate(5deg); opacity: 0.4; filter: invert(1);">
+    
+    <!-- 下方中左 - 故障小猫 -->
+    <img src="asset/cat-kitten-glitch.jpg" alt="cat-kitten-glitch" class="collage-img" loading="lazy"
+         style="bottom: 18%; left: 32%; width: 110px; transform: rotate(10deg); opacity: 0.4; filter: invert(1);">
+    
+    <!-- 下方中间 - L穿I AM MUSIC -->
+    <img src="asset/deathnote-l-iammusic.jpg" alt="l-iammusic" class="collage-img" loading="lazy"
+         style="bottom: 12%; left: 42%; width: 130px; transform: rotate(5deg); opacity: 0.38; filter: invert(1);">
+    
+    <!-- 下方中右 - 故障头部 -->
+    <img src="asset/glitch-error-head.jpg" alt="errorhead" class="collage-img" loading="lazy"
+         style="bottom: 8%; right: 42%; width: 120px; transform: rotate(-9deg); opacity: 0.4; filter: invert(1);">
+    
+    <!-- === 右侧区域 === -->
+    <!-- 右上角 - Misa翅膀 -->
+    <img src="asset/deathnote-misa-wings.png" alt="misa-wings" class="collage-img" loading="lazy"
+         style="top: 12%; right: 4%; width: 115px; transform: rotate(7deg); opacity: 0.45; filter: invert(1);">
+    
+    <!-- 右上中 - 故障头晕女孩 -->
+    <img src="asset/glitch-girl-dizzy.jpg" alt="dizzygirl" class="collage-img" loading="lazy"
+         style="top: 18%; right: 20%; width: 135px; transform: rotate(-7deg); opacity: 0.4; filter: invert(1);">
+    
+    <!-- 右上偏中 - 小猫剪影 -->
+    <img src="asset/cat-kitten.jpg" alt="kitten" class="collage-img" loading="lazy"
+         style="top: 28%; right: 12%; width: 110px; transform: rotate(-8deg); opacity: 0.42; filter: invert(1);">
+    
+    <!-- 右侧上部 - 哥特猫 -->
+    <img src="asset/cat-goth.jpg" alt="goth-cat" class="collage-img invert" loading="lazy"
+         style="top: 38%; right: 3%; width: 100px; transform: rotate(-8deg); opacity: 0.52;">
+    
+    <!-- 右侧中上 - 夜神月 -->
+    <img src="asset/deathnote-light-yagami.jpg" alt="light-yagami" class="collage-img" loading="lazy"
+         style="top: 48%; right: 22%; width: 150px; transform: rotate(4deg); opacity: 0.55;">
+    
+    <!-- 右侧中部 - 故障坐着的女孩 -->
+    <img src="asset/glitch-girl-sitting.jpg" alt="glitch-girl-sitting" class="collage-img" loading="lazy"
+         style="top: 58%; right: 3%; width: 145px; transform: rotate(2deg); opacity: 0.45; filter: invert(1);">
+    
+    <!-- 右下中 - 像素天使 -->
+    <img src="asset/pixel-angel.jpg" alt="pixel-angel" class="collage-img" loading="lazy"
+         style="bottom: 28%; right: 32%; width: 112px; transform: rotate(-4deg); opacity: 0.5;">
+    
+    <!-- 右下区域 - 祈祷男孩 -->
+    <img src="asset/slowdamage-towa.jpg" alt="towa" class="collage-img" loading="lazy"
+         style="bottom: 18%; right: 12%; width: 120px; transform: rotate(-3deg); opacity: 0.48;">
+    
+    <!-- 右下中 - 故障天使 -->
     <img src="asset/glitch-angel.jpg" alt="glitch-angel" class="collage-img" loading="lazy"
-         style="bottom: 20%; right: 30%; width: 180px; transform: rotate(3deg); opacity: 0.55;">
+         style="bottom: 10%; right: 24%; width: 126px; transform: rotate(3deg); opacity: 0.65;">
+    
+    <!-- 右下角 - 故障夜神月 -->
+    <img src="asset/deathnote-light-yagami-glitch.jpg" alt="light-yagami-glitch" class="collage-img" loading="lazy"
+         style="bottom: 4%; right: 5%; width: 130px; transform: rotate(6deg); opacity: 0.6;">
+    
+    <!-- 右侧中下 - 摇滚男孩 (移到右下) -->
+    <img src="asset/rockstar-boy.jpg" alt="rockstar-boy" class="collage-img" loading="lazy"
+         style="bottom: 32%; right: 12%; width: 145px; transform: rotate(7deg); opacity: 0.38; filter: invert(1);">
 
     <!-- ==================== HERO SECTION ==================== -->
     <section id="hero" class="relative h-screen flex flex-col items-center justify-center px-6">
@@ -744,9 +899,8 @@
             </nav>
 
         <!-- 底部版权信息 -->
-        <footer class="fixed bottom-10 w-full px-8 z-10" style="font-family: 'Syne', sans-serif;">
+        <footer class="fixed w-full px-8 z-10" style="font-family: 'Syne', sans-serif; bottom: 32px;">
             <div class="text-[10px] tracking-widest text-gray-500">
-                <span class="uppercase">Design by 天 // ℮</span> <br>
                 天的QQ空间 <span style="font-family: 'Space Mono', 'Courier New', monospace;">^^</span>
             </div>
         </footer>
@@ -760,29 +914,88 @@
         let mouseX = 0, mouseY = 0;
         let dotX = 0, dotY = 0;
         let ringX = 0, ringY = 0;
+        let rafId = null;
+        let isMoving = false;
+        let idleTimeout = null;
 
+        // 使用 passive 事件监听器优化性能
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
-        });
+            isMoving = true;
+            
+            // 清除空闲超时
+            clearTimeout(idleTimeout);
+            
+            // 如果动画未运行，启动它
+            if (!rafId) {
+                rafId = requestAnimationFrame(animateCursor);
+            }
+            
+            // 设置空闲检测
+            idleTimeout = setTimeout(() => {
+                isMoving = false;
+            }, 100);
+        }, { passive: true });
 
         function animateCursor() {
-            dotX += (mouseX - dotX) * 0.3;
-            dotY += (mouseY - dotY) * 0.3;
-            ringX += (mouseX - ringX) * 0.15;
-            ringY += (mouseY - ringY) * 0.15;
+            // 提高插值系数以减少延迟感
+            const dotSpeed = 0.5;  // 从 0.3 提高到 0.5
+            const ringSpeed = 0.22; // 从 0.15 提高到 0.22
+            
+            // 计算移动距离
+            const dotDx = mouseX - dotX;
+            const dotDy = mouseY - dotY;
+            const ringDx = mouseX - ringX;
+            const ringDy = mouseY - ringY;
+            
+            // 应用缓动
+            dotX += dotDx * dotSpeed;
+            dotY += dotDy * dotSpeed;
+            ringX += ringDx * ringSpeed;
+            ringY += ringDy * ringSpeed;
 
-            cursorDot.style.transform = `translate3d(${dotX - 5}px, ${dotY - 5}px, 0)`;
-            cursorRing.style.transform = `translate3d(${ringX - 20}px, ${ringY - 20}px, 0)`;
+            // 使用整数像素值避免亚像素渲染
+            const dotPosX = Math.round(dotX - 5);
+            const dotPosY = Math.round(dotY - 5);
+            const ringPosX = Math.round(ringX - 20);
+            const ringPosY = Math.round(ringY - 20);
 
-            requestAnimationFrame(animateCursor);
+            // 使用 transform 的 translate3d 触发 GPU 加速
+            cursorDot.style.transform = `translate3d(${dotPosX}px, ${dotPosY}px, 0)`;
+            cursorRing.style.transform = `translate3d(${ringPosX}px, ${ringPosY}px, 0)`;
+            
+            // 存储位置供 CSS 动画使用
+            cursorRing.style.setProperty('--ring-x', `${ringPosX}px`);
+            cursorRing.style.setProperty('--ring-y', `${ringPosY}px`);
+
+            // 检查是否接近目标位置
+            const threshold = 0.5;
+            const dotDistance = Math.abs(dotDx) + Math.abs(dotDy);
+            const ringDistance = Math.abs(ringDx) + Math.abs(ringDy);
+            
+            // 如果还在移动或距离目标较远，继续动画
+            if (isMoving || dotDistance > threshold || ringDistance > threshold) {
+                rafId = requestAnimationFrame(animateCursor);
+            } else {
+                // 停止动画以节省资源
+                rafId = null;
+            }
         }
+        
+        // 启动动画
         animateCursor();
 
         // 悬停交互
         document.querySelectorAll('button, a').forEach(el => {
-            el.addEventListener('mouseenter', () => cursorRing.classList.add('hover'));
-            el.addEventListener('mouseleave', () => cursorRing.classList.remove('hover'));
+            el.addEventListener('mouseenter', () => {
+                cursorRing.classList.add('hover');
+                cursorDot.classList.add('hover');
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorRing.classList.remove('hover');
+                cursorDot.classList.remove('hover');
+            });
         });
 
         // ==================== 初始化 Lucide 图标 ====================
@@ -801,21 +1014,32 @@
         const menuBtn = document.getElementById('menu-btn');
         const closeMenuBtn = document.getElementById('close-menu');
         const fullscreenMenu = document.getElementById('fullscreen-menu');
+        const cornerLogo = document.getElementById('corner-logo');
 
         menuBtn.addEventListener('click', () => {
             fullscreenMenu.style.display = 'flex';
+            cornerLogo.style.opacity = '0';
+            cornerLogo.style.visibility = 'hidden';
         });
 
         closeMenuBtn.addEventListener('click', closeMenu);
 
         function closeMenu() {
             fullscreenMenu.style.display = 'none';
+            cornerLogo.style.opacity = '';
+            cornerLogo.style.visibility = '';
         }
 
+        // ESC 键关闭菜单
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && fullscreenMenu.style.display === 'flex') {
+                closeMenu();
+            }
+        });
+
         // ==================== 右上角 Logo 随机抖动效果 ====================
-        const cornerLogo = document.getElementById('corner-logo');
         setInterval(() => {
-            if (Math.random() > 0.96) {
+            if (Math.random() > 0.96 && fullscreenMenu.style.display !== 'flex') {
                 cornerLogo.style.transform = `translate(${Math.random()*8-4}px, ${Math.random()*8-4}px) skew(${Math.random()*6-3}deg)`;
                 setTimeout(() => {
                     cornerLogo.style.transform = 'none';

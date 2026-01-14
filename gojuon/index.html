@@ -140,9 +140,683 @@
         .nav-center {
             display: flex;
             align-items: center;
+            gap: 4px;
+            justify-content: center;
+        }
+        
+        @media (min-width: 480px) {
+            .nav-center {
+                gap: 8px;
+            }
+        }
+
+        /* ========== 下拉菜单容器 ========== */
+        .dropdown-container {
+            position: relative;
+        }
+
+        .dropdown-trigger {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--ui-border);
+            color: #777;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            padding: 8px 12px;
+            letter-spacing: 0.08em;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+        }
+
+        .dropdown-trigger:hover, .dropdown-trigger.active {
+            color: #fff;
+            border-color: var(--toxic-cyan);
+            background: rgba(170, 255, 240, 0.08);
+        }
+
+        .dropdown-trigger svg {
+            width: 14px;
+            height: 14px;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown-trigger.active svg {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 10, 10, 0.98);
+            border: 1px solid var(--ui-border);
+            padding: 8px;
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 140px;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .dropdown-menu.active {
+            display: flex;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: #666;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #aaa;
+        }
+
+        .dropdown-item.active {
+            color: var(--toxic-cyan);
+            border-color: var(--toxic-cyan);
+            background: rgba(170, 255, 240, 0.08);
+        }
+
+        .dropdown-item .toggle-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #333;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item.active .toggle-indicator {
+            background: var(--toxic-cyan);
+            box-shadow: 0 0 8px var(--toxic-cyan);
+        }
+
+        /* ========== 测试按钮 ========== */
+        .quiz-btn {
+            background: rgba(208, 170, 255, 0.08);
+            border: 1px solid var(--acid-purple);
+            color: var(--acid-purple);
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            padding: 8px 14px;
+            letter-spacing: 0.08em;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .quiz-btn:hover {
+            background: rgba(208, 170, 255, 0.15);
+            box-shadow: 0 0 15px rgba(208, 170, 255, 0.3);
+        }
+
+        /* ========== 测试弹窗 ========== */
+        .quiz-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 400;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .quiz-modal.active {
+            display: flex;
+        }
+
+        .quiz-content {
+            background: linear-gradient(145deg, #0c0c0c 0%, #080808 50%, #050508 100%);
+            border: 2px solid var(--acid-purple);
+            max-width: 520px;
+            width: 92vw;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 35px;
+            position: relative;
+            box-shadow: 
+                0 0 80px rgba(208, 170, 255, 0.25),
+                inset 0 0 60px rgba(208, 170, 255, 0.03);
+            animation: modalFadeIn 0.3s ease-out;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .quiz-title {
+            font-family: 'Major Mono Display', monospace;
+            font-size: 1.6rem;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px var(--acid-purple), 0 0 40px rgba(208, 170, 255, 0.5);
+            letter-spacing: 0.05em;
+        }
+
+        .quiz-settings {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .quiz-setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 16px;
+            background: rgba(208, 170, 255, 0.03);
+            border-left: 2px solid rgba(208, 170, 255, 0.3);
+        }
+
+        .quiz-setting-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            color: var(--acid-purple);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-weight: 700;
+        }
+
+        .quiz-options {
+            display: flex;
             gap: 10px;
             flex-wrap: wrap;
+        }
+
+        .quiz-option {
+            flex: 1;
+            min-width: 90px;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #444;
+            color: #999;
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ddd;
+            border-color: #666;
+        }
+
+        .quiz-option.selected {
+            color: #fff;
+            border-color: var(--acid-purple);
+            background: rgba(208, 170, 255, 0.15);
+            box-shadow: 0 0 15px rgba(208, 170, 255, 0.3);
+            text-shadow: 0 0 10px var(--acid-purple);
+        }
+
+        .quiz-start-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, rgba(208, 170, 255, 0.2) 0%, rgba(208, 170, 255, 0.1) 100%);
+            border: 2px solid var(--acid-purple);
+            color: #fff;
+            font-family: 'Space Mono', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--acid-purple);
+        }
+
+        .quiz-start-btn:hover {
+            background: var(--acid-purple);
+            color: #000;
+            box-shadow: 0 0 40px rgba(208, 170, 255, 0.6);
+            text-shadow: none;
+        }
+
+        /* ========== 答题界面 ========== */
+        .quiz-question-area {
+            display: none;
+        }
+
+        .quiz-question-area.active {
+            display: block;
+        }
+
+        .quiz-question {
+            text-align: center;
+            margin-bottom: 35px;
+            padding: 25px;
+            background: rgba(208, 170, 255, 0.03);
+            border: 1px solid rgba(208, 170, 255, 0.15);
+        }
+
+        .quiz-question-prompt {
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .quiz-question-char {
+            font-family: "Hiragino Mincho ProN", "MS Mincho", serif;
+            font-size: 5rem;
+            color: #fff;
+            text-shadow: 
+                0 0 30px var(--acid-purple), 
+                0 0 60px rgba(208, 170, 255, 0.5),
+                0 0 100px rgba(208, 170, 255, 0.3);
+            animation: float-ethereal 3s infinite ease-in-out;
+        }
+
+        .quiz-question-char.romaji {
+            font-family: 'Space Mono', monospace;
+            font-size: 3.5rem;
+            letter-spacing: 0.1em;
+        }
+
+        .quiz-choices {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .quiz-choice {
+            padding: 22px 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid #3a3a3a;
+            color: #ccc;
+            font-family: "Hiragino Mincho ProN", "MS Mincho", serif;
+            font-size: 2.2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .quiz-choice.romaji {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.4rem;
+            letter-spacing: 0.05em;
+        }
+
+        .quiz-choice:hover {
+            background: rgba(208, 170, 255, 0.12);
+            border-color: var(--acid-purple);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(208, 170, 255, 0.2);
+        }
+
+        .quiz-choice.correct {
+            background: rgba(170, 255, 240, 0.2);
+            border-color: var(--toxic-cyan);
+            color: #fff;
+            text-shadow: 0 0 15px var(--toxic-cyan);
+            box-shadow: 0 0 25px rgba(170, 255, 240, 0.3);
+        }
+
+        .quiz-choice.wrong {
+            background: rgba(255, 100, 100, 0.2);
+            border-color: #ff6464;
+            color: #fff;
+            text-shadow: 0 0 15px #ff6464;
+        }
+
+        /* ========== 填空题界面 ========== */
+        .quiz-fill-area {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .quiz-answer-display {
+            min-height: 80px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px dashed #444;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
             justify-content: center;
+            font-family: "Hiragino Mincho ProN", serif;
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow: 0 0 20px var(--acid-purple);
+        }
+
+        .quiz-answer-display.romaji {
+            font-family: 'Space Mono', monospace;
+            font-size: 2rem;
+            letter-spacing: 0.1em;
+        }
+
+        .quiz-kana-picker-btn {
+            padding: 16px 28px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #555;
+            color: #ccc;
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin-bottom: 18px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .quiz-kana-picker-btn:hover {
+            border-color: var(--acid-purple);
+            color: #fff;
+            background: rgba(208, 170, 255, 0.1);
+            box-shadow: 0 0 20px rgba(208, 170, 255, 0.2);
+        }
+
+        .quiz-fill-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 5px;
+        }
+
+        .quiz-submit-btn {
+            padding: 16px 35px;
+            background: rgba(208, 170, 255, 0.15);
+            border: 2px solid var(--acid-purple);
+            color: #fff;
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            text-shadow: 0 0 10px var(--acid-purple);
+        }
+
+        .quiz-submit-btn:hover {
+            background: var(--acid-purple);
+            color: #000;
+            box-shadow: 0 0 30px rgba(208, 170, 255, 0.5);
+            text-shadow: none;
+        }
+
+        .quiz-skip-btn {
+            padding: 16px 25px;
+            background: transparent;
+            border: 1px solid #555;
+            color: #888;
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .quiz-skip-btn:hover {
+            border-color: #888;
+            color: #ccc;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .quiz-choice-skip {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* ========== 假名选择器弹窗 ========== */
+        .kana-picker-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .kana-picker-overlay.active {
+            display: flex;
+        }
+
+        .kana-picker-content {
+            background: linear-gradient(145deg, #0c0c0c 0%, #080808 100%);
+            border: 2px solid var(--acid-purple);
+            padding: 25px;
+            max-width: 95vw;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 60px rgba(208, 170, 255, 0.25);
+        }
+
+        .kana-picker-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #444;
+            color: #999;
+            font-size: 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .kana-picker-close:hover {
+            border-color: var(--acid-purple);
+            color: #fff;
+            background: rgba(208, 170, 255, 0.1);
+        }
+
+        .kana-picker-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            text-shadow: 0 0 15px var(--acid-purple);
+        }
+
+        .kana-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .kana-picker-grid.romaji-grid {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        .kana-picker-item {
+            padding: 14px 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #3a3a3a;
+            color: #bbb;
+            font-family: "Hiragino Mincho ProN", serif;
+            font-size: 1.4rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .kana-picker-item:hover {
+            background: rgba(208, 170, 255, 0.15);
+            border-color: var(--acid-purple);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(208, 170, 255, 0.2);
+        }
+
+        .kana-picker-item.empty {
+            visibility: hidden;
+        }
+
+        @media (max-width: 480px) {
+            .kana-picker-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 5px;
+            }
+            .kana-picker-grid.romaji-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            .kana-picker-item {
+                padding: 12px 6px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* ========== 结果反馈 ========== */
+        .quiz-result {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 25px;
+            display: none;
+        }
+
+        .quiz-result.active {
+            display: block;
+        }
+
+        .quiz-result-text {
+            font-family: 'Major Mono Display', monospace;
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: 0.08em;
+            opacity: 0;
+            transform: translateY(20px) scale(0.8);
+        }
+
+        .quiz-result.active .quiz-result-text {
+            animation: resultTextReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes resultTextReveal {
+            0% { 
+                opacity: 0; 
+                transform: translateY(20px) scale(0.8);
+                filter: blur(10px);
+            }
+            50% {
+                filter: blur(0);
+            }
+            100% { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        .quiz-result.correct .quiz-result-text {
+            color: var(--toxic-cyan);
+            text-shadow: 
+                0 0 20px var(--toxic-cyan),
+                0 0 40px rgba(170, 255, 240, 0.5),
+                0 0 60px rgba(170, 255, 240, 0.3);
+        }
+
+        .quiz-result.wrong .quiz-result-text {
+            color: #ff6464;
+            text-shadow: 
+                0 0 20px #ff6464,
+                0 0 40px rgba(255, 100, 100, 0.5),
+                0 0 60px rgba(255, 100, 100, 0.3);
+        }
+
+        .quiz-result.skipped .quiz-result-text {
+            color: var(--acid-purple);
+            text-shadow: 
+                0 0 20px var(--acid-purple),
+                0 0 40px rgba(208, 170, 255, 0.5);
+        }
+
+        .quiz-correct-answer {
+            font-family: "Hiragino Mincho ProN", serif;
+            font-size: 2rem;
+            color: #fff;
+            opacity: 0;
+            margin-top: 10px;
+        }
+
+        .quiz-result.active .quiz-correct-answer {
+            animation: answerFadeIn 0.5s ease-out 0.3s forwards;
+        }
+
+        @keyframes answerFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quiz-correct-answer span {
+            color: var(--toxic-cyan);
+            text-shadow: 0 0 15px var(--toxic-cyan);
+        }
+
+        .quiz-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .quiz-action-btn {
+            padding: 14px 25px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid #555;
+            color: #ccc;
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .quiz-action-btn:hover {
+            border-color: #888;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .quiz-action-btn.primary {
+            border-color: var(--toxic-cyan);
+            color: #fff;
+            background: rgba(170, 255, 240, 0.1);
+            text-shadow: 0 0 10px var(--toxic-cyan);
+        }
+
+        .quiz-action-btn.primary:hover {
+            background: var(--toxic-cyan);
+            color: #000;
+            box-shadow: 0 0 25px rgba(170, 255, 240, 0.5);
+            text-shadow: none;
         }
 
         /* ========== 全屏菜单 ========== */
@@ -189,7 +863,7 @@
         }
 
         .menu-link {
-            font-family: "Impact", "Arial Black", sans-serif;
+            font-family: 'Syne', sans-serif;
             font-size: clamp(1.8rem, 6vw, 3.5rem);
             font-weight: 900;
             font-style: italic;
@@ -383,89 +1057,196 @@
             opacity: 0.2;
         }
 
-        footer {
-            height: 20px;
-            border-top: 1px solid var(--grid-line);
-        }
-
-        /* ========== 测试模式样式 ========== */
-        .test-controls {
+        /* ========== Wallpaper Engine 按钮 ========== */
+        .wallpaper-btn {
+            background: rgba(170, 255, 240, 0.05);
+            border: 1px solid var(--toxic-cyan);
+            color: var(--toxic-cyan);
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(10px, 2.8vw, 18px);
+            padding: 0;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-family: monospace;
-            font-size: 11px;
-        }
-
-        .test-score {
-            color: var(--toxic-cyan);
-            font-weight: bold;
-            padding: 5px 10px;
-            background: rgba(170, 255, 240, 0.08);
-            border: 1px solid var(--ui-border);
-            min-width: 60px;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            text-shadow: 0 0 8px var(--toxic-cyan);
+            line-height: 1.3;
             text-align: center;
         }
 
-        .test-btn {
-            background: rgba(255, 255, 255, 0.02);
+        .wallpaper-btn:hover {
+            background: rgba(170, 255, 240, 0.15);
+            box-shadow: 0 0 20px rgba(170, 255, 240, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* ========== 弹窗样式 ========== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 300;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0a0a0a 0%, #050505 100%);
+            border: 2px solid var(--toxic-cyan);
+            border-radius: 0;
+            max-width: 90vw;
+            max-height: 90vh;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 0 60px rgba(170, 255, 240, 0.3);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            background: transparent;
             border: 1px solid var(--ui-border);
             color: #777;
-            font-family: monospace;
-            font-size: 11px;
-            padding: 5px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 24px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: var(--toxic-cyan);
+            border-color: var(--toxic-cyan);
+            background: rgba(170, 255, 240, 0.08);
+        }
+
+        .modal-title {
+            font-family: 'Major Mono Display', monospace;
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            color: var(--toxic-cyan);
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px var(--toxic-cyan);
+            letter-spacing: 0.05em;
+        }
+
+        .modal-preview-img {
+            width: 100%;
+            max-width: 420px;
+            height: auto;
+            border: 1px solid var(--grid-line);
+            margin: 0 auto 20px;
+            display: block;
+            filter: drop-shadow(0 0 20px rgba(170, 255, 240, 0.2));
+        }
+        
+        .modal-subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            margin-top: -12px;
+            margin-bottom: 20px;
+            letter-spacing: 0.02em;
+        }
+
+        .modal-link-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .modal-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: rgba(170, 255, 240, 0.08);
+            border: 1px solid var(--toxic-cyan);
+            color: var(--toxic-cyan);
+            text-decoration: none;
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .modal-link:hover {
+            background: rgba(170, 255, 240, 0.15);
+            box-shadow: 0 0 20px rgba(170, 255, 240, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .modal-copy-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: rgba(208, 170, 255, 0.08);
+            border: 1px solid var(--acid-purple);
+            color: var(--acid-purple);
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
             letter-spacing: 0.05em;
             transition: all 0.3s ease;
             cursor: pointer;
-            white-space: nowrap;
+            text-transform: uppercase;
         }
 
-        .test-btn:hover {
+        .modal-copy-btn:hover {
+            background: rgba(208, 170, 255, 0.15);
+            box-shadow: 0 0 20px rgba(208, 170, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .modal-copy-btn.copied {
+            background: rgba(170, 255, 240, 0.15);
+            border-color: var(--toxic-cyan);
             color: var(--toxic-cyan);
-            border-color: var(--toxic-cyan);
-            background: rgba(170, 255, 240, 0.08);
         }
 
-        .test-btn.active {
-            color: #fff;
-            background: var(--toxic-cyan);
-            border-color: var(--toxic-cyan);
-            text-shadow: none;
+        @media (max-width: 768px) {
+            .modal-content {
+                padding: 20px;
+            }
+            .modal-title {
+                font-size: 1rem;
+            }
+            .wallpaper-btn {
+                font-size: 9px;
+                padding: 6px 8px;
+            }
         }
 
-        .quiz-input {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid var(--ui-border);
-            color: var(--drain-white);
-            font-family: "Courier New", monospace;
-            font-size: 1.2rem;
-            padding: 8px 12px;
-            text-align: center;
-            width: 120px;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        .quiz-input:focus {
-            border-color: var(--toxic-cyan);
-            background: rgba(170, 255, 240, 0.1);
-            box-shadow: 0 0 10px rgba(170, 255, 240, 0.3);
-        }
-
-        .quiz-input.correct {
-            border-color: #4ade80;
-            background: rgba(74, 222, 128, 0.1);
-        }
-
-        .quiz-input.incorrect {
-            border-color: #f87171;
-            background: rgba(248, 113, 113, 0.1);
-        }
-
-        .kana-cell.quiz-active {
-            outline: 2px solid var(--toxic-cyan);
-            background: rgba(170, 255, 240, 0.05);
-            box-shadow: 0 0 20px rgba(170, 255, 240, 0.3);
+        footer {
+            height: 20px;
+            border-top: 1px solid var(--grid-line);
         }
 
         /* ========== 工具类 ========== */
@@ -475,37 +1256,42 @@
         
         /* 平板竖屏 */
         @media (max-width: 768px) {
-            .nav-center {
-                gap: 6px;
-            }
             #main-grid {
                 margin-top: 60px;
             }
-            .toggle-btn {
+            .dropdown-trigger, .quiz-btn {
                 font-size: 11px;
                 padding: 6px 10px;
-                min-width: 56px;
             }
             .kana-cell {
                 max-height: 100px;
             }
-            .test-controls {
-                font-size: 10px;
-                gap: 4px;
+            .quiz-content {
+                padding: 25px;
             }
-            .test-score, .test-btn {
-                font-size: 10px;
-                padding: 4px 8px;
-                min-width: 50px;
+            .quiz-title {
+                font-size: 1.3rem;
+            }
+            .quiz-question-char {
+                font-size: 4rem;
+            }
+            .quiz-question-char.romaji {
+                font-size: 2.8rem;
+            }
+            .quiz-setting-group {
+                padding: 14px;
+            }
+            .quiz-option {
+                padding: 12px 14px;
+                font-size: 12px;
             }
         }
 
         /* 手机竖屏 - 保持5列布局以确保五十音正确分行 */
         @media (max-width: 480px) {
-            .nav-center {
-                display: grid;
-                grid-template-columns: repeat(2, auto);
-                gap: 4px 6px;
+            .dropdown-trigger, .quiz-btn {
+                font-size: 10px;
+                padding: 5px 8px;
             }
             #main-grid {
                 grid-template-columns: repeat(5, 1fr);
@@ -524,25 +1310,93 @@
             .cell-origin {
                 font-size: clamp(9px, 2vw, 12px);
             }
-            .toggle-btn {
-                min-width: 52px;
-                padding: 6px 8px;
+            .dropdown-trigger, .quiz-btn {
                 font-size: 10px;
-                letter-spacing: 0.05em;
+                padding: 6px 8px;
             }
-            .test-controls {
-                font-size: 9px;
-                gap: 3px;
+            .quiz-content {
+                padding: 20px;
             }
-            .test-score, .test-btn {
-                font-size: 9px;
-                padding: 3px 6px;
-                min-width: 44px;
+            .quiz-title {
+                font-size: 1.1rem;
+                margin-bottom: 20px;
             }
-            .quiz-input {
-                font-size: 1rem;
-                padding: 4px 6px;
-                width: 80px;
+            .quiz-settings {
+                gap: 18px;
+            }
+            .quiz-setting-group {
+                padding: 12px;
+            }
+            .quiz-setting-label {
+                font-size: 11px;
+            }
+            .quiz-options {
+                gap: 8px;
+            }
+            .quiz-option {
+                padding: 11px 10px;
+                font-size: 11px;
+                min-width: 70px;
+            }
+            .quiz-start-btn {
+                padding: 15px;
+                font-size: 14px;
+            }
+            .quiz-question {
+                padding: 18px;
+                margin-bottom: 25px;
+            }
+            .quiz-question-prompt {
+                font-size: 12px;
+            }
+            .quiz-question-char {
+                font-size: 3.5rem;
+            }
+            .quiz-question-char.romaji {
+                font-size: 2.2rem;
+            }
+            .quiz-choices {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .quiz-choice {
+                padding: 18px 10px;
+                font-size: 1.8rem;
+            }
+            .quiz-choice.romaji {
+                font-size: 1.2rem;
+            }
+            .quiz-answer-display {
+                min-height: 70px;
+                font-size: 2rem;
+            }
+            .quiz-kana-picker-btn {
+                padding: 14px 22px;
+                font-size: 13px;
+            }
+            .quiz-submit-btn {
+                padding: 14px 30px;
+                font-size: 13px;
+            }
+            .quiz-result {
+                padding: 15px 0;
+            }
+            .quiz-result-text {
+                font-size: 2rem;
+            }
+            .quiz-correct-answer {
+                font-size: 1.6rem;
+            }
+            .quiz-fill-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .quiz-submit-btn, .quiz-skip-btn {
+                width: 100%;
+            }
+            .quiz-action-btn {
+                padding: 12px 20px;
+                font-size: 12px;
             }
         }
 
@@ -551,10 +1405,9 @@
             #main-grid {
                 margin-top: 60px;
             }
-            .toggle-btn {
-                min-width: 46px;
-                padding: 5px 6px;
+            .dropdown-trigger, .quiz-btn {
                 font-size: 9px;
+                padding: 5px 6px;
             }
             .kana-cell {
                 max-height: 80px;
@@ -569,20 +1422,6 @@
             .cell-origin {
                 font-size: clamp(8px, 1.8vw, 10px);
             }
-            .test-controls {
-                font-size: 8px;
-                gap: 2px;
-            }
-            .test-score, .test-btn {
-                font-size: 8px;
-                padding: 3px 5px;
-                min-width: 40px;
-            }
-            .quiz-input {
-                font-size: 0.9rem;
-                padding: 3px 5px;
-                width: 70px;
-            }
         }
     </style>
 </head>
@@ -592,28 +1431,49 @@
     <div id="cursor-ring"></div>
 
     <!-- 顶部导航栏 -->
-    <nav class="fixed top-0 left-0 w-full z-40 px-5 md:px-8 flex justify-between items-center backdrop-blur-md" style="height: 52px; background: linear-gradient(180deg, rgba(10,10,10,0.98) 0%, rgba(5,5,5,0.95) 100%); border-bottom: 1px solid rgba(188,254,45,0.15); box-shadow: 0 1px 20px rgba(0,0,0,0.5), 0 1px 0 rgba(188,254,45,0.08);">
-        <a href="../" class="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity">
-            <img src="../asset/Ecco2k-E.jpg" alt="E" class="w-7 h-7 md:w-8 md:h-8 object-contain">
-            <span class="font-black tracking-tighter text-base md:text-lg" style="font-family: 'Syne', sans-serif;">EMOBOI</span>
+    <nav class="fixed top-0 left-0 w-full z-40 px-3 sm:px-5 md:px-8 flex justify-between items-center backdrop-blur-md" style="height: 52px; background: linear-gradient(180deg, rgba(10,10,10,0.98) 0%, rgba(5,5,5,0.95) 100%); border-bottom: 1px solid rgba(188,254,45,0.15); box-shadow: 0 1px 20px rgba(0,0,0,0.5), 0 1px 0 rgba(188,254,45,0.08);">
+        <a href="../" class="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity flex-shrink-0">
+            <img src="../asset/logo-e.jpg" alt="E" class="w-7 h-7 md:w-8 md:h-8 object-contain">
+            <span class="font-black tracking-tighter text-base md:text-lg hidden sm:block" style="font-family: 'Syne', sans-serif;">EMOBOI</span>
         </a>
-        <div class="nav-center" id="nav-toggles">
-            <button class="toggle-btn active" data-target="cell-romaji">ROMAN</button>
-            <button class="toggle-btn active" data-target="hira">HIRA</button>
-            <button class="toggle-btn active" data-target="kata">KATA</button>
-            <button class="toggle-btn active" data-target="cell-origin">ORIGIN</button>
+        <div class="nav-center flex-shrink-0">
+            <!-- 显隐下拉菜单 -->
+            <div class="dropdown-container">
+                <button class="dropdown-trigger" id="display-dropdown-btn">
+                    <span>显隐</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div class="dropdown-menu" id="display-dropdown">
+                    <button class="dropdown-item active" data-target="cell-romaji">
+                        <span>ROMAN</span>
+                        <span class="toggle-indicator"></span>
+                    </button>
+                    <button class="dropdown-item active" data-target="hira">
+                        <span>HIRA</span>
+                        <span class="toggle-indicator"></span>
+                    </button>
+                    <button class="dropdown-item active" data-target="kata">
+                        <span>KATA</span>
+                        <span class="toggle-indicator"></span>
+                    </button>
+                    <button class="dropdown-item active" data-target="cell-origin">
+                        <span>ORIGIN</span>
+                        <span class="toggle-indicator"></span>
+                    </button>
+                </div>
+            </div>
+            <!-- 测试按钮 -->
+            <button class="quiz-btn" id="quiz-btn">测试</button>
         </div>
-        <div class="test-controls hidden" id="test-controls">
-            <span class="test-score" id="test-score">0/0</span>
-            <button class="test-btn" id="reset-score">RESET</button>
-        </div>
-        <div class="flex items-center gap-4 md:gap-6">
-            <button class="test-btn" id="toggle-test">TEST</button>
-            <a href="../" class="p-2.5 border border-zinc-800 hover:bg-white hover:text-black transition-all flex items-center gap-2" title="返回主页">
-                <i data-lucide="home" class="w-5 h-5"></i>
+        <div class="flex items-center gap-2 sm:gap-4 md:gap-6 flex-shrink-0">
+            <span class="mono text-[10px] md:text-xs text-lime-400 uppercase hidden sm:block">GOJUON</span>
+            <a href="../" class="p-2 sm:p-2.5 border border-zinc-800 hover:bg-white hover:text-black transition-all flex items-center gap-2" title="返回主页">
+                <i data-lucide="home" class="w-4 h-4 sm:w-5 sm:h-5"></i>
             </a>
-            <button id="menu-btn" class="p-2.5 border border-zinc-800 hover:bg-white hover:text-black transition-all" title="菜单">
-                <i data-lucide="menu" class="w-5 h-5"></i>
+            <button id="menu-btn" class="p-2 sm:p-2.5 border border-zinc-800 hover:bg-white hover:text-black transition-all" title="菜单">
+                <i data-lucide="menu" class="w-4 h-4 sm:w-5 sm:h-5"></i>
             </button>
         </div>
     </nav>
@@ -632,7 +1492,124 @@
 
     <main id="main-grid"></main>
 
-    <footer></footer>
+    <!-- 测试弹窗 -->
+    <div class="quiz-modal" id="quiz-modal">
+        <div class="quiz-content">
+            <button class="modal-close" id="quiz-close">×</button>
+            
+            <!-- 设置界面 -->
+            <div id="quiz-setup">
+                <h2 class="quiz-title">† 五十音测试 †</h2>
+                <div class="quiz-settings">
+                    <div class="quiz-setting-group">
+                        <label class="quiz-setting-label">假名类型</label>
+                        <div class="quiz-options" data-setting="kanaType">
+                            <button class="quiz-option selected" data-value="hira">平假名</button>
+                            <button class="quiz-option" data-value="kata">片假名</button>
+                            <button class="quiz-option" data-value="both">BOTH</button>
+                        </div>
+                    </div>
+                    <div class="quiz-setting-group">
+                        <label class="quiz-setting-label">测试方向</label>
+                        <div class="quiz-options" data-setting="direction">
+                            <button class="quiz-option selected" data-value="kanaToRomaji">假名 → 读音</button>
+                            <button class="quiz-option" data-value="romajiToKana">读音 → 假名</button>
+                        </div>
+                    </div>
+                    <div class="quiz-setting-group">
+                        <label class="quiz-setting-label">题目类型</label>
+                        <div class="quiz-options" data-setting="questionType">
+                            <button class="quiz-option selected" data-value="choice">选择题</button>
+                            <button class="quiz-option" data-value="fill">填空题</button>
+                        </div>
+                    </div>
+                </div>
+                <button class="quiz-start-btn" id="quiz-start">开始测试</button>
+            </div>
+
+            <!-- 答题界面 -->
+            <div class="quiz-question-area" id="quiz-question-area">
+                <div class="quiz-question">
+                    <div class="quiz-question-prompt" id="quiz-prompt">请选择正确的读音</div>
+                    <div class="quiz-question-char" id="quiz-char">あ</div>
+                </div>
+
+                <!-- 选择题选项 -->
+                <div class="quiz-choices" id="quiz-choices"></div>
+                
+                <!-- 选择题显示答案按钮 -->
+                <div class="quiz-choice-skip" id="quiz-choice-skip">
+                    <button class="quiz-skip-btn" id="quiz-choice-skip-btn">显示答案</button>
+                </div>
+
+                <!-- 填空题区域 -->
+                <div class="quiz-fill-area" id="quiz-fill-area" style="display: none;">
+                    <div class="quiz-answer-display" id="quiz-answer-display">_</div>
+                    <button class="quiz-kana-picker-btn" id="open-kana-picker">选择答案</button>
+                    <div class="quiz-fill-buttons">
+                        <button class="quiz-submit-btn" id="quiz-submit">提交答案</button>
+                        <button class="quiz-skip-btn" id="quiz-skip">显示答案</button>
+                    </div>
+                </div>
+
+                <!-- 结果反馈 -->
+                <div class="quiz-result" id="quiz-result">
+                    <div class="quiz-result-text" id="quiz-result-text">正确!</div>
+                    <div class="quiz-correct-answer" id="quiz-correct-answer"></div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="quiz-actions" id="quiz-actions" style="display: none;">
+                    <button class="quiz-action-btn" id="quiz-settings-btn">调整设置</button>
+                    <button class="quiz-action-btn primary" id="quiz-next-btn">下一题</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 假名选择器 -->
+    <div class="kana-picker-overlay" id="kana-picker">
+        <div class="kana-picker-content">
+            <button class="kana-picker-close" id="kana-picker-close">×</button>
+            <div class="kana-picker-title" id="kana-picker-title">选择答案</div>
+            <div class="kana-picker-grid" id="kana-picker-grid"></div>
+        </div>
+    </div>
+
+    <!-- Wallpaper Engine 弹窗 -->
+    <div class="modal-overlay" id="wallpaper-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">×</button>
+            <h2 class="modal-title">† 五十音 * 假名 † WALLPAPER</h2>
+            <p class="modal-subtitle">音频监听，显示音乐封面，整体界面响应音频频段互动</p>
+            <img src="../asset/gojuon-wallpaper-preview.jpg" alt="Wallpaper Preview" class="modal-preview-img">
+            <div class="modal-link-container">
+                <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3635766356" target="_blank" class="modal-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    访问 Steam 创意工坊
+                </a>
+                <button class="modal-copy-btn" id="copy-link-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    复制链接
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="w-full px-6 py-4 border-t border-zinc-900/50" style="font-family: 'Syne', sans-serif;">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-2 text-[10px] tracking-widest text-zinc-600">
+            <div class="text-center md:text-left">
+                天的QQ空间 <span style="font-family: 'Space Mono', monospace;">^^</span>
+            </div>
+        </div>
+    </footer>
 
     <script>
     // ==================== 自定义光标 ====================
@@ -662,7 +1639,7 @@
     animateCursor();
 
     // 悬停交互
-    document.querySelectorAll('button, a, .char-unit, .toggle-btn, .test-btn').forEach(el => {
+    document.querySelectorAll('button, a, .char-unit, .toggle-btn').forEach(el => {
         el.addEventListener('mouseenter', () => cursorRing.classList.add('hover'));
         el.addEventListener('mouseleave', () => cursorRing.classList.remove('hover'));
     });
@@ -687,10 +1664,16 @@
         fullscreenMenu.classList.remove('active');
     }
 
-    // ESC 键关闭菜单
+    // ESC 键关闭菜单和弹窗
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && fullscreenMenu.classList.contains('active')) {
-            closeMenu();
+        if (e.key === 'Escape') {
+            if (document.getElementById('kana-picker').classList.contains('active')) {
+                document.getElementById('kana-picker').classList.remove('active');
+            } else if (document.getElementById('quiz-modal').classList.contains('active')) {
+                document.getElementById('quiz-modal').classList.remove('active');
+            } else if (fullscreenMenu.classList.contains('active')) {
+                closeMenu();
+            }
         }
     });
 
@@ -765,183 +1748,57 @@
         null
     ];
 
-    // ==================== 测试模式 ====================
-    let testMode = false;
-    let testStats = { correct: 0, total: 0 };
-    let currentQuizCell = null;
-    let currentQuizInput = null;
-
-    // 从localStorage读取战绩
-    function loadTestStats() {
-        const saved = localStorage.getItem('gojuon-test-stats');
-        if (saved) {
-            testStats = JSON.parse(saved);
-            updateScoreDisplay();
-        }
-    }
-
-    // 保存战绩到localStorage
-    function saveTestStats() {
-        localStorage.setItem('gojuon-test-stats', JSON.stringify(testStats));
-    }
-
-    // 更新分数显示
-    function updateScoreDisplay() {
-        const scoreEl = document.getElementById('test-score');
-        scoreEl.textContent = `${testStats.correct}/${testStats.total}`;
-    }
-
-    // 切换测试模式
-    function toggleTestMode() {
-        testMode = !testMode;
-        const toggleBtn = document.getElementById('toggle-test');
-        const navToggles = document.getElementById('nav-toggles');
-        const testControls = document.getElementById('test-controls');
-
-        if (testMode) {
-            toggleBtn.classList.add('active');
-            toggleBtn.textContent = 'EXIT TEST';
-            navToggles.classList.add('hidden');
-            testControls.classList.remove('hidden');
-            startNewQuiz();
-        } else {
-            toggleBtn.classList.remove('active');
-            toggleBtn.textContent = 'TEST';
-            navToggles.classList.remove('hidden');
-            testControls.classList.add('hidden');
-            clearCurrentQuiz();
-        }
-    }
-
-    // 开始新的测试题目
-    function startNewQuiz() {
-        clearCurrentQuiz();
-        
-        // 随机选择一个有效的假名
-        const validKana = kanaData.filter(item => item !== null);
-        const randomKana = validKana[Math.floor(Math.random() * validKana.length)];
-        
-        // 找到对应的cell
-        const cells = document.querySelectorAll('.kana-cell:not(.empty)');
-        const kanaIndex = kanaData.indexOf(randomKana);
-        currentQuizCell = cells[kanaIndex];
-        
-        if (!currentQuizCell) return;
-        
-        currentQuizCell.classList.add('quiz-active');
-        
-        // 替换romaji为输入框
-        const romajiEl = currentQuizCell.querySelector('.cell-romaji');
-        const correctAnswer = romajiEl.textContent.trim();
-        
-        romajiEl.innerHTML = `<input type="text" class="quiz-input" placeholder="?" maxlength="4" autocomplete="off">`;
-        currentQuizInput = romajiEl.querySelector('input');
-        
-        // 绑定输入事件
-        currentQuizInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                checkAnswer(correctAnswer);
-            }
-        });
-        
-        // 绑定假名点击事件（支持点击假名填入答案）
-        const hiraEl = currentQuizCell.querySelector('.hira');
-        const kataEl = currentQuizCell.querySelector('.kata');
-        
-        const clickToAnswer = () => {
-            currentQuizInput.value = correctAnswer;
-            checkAnswer(correctAnswer);
-        };
-        
-        hiraEl.addEventListener('click', clickToAnswer, { once: true });
-        kataEl.addEventListener('click', clickToAnswer, { once: true });
-        
-        currentQuizInput.focus();
-    }
-
-    // 检查答案
-    function checkAnswer(correctAnswer) {
-        if (!currentQuizInput) return;
-        
-        const userAnswer = currentQuizInput.value.trim().toLowerCase();
-        const isCorrect = userAnswer === correctAnswer.toLowerCase();
-        
-        testStats.total++;
-        if (isCorrect) {
-            testStats.correct++;
-            currentQuizInput.classList.add('correct');
-        } else {
-            currentQuizInput.classList.add('incorrect');
-            // 显示正确答案
-            setTimeout(() => {
-                if (currentQuizInput) {
-                    currentQuizInput.value = correctAnswer;
-                }
-            }, 300);
-        }
-        
-        saveTestStats();
-        updateScoreDisplay();
-        
-        // 1.5秒后开始下一题
-        setTimeout(() => {
-            if (testMode) {
-                startNewQuiz();
-            }
-        }, 1500);
-    }
-
-    // 清除当前测试状态
-    function clearCurrentQuiz() {
-        if (currentQuizCell) {
-            currentQuizCell.classList.remove('quiz-active');
-            const romajiEl = currentQuizCell.querySelector('.cell-romaji');
-            if (romajiEl) {
-                const original = romajiEl.dataset.original;
-                if (original) {
-                    romajiEl.innerHTML = '';
-                    romajiEl.textContent = original;
-                }
-            }
-            currentQuizCell = null;
-        }
-        currentQuizInput = null;
-    }
-
-    // 重置战绩
-    function resetTestStats() {
-        if (confirm('确定要重置战绩吗？')) {
-            testStats = { correct: 0, total: 0 };
-            saveTestStats();
-            updateScoreDisplay();
-        }
-    }
-
     // 页面初始化
     document.addEventListener('DOMContentLoaded', () => {
-        // 绑定控制按钮点击
-        document.querySelectorAll('#nav-toggles .toggle-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                btn.classList.toggle('active');
+        renderGrid();
+        initDropdown();
+        initQuiz();
+    });
+
+    // ==================== 下拉菜单控制 ====================
+    function initDropdown() {
+        const dropdownBtn = document.getElementById('display-dropdown-btn');
+        const dropdownMenu = document.getElementById('display-dropdown');
+        const dropdownItems = dropdownMenu.querySelectorAll('.dropdown-item');
+
+        // 点击按钮切换下拉菜单
+        dropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownBtn.classList.toggle('active');
+            dropdownMenu.classList.toggle('active');
+        });
+
+        // 点击选项切换显隐
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                item.classList.toggle('active');
                 syncDisplay();
             });
         });
-        
-        // 绑定测试相关按钮
-        document.getElementById('toggle-test').addEventListener('click', toggleTestMode);
-        document.getElementById('reset-score').addEventListener('click', resetTestStats);
-        
-        // 加载战绩
-        loadTestStats();
-        
-        renderGrid();
-    });
+
+        // 点击外部关闭下拉菜单
+        document.addEventListener('click', () => {
+            dropdownBtn.classList.remove('active');
+            dropdownMenu.classList.remove('active');
+        });
+
+        // 初始化显隐状态
+        syncDisplay();
+    }
 
     // 五十音图渲染逻辑 - 渲染全部数据
     function renderGrid() {
         const gridEl = document.getElementById('main-grid');
         gridEl.innerHTML = '';
-        kanaData.forEach(item => gridEl.appendChild(createCell(item)));
+        kanaData.forEach((item, index) => {
+            // 在最后一行的最右边（索引54）插入 Wallpaper 按钮
+            if (index === 54) {
+                gridEl.appendChild(createWallpaperCell());
+            } else {
+                gridEl.appendChild(createCell(item));
+            }
+        });
         syncDisplay();
         
         // 为动态生成的元素绑定光标悬停效果
@@ -974,9 +1831,6 @@
         const o1 = cell.querySelector('.o1');
         const o2 = cell.querySelector('.o2');
         const romaji = cell.querySelector('.cell-romaji');
-        
-        // 保存原始romaji文本用于测试模式恢复
-        romaji.dataset.original = item.r;
 
         // 绑定交互（支持鼠标和触摸）
         const bindInteraction = (trigger, target, romajiEl) => {
@@ -1010,16 +1864,457 @@
         return cell;
     }
 
+    // 创建 Wallpaper Engine 按钮单元格
+    function createWallpaperCell() {
+        const cell = document.createElement('div');
+        cell.className = 'kana-cell';
+        cell.style.padding = '0'; // 移除内边距，让按钮填满整个格子
+        cell.innerHTML = `<button class="wallpaper-btn">Wallpaper<br>Engine</button>`;
+        
+        const btn = cell.querySelector('.wallpaper-btn');
+        btn.addEventListener('click', () => {
+            document.getElementById('wallpaper-modal').classList.add('active');
+        });
+        
+        // 光标悬停效果
+        btn.addEventListener('mouseenter', () => cursorRing.classList.add('hover'));
+        btn.addEventListener('mouseleave', () => cursorRing.classList.remove('hover'));
+        
+        return cell;
+    }
+
     function syncDisplay() {
-        const buttons = document.querySelectorAll('.nav-center .toggle-btn');
-        buttons.forEach(btn => {
-            const targetClass = btn.getAttribute('data-target');
-            const isActive = btn.classList.contains('active');
+        const items = document.querySelectorAll('#display-dropdown .dropdown-item');
+        items.forEach(item => {
+            const targetClass = item.getAttribute('data-target');
+            const isActive = item.classList.contains('active');
             document.querySelectorAll('.' + targetClass).forEach(el => {
                 el.classList.toggle('hidden-content', !isActive);
             });
         });
     }
+
+    // ==================== 测试系统 ====================
+    let quizSettings = {
+        kanaType: 'hira',      // hira, kata, both
+        direction: 'kanaToRomaji', // kanaToRomaji, romajiToKana
+        questionType: 'choice' // choice, fill
+    };
+    let currentQuestion = null;
+    let userAnswer = '';
+
+    function initQuiz() {
+        const quizBtn = document.getElementById('quiz-btn');
+        const quizModal = document.getElementById('quiz-modal');
+        const quizClose = document.getElementById('quiz-close');
+        const quizStart = document.getElementById('quiz-start');
+        const quizSetup = document.getElementById('quiz-setup');
+        const quizQuestionArea = document.getElementById('quiz-question-area');
+
+        // 打开测试弹窗
+        quizBtn.addEventListener('click', () => {
+            quizModal.classList.add('active');
+            showQuizSetup();
+        });
+
+        // 关闭测试弹窗
+        quizClose.addEventListener('click', () => {
+            quizModal.classList.remove('active');
+        });
+
+        quizModal.addEventListener('click', (e) => {
+            if (e.target === quizModal) {
+                quizModal.classList.remove('active');
+            }
+        });
+
+        // 设置选项点击
+        document.querySelectorAll('.quiz-options').forEach(group => {
+            const setting = group.dataset.setting;
+            group.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    group.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    quizSettings[setting] = opt.dataset.value;
+                });
+            });
+        });
+
+        // 开始测试
+        quizStart.addEventListener('click', () => {
+            startQuiz();
+        });
+
+        // 调整设置按钮
+        document.getElementById('quiz-settings-btn').addEventListener('click', () => {
+            showQuizSetup();
+        });
+
+        // 下一题按钮
+        document.getElementById('quiz-next-btn').addEventListener('click', () => {
+            generateQuestion();
+        });
+
+        // 填空题提交
+        document.getElementById('quiz-submit').addEventListener('click', () => {
+            checkFillAnswer();
+        });
+
+        // 填空题显示答案
+        document.getElementById('quiz-skip').addEventListener('click', () => {
+            skipQuestion();
+        });
+
+        // 选择题显示答案
+        document.getElementById('quiz-choice-skip-btn').addEventListener('click', () => {
+            skipQuestion();
+        });
+
+        // 假名选择器
+        document.getElementById('open-kana-picker').addEventListener('click', () => {
+            openKanaPicker();
+        });
+
+        document.getElementById('kana-picker').addEventListener('click', (e) => {
+            if (e.target.id === 'kana-picker') {
+                document.getElementById('kana-picker').classList.remove('active');
+            }
+        });
+
+        document.getElementById('kana-picker-close').addEventListener('click', () => {
+            document.getElementById('kana-picker').classList.remove('active');
+        });
+    }
+
+    function showQuizSetup() {
+        document.getElementById('quiz-setup').style.display = 'block';
+        document.getElementById('quiz-question-area').classList.remove('active');
+    }
+
+    function startQuiz() {
+        document.getElementById('quiz-setup').style.display = 'none';
+        document.getElementById('quiz-question-area').classList.add('active');
+        generateQuestion();
+    }
+
+    // 获取有效假名数据（排除null）
+    function getValidKana() {
+        return kanaData.filter(item => item !== null);
+    }
+
+    // 生成题目
+    function generateQuestion() {
+        const validKana = getValidKana();
+        const randomKana = validKana[Math.floor(Math.random() * validKana.length)];
+        
+        // 根据设置决定使用哪种假名
+        let kanaChar, kanaType;
+        if (quizSettings.kanaType === 'both') {
+            kanaType = Math.random() > 0.5 ? 'hira' : 'kata';
+        } else {
+            kanaType = quizSettings.kanaType;
+        }
+        kanaChar = kanaType === 'hira' ? randomKana.h : randomKana.k;
+
+        currentQuestion = {
+            kana: kanaChar,
+            kanaType: kanaType,
+            romaji: randomKana.r,
+            fullData: randomKana
+        };
+
+        userAnswer = '';
+        
+        // 重置UI
+        document.getElementById('quiz-result').classList.remove('active', 'correct', 'wrong', 'skipped');
+        document.getElementById('quiz-actions').style.display = 'none';
+        document.getElementById('quiz-choice-skip').style.display = 'block';
+        
+        const quizChar = document.getElementById('quiz-char');
+        const quizPrompt = document.getElementById('quiz-prompt');
+        const quizChoices = document.getElementById('quiz-choices');
+        const quizFillArea = document.getElementById('quiz-fill-area');
+
+        const quizChoiceSkip = document.getElementById('quiz-choice-skip');
+
+        if (quizSettings.direction === 'kanaToRomaji') {
+            // 假名 → 读音
+            quizChar.textContent = currentQuestion.kana;
+            quizChar.classList.remove('romaji');
+            quizPrompt.textContent = '请选择正确的读音';
+            
+            if (quizSettings.questionType === 'choice') {
+                quizChoices.style.display = 'grid';
+                quizChoiceSkip.style.display = 'block';
+                quizFillArea.style.display = 'none';
+                generateChoices('romaji');
+            } else {
+                quizChoices.style.display = 'none';
+                quizChoiceSkip.style.display = 'none';
+                quizFillArea.style.display = 'block';
+                document.getElementById('quiz-answer-display').textContent = '_';
+                document.getElementById('quiz-answer-display').classList.add('romaji');
+            }
+        } else {
+            // 读音 → 假名
+            quizChar.textContent = currentQuestion.romaji;
+            quizChar.classList.add('romaji');
+            quizPrompt.textContent = `请选择正确的${kanaType === 'hira' ? '平假名' : '片假名'}`;
+            
+            if (quizSettings.questionType === 'choice') {
+                quizChoices.style.display = 'grid';
+                quizChoiceSkip.style.display = 'block';
+                quizFillArea.style.display = 'none';
+                generateChoices('kana');
+            } else {
+                quizChoices.style.display = 'none';
+                quizChoiceSkip.style.display = 'none';
+                quizFillArea.style.display = 'block';
+                document.getElementById('quiz-answer-display').textContent = '_';
+                document.getElementById('quiz-answer-display').classList.remove('romaji');
+            }
+        }
+    }
+
+    // 生成选择题选项
+    function generateChoices(answerType) {
+        const quizChoices = document.getElementById('quiz-choices');
+        quizChoices.innerHTML = '';
+        
+        const validKana = getValidKana();
+        let correctAnswer = answerType === 'romaji' ? currentQuestion.romaji : currentQuestion.kana;
+        
+        // 生成3个错误选项
+        let wrongAnswers = [];
+        while (wrongAnswers.length < 3) {
+            const randomKana = validKana[Math.floor(Math.random() * validKana.length)];
+            let answer;
+            if (answerType === 'romaji') {
+                answer = randomKana.r;
+            } else {
+                answer = currentQuestion.kanaType === 'hira' ? randomKana.h : randomKana.k;
+            }
+            if (answer !== correctAnswer && !wrongAnswers.includes(answer)) {
+                wrongAnswers.push(answer);
+            }
+        }
+        
+        // 混合正确答案和错误答案
+        let allAnswers = [correctAnswer, ...wrongAnswers];
+        allAnswers = shuffleArray(allAnswers);
+        
+        // 创建选项按钮
+        allAnswers.forEach(answer => {
+            const btn = document.createElement('button');
+            btn.className = 'quiz-choice';
+            if (answerType === 'romaji') {
+                btn.classList.add('romaji');
+            }
+            btn.textContent = answer;
+            btn.addEventListener('click', () => checkChoiceAnswer(btn, answer, correctAnswer));
+            quizChoices.appendChild(btn);
+        });
+    }
+
+    // 检查选择题答案
+    function checkChoiceAnswer(btn, selected, correct) {
+        const allBtns = document.querySelectorAll('.quiz-choice');
+        allBtns.forEach(b => {
+            b.style.pointerEvents = 'none';
+            if (b.textContent === correct) {
+                b.classList.add('correct');
+            }
+        });
+        
+        // 隐藏跳过按钮
+        document.getElementById('quiz-choice-skip').style.display = 'none';
+        
+        const isCorrect = selected === correct;
+        if (!isCorrect) {
+            btn.classList.add('wrong');
+        }
+        
+        showResult(isCorrect, correct);
+    }
+
+    // 填空题假名选择器
+    function openKanaPicker() {
+        const picker = document.getElementById('kana-picker');
+        const grid = document.getElementById('kana-picker-grid');
+        const title = document.getElementById('kana-picker-title');
+        grid.innerHTML = '';
+        
+        const validKana = getValidKana();
+        
+        if (quizSettings.direction === 'kanaToRomaji') {
+            // 选择读音
+            title.textContent = '选择读音';
+            grid.classList.add('romaji-grid');
+            validKana.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'kana-picker-item';
+                btn.style.fontFamily = "'Space Mono', monospace";
+                btn.style.fontSize = '0.9rem';
+                btn.textContent = item.r;
+                btn.addEventListener('click', () => {
+                    userAnswer = item.r;
+                    document.getElementById('quiz-answer-display').textContent = item.r;
+                    picker.classList.remove('active');
+                });
+                grid.appendChild(btn);
+            });
+        } else {
+            // 选择假名
+            title.textContent = currentQuestion.kanaType === 'hira' ? '选择平假名' : '选择片假名';
+            grid.classList.remove('romaji-grid');
+            kanaData.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'kana-picker-item';
+                if (item) {
+                    const kana = currentQuestion.kanaType === 'hira' ? item.h : item.k;
+                    btn.textContent = kana;
+                    btn.addEventListener('click', () => {
+                        userAnswer = kana;
+                        document.getElementById('quiz-answer-display').textContent = kana;
+                        picker.classList.remove('active');
+                    });
+                } else {
+                    btn.classList.add('empty');
+                }
+                grid.appendChild(btn);
+            });
+        }
+        
+        picker.classList.add('active');
+    }
+
+    // 检查填空题答案
+    function checkFillAnswer() {
+        if (!userAnswer) {
+            alert('请先选择答案');
+            return;
+        }
+        
+        let correctAnswer;
+        if (quizSettings.direction === 'kanaToRomaji') {
+            correctAnswer = currentQuestion.romaji;
+        } else {
+            correctAnswer = currentQuestion.kana;
+        }
+        
+        const isCorrect = userAnswer === correctAnswer;
+        showResult(isCorrect, correctAnswer);
+    }
+
+    // 跳过题目，显示答案
+    function skipQuestion() {
+        let correctAnswer;
+        if (quizSettings.direction === 'kanaToRomaji') {
+            correctAnswer = currentQuestion.romaji;
+        } else {
+            correctAnswer = currentQuestion.kana;
+        }
+        
+        // 禁用选择题选项
+        const allBtns = document.querySelectorAll('.quiz-choice');
+        allBtns.forEach(b => {
+            b.style.pointerEvents = 'none';
+            if (b.textContent === correctAnswer) {
+                b.classList.add('correct');
+            }
+        });
+        
+        // 隐藏跳过按钮
+        document.getElementById('quiz-choice-skip').style.display = 'none';
+        
+        showResult('skipped', correctAnswer);
+    }
+
+    // 显示结果
+    function showResult(status, correctAnswer) {
+        const result = document.getElementById('quiz-result');
+        const resultText = document.getElementById('quiz-result-text');
+        const correctAnswerEl = document.getElementById('quiz-correct-answer');
+        const actions = document.getElementById('quiz-actions');
+        
+        result.classList.remove('correct', 'wrong', 'skipped');
+        
+        if (status === 'skipped') {
+            result.classList.add('active', 'skipped');
+            resultText.textContent = '答案';
+            correctAnswerEl.innerHTML = `<span>${correctAnswer}</span>`;
+            correctAnswerEl.style.display = 'block';
+        } else {
+            const isCorrect = status === true;
+            result.classList.add('active', isCorrect ? 'correct' : 'wrong');
+            resultText.textContent = isCorrect ? '正确!' : '错误';
+            
+            if (!isCorrect) {
+                correctAnswerEl.innerHTML = `正确答案: <span>${correctAnswer}</span>`;
+                correctAnswerEl.style.display = 'block';
+            } else {
+                correctAnswerEl.style.display = 'none';
+            }
+        }
+        
+        actions.style.display = 'flex';
+    }
+
+    // 数组随机排序
+    function shuffleArray(array) {
+        const arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // ==================== Wallpaper 弹窗控制 ====================
+    const wallpaperModal = document.getElementById('wallpaper-modal');
+    const modalClose = document.getElementById('modal-close');
+    const copyLinkBtn = document.getElementById('copy-link-btn');
+    const workshopLink = 'https://steamcommunity.com/sharedfiles/filedetails/?id=3635766356';
+
+    // 关闭弹窗
+    modalClose.addEventListener('click', () => {
+        wallpaperModal.classList.remove('active');
+    });
+
+    // 点击背景关闭
+    wallpaperModal.addEventListener('click', (e) => {
+        if (e.target === wallpaperModal) {
+            wallpaperModal.classList.remove('active');
+        }
+    });
+
+    // ESC 键关闭弹窗
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && wallpaperModal.classList.contains('active')) {
+            wallpaperModal.classList.remove('active');
+        }
+    });
+
+    // 复制链接
+    copyLinkBtn.addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(workshopLink);
+            copyLinkBtn.textContent = '✓ 已复制';
+            copyLinkBtn.classList.add('copied');
+            setTimeout(() => {
+                copyLinkBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    复制链接
+                `;
+                copyLinkBtn.classList.remove('copied');
+            }, 2000);
+        } catch (err) {
+            alert('复制失败，请手动复制链接');
+        }
+    });
     </script>
 </body>
 </html>
