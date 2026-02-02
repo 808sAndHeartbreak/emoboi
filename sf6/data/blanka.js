@@ -30,13 +30,22 @@ CHARACTER_DATA["BLANKA"] = {
   "scenarios": [
     { "adv": 46, "context": "版边民工连升龙" },
     { "adv": 44, "context": "民工连升龙" },
+    { "adv": 40, "context": "OD电" },
     { "adv": 39, "context": "电" },
     { "adv": 35, "context": "民工连滑铲" },
+    { "adv": 33, "context": "OD指令投+轻滚" },
     { "adv": 29, "context": "滑铲" },
     { "adv": 27, "context": "下重脚确反+前前" },
     { "adv": 25, "context": "下重脚" },
+    { "adv": 21, "context": "OD电+前前" },
+    { "adv": 20, "context": "电+前前" },
+    { "adv": 17, "context": "民工连升龙+前前" },
     { "adv": 16, "context": "民工连滑铲+前前" },
+    { "adv": 14, "context": "中滚" },
     { "adv": 13, "context": "民工连升龙+轻滚接近" },
-    { "adv": 11, "context": "投+前前" }
+    { "adv": 13, "context": "轻滚" },
+    { "adv": 11, "context": "投+前前" },
+    { "adv": 8, "context": "民工连滑铲+6kkk" },
+    { "advRange": [39, 421], "context": "后滚", "isFuzzy": true }
   ]
 };
