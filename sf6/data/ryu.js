@@ -28,21 +28,21 @@ CHARACTER_DATA["RYU"] = {
     { "adv": 17, "context": "投技" },
     { "adv": 20, "context": "浮空绿冲重升龙+前前" },
     { "adv": 23, "context": "中旋风" },
+    { "adv": 26, "context": "版边前重脚OD旋风-重升龙" },
     { "adv": 27, "context": "浮空中旋风" },
     { "adv": 29, "context": "OD升龙" },
     { "adv": 32, "context": "版边民工连-中升龙" },
     { "adv": 34, "context": "中升龙" },
-    { "adv": 26, "context": "版边前重脚OD旋风-重升龙" },
     { "adv": 37, "context": "重升龙" },
     { "adv": 38, "context": "轻升龙" },
+    { "adv": 38, "context": "前重脚-旋风脚" },
     { "adv": 39, "context": "浮空绿冲-重升龙" },
     { "adv": 39, "context": "浮空绿冲-下重脚" },
-    { "adv": 38, "context": "前重脚-旋风脚" },
     { "adv": 40, "context": "下重脚 (2HK)" },
     { "adv": 40, "context": "中驴踢" },
+    { "adv": 40, "context": "版边浮空重升龙" },
     { "adv": 42, "context": "浮空绿冲-重驴踢" },
-    { "adv": 47, "context": "下重脚确反 (2HK)" },
-    { "adv": 40, "context": "版边浮空重升龙" }
+    { "adv": 47, "context": "下重脚确反 (2HK)" }
   ]
 };
 

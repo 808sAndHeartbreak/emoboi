@@ -25,7 +25,6 @@ CHARACTER_DATA["JURI"] = {
     { "name": "66", "isDash": true, "dashFrames": 22 }
   ],
   "scenarios": [
-    { "adv": 15, "context": "中风破刃+前前" },
     { "adv": 17, "context": "投技" },
     // 模糊场景：帧数不确定的情况
     { "advRange": [24, 30], "context": "模糊踩头", "isFuzzy": true },
