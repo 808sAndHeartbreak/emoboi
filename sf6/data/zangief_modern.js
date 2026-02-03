@@ -40,7 +40,7 @@ CHARACTER_DATA["ZANGIEF_MODERN"] = {
     { "name": "66", "isDash": true, "dashFrames": 22 }
   ],
   "scenarios": [
-    { "adv": 22, "context": "投" },
+    { "adv": 22, "context": "投", "requiresDash": true },
     { "adv": 27, "context": "正常转圈圈" },
     { "adv": 27, "context": "三连手刀" },
     { "adv": 28, "context": "下前投" },

@@ -32,13 +32,13 @@ CHARACTER_DATA["BLANKA"] = {
     { "adv": 14, "context": "中滚" },
     { "adv": 25, "context": "下重脚" },
     { "adv": 29, "context": "滑铲" },
-    { "adv": 30, "context": "投" },
+    { "adv": 30, "context": "投", "requiresDash": true },
     { "adv": 35, "context": "民工连滑铲" },
     { "adv": 39, "context": "电" },
     { "adv": 40, "context": "OD电" },
-    { "adv": 44, "context": "民工连升龙" },
+    { "adv": 44, "context": "民工连升龙", "requiresDash": true },
     { "adv": 46, "context": "版边民工连升龙" },
     { "adv": 46, "context": "下重脚确反" },
-    { "adv": 64, "context": "OD指令投" }
+    { "adv": 64, "context": "OD指令投", "requiresDash": true }
   ]
 };

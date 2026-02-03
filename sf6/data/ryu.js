@@ -26,7 +26,6 @@ CHARACTER_DATA["RYU"] = {
   "scenarios": [
     { "adv": 7,  "context": "蓄电TC" },
     { "adv": 17, "context": "投技" },
-    { "adv": 20, "context": "浮空绿冲重升龙+前前" },
     { "adv": 23, "context": "中旋风" },
     { "adv": 26, "context": "版边前重脚OD旋风-重升龙" },
     { "adv": 27, "context": "浮空中旋风" },
