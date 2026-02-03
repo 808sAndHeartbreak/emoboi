@@ -21,6 +21,7 @@ CHARACTER_DATA["BLANKA"] = {
     { "name": "4MK", "startup": 9, "active": "9-14", "recovery": 12, "hit": 8, "block": 2 },
     { "name": "6HP", "startup": 18, "active": "18-21", "recovery": 31, "hit": 0, "block": -15, "isKnockdown": true },
     { "name": "3HP", "startup": 14, "active": "14-23", "recovery": 22, "hit": 0, "block": -18, "isKnockdown": true },
+    { "name": "滑铲", "startup": 12, "active": "12-15", "recovery": 28, "hit": 0, "block": -15, "isKnockdown": true },
     // 投技和冲刺类移动
     { "name": "投", "startup": 5, "active": "5-7", "recovery": 23, "isThrow": true, "isKnockdown": true },
     { "name": "66", "isDash": true, "dashFrames": 19 },

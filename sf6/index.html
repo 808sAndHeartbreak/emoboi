@@ -197,6 +197,25 @@
             }
         }
         
+        /* ========== 收藏页面搜索高亮 ========== */
+        .fav-search-highlight {
+            background: linear-gradient(90deg, 
+                rgba(6, 182, 212, 0.15) 0%, 
+                rgba(6, 182, 212, 0.25) 50%, 
+                rgba(6, 182, 212, 0.15) 100%) !important;
+            border-color: rgba(6, 182, 212, 0.6) !important;
+            animation: search-pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes search-pulse {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+            }
+        }
+        
         /* 主收藏按钮样式 */
         .favorites-main-btn {
             background: linear-gradient(135deg, 
@@ -2033,6 +2052,22 @@
                     </div>
                 </div>
                 
+                <!-- 合并同压制开关 -->
+                <div class="mb-6 flex items-center gap-3 px-4 py-3 bg-zinc-900/50 border border-zinc-700">
+                    <input type="checkbox" id="favoriteMergeSameMeaty" class="w-5 h-5 accent-cyan-500 cursor-pointer" onchange="toggleFavoriteMerge()">
+                    <label for="favoriteMergeSameMeaty" class="text-sm font-bold text-zinc-300 cursor-pointer select-none">
+                        合并同压制（把不同帧数但压制招式相同的方案合并显示）
+                    </label>
+                </div>
+                
+                <!-- 收藏页面搜索框 -->
+                <div class="mb-6 px-4 py-3 bg-zinc-900/50 border border-zinc-700">
+                    <input type="text" id="favoritesSearch" 
+                        placeholder="搜索场景、招式名称..." 
+                        class="w-full bg-zinc-800 text-white px-4 py-2 border border-zinc-600 focus:border-cyan-500 focus:outline-none transition-colors"
+                        oninput="filterFavorites()">
+                </div>
+                
                 <!-- 压制方案收藏 -->
                 <div id="favMeatySection" class="mb-10">
                     <div class="text-sm text-zinc-400 uppercase tracking-wider mb-5 border-b border-zinc-700 pb-3 font-bold">压制方案</div>
@@ -2662,6 +2697,44 @@
                         description: "无法取消，不适合用于压制"
                     }
                 ],
+                "BLANKA": [
+                    {
+                        id: "blanka_preset_66_roll",
+                        type: "combo",
+                        move1: "66",
+                        move2: "轻滚接近",
+                        description: "前冲后不接轻滚（动作僵硬）"
+                    },
+                    {
+                        id: "blanka_preset_6kkk_roll",
+                        type: "combo",
+                        move1: "6KKK",
+                        move2: "轻滚接近",
+                        description: "野兽冲刺后不接轻滚（动作僵硬）"
+                    },
+                    {
+                        id: "blanka_preset_slide_roll",
+                        type: "combo",
+                        move1: "滑铲",
+                        move2: "轻滚接近",
+                        description: "滑铲后不接轻滚（连招不稳定）"
+                    },
+                    {
+                        id: "blanka_preset_minkoren_slide_roll",
+                        type: "context_disable",
+                        context: "民工连滑铲",
+                        dashMove: "轻滚接近",
+                        description: "民工连滑铲后距离仍不够，禁用轻滚接近"
+                    },
+                    {
+                        id: "blanka_preset_od_elec_66_throw",
+                        type: "context_disable",
+                        context: "OD电+66",
+                        moveName: "投",
+                        usage: "meaty",
+                        description: "OD电+66后距离不够，无法用投压制"
+                    }
+                ],
                 "ZANGIEF": [
                     {
                         id: "zangief_preset_throw_after_throw",
@@ -2810,9 +2883,19 @@
                     "2LP||4MK|29",
                     "4MK||4MK|39",
                     "5HK||4MK|46",
-                    "5LK||4MK|27"
+                    "5LK||4MK|27",
+                    "DIRECT||4MK|10",
+                    "DIRECT||4MK|12",
+                    "2LP||投|20",
+                    "5MP||4MK|40"
                 ],
-                mixupFavorites: []
+                mixupFavorites: [],
+                excludedScenarios: {
+                    "DIRECT||4MK|10": ["OD指令投+6KKK+6KKK"],
+                    "DIRECT||4MK|13": ["轻滚"],
+                    "5LK||4MK|27": ["版边民工连升龙+66"],
+                    "5HK||4MK|46": ["下重脚确反"]
+                }
             }
             // 其他角色暂无推荐，可以根据需要添加
         };
@@ -2839,6 +2922,8 @@
             expandedAdvSet: new Set(),
             // 全局展开详情开关
             allDetailsExpanded: false,
+            // 收藏页面：合并同压制开关
+            favoriteMergeSameMeaty: true,  // 默认开启合并
             // 是否只显示收藏方案
             showOnlyFavorites: false,
             // 打投择收藏 { "charName:adv:remain:killDesc": true } - 旧版，保留用于迁移
@@ -2847,7 +2932,9 @@
             // 收藏模板系统 { charName: { current: "my", templates: {...} } }
             favoriteTemplates: {},
             // 模板修改提示标记 { "charName:templateId": true }
-            templateModifyWarned: {}
+            templateModifyWarned: {},
+            // 排除的自动扩展场景 { "charName": ["context1", "context2"] }
+            excludedAutoExpanded: {}
         };
 
         // ==================== 工具函数 ====================
@@ -3081,10 +3168,18 @@
             // 自动扩展：添加"场景+移动"组合
             const expandedScenarios = autoExpandScenariosWithDash(baseScenarios);
             
+            // 获取排除列表
+            const excludedList = state.excludedAutoExpanded[char] || [];
+            
+            // 过滤掉被排除的自动扩展场景
+            const filteredExpanded = expandedScenarios.filter(s => 
+                !excludedList.includes(s.context)
+            );
+            
             // 过滤掉标记为 requiresDash 的基础场景（它们只以扩展形式出现）
             const filteredBaseScenarios = baseScenarios.filter(s => !s.requiresDash);
             
-            return [...filteredBaseScenarios, ...expandedScenarios];
+            return [...filteredBaseScenarios, ...filteredExpanded];
         }
         
         // 自动扩展场景：计算"基础场景+移动技能"的组合
@@ -3095,6 +3190,17 @@
             const dashMoves = state.moveLibrary.filter(m => m.isDash && m.dashFrames);
             if (dashMoves.length === 0) return expanded;
             
+            // 获取当前角色的 context_disable 规则
+            const allRules = getAllRulesForCharacter(state.currentCharacter);
+            const contextDisableRules = allRules.filter(r => r.type === 'context_disable');
+            
+            // 检查某个场景是否禁用了某个dash技能
+            function isContextDashDisabled(scenarioContext, dashMoveName) {
+                return contextDisableRules.some(rule => 
+                    rule.context === scenarioContext && rule.dashMove === dashMoveName
+                );
+            }
+            
             // 对每个基础场景进行扩展（最多2层）
             baseScenarios.forEach(scenario => {
                 if (scenario.isFuzzy || !scenario.adv) return; // 跳过模糊场景
@@ -3104,6 +3210,11 @@
                 
                 // 第一层扩展
                 dashMoves.forEach(dash1 => {
+                    // 检查规则：该场景是否禁用了这个dash技能
+                    if (isContextDashDisabled(scenario.context, dash1.name)) {
+                        return; // 跳过这个dash技能
+                    }
+                    
                     const newAdv1 = scenario.adv - dash1.dashFrames;
                     if (newAdv1 > 0) { // 只有正帧才生成
                         expanded.push({
@@ -3169,6 +3280,25 @@
                 // 静默失败
             }
             return [];
+        }
+        
+        // 保存排除的自动扩展场景
+        function saveExcludedAutoExpanded(char, excludedList) {
+            try {
+                localStorage.setItem(getStorageKey(char, 'excludedAutoExpanded'), JSON.stringify(excludedList));
+            } catch (e) {
+                // 静默失败
+            }
+        }
+        
+        // 加载排除的自动扩展场景
+        function loadExcludedAutoExpanded(char) {
+            try {
+                const saved = localStorage.getItem(getStorageKey(char, 'excludedAutoExpanded'));
+                return saved ? JSON.parse(saved) : [];
+            } catch (e) {
+                return [];
+            }
         }
         
         // 获取当前角色的所有规则（全局 + 角色预设 + 用户自定义）
@@ -4265,10 +4395,8 @@
                 const warnKey = `${char}:${template.id}`;
                 if (!state.templateModifyWarned[warnKey]) {
                     showTemplateModifyWarning(template.name, () => {
-                        state.templateModifyWarned[warnKey] = true;
-                        saveTemplateModifyWarned();
                         doToggleFavorite(adv, planKey);
-                    });
+                    }, warnKey);
                     return;
                 }
             }
@@ -4277,7 +4405,27 @@
         }
         
         function doToggleFavorite(adv, planKey) {
-            const template = getCurrentTemplate();
+            let template = getCurrentTemplate();
+            
+            // 如果当前是"默认推荐"模板，不允许修改，而是复制到"我的收藏"并切换
+            if (template.id === 'director') {
+                const char = state.currentCharacter;
+                initCharacterTemplates(char);
+                
+                // 复制当前"默认推荐"的内容到"我的收藏"（如果"我的收藏"为空）
+                const myTemplate = state.favoriteTemplates[char].templates['my'];
+                if (myTemplate.favorites.length === 0 && myTemplate.mixupFavorites.length === 0) {
+                    myTemplate.favorites = [...template.favorites];
+                    myTemplate.mixupFavorites = [...template.mixupFavorites];
+                }
+                
+                // 切换到"我的收藏"
+                state.favoriteTemplates[char].current = 'my';
+                template = myTemplate;
+                
+                showToast('已切换到"我的收藏"模板', 2000);
+            }
+            
             const fullKey = `${planKey}|${adv}`;
             const favorites = template.favorites || [];
             
@@ -4360,10 +4508,8 @@
                 const warnKey = `${char}:${template.id}`;
                 if (!state.templateModifyWarned[warnKey]) {
                     showTemplateModifyWarning(template.name, () => {
-                        state.templateModifyWarned[warnKey] = true;
-                        saveTemplateModifyWarned();
                         doToggleMixupFavorite(adv, remain, killDesc);
-                    });
+                    }, warnKey);
                     return;
                 }
             }
@@ -4372,7 +4518,27 @@
         }
         
         function doToggleMixupFavorite(adv, remain, killDesc) {
-            const template = getCurrentTemplate();
+            let template = getCurrentTemplate();
+            
+            // 如果当前是"默认推荐"模板，不允许修改，而是复制到"我的收藏"并切换
+            if (template.id === 'director') {
+                const char = state.currentCharacter;
+                initCharacterTemplates(char);
+                
+                // 复制当前"默认推荐"的内容到"我的收藏"（如果"我的收藏"为空）
+                const myTemplate = state.favoriteTemplates[char].templates['my'];
+                if (myTemplate.favorites.length === 0 && myTemplate.mixupFavorites.length === 0) {
+                    myTemplate.favorites = [...template.favorites];
+                    myTemplate.mixupFavorites = [...template.mixupFavorites];
+                }
+                
+                // 切换到"我的收藏"
+                state.favoriteTemplates[char].current = 'my';
+                template = myTemplate;
+                
+                showToast('已切换到"我的收藏"模板', 2000);
+            }
+            
             const key = getMixupKey(adv, remain, killDesc);
             const mixupFavorites = template.mixupFavorites || [];
             
@@ -4480,7 +4646,8 @@
                             name: '我的收藏',
                             type: 'user',
                             favorites: [],
-                            mixupFavorites: []
+                            mixupFavorites: [],
+                            excludedScenarios: {}  // 排除的场景 { "planKey|adv": ["context1", "context2"] }
                         }
                     }
                 };
@@ -4503,9 +4670,17 @@
                     name: '我的收藏',
                     type: 'user',
                     favorites: [],
-                    mixupFavorites: []
+                    mixupFavorites: [],
+                    excludedScenarios: {}
                 };
             }
+            
+            // 确保所有模板都有 excludedScenarios 字段（兼容旧数据）
+            Object.values(state.favoriteTemplates[char].templates).forEach(template => {
+                if (!template.excludedScenarios) {
+                    template.excludedScenarios = {};
+                }
+            });
             
             // 添加/更新默认推荐模板（如果配置中有定义）
             // 每次都同步更新，确保默认推荐始终是最新的
@@ -4515,7 +4690,8 @@
                     name: '默认推荐',
                     type: 'director',
                     favorites: DIRECTOR_CUTS[char].favorites || [],
-                    mixupFavorites: DIRECTOR_CUTS[char].mixupFavorites || []
+                    mixupFavorites: DIRECTOR_CUTS[char].mixupFavorites || [],
+                    excludedScenarios: DIRECTOR_CUTS[char].excludedScenarios || {}
                 };
             }
             
@@ -4666,7 +4842,8 @@
                 name: templateName,
                 type: 'imported',
                 favorites: data.favorites || [],
-                mixupFavorites: data.mixupFavorites || []
+                mixupFavorites: data.mixupFavorites || [],
+                excludedScenarios: data.excludedScenarios || {}  // 导入时保留排除列表
             };
             
             // 切换到新模板
@@ -4708,7 +4885,8 @@
                 character: char,
                 timestamp: new Date().toISOString(),
                 favorites: template.favorites || [],
-                mixupFavorites: template.mixupFavorites || []
+                mixupFavorites: template.mixupFavorites || [],
+                excludedScenarios: template.excludedScenarios || {}  // 导出时包含排除列表
             };
             
             return JSON.stringify(exportData, null, 2);
@@ -4847,6 +5025,56 @@
             }
         }
         
+        // 切换收藏页面合并开关
+        function toggleFavoriteMerge() {
+            const checkbox = document.getElementById('favoriteMergeSameMeaty');
+            state.favoriteMergeSameMeaty = checkbox.checked;
+            renderFavoritesView();
+        }
+        
+        // 收藏页面搜索过滤
+        function filterFavorites() {
+            const searchInput = document.getElementById('favoritesSearch');
+            const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
+            
+            // 获取所有收藏项（压制方案和打投择方案）
+            const meatyGrid = document.getElementById('favMeatyGrid');
+            const mixupGrid = document.getElementById('favMixupGrid');
+            
+            // 移除所有现有高亮
+            [meatyGrid, mixupGrid].forEach(grid => {
+                if (!grid) return;
+                grid.querySelectorAll('.fav-search-highlight').forEach(el => {
+                    el.classList.remove('fav-search-highlight');
+                });
+            });
+            
+            // 如果搜索为空，不做任何高亮
+            if (!searchTerm) return;
+            
+            // 高亮匹配的内容
+            [meatyGrid, mixupGrid].forEach(grid => {
+                if (!grid) return;
+                
+                // 查找所有包含文本的元素
+                const textElements = grid.querySelectorAll('.text-zinc-300, .text-white, .text-cyan-400, .impact-text');
+                
+                textElements.forEach(el => {
+                    const text = el.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        // 向上查找最近的行容器并高亮
+                        let parent = el.closest('.flex.items-center.justify-between');
+                        if (!parent) {
+                            parent = el.closest('.border-2');
+                        }
+                        if (parent) {
+                            parent.classList.add('fav-search-highlight');
+                        }
+                    }
+                });
+            });
+        }
+        
         // 渲染收藏卡片视图
         function renderFavoritesView() {
             const meatyGrid = document.getElementById('favMeatyGrid');
@@ -4855,6 +5083,9 @@
             const mixupSection = document.getElementById('favMixupSection');
             const emptyState = document.getElementById('favEmptyState');
             const countSpan = document.getElementById('favoritesCount');
+            const mergeCheckbox = document.getElementById('favoriteMergeSameMeaty');
+            
+            if (mergeCheckbox) mergeCheckbox.checked = state.favoriteMergeSameMeaty;
             
             // 更新模板选择器
             updateTemplateSelector();
@@ -4864,53 +5095,75 @@
             const favorites = template.favorites || [];
             const mixupFavorites = template.mixupFavorites || [];
             
-            // 收集所有收藏的压制方案
+            // 收集所有收藏的压制方案（带完整 Hit/Block 信息）
             const meatyFavs = [];
             favorites.forEach(fullKey => {
-                // fullKey 格式: "planKey|adv"
                 const lastPipe = fullKey.lastIndexOf('|');
                 if (lastPipe === -1) return;
-                
                 const planKey = fullKey.substring(0, lastPipe);
                 const adv = parseInt(fullKey.substring(lastPipe + 1));
-                
                 if (isNaN(adv)) return;
                 
-                // 获取该 adv 对应的场景
-                const contexts = [];
+                // 获取排除列表
+                const excludedList = template.excludedScenarios?.[fullKey] || [];
+                
+                const scenarioData = [];
                 state.notes.forEach(note => {
                     if (note.adv === adv && !note.advRange) {
-                        contexts.push(note.context);
+                        // 过滤掉被排除的场景
+                        if (!excludedList.includes(note.context)) {
+                            scenarioData.push({ adv: note.adv, context: note.context });
+                        }
                     }
                 });
                 
-                // 如果找不到任何场景，保留收藏但标记为"场景已删除"
-                if (contexts.length === 0) {
-                    contexts.push('(场景已删除)');
-                }
+                // 如果所有场景都被排除了，跳过这个收藏
+                if (scenarioData.length === 0) return;
                 
-                meatyFavs.push({ adv, planKey, contexts });
+                // 计算方案的完整信息（包括 Hit/Block）
+                const allPlans = calculateBestPlan(adv, scenarioData.map(s => s.context));
+                const matchingPlan = allPlans.find(p => getPlanKey(p) === planKey);
+                
+                // 过滤掉打投择方案：
+                // 1. isThrow: true（投技）
+                // 2. remain 在 4-5 帧范围（打投择特征）
+                if (matchingPlan && !(matchingPlan.isThrow && matchingPlan.remain >= 4 && matchingPlan.remain <= 5)) {
+                    const parts = planKey.split('|');
+                    const kill1 = parts[0] || '';
+                    const kill2 = parts[1] || '';
+                    const meatyMoveName = parts[2] || parts[1] || '';
+                    
+                    let planDisplay = '';
+                    if (kill1 === 'DIRECT') {
+                        planDisplay = meatyMoveName;
+                    } else if (kill2 && kill2 !== '') {
+                        planDisplay = `${kill1} + ${kill2} → ${meatyMoveName}`;
+                    } else {
+                        planDisplay = `${kill1} → ${meatyMoveName}`;
+                    }
+                    
+                    meatyFavs.push({
+                        adv, planKey, planDisplay, meatyMoveName, scenarioData,
+                        hitBlock: { hit: matchingPlan.finalHit, block: matchingPlan.finalBlock }
+                    });
+                }
             });
             
             // 收集所有收藏的打投择方案
             const mixupFavs = [];
             mixupFavorites.forEach(key => {
-                // key 格式: "adv|remain|killDesc"
                 const parts = key.split('|');
                 if (parts.length >= 3) {
                     const adv = parseInt(parts[0]);
                     const remain = parseInt(parts[1]);
                     const killDesc = parts.slice(2).join('|');
-                    
-                    // 获取该 adv 对应的场景
-                    const contexts = [];
+                    const scenarioData = [];
                     state.notes.forEach(note => {
                         if (note.adv === adv && !note.advRange) {
-                            contexts.push(note.context);
+                            scenarioData.push({ adv: note.adv, context: note.context });
                         }
                     });
-                    
-                    mixupFavs.push({ adv, remain, killDesc, contexts });
+                    mixupFavs.push({ adv, remain, killDesc, scenarioData });
                 }
             });
             
@@ -4930,87 +5183,129 @@
             // 渲染压制方案卡片
             if (meatyFavs.length > 0) {
                 meatySection.classList.remove('hidden');
-                meatyGrid.innerHTML = meatyFavs.map(fav => {
-                    const contextsHtml = fav.contexts.length > 0 
-                        ? fav.contexts.map(ctx => `<span class="fav-card-context">${escapeHtml(ctx)}</span>`).join('')
-                        : '<span class="fav-card-context" style="background: #000; color: #666; border-color: #222;">无场景</span>';
+                
+                if (state.favoriteMergeSameMeaty) {
+                    // ========== 合并模式：按压制招式合并 ==========
+                    const merged = {};
+                    meatyFavs.forEach(fav => {
+                        if (!merged[fav.planDisplay]) {
+                            merged[fav.planDisplay] = { planDisplay: fav.planDisplay, items: [] };
+                        }
+                        merged[fav.planDisplay].items.push(fav);
+                    });
                     
-                    // 解析方案描述：planKey 格式为 "kill1|kill2|meaty"
-                    // DIRECT||meaty -> 直接压制
-                    // kill1||meaty -> 一步卡帧
-                    // kill1|kill2|meaty -> 两步卡帧
-                    let planDisplay = '';
-                    const parts = fav.planKey.split('|');
-                    const kill1 = parts[0] || '';
-                    const kill2 = parts[1] || '';
-                    const meaty = parts[2] || parts[1] || '';  // 兼容两种格式
+                    // 对每个压制招式下的 items 按 adv 降序排列
+                    Object.values(merged).forEach(group => {
+                        group.items.sort((a, b) => b.adv - a.adv);
+                    });
                     
-                    if (kill1 === 'DIRECT') {
-                        // 直接压制：只显示招式名
-                        planDisplay = escapeHtml(meaty);
-                    } else if (kill2 && kill2 !== '') {
-                        // 两步卡帧（kill2 不为空）
-                        planDisplay = `${escapeHtml(kill1)} <span class="fav-card-plan-arrow">+</span> ${escapeHtml(kill2)} <span class="fav-card-plan-arrow">→</span> ${escapeHtml(meaty)}`;
-                    } else {
-                        // 一步卡帧（kill2 为空）
-                        const actualMeaty = parts[2] || parts[1] || '';
-                        planDisplay = `${escapeHtml(kill1)} <span class="fav-card-plan-arrow">→</span> ${escapeHtml(actualMeaty)}`;
-                    }
-                    
-                    const safePlanKey = encodeURIComponent(fav.planKey);
-                    
-                    return `
-                        <div class="fav-card" id="fav-meaty-${fav.adv}-${safePlanKey}">
-                            <div class="fav-card-plan">${planDisplay}</div>
-                            <div class="fav-card-contexts">${contextsHtml}</div>
-                            <div class="fav-card-header">
-                                <span class="fav-card-adv">+${fav.adv}F</span>
-                                <span class="fav-card-star" onclick="removeFavoriteMeaty(${fav.adv}, '${safePlanKey}')" title="取消收藏">★</span>
+                    meatyGrid.innerHTML = Object.values(merged).map(group => {
+                        const itemsHtml = group.items.map(item => {
+                            const scenariosHtml = item.scenarioData.map(scenario => {
+                                const safePlanKey = encodeURIComponent(item.planKey);
+                                const safeContext = encodeURIComponent(scenario.context);
+                                return `
+                                    <div class="flex items-center justify-between py-2 px-3 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-b border-zinc-800 group">
+                                        <div class="flex items-center gap-3 flex-1 flex-wrap">
+                                            <span class="text-zinc-300 text-sm">${escapeHtml(scenario.context)}</span>
+                                            <span class="text-green-400 text-xs font-mono">H${item.hitBlock.hit >= 0 ? '+' : ''}${item.hitBlock.hit}</span>
+                                            <span class="text-orange-400 text-xs font-mono">B${item.hitBlock.block >= 0 ? '+' : ''}${item.hitBlock.block}</span>
+                                        </div>
+                                        <button onclick="removeScenarioFromFavorite(${item.adv}, '${safePlanKey}', '${safeContext}')" 
+                                            class="text-zinc-600 hover:text-red-500 text-xl opacity-0 group-hover:opacity-100 transition-all px-2 flex-shrink-0" 
+                                            title="从收藏中移除此场景">×</button>
+                                    </div>
+                                `;
+                            }).join('');
+                            
+                            const safePlanKey = encodeURIComponent(item.planKey);
+                            return `
+                                <div class="mb-4 border border-zinc-700 bg-black/20 group">
+                                    <div class="flex items-center justify-between px-3 py-2 bg-zinc-800/30 border-b border-zinc-700">
+                                        <span class="text-cyan-400 font-mono text-sm font-bold">+${item.adv}F</span>
+                                        <button onclick="confirmRemoveAdvFromFavorite(${item.adv}, '${safePlanKey}')" 
+                                            class="text-zinc-600 hover:text-red-500 text-xl opacity-0 group-hover:opacity-100 transition-all px-2" 
+                                            title="删除此帧数下的所有场景">×</button>
+                                    </div>
+                                    ${scenariosHtml}
+                                </div>
+                            `;
+                        }).join('');
+                        
+                        return `
+                            <div class="border-2 bg-zinc-900/80 p-5" style="border-color: var(--theme-primary);">
+                                <div class="text-3xl font-black mb-4 text-white">${escapeHtml(group.planDisplay)}</div>
+                                ${itemsHtml}
                             </div>
-                        </div>
-                    `;
-                }).join('');
+                        `;
+                    }).join('');
+                } else {
+                    // ========== 非合并模式：每个方案独立显示 ==========
+                    meatyGrid.innerHTML = meatyFavs.map(fav => {
+                        const scenariosHtml = fav.scenarioData.map(scenario => {
+                            const safePlanKey = encodeURIComponent(fav.planKey);
+                            const safeContext = encodeURIComponent(scenario.context);
+                            return `
+                                <div class="flex items-center justify-between py-2 px-3 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-b border-zinc-800 last:border-0 group">
+                                    <span class="text-zinc-300 text-sm">${escapeHtml(scenario.context)}</span>
+                                    <button onclick="removeScenarioFromFavorite(${fav.adv}, '${safePlanKey}', '${safeContext}')" 
+                                        class="text-zinc-600 hover:text-red-500 text-xl opacity-0 group-hover:opacity-100 transition-all px-2" 
+                                        title="从收藏中移除此场景">×</button>
+                                </div>
+                            `;
+                        }).join('');
+                        
+                        const safePlanKey = encodeURIComponent(fav.planKey);
+                        return `
+                            <div class="border-2 bg-zinc-900/80 p-5 group" style="border-color: var(--theme-primary);">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="text-3xl font-black text-white flex-1">${escapeHtml(fav.planDisplay)}</div>
+                                    <span class="text-cyan-400 font-mono text-lg font-bold">+${fav.adv}F</span>
+                                </div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-4 text-sm flex-wrap">
+                                <span class="text-green-400 font-mono">H${fav.hitBlock.hit >= 0 ? '+' : ''}${fav.hitBlock.hit}</span>
+                                <span class="text-orange-400 font-mono">B${fav.hitBlock.block >= 0 ? '+' : ''}${fav.hitBlock.block}</span>
+                            </div>
+                                    <button onclick="confirmRemoveAdvFromFavorite(${fav.adv}, '${safePlanKey}')" 
+                                        class="text-zinc-600 hover:text-red-500 text-xl opacity-0 group-hover:opacity-100 transition-all px-2" 
+                                        title="删除此帧数下的所有场景">×</button>
+                                </div>
+                                <div class="border border-zinc-700 bg-black/20">
+                                    ${scenariosHtml}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
             } else {
                 meatySection.classList.add('hidden');
             }
             
-            // 渲染打投择方案卡片
+            // 渲染打投择方案卡片（使用新布局）
             if (mixupFavs.length > 0) {
                 mixupSection.classList.remove('hidden');
                 mixupGrid.innerHTML = mixupFavs.map(fav => {
-                    const contextsHtml = fav.contexts.length > 0 
-                        ? fav.contexts.map(ctx => `<span class="fav-card-context">${escapeHtml(ctx)}</span>`).join('')
-                        : '<span class="fav-card-context" style="background: #000; color: #666; border-color: #222;">无场景</span>';
-                    
-                    // 解析卡帧描述
-                    let planDisplay = fav.killDesc;
-                    if (fav.killDesc.includes(' + ')) {
-                        const parts = fav.killDesc.split(' + ');
-                        planDisplay = parts.join(' <span class="fav-card-plan-arrow">+</span> ');
-                    } else if (fav.killDesc.includes(' → ')) {
-                        const parts = fav.killDesc.split(' → ');
-                        planDisplay = parts.join(' <span class="fav-card-plan-arrow">→</span> ');
-                    }
-                    
+                    const scenariosHtml = fav.scenarioData.map(s => 
+                        `<div class="text-zinc-400 text-sm py-1">${escapeHtml(s.context)}</div>`
+                    ).join('');
                     const safeKillDesc = encodeURIComponent(fav.killDesc);
-                    
                     return `
-                        <div class="fav-card" id="fav-mixup-${fav.adv}-${fav.remain}-${safeKillDesc}">
-                            <div class="fav-card-header">
-                                <span class="fav-card-adv">+${fav.adv}F</span>
-                                <span class="fav-card-star" onclick="removeFavoriteMixup(${fav.adv}, ${fav.remain}, '${safeKillDesc}')" title="取消收藏">★</span>
-                            </div>
-                            <div class="fav-card-contexts">${contextsHtml}</div>
-                            <div class="fav-card-plan">${planDisplay}</div>
-                            <div class="text-center">
-                                <span class="fav-card-mixup-tag">${fav.remain}F 打投择</span>
-                            </div>
+                        <div class="border-2 bg-zinc-900/80 p-5" style="border-color: var(--theme-primary);">
+                            <div class="text-2xl font-black mb-3 text-white">${escapeHtml(fav.killDesc)}</div>
+                            <div class="text-cyan-400 font-mono text-sm mb-3">+${fav.adv}F → +${fav.remain}F</div>
+                            <div class="mb-3 border-t border-zinc-700 pt-3">${scenariosHtml}</div>
+                            <button onclick="removeFavoriteMixup(${fav.adv}, ${fav.remain}, '${safeKillDesc}')" 
+                                class="text-zinc-500 hover:text-red-400 text-sm transition-colors">× 取消收藏</button>
                         </div>
                     `;
                 }).join('');
             } else {
                 mixupSection.classList.add('hidden');
             }
+            
+            // 渲染完成后，重新应用搜索过滤（如果有搜索词）
+            setTimeout(() => filterFavorites(), 0);
         }
         
         // 从收藏视图中移除压制方案
@@ -5044,6 +5339,60 @@
                 }, 300);
             } else {
                 doToggleMixupFavorite(adv, remain, killDesc);
+            }
+        }
+        
+        // 从收藏中移除单个场景
+        function removeScenarioFromFavorite(adv, encodedPlanKey, encodedContext) {
+            const planKey = decodeURIComponent(encodedPlanKey);
+            const context = decodeURIComponent(encodedContext);
+            const fullKey = `${planKey}|${adv}`;
+            
+            const template = getCurrentTemplate();
+            
+            // 初始化 excludedScenarios
+            if (!template.excludedScenarios) {
+                template.excludedScenarios = {};
+            }
+            
+            // 添加到排除列表
+            if (!template.excludedScenarios[fullKey]) {
+                template.excludedScenarios[fullKey] = [];
+            }
+            
+            if (!template.excludedScenarios[fullKey].includes(context)) {
+                template.excludedScenarios[fullKey].push(context);
+            }
+            
+            // 检查该 adv 下是否所有场景都被排除了
+            const allScenarios = [];
+            state.notes.forEach(note => {
+                if (note.adv === adv && !note.advRange) {
+                    allScenarios.push(note.context);
+                }
+            });
+            
+            const excludedCount = template.excludedScenarios[fullKey].length;
+            if (excludedCount >= allScenarios.length && allScenarios.length > 0) {
+                // 所有场景都被排除，直接取消整个收藏
+                const index = template.favorites.indexOf(fullKey);
+                if (index > -1) {
+                    template.favorites.splice(index, 1);
+                }
+                // 清除排除列表
+                delete template.excludedScenarios[fullKey];
+            }
+            
+            saveFavoriteTemplates();
+            renderFavoritesView();
+        }
+        
+        // 确认删除整个 adv 下的所有场景
+        function confirmRemoveAdvFromFavorite(adv, encodedPlanKey) {
+            const planKey = decodeURIComponent(encodedPlanKey);
+            
+            if (confirm(`确定要取消收藏 +${adv}F 的所有场景吗？`)) {
+                doToggleFavorite(adv, planKey);
             }
         }
         
@@ -5287,6 +5636,24 @@
             
             let sortedGroups = allGroups;
             
+            // ========== 过滤无有利方案的预设场景 ==========
+            // 只过滤预设场景（非用户添加的），用户手动添加的场景总是显示
+            sortedGroups = sortedGroups.filter(group => {
+                if (group.isFuzzy) return true; // 模糊场景总是显示
+                
+                // 检查该组是否包含用户添加的场景
+                const hasUserAdded = group.indices.some(idx => state.notes[idx].isUserAdded);
+                if (hasUserAdded) return true; // 有用户添加的场景，总是显示
+                
+                // 预设场景：检查是否有有利方案
+                const allPlans = calculateBestPlan(group.adv, group.contexts || []);
+                const normalPlans = allPlans.filter(p => !p.isThrow && p.finalBlock > 0);
+                const throwPlans = allPlans.filter(p => p.isThrow && p.remain >= 4 && p.remain <= 5);
+                
+                // 只要有任何有利方案（普通方案或投技方案），就显示
+                return normalPlans.length > 0 || throwPlans.length > 0;
+            });
+            
             // 无匹配结果
             if (sortedGroups.length === 0) {
                 // 区分无数据、收藏筛选无结果和搜索无结果
@@ -5417,12 +5784,12 @@
                     const isPreset = !note.isUserAdded;
                     const isAutoExpanded = note.isAutoExpanded;
                     const requiresDash = note.requiresDash && !note.isAutoExpanded;
-                    const deleteTitle = isAutoExpanded ? "自动扩展场景不能删除" : 
+                    const deleteTitle = isAutoExpanded ? "隐藏此自动扩展场景（可通过重置恢复）" : 
                                        (isPreset ? "此为预设场景，删除后可通过重置恢复" : "删除此用户场景");
                     const contextClass = isPreset ? "context-tag-preset" : "context-tag";
                     const autoExpandIcon = isAutoExpanded ? '➜ ' : '';
                     const dashBadge = requiresDash ? '<span class="text-xs px-1.5 py-0.5 rounded ml-1" style="background: rgba(139, 92, 246, 0.2); color: rgb(196, 181, 253); border: 1px solid rgba(139, 92, 246, 0.4);" title="此场景必须接位移">需位移</span>' : '';
-                    const deleteDisabled = isAutoExpanded ? 'opacity-30 cursor-not-allowed' : '';
+                    const deleteDisabled = '';
                     
                     return `<div class="flex items-center gap-1 sm:gap-2 group/ctx">
                         <div class="expanded-context-tag text-xs sm:text-sm font-black uppercase tracking-wide px-2 py-1 border-l-2 flex-1 ${contextClass}">${autoExpandIcon}${escapeHtml(ctx)}${dashBadge}</div>
@@ -6132,10 +6499,8 @@
                 const warnKey = `${char}:${template.id}`;
                 if (!state.templateModifyWarned[warnKey]) {
                     showTemplateModifyWarning(template.name, () => {
-                        state.templateModifyWarned[warnKey] = true;
-                        saveTemplateModifyWarned();
                         _performToggleMixupAll(adv, remain, item, template);
-                    });
+                    }, warnKey);
                     return;
                 }
             }
@@ -6721,7 +7086,7 @@
         }
         
         // 显示模板修改警告
-        function showTemplateModifyWarning(templateName, onConfirm) {
+        function showTemplateModifyWarning(templateName, onConfirm, warnKey) {
             const modalHtml = `
                 <div id="templateModifyWarning" class="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
                     <div class="bg-zinc-900 border-2 w-full max-w-md p-6" style="border-color: var(--theme-primary);">
@@ -6744,20 +7109,30 @@
             
             document.body.insertAdjacentHTML('beforeend', modalHtml);
             
-            // 存储回调
+            // 存储回调和警告键
             window._templateModifyCallback = onConfirm;
+            window._templateModifyWarnKey = warnKey;
         }
         
         function closeTemplateModifyWarning() {
             const modal = document.getElementById('templateModifyWarning');
             if (modal) modal.remove();
             delete window._templateModifyCallback;
+            delete window._templateModifyWarnKey;
         }
         
         function confirmTemplateModify() {
-            const dontShow = document.getElementById('dontShowAgain').checked;
+            const dontShow = document.getElementById('dontShowAgain')?.checked || false;
+            
+            // 保存"不再提示"设置（如果用户勾选了）
+            if (dontShow && window._templateModifyWarnKey) {
+                state.templateModifyWarned[window._templateModifyWarnKey] = true;
+                saveTemplateModifyWarned();
+            }
+            
             closeTemplateModifyWarning();
             
+            // 执行回调（收藏操作）
             if (window._templateModifyCallback) {
                 window._templateModifyCallback();
                 delete window._templateModifyCallback;
@@ -8354,9 +8729,26 @@
             const isPreset = !note.isUserAdded;
             const isAutoExpanded = note.isAutoExpanded;
             
-            // 不允许删除自动扩展的场景
+            // 如果是自动扩展的场景，添加到排除列表
             if (isAutoExpanded) {
-                alert('自动扩展的场景不能删除。如需移除，请删除对应的基础场景。');
+                if (!confirm(`确定要隐藏自动扩展的场景 "${note.context}" 吗？\n\n如需恢复，可通过"重置"按钮恢复。`)) {
+                    return;
+                }
+                
+                const char = state.currentCharacter;
+                if (!state.excludedAutoExpanded[char]) {
+                    state.excludedAutoExpanded[char] = [];
+                }
+                
+                if (!state.excludedAutoExpanded[char].includes(note.context)) {
+                    state.excludedAutoExpanded[char].push(note.context);
+                    saveExcludedAutoExpanded(char, state.excludedAutoExpanded[char]);
+                }
+                
+                // 重新加载场景
+                state.notes = loadAllScenarios(char);
+                renderNotes();
+                showToast(`已隐藏场景 "${note.context}"`);
                 return;
             }
             
@@ -8382,14 +8774,21 @@
         function resetToDefault() {
             const userCount = state.notes.filter(n => n.isUserAdded).length;
             const confirmMsg = userCount > 0 
-                ? `重置 ${state.currentCharacter} 的 Scenarios 为预设值？\n（将清除 ${userCount} 个用户自定义场景，保留所有预设场景）`
-                : `重置 ${state.currentCharacter} 的 Scenarios 为预设值？`;
+                ? `重置 ${state.currentCharacter} 的 Scenarios 为预设值？\n（将清除 ${userCount} 个用户自定义场景，保留所有预设场景，并恢复所有隐藏的自动扩展场景）`
+                : `重置 ${state.currentCharacter} 的 Scenarios 为预设值？\n（将恢复所有隐藏的自动扩展场景）`;
             
             if (confirm(confirmMsg)) {
-                state.notes = resetScenarios(state.currentCharacter);
+                const char = state.currentCharacter;
+                
+                // 重置场景
+                state.notes = resetScenarios(char);
+                
+                // 清除排除的自动扩展场景
+                state.excludedAutoExpanded[char] = [];
+                saveExcludedAutoExpanded(char, []);
                 
                 // 重新加载场景（包括自动扩展）
-                state.notes = loadAllScenarios(state.currentCharacter);
+                state.notes = loadAllScenarios(char);
                 
                 renderNotes();
                 showToast('已重置为预设场景');
@@ -8610,6 +9009,9 @@
             state.minimized = loadMinimized();
             
             state.mixupHidden = loadMixupHidden();
+            
+            // 5.3 加载排除的自动扩展场景
+            state.excludedAutoExpanded[state.currentCharacter] = loadExcludedAutoExpanded(state.currentCharacter);
             
             updateSortOrderUI();
             renderAll();
