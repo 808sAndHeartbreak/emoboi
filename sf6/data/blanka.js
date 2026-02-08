@@ -12,30 +12,34 @@ CHARACTER_DATA["BLANKA"] = {
     { "name": "2LP", "startup": 6, "active": "6-8", "recovery": 8, "hit": 5, "block": -2 },
     { "name": "2LK", "startup": 5, "active": "5-6", "recovery": 10, "hit": 3, "block": -3 },
     { "name": "2MP", "startup": 9, "active": "9-13", "recovery": 16, "hit": -1, "block": -5 },
-    { "name": "2MK", "startup": 8, "active": "8-10", "recovery": 16, "hit": 5, "block": -5 },
+    { "name": "2MK", "startup": 8, "active": "8-10", "recovery": 18, "hit": 5, "block": -5 },
     { "name": "2HP", "startup": 15, "active": "15-19", "recovery": 20, "hit": 0, "block": -5 },
     { "name": "2HK", "startup": 11, "active": "11-14", "recovery": 23, "hit": 0, "block": -12, "isKnockdown": true },
     // 特殊技
     { "name": "6MP", "startup": 20, "active": "20-22", "recovery": 20, "hit": 3, "block": -3 },
-    { "name": "6MK", "startup": 9, "active": "9-20", "recovery": 18, "hit": 6, "block": -2 },
+    { "name": "6MK", "startup": 9, "active": "9-11,19-20", "recovery": 18, "hit": 6, "block": -2 },
     { "name": "4MK", "startup": 9, "active": "9-14", "recovery": 12, "hit": 8, "block": 2 },
     { "name": "6HP", "startup": 18, "active": "18-21", "recovery": 31, "hit": 0, "block": -15, "isKnockdown": true },
     { "name": "3HP", "startup": 14, "active": "14-23", "recovery": 22, "hit": 0, "block": -18, "isKnockdown": true },
+    { "name": "滑铲", "startup": 12, "active": "12-15", "recovery": 28, "hit": 0, "block": -15, "isKnockdown": true },
     // 投技和冲刺类移动
     { "name": "投", "startup": 5, "active": "5-7", "recovery": 23, "isThrow": true, "isKnockdown": true },
     { "name": "66", "isDash": true, "dashFrames": 19 },
     { "name": "6KKK", "isDash": true, "dashFrames": 27 },
-    { "name": "4KKK", "isDash": true, "dashFrames": 32 }
+    { "name": "轻滚接近", "isDash": true, "dashFrames": 31 }
   ],
   "scenarios": [
-    { "adv": 46, "context": "版边民工连升龙" },
-    { "adv": 44, "context": "民工连升龙" },
-    { "adv": 39, "context": "电" },
-    { "adv": 35, "context": "民工连滑铲" },
-    { "adv": 29, "context": "滑铲" },
+    { "adv": 13, "context": "轻滚" },
+    { "adv": 14, "context": "中滚" },
     { "adv": 25, "context": "下重脚" },
-    { "adv": 16, "context": "民工连滑铲+前前" },
-    { "adv": 13, "context": "民工连升龙+轻滚接近" },
-    { "adv": 11, "context": "投+前前" }
+    { "adv": 29, "context": "滑铲" },
+    { "adv": 30, "context": "投", "requiresDash": true },
+    { "adv": 35, "context": "民工连滑铲" },
+    { "adv": 39, "context": "电" },
+    { "adv": 40, "context": "OD电" },
+    { "adv": 44, "context": "民工连升龙", "requiresDash": true },
+    { "adv": 46, "context": "版边民工连升龙" },
+    { "adv": 46, "context": "下重脚确反" },
+    { "adv": 64, "context": "OD指令投", "requiresDash": true }
   ]
 };

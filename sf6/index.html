@@ -165,6 +165,101 @@
             66% { transform: translate(-2px, 1px); opacity: 0.9; }
         }
         
+        /* ========== 主收藏按钮流光效果 ========== */
+        @keyframes favorites-glow-pulse {
+            0%, 100% {
+                border-color: var(--theme-secondary);
+                box-shadow: 
+                    0 0 10px color-mix(in srgb, var(--theme-secondary) 30%, transparent),
+                    inset 0 0 10px color-mix(in srgb, var(--theme-secondary) 10%, transparent);
+                transform: scale(1);
+            }
+            50% {
+                border-color: var(--theme-primary);
+                box-shadow: 
+                    0 0 20px color-mix(in srgb, var(--theme-primary) 50%, transparent),
+                    0 0 40px color-mix(in srgb, var(--theme-primary) 30%, transparent),
+                    inset 0 0 20px color-mix(in srgb, var(--theme-primary) 20%, transparent);
+                transform: scale(1.03);
+            }
+        }
+        
+        @keyframes favorites-icon-pulse {
+            0%, 100% {
+                text-shadow: 0 0 8px var(--theme-secondary);
+                transform: scale(1);
+            }
+            50% {
+                text-shadow: 
+                    0 0 15px var(--theme-primary),
+                    0 0 25px var(--theme-primary);
+                transform: scale(1.1);
+            }
+        }
+        
+        /* ========== 收藏页面搜索高亮 ========== */
+        .fav-search-highlight {
+            background: linear-gradient(90deg, 
+                rgba(6, 182, 212, 0.15) 0%, 
+                rgba(6, 182, 212, 0.25) 50%, 
+                rgba(6, 182, 212, 0.15) 100%) !important;
+            border-color: rgba(6, 182, 212, 0.6) !important;
+            animation: search-pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes search-pulse {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+            }
+        }
+        
+        /* 主收藏按钮样式 */
+        .favorites-main-btn {
+            background: linear-gradient(135deg, 
+                color-mix(in srgb, var(--theme-secondary) 15%, transparent),
+                color-mix(in srgb, var(--theme-primary) 10%, transparent));
+            border-color: var(--theme-secondary);
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 未激活状态 - 流光动画 */
+        .favorites-main-btn:not(.active) {
+            animation: favorites-glow-pulse 2.5s ease-in-out infinite;
+        }
+        
+        .favorites-main-btn:not(.active) #showFavoritesIcon {
+            animation: favorites-icon-pulse 2.5s ease-in-out infinite;
+        }
+        
+        /* 激活状态 - 稳定发光 */
+        .favorites-main-btn.active {
+            background: linear-gradient(135deg, 
+                color-mix(in srgb, var(--theme-primary) 30%, transparent),
+                color-mix(in srgb, var(--theme-secondary) 20%, transparent));
+            border-color: var(--theme-primary);
+            box-shadow: 
+                0 0 15px color-mix(in srgb, var(--theme-primary) 40%, transparent),
+                inset 0 0 15px color-mix(in srgb, var(--theme-primary) 15%, transparent);
+        }
+        
+        .favorites-main-btn.active #showFavoritesIcon {
+            color: var(--theme-primary);
+            text-shadow: 0 0 10px var(--theme-primary);
+        }
+        
+        /* 悬停效果 */
+        .favorites-main-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 
+                0 0 25px color-mix(in srgb, var(--theme-primary) 60%, transparent),
+                0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        
         /* ========== 收藏卡片视图 ========== */
         .fav-card {
             background: color-mix(in srgb, var(--theme-primary) 15%, #111);
@@ -1854,6 +1949,13 @@
                 <h2 class="impact-text text-4xl sm:text-5xl font-black" style="color: var(--theme-secondary);">卡帧策略</h2>
                 <div class="flex gap-2">
                     <button onclick="resetToDefault()" class="px-4 py-3 text-xs bg-zinc-800 text-zinc-500 hover:bg-zinc-700 hover:text-white transition-all font-bold">重置</button>
+                    <!-- 收藏按钮 - 显眼位置 -->
+                    <button onclick="toggleShowOnlyFavorites()" id="showFavoritesBtn" 
+                        class="favorites-main-btn px-4 sm:px-5 py-2.5 sm:py-3 border-2 transition-all flex items-center gap-2 font-black text-sm sm:text-base"
+                        title="查看收藏方案">
+                        <span id="showFavoritesIcon" class="text-xl sm:text-2xl">☆</span>
+                        <span id="showFavoritesText">查看推荐/收藏方案</span>
+                    </button>
                     <button onclick="openNoteModal()" class="btn-hype px-6 sm:px-8 py-3 text-sm font-bold">+ 新增场景</button>
                 </div>
             </div>
@@ -1884,12 +1986,6 @@
                         <span id="toggleAllIcon" class="text-[10px] opacity-80">▼</span>
                         <span id="toggleAllText" class="hidden sm:inline">展开</span>
                     </button>
-                    <button onclick="toggleShowOnlyFavorites()" id="showFavoritesBtn" 
-                        class="sort-btn px-2.5 py-2 border transition-all flex items-center gap-1 text-xs font-bold"
-                        title="只显示收藏方案">
-                        <span id="showFavoritesIcon">☆</span>
-                        <span id="showFavoritesText" class="hidden sm:inline">收藏</span>
-                </button>
                 </div>
             </div>
             
@@ -1954,6 +2050,22 @@
                             ← 返回列表
                         </button>
                     </div>
+                </div>
+                
+                <!-- 合并同压制开关 -->
+                <div class="mb-6 flex items-center gap-3 px-4 py-3 bg-zinc-900/50 border border-zinc-700">
+                    <input type="checkbox" id="favoriteMergeSameMeaty" class="w-5 h-5 accent-cyan-500 cursor-pointer" onchange="toggleFavoriteMerge()">
+                    <label for="favoriteMergeSameMeaty" class="text-sm font-bold text-zinc-300 cursor-pointer select-none">
+                        合并同压制（把不同帧数但压制招式相同的方案合并显示）
+                    </label>
+                </div>
+                
+                <!-- 收藏页面搜索框 -->
+                <div class="mb-6 px-4 py-3 bg-zinc-900/50 border border-zinc-700">
+                    <input type="text" id="favoritesSearch" 
+                        placeholder="搜索场景、招式名称..." 
+                        class="w-full bg-zinc-800 text-white px-4 py-2 border border-zinc-600 focus:border-cyan-500 focus:outline-none transition-colors"
+                        oninput="filterFavorites()">
                 </div>
                 
                 <!-- 压制方案收藏 -->
@@ -2073,6 +2185,15 @@
                 <div>
                     <label class="block text-sm font-black uppercase mb-3 text-zinc-400">情境说明</label>
                     <input type="text" id="inputContext" class="w-full bg-black border p-4 text-base font-bold text-white" style="border-color: var(--theme-card-border);" placeholder="例如：2HK放倒">
+                </div>
+                
+                <!-- 位移接近选项 -->
+                <div class="flex items-center gap-3 px-4 py-3 bg-zinc-900/50 border" style="border-color: var(--theme-card-border);">
+                    <input type="checkbox" id="inputRequiresDash" class="w-5 h-5 accent-cyan-500 cursor-pointer">
+                    <label for="inputRequiresDash" class="text-sm font-bold text-zinc-300 cursor-pointer select-none flex items-center gap-2">
+                        <span>后续需要位移接近</span>
+                        <span class="text-xs text-zinc-500">(打完后距离远，需先接近再压制)</span>
+                    </label>
                 </div>
                 
                 <!-- 期望后续 - 进阶选项 -->
@@ -2389,15 +2510,15 @@
                             <div class="flex gap-5 items-center">
                                 <div class="flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-lg" style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent));">2</div>
                                 <div class="flex-1 bg-zinc-800/40 border border-zinc-700 p-5 rounded-lg hover:border-zinc-600 transition-colors">
-                                    <div class="font-bold text-white text-base mb-2">查看或添加场景</div>
-                                    <div class="text-sm text-zinc-400">「方案」页签查看预设，或点击「+ 新增场景」输入有利帧数</div>
+                                    <div class="font-bold text-white text-base mb-2">查看 [压制] 和 [打择投] 方案</div>
+                                    <div class="text-sm text-zinc-400">「方案」页签自动计算最优卡帧和打投择混合策略</div>
                                 </div>
                             </div>
                             <div class="flex gap-5 items-center">
                                 <div class="flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-lg" style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent));">3</div>
                                 <div class="flex-1 bg-zinc-800/40 border border-zinc-700 p-5 rounded-lg hover:border-zinc-600 transition-colors">
-                                    <div class="font-bold text-white text-base mb-2">查看压制方案</div>
-                                    <div class="text-sm text-zinc-400">系统自动计算最优卡帧组合，点击 <span class="text-yellow-400 font-bold">☆</span> 收藏常用方案</div>
+                                    <div class="font-bold text-white text-base mb-2">展开场景详细查看</div>
+                                    <div class="text-sm text-zinc-400">查看具体方案详情，点击 <span class="text-yellow-400 font-bold">☆</span> 可收藏并直接跳转至推荐收藏页</div>
                                 </div>
                             </div>
                         </div>
@@ -2405,92 +2526,66 @@
                 </div>
                 
                 <!-- 页面 2: 功能模块总览 -->
-                <div id="helpPage2" class="help-page hidden h-full flex flex-col justify-center space-y-5 text-zinc-300 text-sm">
-                    <h3 class="text-2xl font-bold text-white mb-2 text-center" style="color: var(--theme-primary);">功能模块</h3>
-                    
-                    <div class="grid grid-cols-2 gap-5">
-                        <div class="bg-zinc-800/30 border border-zinc-700 p-5 rounded hover:border-cyan-700 transition-colors">
-                            <h4 class="text-white font-bold mb-3 flex items-center gap-2 text-base">
+                <div id="helpPage2" class="help-page hidden h-full flex flex-col justify-center text-zinc-300 text-sm">
+                    <div class="space-y-4 px-2">
+                        <!-- 模块1: 方案页签 -->
+                        <div class="bg-zinc-800/30 border border-zinc-700 p-4 rounded hover:border-cyan-700 transition-colors">
+                            <h4 class="text-white font-bold mb-2 flex items-center gap-2 text-base">
                                 <span class="text-2xl">📊</span> 方案页签
                             </h4>
-                            <ul class="space-y-2 text-xs text-zinc-400">
-                                <li>• 查看所有场景的压制方案</li>
-                                <li>• 搜索/排序/收藏/最小化</li>
-                                <li>• 打投择方案（混合策略）</li>
+                            <ul class="space-y-1.5 text-xs text-zinc-400">
+                                <li>• 查看所有场景的<strong class="text-white">压制方案</strong>和<strong class="text-white">打投择方案</strong></li>
+                                <li>• 检索/排序/收藏/最小化</li>
+                                <li>• 手动新增场景</li>
                             </ul>
                         </div>
                         
-                        <div class="bg-zinc-800/30 border border-zinc-700 p-5 rounded hover:border-cyan-700 transition-colors">
-                            <h4 class="text-white font-bold mb-3 flex items-center gap-2 text-base">
-                                <span class="text-2xl">➕</span> 新增场景
-                            </h4>
-                            <ul class="space-y-2 text-xs text-zinc-400">
-                                <li>• <strong class="text-white">精确</strong>：具体帧数（27）</li>
-                                <li>• <strong class="text-white">模糊</strong>：帧数范围（28~31）</li>
-                                <li>• <strong class="text-white">期望</strong>：指定理想压制</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="bg-zinc-800/30 border border-zinc-700 p-5 rounded hover:border-cyan-700 transition-colors">
-                            <h4 class="text-white font-bold mb-3 flex items-center gap-2 text-base">
+                        <!-- 模块2: 数据页签 -->
+                        <div class="bg-zinc-800/30 border border-zinc-700 p-4 rounded hover:border-cyan-700 transition-colors">
+                            <h4 class="text-white font-bold mb-2 flex items-center gap-2 text-base">
                                 <span class="text-2xl">📚</span> 数据页签
                             </h4>
-                            <ul class="space-y-2 text-xs text-zinc-400">
+                            <ul class="space-y-1.5 text-xs text-zinc-400">
                                 <li>• <strong class="text-white">招式库</strong>：查看/编辑/导入</li>
                                 <li>• <strong class="text-white">规则</strong>：自定义禁用规则</li>
-                                <li>• <strong class="text-white">收藏</strong>：保存/导出模板</li>
                             </ul>
                         </div>
                         
-                        <div class="bg-zinc-800/30 border border-zinc-700 p-5 rounded hover:border-cyan-700 transition-colors">
-                            <h4 class="text-white font-bold mb-3 flex items-center gap-2 text-base">
-                                <span class="text-2xl">⭐</span> 常用操作
+                        <!-- 模块3: 帧数标记 -->
+                        <div class="bg-zinc-800/30 border border-zinc-700 p-4 rounded hover:border-cyan-700 transition-colors">
+                            <h4 class="text-white font-bold mb-2 flex items-center gap-2 text-base">
+                                <span class="text-2xl">🔢</span> 帧数标记
                             </h4>
-                            <ul class="space-y-2 text-xs text-zinc-400">
-                                <li>• <span class="text-yellow-400">☆</span> 收藏喜欢的方案</li>
-                                <li>• <span class="text-zinc-400">-</span> 最小化到备选区</li>
-                                <li>• 搜索框快速筛选场景</li>
-                            </ul>
+                            <div class="space-y-1.5 text-xs max-w-md">
+                                <div class="flex items-center gap-4 py-1">
+                                    <span class="font-mono font-bold text-cyan-400 w-28">H +X / H -X</span>
+                                    <span class="text-zinc-400">命中后的优势/劣势帧数</span>
+                                </div>
+                                <div class="flex items-center gap-4 py-1">
+                                    <span class="font-mono font-bold text-rose-400 w-28">B +X / B -X</span>
+                                    <span class="text-zinc-400">防御后的优势/劣势帧数</span>
+                                </div>
+                                <div class="flex items-center gap-4 py-1">
+                                    <span class="font-mono font-bold text-emerald-400 w-28">偷 XF</span>
+                                    <span class="text-zinc-400">提前命中多偷到的帧数</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- 页面 3: 符号速查 + 联系 -->
-                <div id="helpPage3" class="help-page hidden h-full flex flex-col justify-center space-y-8 text-zinc-300 text-sm py-6">
-                    <section>
-                        <h3 class="text-2xl font-bold text-white mb-4 text-center" style="color: var(--theme-primary);">帧数标记</h3>
-                        <div class="bg-zinc-800/50 border border-zinc-700 rounded-lg max-w-2xl mx-auto">
-                            <table class="w-full text-sm">
-                                <tbody>
-                                    <tr class="border-b border-zinc-700">
-                                        <td class="p-4 font-mono font-bold text-cyan-400">H +X / H -X</td>
-                                        <td class="p-4 text-zinc-400">命中后的优势 / 劣势帧数</td>
-                                    </tr>
-                                    <tr class="border-b border-zinc-700">
-                                        <td class="p-4 font-mono font-bold text-rose-400">B +X / B -X</td>
-                                        <td class="p-4 text-zinc-400">防御后的优势 / 劣势帧数</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="p-4 font-mono font-bold text-emerald-400">偷 XF</td>
-                                        <td class="p-4 text-zinc-400">提前命中多偷到的帧数</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
-                    
-                    <section class="pt-4">
-                        <div class="text-center">
-                            <p class="text-sm text-zinc-400 mb-4">功能建议 / Bug反馈 / 数据整理</p>
-                            <a href="https://space.bilibili.com/3493085064914308" target="_blank" class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-pink-600 to-blue-600 hover:from-pink-500 hover:to-blue-500 rounded-lg text-white font-bold text-base transition-all transform hover:scale-105 shadow-lg">
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373z"/>
-                                </svg>
-                                <span>B站私信 @Cold_Visions</span>
-                            </a>
-                            <p class="text-sm text-zinc-500 mt-4">感谢您的使用和反馈！</p>
-                        </div>
-                    </section>
+                <!-- 页面 3: 反馈与支持 -->
+                <div id="helpPage3" class="help-page hidden h-full flex flex-col justify-center text-zinc-300 text-sm">
+                    <div class="text-center">
+                        <p class="text-base text-zinc-400 mb-8">功能建议 / Bug反馈 / 数据整理</p>
+                        <a href="https://space.bilibili.com/14963027" target="_blank" class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-pink-600 to-blue-600 hover:from-pink-500 hover:to-blue-500 rounded-lg text-white font-bold text-base transition-all transform hover:scale-105 shadow-lg">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373z"/>
+                            </svg>
+                            <span>B站私信 @Cold_Visions</span>
+                        </a>
+                        <p class="text-sm text-zinc-500 mt-6">感谢您的使用和反馈！</p>
+                    </div>
                 </div>
             </div>
             
@@ -2600,6 +2695,44 @@
                         moveName: "5MK",
                         usage: "meaty_direct",
                         description: "无法取消，不适合用于压制"
+                    }
+                ],
+                "BLANKA": [
+                    {
+                        id: "blanka_preset_66_roll",
+                        type: "combo",
+                        move1: "66",
+                        move2: "轻滚接近",
+                        description: "前冲后不接轻滚（动作僵硬）"
+                    },
+                    {
+                        id: "blanka_preset_6kkk_roll",
+                        type: "combo",
+                        move1: "6KKK",
+                        move2: "轻滚接近",
+                        description: "野兽冲刺后不接轻滚（动作僵硬）"
+                    },
+                    {
+                        id: "blanka_preset_slide_roll",
+                        type: "combo",
+                        move1: "滑铲",
+                        move2: "轻滚接近",
+                        description: "滑铲后不接轻滚（连招不稳定）"
+                    },
+                    {
+                        id: "blanka_preset_minkoren_slide_roll",
+                        type: "context_disable",
+                        context: "民工连滑铲",
+                        dashMove: "轻滚接近",
+                        description: "民工连滑铲后距离仍不够，禁用轻滚接近"
+                    },
+                    {
+                        id: "blanka_preset_od_elec_66_throw",
+                        type: "context_disable",
+                        context: "OD电+66",
+                        moveName: "投",
+                        usage: "meaty",
+                        description: "OD电+66后距离不够，无法用投压制"
                     }
                 ],
                 "ZANGIEF": [
@@ -2712,7 +2845,7 @@
             }
         };
 
-        // ==================== 推荐收藏预设（导演剪辑版） ====================
+        // ==================== 默认推荐预设（导演剪辑版） ====================
         const DIRECTOR_CUTS = {
             "RYU": {
                 favorites: [
@@ -2741,6 +2874,28 @@
                 mixupFavorites: [
                     "27|5|66"
                 ]
+            },
+            "BLANKA": {
+                favorites: [
+                    "DIRECT||4MK|11",
+                    "DIRECT||4MK|13",
+                    "5LK||4MK|25",
+                    "2LP||4MK|29",
+                    "4MK||4MK|39",
+                    "5HK||4MK|46",
+                    "5LK||4MK|27",
+                    "DIRECT||4MK|10",
+                    "DIRECT||4MK|12",
+                    "2LP||投|20",
+                    "5MP||4MK|40"
+                ],
+                mixupFavorites: [],
+                excludedScenarios: {
+                    "DIRECT||4MK|10": ["OD指令投+6KKK+6KKK"],
+                    "DIRECT||4MK|13": ["轻滚"],
+                    "5LK||4MK|27": ["版边民工连升龙+66"],
+                    "5HK||4MK|46": ["下重脚确反"]
+                }
             }
             // 其他角色暂无推荐，可以根据需要添加
         };
@@ -2767,6 +2922,8 @@
             expandedAdvSet: new Set(),
             // 全局展开详情开关
             allDetailsExpanded: false,
+            // 收藏页面：合并同压制开关
+            favoriteMergeSameMeaty: true,  // 默认开启合并
             // 是否只显示收藏方案
             showOnlyFavorites: false,
             // 打投择收藏 { "charName:adv:remain:killDesc": true } - 旧版，保留用于迁移
@@ -2775,7 +2932,9 @@
             // 收藏模板系统 { charName: { current: "my", templates: {...} } }
             favoriteTemplates: {},
             // 模板修改提示标记 { "charName:templateId": true }
-            templateModifyWarned: {}
+            templateModifyWarned: {},
+            // 排除的自动扩展场景 { "charName": ["context1", "context2"] }
+            excludedAutoExpanded: {}
         };
 
         // ==================== 工具函数 ====================
@@ -3004,7 +3163,88 @@
         function loadAllScenarios(char) {
             const defaultScenarios = getDefaultScenarios(char);
             const userScenarios = loadScenariosFromStorage(char);
-            return [...defaultScenarios, ...userScenarios];
+            const baseScenarios = [...defaultScenarios, ...userScenarios];
+            
+            // 自动扩展：添加"场景+移动"组合
+            const expandedScenarios = autoExpandScenariosWithDash(baseScenarios);
+            
+            // 获取排除列表
+            const excludedList = state.excludedAutoExpanded[char] || [];
+            
+            // 过滤掉被排除的自动扩展场景
+            const filteredExpanded = expandedScenarios.filter(s => 
+                !excludedList.includes(s.context)
+            );
+            
+            // 过滤掉标记为 requiresDash 的基础场景（它们只以扩展形式出现）
+            const filteredBaseScenarios = baseScenarios.filter(s => !s.requiresDash);
+            
+            return [...filteredBaseScenarios, ...filteredExpanded];
+        }
+        
+        // 自动扩展场景：计算"基础场景+移动技能"的组合
+        function autoExpandScenariosWithDash(baseScenarios) {
+            const expanded = [];
+            
+            // 获取所有dash/移动技能（使用当前的moveLibrary）
+            const dashMoves = state.moveLibrary.filter(m => m.isDash && m.dashFrames);
+            if (dashMoves.length === 0) return expanded;
+            
+            // 获取当前角色的 context_disable 规则
+            const allRules = getAllRulesForCharacter(state.currentCharacter);
+            const contextDisableRules = allRules.filter(r => r.type === 'context_disable');
+            
+            // 检查某个场景是否禁用了某个dash技能
+            function isContextDashDisabled(scenarioContext, dashMoveName) {
+                return contextDisableRules.some(rule => 
+                    rule.context === scenarioContext && rule.dashMove === dashMoveName
+                );
+            }
+            
+            // 对每个基础场景进行扩展（最多2层）
+            baseScenarios.forEach(scenario => {
+                if (scenario.isFuzzy || !scenario.adv) return; // 跳过模糊场景
+                if (scenario.isAutoExpanded) return; // 跳过已经是自动扩展的场景，避免递归
+                
+                const isRequiredDash = scenario.requiresDash === true; // 是否必须接dash
+                
+                // 第一层扩展
+                dashMoves.forEach(dash1 => {
+                    // 检查规则：该场景是否禁用了这个dash技能
+                    if (isContextDashDisabled(scenario.context, dash1.name)) {
+                        return; // 跳过这个dash技能
+                    }
+                    
+                    const newAdv1 = scenario.adv - dash1.dashFrames;
+                    if (newAdv1 > 0) { // 只有正帧才生成
+                        expanded.push({
+                            adv: newAdv1,
+                            context: `${scenario.context}+${dash1.name}`,
+                            isAutoExpanded: true,
+                            originalAdv: scenario.adv,
+                            dashChain: [dash1.name],
+                            fromRequiredDash: isRequiredDash // 标记是否来自必须接dash的场景
+                        });
+                        
+                        // 第二层扩展（所有场景都可以扩展第二层）
+                        dashMoves.forEach(dash2 => {
+                            const newAdv2 = newAdv1 - dash2.dashFrames;
+                            if (newAdv2 > 0) { // 只有正帧才生成
+                                expanded.push({
+                                    adv: newAdv2,
+                                    context: `${scenario.context}+${dash1.name}+${dash2.name}`,
+                                    isAutoExpanded: true,
+                                    originalAdv: scenario.adv,
+                                    dashChain: [dash1.name, dash2.name],
+                                    fromRequiredDash: isRequiredDash
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+            
+            return expanded;
         }
 
         // 重置角色 scenarios 为预设（清除用户自定义）
@@ -3040,6 +3280,25 @@
                 // 静默失败
             }
             return [];
+        }
+        
+        // 保存排除的自动扩展场景
+        function saveExcludedAutoExpanded(char, excludedList) {
+            try {
+                localStorage.setItem(getStorageKey(char, 'excludedAutoExpanded'), JSON.stringify(excludedList));
+            } catch (e) {
+                // 静默失败
+            }
+        }
+        
+        // 加载排除的自动扩展场景
+        function loadExcludedAutoExpanded(char) {
+            try {
+                const saved = localStorage.getItem(getStorageKey(char, 'excludedAutoExpanded'));
+                return saved ? JSON.parse(saved) : [];
+            } catch (e) {
+                return [];
+            }
         }
         
         // 获取当前角色的所有规则（全局 + 角色预设 + 用户自定义）
@@ -3455,25 +3714,44 @@
         }
 
         // ==================== 数据加载 ====================
+        // 数据版本号 - 每次更新预设数据时增加此版本号
+        const DATA_VERSION = 2; // v2: 添加 requiresDash 支持和自动扩展功能
+        
         // 从全局 CHARACTER_DATA 加载角色数据（由外部 .js 文件填充）
         function loadCharacterData(char) {
             // 根据当前模式构造数据键名
             const dataKey = state.controlMode === 'modern' ? `${char}_MODERN` : char;
             
-            // 1. 优先从 localStorage 加载用户保存的数据
+            // 检查数据版本，如果版本不匹配则清除缓存
+            const savedVersion = localStorage.getItem('sf6_data_version');
+            if (savedVersion !== String(DATA_VERSION)) {
+                console.log(`数据版本更新: ${savedVersion} -> ${DATA_VERSION}，清除角色缓存`);
+                localStorage.setItem('sf6_data_version', String(DATA_VERSION));
+                // 清除角色数据缓存，但保留用户数据
+                state.characterCache = {};
+            }
+            
+            // 1. 优先从 localStorage 加载用户保存的数据（仅 moves）
             const savedMoves = loadMovesFromStorage(char);
             if (savedMoves && savedMoves.length > 0) {
                 state.moveLibrary = savedMoves;
+                // 即使有 savedMoves，也要从 CHARACTER_DATA 读取最新的 scenarios
+                const data = CHARACTER_DATA[dataKey];
                 state.characterCache[char] = {
                     moves: savedMoves,
-                    scenarios: CHARACTER_DATA[dataKey]?.scenarios || []
+                    scenarios: data?.scenarios ? [...data.scenarios] : []
                 };
                 return true;
             }
             
-            // 2. 检查内存缓存
+            // 2. 检查内存缓存（但始终重新读取 scenarios 以确保最新）
             if (state.characterCache[char]?.moves?.length > 0) {
                 state.moveLibrary = [...state.characterCache[char].moves];
+                // 重新读取 scenarios 确保最新
+                const data = CHARACTER_DATA[dataKey];
+                if (data?.scenarios) {
+                    state.characterCache[char].scenarios = [...data.scenarios];
+                }
                 return true;
             }
 
@@ -4117,10 +4395,8 @@
                 const warnKey = `${char}:${template.id}`;
                 if (!state.templateModifyWarned[warnKey]) {
                     showTemplateModifyWarning(template.name, () => {
-                        state.templateModifyWarned[warnKey] = true;
-                        saveTemplateModifyWarned();
                         doToggleFavorite(adv, planKey);
-                    });
+                    }, warnKey);
                     return;
                 }
             }
@@ -4129,7 +4405,27 @@
         }
         
         function doToggleFavorite(adv, planKey) {
-            const template = getCurrentTemplate();
+            let template = getCurrentTemplate();
+            
+            // 如果当前是"默认推荐"模板，不允许修改，而是复制到"我的收藏"并切换
+            if (template.id === 'director') {
+                const char = state.currentCharacter;
+                initCharacterTemplates(char);
+                
+                // 复制当前"默认推荐"的内容到"我的收藏"（如果"我的收藏"为空）
+                const myTemplate = state.favoriteTemplates[char].templates['my'];
+                if (myTemplate.favorites.length === 0 && myTemplate.mixupFavorites.length === 0) {
+                    myTemplate.favorites = [...template.favorites];
+                    myTemplate.mixupFavorites = [...template.mixupFavorites];
+                }
+                
+                // 切换到"我的收藏"
+                state.favoriteTemplates[char].current = 'my';
+                template = myTemplate;
+                
+                showToast('已切换到"我的收藏"模板', 2000);
+            }
+            
             const fullKey = `${planKey}|${adv}`;
             const favorites = template.favorites || [];
             
@@ -4212,10 +4508,8 @@
                 const warnKey = `${char}:${template.id}`;
                 if (!state.templateModifyWarned[warnKey]) {
                     showTemplateModifyWarning(template.name, () => {
-                        state.templateModifyWarned[warnKey] = true;
-                        saveTemplateModifyWarned();
                         doToggleMixupFavorite(adv, remain, killDesc);
-                    });
+                    }, warnKey);
                     return;
                 }
             }
@@ -4224,7 +4518,27 @@
         }
         
         function doToggleMixupFavorite(adv, remain, killDesc) {
-            const template = getCurrentTemplate();
+            let template = getCurrentTemplate();
+            
+            // 如果当前是"默认推荐"模板，不允许修改，而是复制到"我的收藏"并切换
+            if (template.id === 'director') {
+                const char = state.currentCharacter;
+                initCharacterTemplates(char);
+                
+                // 复制当前"默认推荐"的内容到"我的收藏"（如果"我的收藏"为空）
+                const myTemplate = state.favoriteTemplates[char].templates['my'];
+                if (myTemplate.favorites.length === 0 && myTemplate.mixupFavorites.length === 0) {
+                    myTemplate.favorites = [...template.favorites];
+                    myTemplate.mixupFavorites = [...template.mixupFavorites];
+                }
+                
+                // 切换到"我的收藏"
+                state.favoriteTemplates[char].current = 'my';
+                template = myTemplate;
+                
+                showToast('已切换到"我的收藏"模板', 2000);
+            }
+            
             const key = getMixupKey(adv, remain, killDesc);
             const mixupFavorites = template.mixupFavorites || [];
             
@@ -4332,7 +4646,8 @@
                             name: '我的收藏',
                             type: 'user',
                             favorites: [],
-                            mixupFavorites: []
+                            mixupFavorites: [],
+                            excludedScenarios: {}  // 排除的场景 { "planKey|adv": ["context1", "context2"] }
                         }
                     }
                 };
@@ -4355,19 +4670,45 @@
                     name: '我的收藏',
                     type: 'user',
                     favorites: [],
-                    mixupFavorites: []
+                    mixupFavorites: [],
+                    excludedScenarios: {}
                 };
             }
             
-            // 添加推荐收藏模板（如果配置中有定义）
-            if (DIRECTOR_CUTS[char] && !state.favoriteTemplates[char].templates['director']) {
+            // 确保所有模板都有 excludedScenarios 字段（兼容旧数据）
+            Object.values(state.favoriteTemplates[char].templates).forEach(template => {
+                if (!template.excludedScenarios) {
+                    template.excludedScenarios = {};
+                }
+            });
+            
+            // 添加/更新默认推荐模板（如果配置中有定义）
+            // 每次都同步更新，确保默认推荐始终是最新的
+            if (DIRECTOR_CUTS[char]) {
                 state.favoriteTemplates[char].templates['director'] = {
                     id: 'director',
-                    name: '推荐收藏',
+                    name: '默认推荐',
                     type: 'director',
                     favorites: DIRECTOR_CUTS[char].favorites || [],
-                    mixupFavorites: DIRECTOR_CUTS[char].mixupFavorites || []
+                    mixupFavorites: DIRECTOR_CUTS[char].mixupFavorites || [],
+                    excludedScenarios: DIRECTOR_CUTS[char].excludedScenarios || {}
                 };
+            }
+            
+            // 智能选择默认模板：如果"我的收藏"为空，默认显示"默认推荐"
+            if (!state.favoriteTemplates[char].current || state.favoriteTemplates[char].current === 'my') {
+                const myTemplate = state.favoriteTemplates[char].templates['my'];
+                const hasMyFavorites = myTemplate && (
+                    (myTemplate.favorites && myTemplate.favorites.length > 0) ||
+                    (myTemplate.mixupFavorites && myTemplate.mixupFavorites.length > 0)
+                );
+                
+                // 如果"我的收藏"为空且有默认推荐，默认显示默认推荐
+                if (!hasMyFavorites && DIRECTOR_CUTS[char]) {
+                    state.favoriteTemplates[char].current = 'director';
+                } else {
+                    state.favoriteTemplates[char].current = 'my';
+                }
             }
         }
         
@@ -4501,7 +4842,8 @@
                 name: templateName,
                 type: 'imported',
                 favorites: data.favorites || [],
-                mixupFavorites: data.mixupFavorites || []
+                mixupFavorites: data.mixupFavorites || [],
+                excludedScenarios: data.excludedScenarios || {}  // 导入时保留排除列表
             };
             
             // 切换到新模板
@@ -4516,7 +4858,7 @@
             const char = state.currentCharacter;
             const template = state.favoriteTemplates[char]?.templates[templateId];
             
-            // 不能删除"我的收藏"和"推荐收藏"
+            // 不能删除"我的收藏"和"默认推荐"
             if (templateId === 'my' || templateId === 'director' || !template) {
                 return false;
             }
@@ -4543,7 +4885,8 @@
                 character: char,
                 timestamp: new Date().toISOString(),
                 favorites: template.favorites || [],
-                mixupFavorites: template.mixupFavorites || []
+                mixupFavorites: template.mixupFavorites || [],
+                excludedScenarios: template.excludedScenarios || {}  // 导出时包含排除列表
             };
             
             return JSON.stringify(exportData, null, 2);
@@ -4682,6 +5025,56 @@
             }
         }
         
+        // 切换收藏页面合并开关
+        function toggleFavoriteMerge() {
+            const checkbox = document.getElementById('favoriteMergeSameMeaty');
+            state.favoriteMergeSameMeaty = checkbox.checked;
+            renderFavoritesView();
+        }
+        
+        // 收藏页面搜索过滤
+        function filterFavorites() {
+            const searchInput = document.getElementById('favoritesSearch');
+            const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
+            
+            // 获取所有收藏项（压制方案和打投择方案）
+            const meatyGrid = document.getElementById('favMeatyGrid');
+            const mixupGrid = document.getElementById('favMixupGrid');
+            
+            // 移除所有现有高亮
+            [meatyGrid, mixupGrid].forEach(grid => {
+                if (!grid) return;
+                grid.querySelectorAll('.fav-search-highlight').forEach(el => {
+                    el.classList.remove('fav-search-highlight');
+                });
+            });
+            
+            // 如果搜索为空，不做任何高亮
+            if (!searchTerm) return;
+            
+            // 高亮匹配的内容
+            [meatyGrid, mixupGrid].forEach(grid => {
+                if (!grid) return;
+                
+                // 查找所有包含文本的元素
+                const textElements = grid.querySelectorAll('.text-zinc-300, .text-white, .text-cyan-400, .impact-text');
+                
+                textElements.forEach(el => {
+                    const text = el.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        // 向上查找最近的行容器并高亮
+                        let parent = el.closest('.flex.items-center.justify-between');
+                        if (!parent) {
+                            parent = el.closest('.border-2');
+                        }
+                        if (parent) {
+                            parent.classList.add('fav-search-highlight');
+                        }
+                    }
+                });
+            });
+        }
+        
         // 渲染收藏卡片视图
         function renderFavoritesView() {
             const meatyGrid = document.getElementById('favMeatyGrid');
@@ -4690,6 +5083,9 @@
             const mixupSection = document.getElementById('favMixupSection');
             const emptyState = document.getElementById('favEmptyState');
             const countSpan = document.getElementById('favoritesCount');
+            const mergeCheckbox = document.getElementById('favoriteMergeSameMeaty');
+            
+            if (mergeCheckbox) mergeCheckbox.checked = state.favoriteMergeSameMeaty;
             
             // 更新模板选择器
             updateTemplateSelector();
@@ -4699,48 +5095,75 @@
             const favorites = template.favorites || [];
             const mixupFavorites = template.mixupFavorites || [];
             
-            // 收集所有收藏的压制方案
+            // 收集所有收藏的压制方案（带完整 Hit/Block 信息）
             const meatyFavs = [];
             favorites.forEach(fullKey => {
-                // fullKey 格式: "planKey|adv"
                 const lastPipe = fullKey.lastIndexOf('|');
                 if (lastPipe === -1) return;
-                
                 const planKey = fullKey.substring(0, lastPipe);
                 const adv = parseInt(fullKey.substring(lastPipe + 1));
-                
                 if (isNaN(adv)) return;
                 
-                // 获取该 adv 对应的场景
-                const contexts = [];
+                // 获取排除列表
+                const excludedList = template.excludedScenarios?.[fullKey] || [];
+                
+                const scenarioData = [];
                 state.notes.forEach(note => {
                     if (note.adv === adv && !note.advRange) {
-                        contexts.push(note.context);
+                        // 过滤掉被排除的场景
+                        if (!excludedList.includes(note.context)) {
+                            scenarioData.push({ adv: note.adv, context: note.context });
+                        }
                     }
                 });
                 
-                meatyFavs.push({ adv, planKey, contexts });
+                // 如果所有场景都被排除了，跳过这个收藏
+                if (scenarioData.length === 0) return;
+                
+                // 计算方案的完整信息（包括 Hit/Block）
+                const allPlans = calculateBestPlan(adv, scenarioData.map(s => s.context));
+                const matchingPlan = allPlans.find(p => getPlanKey(p) === planKey);
+                
+                // 过滤掉打投择方案：
+                // 1. isThrow: true（投技）
+                // 2. remain 在 4-5 帧范围（打投择特征）
+                if (matchingPlan && !(matchingPlan.isThrow && matchingPlan.remain >= 4 && matchingPlan.remain <= 5)) {
+                    const parts = planKey.split('|');
+                    const kill1 = parts[0] || '';
+                    const kill2 = parts[1] || '';
+                    const meatyMoveName = parts[2] || parts[1] || '';
+                    
+                    let planDisplay = '';
+                    if (kill1 === 'DIRECT') {
+                        planDisplay = meatyMoveName;
+                    } else if (kill2 && kill2 !== '') {
+                        planDisplay = `${kill1} + ${kill2} → ${meatyMoveName}`;
+                    } else {
+                        planDisplay = `${kill1} → ${meatyMoveName}`;
+                    }
+                    
+                    meatyFavs.push({
+                        adv, planKey, planDisplay, meatyMoveName, scenarioData,
+                        hitBlock: { hit: matchingPlan.finalHit, block: matchingPlan.finalBlock }
+                    });
+                }
             });
             
             // 收集所有收藏的打投择方案
             const mixupFavs = [];
             mixupFavorites.forEach(key => {
-                // key 格式: "adv|remain|killDesc"
                 const parts = key.split('|');
                 if (parts.length >= 3) {
                     const adv = parseInt(parts[0]);
                     const remain = parseInt(parts[1]);
                     const killDesc = parts.slice(2).join('|');
-                    
-                    // 获取该 adv 对应的场景
-                    const contexts = [];
+                    const scenarioData = [];
                     state.notes.forEach(note => {
                         if (note.adv === adv && !note.advRange) {
-                            contexts.push(note.context);
+                            scenarioData.push({ adv: note.adv, context: note.context });
                         }
                     });
-                    
-                    mixupFavs.push({ adv, remain, killDesc, contexts });
+                    mixupFavs.push({ adv, remain, killDesc, scenarioData });
                 }
             });
             
@@ -4760,87 +5183,129 @@
             // 渲染压制方案卡片
             if (meatyFavs.length > 0) {
                 meatySection.classList.remove('hidden');
-                meatyGrid.innerHTML = meatyFavs.map(fav => {
-                    const contextsHtml = fav.contexts.length > 0 
-                        ? fav.contexts.map(ctx => `<span class="fav-card-context">${escapeHtml(ctx)}</span>`).join('')
-                        : '<span class="fav-card-context" style="background: #000; color: #666; border-color: #222;">无场景</span>';
+                
+                if (state.favoriteMergeSameMeaty) {
+                    // ========== 合并模式：按压制招式合并 ==========
+                    const merged = {};
+                    meatyFavs.forEach(fav => {
+                        if (!merged[fav.planDisplay]) {
+                            merged[fav.planDisplay] = { planDisplay: fav.planDisplay, items: [] };
+                        }
+                        merged[fav.planDisplay].items.push(fav);
+                    });
                     
-                    // 解析方案描述：planKey 格式为 "kill1|kill2|meaty"
-                    // DIRECT||meaty -> 直接压制
-                    // kill1||meaty -> 一步卡帧
-                    // kill1|kill2|meaty -> 两步卡帧
-                    let planDisplay = '';
-                    const parts = fav.planKey.split('|');
-                    const kill1 = parts[0] || '';
-                    const kill2 = parts[1] || '';
-                    const meaty = parts[2] || parts[1] || '';  // 兼容两种格式
+                    // 对每个压制招式下的 items 按 adv 降序排列
+                    Object.values(merged).forEach(group => {
+                        group.items.sort((a, b) => b.adv - a.adv);
+                    });
                     
-                    if (kill1 === 'DIRECT') {
-                        // 直接压制：只显示招式名
-                        planDisplay = escapeHtml(meaty);
-                    } else if (kill2 && kill2 !== '') {
-                        // 两步卡帧（kill2 不为空）
-                        planDisplay = `${escapeHtml(kill1)} <span class="fav-card-plan-arrow">+</span> ${escapeHtml(kill2)} <span class="fav-card-plan-arrow">→</span> ${escapeHtml(meaty)}`;
-                    } else {
-                        // 一步卡帧（kill2 为空）
-                        const actualMeaty = parts[2] || parts[1] || '';
-                        planDisplay = `${escapeHtml(kill1)} <span class="fav-card-plan-arrow">→</span> ${escapeHtml(actualMeaty)}`;
-                    }
-                    
-                    const safePlanKey = encodeURIComponent(fav.planKey);
-                    
-                    return `
-                        <div class="fav-card" id="fav-meaty-${fav.adv}-${safePlanKey}">
-                            <div class="fav-card-plan">${planDisplay}</div>
-                            <div class="fav-card-contexts">${contextsHtml}</div>
-                            <div class="fav-card-header">
-                                <span class="fav-card-adv">+${fav.adv}F</span>
-                                <span class="fav-card-star" onclick="removeFavoriteMeaty(${fav.adv}, '${safePlanKey}')" title="取消收藏">★</span>
+                    meatyGrid.innerHTML = Object.values(merged).map(group => {
+                        const itemsHtml = group.items.map(item => {
+                            const scenariosHtml = item.scenarioData.map(scenario => {
+                                const safePlanKey = encodeURIComponent(item.planKey);
+                                const safeContext = encodeURIComponent(scenario.context);
+                                return `
+                                    <div class="flex items-center justify-between py-2 px-3 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-b border-zinc-800 group">
+                                        <div class="flex items-center gap-3 flex-1 flex-wrap">
+                                            <span class="text-zinc-300 text-sm">${escapeHtml(scenario.context)}</span>
+                                            <span class="text-green-400 text-xs font-mono">H${item.hitBlock.hit >= 0 ? '+' : ''}${item.hitBlock.hit}</span>
+                                            <span class="text-orange-400 text-xs font-mono">B${item.hitBlock.block >= 0 ? '+' : ''}${item.hitBlock.block}</span>
+                                        </div>
+                                        <button onclick="removeScenarioFromFavorite(${item.adv}, '${safePlanKey}', '${safeContext}')" 
+                                            class="text-zinc-600 hover:text-red-500 text-xl opacity-0 group-hover:opacity-100 transition-all px-2 flex-shrink-0" 
+                                            title="从收藏中移除此场景">×</button>
+                                    </div>
+                                `;
+                            }).join('');
+                            
+                            const safePlanKey = encodeURIComponent(item.planKey);
+                            return `
+                                <div class="mb-4 border border-zinc-700 bg-black/20 group">
+                                    <div class="flex items-center justify-between px-3 py-2 bg-zinc-800/30 border-b border-zinc-700">
+                                        <span class="text-cyan-400 font-mono text-sm font-bold">+${item.adv}F</span>
+                                        <button onclick="confirmRemoveAdvFromFavorite(${item.adv}, '${safePlanKey}')" 
+                                            class="text-zinc-600 hover:text-red-500 text-xl opacity-0 group-hover:opacity-100 transition-all px-2" 
+                                            title="删除此帧数下的所有场景">×</button>
+                                    </div>
+                                    ${scenariosHtml}
+                                </div>
+                            `;
+                        }).join('');
+                        
+                        return `
+                            <div class="border-2 bg-zinc-900/80 p-5" style="border-color: var(--theme-primary);">
+                                <div class="text-3xl font-black mb-4 text-white">${escapeHtml(group.planDisplay)}</div>
+                                ${itemsHtml}
                             </div>
-                        </div>
-                    `;
-                }).join('');
+                        `;
+                    }).join('');
+                } else {
+                    // ========== 非合并模式：每个方案独立显示 ==========
+                    meatyGrid.innerHTML = meatyFavs.map(fav => {
+                        const scenariosHtml = fav.scenarioData.map(scenario => {
+                            const safePlanKey = encodeURIComponent(fav.planKey);
+                            const safeContext = encodeURIComponent(scenario.context);
+                            return `
+                                <div class="flex items-center justify-between py-2 px-3 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-b border-zinc-800 last:border-0 group">
+                                    <span class="text-zinc-300 text-sm">${escapeHtml(scenario.context)}</span>
+                                    <button onclick="removeScenarioFromFavorite(${fav.adv}, '${safePlanKey}', '${safeContext}')" 
+                                        class="text-zinc-600 hover:text-red-500 text-xl opacity-0 group-hover:opacity-100 transition-all px-2" 
+                                        title="从收藏中移除此场景">×</button>
+                                </div>
+                            `;
+                        }).join('');
+                        
+                        const safePlanKey = encodeURIComponent(fav.planKey);
+                        return `
+                            <div class="border-2 bg-zinc-900/80 p-5 group" style="border-color: var(--theme-primary);">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="text-3xl font-black text-white flex-1">${escapeHtml(fav.planDisplay)}</div>
+                                    <span class="text-cyan-400 font-mono text-lg font-bold">+${fav.adv}F</span>
+                                </div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-4 text-sm flex-wrap">
+                                <span class="text-green-400 font-mono">H${fav.hitBlock.hit >= 0 ? '+' : ''}${fav.hitBlock.hit}</span>
+                                <span class="text-orange-400 font-mono">B${fav.hitBlock.block >= 0 ? '+' : ''}${fav.hitBlock.block}</span>
+                            </div>
+                                    <button onclick="confirmRemoveAdvFromFavorite(${fav.adv}, '${safePlanKey}')" 
+                                        class="text-zinc-600 hover:text-red-500 text-xl opacity-0 group-hover:opacity-100 transition-all px-2" 
+                                        title="删除此帧数下的所有场景">×</button>
+                                </div>
+                                <div class="border border-zinc-700 bg-black/20">
+                                    ${scenariosHtml}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
             } else {
                 meatySection.classList.add('hidden');
             }
             
-            // 渲染打投择方案卡片
+            // 渲染打投择方案卡片（使用新布局）
             if (mixupFavs.length > 0) {
                 mixupSection.classList.remove('hidden');
                 mixupGrid.innerHTML = mixupFavs.map(fav => {
-                    const contextsHtml = fav.contexts.length > 0 
-                        ? fav.contexts.map(ctx => `<span class="fav-card-context">${escapeHtml(ctx)}</span>`).join('')
-                        : '<span class="fav-card-context" style="background: #000; color: #666; border-color: #222;">无场景</span>';
-                    
-                    // 解析卡帧描述
-                    let planDisplay = fav.killDesc;
-                    if (fav.killDesc.includes(' + ')) {
-                        const parts = fav.killDesc.split(' + ');
-                        planDisplay = parts.join(' <span class="fav-card-plan-arrow">+</span> ');
-                    } else if (fav.killDesc.includes(' → ')) {
-                        const parts = fav.killDesc.split(' → ');
-                        planDisplay = parts.join(' <span class="fav-card-plan-arrow">→</span> ');
-                    }
-                    
+                    const scenariosHtml = fav.scenarioData.map(s => 
+                        `<div class="text-zinc-400 text-sm py-1">${escapeHtml(s.context)}</div>`
+                    ).join('');
                     const safeKillDesc = encodeURIComponent(fav.killDesc);
-                    
                     return `
-                        <div class="fav-card" id="fav-mixup-${fav.adv}-${fav.remain}-${safeKillDesc}">
-                            <div class="fav-card-header">
-                                <span class="fav-card-adv">+${fav.adv}F</span>
-                                <span class="fav-card-star" onclick="removeFavoriteMixup(${fav.adv}, ${fav.remain}, '${safeKillDesc}')" title="取消收藏">★</span>
-                            </div>
-                            <div class="fav-card-contexts">${contextsHtml}</div>
-                            <div class="fav-card-plan">${planDisplay}</div>
-                            <div class="text-center">
-                                <span class="fav-card-mixup-tag">${fav.remain}F 打投择</span>
-                            </div>
+                        <div class="border-2 bg-zinc-900/80 p-5" style="border-color: var(--theme-primary);">
+                            <div class="text-2xl font-black mb-3 text-white">${escapeHtml(fav.killDesc)}</div>
+                            <div class="text-cyan-400 font-mono text-sm mb-3">+${fav.adv}F → +${fav.remain}F</div>
+                            <div class="mb-3 border-t border-zinc-700 pt-3">${scenariosHtml}</div>
+                            <button onclick="removeFavoriteMixup(${fav.adv}, ${fav.remain}, '${safeKillDesc}')" 
+                                class="text-zinc-500 hover:text-red-400 text-sm transition-colors">× 取消收藏</button>
                         </div>
                     `;
                 }).join('');
             } else {
                 mixupSection.classList.add('hidden');
             }
+            
+            // 渲染完成后，重新应用搜索过滤（如果有搜索词）
+            setTimeout(() => filterFavorites(), 0);
         }
         
         // 从收藏视图中移除压制方案
@@ -4874,6 +5339,60 @@
                 }, 300);
             } else {
                 doToggleMixupFavorite(adv, remain, killDesc);
+            }
+        }
+        
+        // 从收藏中移除单个场景
+        function removeScenarioFromFavorite(adv, encodedPlanKey, encodedContext) {
+            const planKey = decodeURIComponent(encodedPlanKey);
+            const context = decodeURIComponent(encodedContext);
+            const fullKey = `${planKey}|${adv}`;
+            
+            const template = getCurrentTemplate();
+            
+            // 初始化 excludedScenarios
+            if (!template.excludedScenarios) {
+                template.excludedScenarios = {};
+            }
+            
+            // 添加到排除列表
+            if (!template.excludedScenarios[fullKey]) {
+                template.excludedScenarios[fullKey] = [];
+            }
+            
+            if (!template.excludedScenarios[fullKey].includes(context)) {
+                template.excludedScenarios[fullKey].push(context);
+            }
+            
+            // 检查该 adv 下是否所有场景都被排除了
+            const allScenarios = [];
+            state.notes.forEach(note => {
+                if (note.adv === adv && !note.advRange) {
+                    allScenarios.push(note.context);
+                }
+            });
+            
+            const excludedCount = template.excludedScenarios[fullKey].length;
+            if (excludedCount >= allScenarios.length && allScenarios.length > 0) {
+                // 所有场景都被排除，直接取消整个收藏
+                const index = template.favorites.indexOf(fullKey);
+                if (index > -1) {
+                    template.favorites.splice(index, 1);
+                }
+                // 清除排除列表
+                delete template.excludedScenarios[fullKey];
+            }
+            
+            saveFavoriteTemplates();
+            renderFavoritesView();
+        }
+        
+        // 确认删除整个 adv 下的所有场景
+        function confirmRemoveAdvFromFavorite(adv, encodedPlanKey) {
+            const planKey = decodeURIComponent(encodedPlanKey);
+            
+            if (confirm(`确定要取消收藏 +${adv}F 的所有场景吗？`)) {
+                doToggleFavorite(adv, planKey);
             }
         }
         
@@ -5048,10 +5567,21 @@
                 } else {
                     // 精确场景
                     if (!advGroups[note.adv]) {
-                        advGroups[note.adv] = { adv: note.adv, contexts: [], indices: [], isFuzzy: false };
+                        advGroups[note.adv] = { 
+                            adv: note.adv, 
+                            contexts: [], 
+                            indices: [], 
+                            isFuzzy: false,
+                            hasAutoExpanded: false // 标记是否包含自动扩展场景
+                        };
                     }
                     advGroups[note.adv].contexts.push(note.context);
                     advGroups[note.adv].indices.push(idx);
+                    
+                    // 如果这个场景是自动扩展的，标记这个组
+                    if (note.isAutoExpanded) {
+                        advGroups[note.adv].hasAutoExpanded = true;
+                    }
                 }
             });
             
@@ -5105,6 +5635,24 @@
             }
             
             let sortedGroups = allGroups;
+            
+            // ========== 过滤无有利方案的预设场景 ==========
+            // 只过滤预设场景（非用户添加的），用户手动添加的场景总是显示
+            sortedGroups = sortedGroups.filter(group => {
+                if (group.isFuzzy) return true; // 模糊场景总是显示
+                
+                // 检查该组是否包含用户添加的场景
+                const hasUserAdded = group.indices.some(idx => state.notes[idx].isUserAdded);
+                if (hasUserAdded) return true; // 有用户添加的场景，总是显示
+                
+                // 预设场景：检查是否有有利方案
+                const allPlans = calculateBestPlan(group.adv, group.contexts || []);
+                const normalPlans = allPlans.filter(p => !p.isThrow && p.finalBlock > 0);
+                const throwPlans = allPlans.filter(p => p.isThrow && p.remain >= 4 && p.remain <= 5);
+                
+                // 只要有任何有利方案（普通方案或投技方案），就显示
+                return normalPlans.length > 0 || throwPlans.length > 0;
+            });
             
             // 无匹配结果
             if (sortedGroups.length === 0) {
@@ -5193,7 +5741,16 @@
                     
                     // 紧凑的 context 显示 - 桌面端显示2个，移动端显示1个
                     // 使用CSS media query控制，这里生成两套HTML
-                    const firstContext = group.contexts[0] ? `<span class="compact-context-tag">${escapeHtml(group.contexts[0])}</span>` : '';
+                    // 检查第一个context是否是自动扩展的
+                    const firstNote = state.notes[group.indices[0]];
+                    const isAutoExpanded = firstNote && firstNote.isAutoExpanded;
+                    const autoExpandIcon = isAutoExpanded ? '➜ ' : '';
+                    
+                    // 检查第一个场景是否需要位移接近（仅基础场景显示，自动扩展的不显示）
+                    const requiresDash = firstNote && firstNote.requiresDash && !firstNote.isAutoExpanded;
+                    const dashBadge = requiresDash ? '<span class="text-xs px-1.5 py-0.5 rounded" style="background: rgba(139, 92, 246, 0.2); color: rgb(196, 181, 253); border: 1px solid rgba(139, 92, 246, 0.4);" title="此场景必须接位移">需位移</span> ' : '';
+                    
+                    const firstContext = group.contexts[0] ? `<span class="compact-context-tag">${autoExpandIcon}${escapeHtml(group.contexts[0])}</span>` : '';
                     const secondContext = group.contexts[1] ? `<span class="compact-context-tag hidden sm:inline-block">${escapeHtml(group.contexts[1])}</span>` : '';
                     const moreCount = group.contexts.length - 1;
                     const moreContextsMobile = moreCount > 0 ? `<span class="text-xs text-zinc-400 ml-1 sm:hidden">+${moreCount}</span>` : '';
@@ -5204,6 +5761,7 @@
                             <div class="flex items-center gap-2 sm:gap-3">
                                 <span class="impact-text text-xl sm:text-2xl font-black min-w-[60px] sm:min-w-[70px] flex-shrink-0" style="color: var(--theme-secondary);">+${group.adv}F</span>
                                 <div class="flex gap-1 items-center flex-shrink-0">
+                                    ${dashBadge}
                                     ${firstContext}
                                     ${secondContext}
                                     ${moreContextsMobile}
@@ -5224,11 +5782,18 @@
                     const ctx = group.contexts[i];
                     const note = state.notes[idx];
                     const isPreset = !note.isUserAdded;
-                    const deleteTitle = isPreset ? "此为预设场景，删除后可通过重置恢复" : "删除此用户场景";
+                    const isAutoExpanded = note.isAutoExpanded;
+                    const requiresDash = note.requiresDash && !note.isAutoExpanded;
+                    const deleteTitle = isAutoExpanded ? "隐藏此自动扩展场景（可通过重置恢复）" : 
+                                       (isPreset ? "此为预设场景，删除后可通过重置恢复" : "删除此用户场景");
                     const contextClass = isPreset ? "context-tag-preset" : "context-tag";
+                    const autoExpandIcon = isAutoExpanded ? '➜ ' : '';
+                    const dashBadge = requiresDash ? '<span class="text-xs px-1.5 py-0.5 rounded ml-1" style="background: rgba(139, 92, 246, 0.2); color: rgb(196, 181, 253); border: 1px solid rgba(139, 92, 246, 0.4);" title="此场景必须接位移">需位移</span>' : '';
+                    const deleteDisabled = '';
+                    
                     return `<div class="flex items-center gap-1 sm:gap-2 group/ctx">
-                        <div class="expanded-context-tag text-xs sm:text-sm font-black uppercase tracking-wide px-2 py-1 border-l-2 flex-1 ${contextClass}">${escapeHtml(ctx)}</div>
-                        <button onclick="event.stopPropagation(); removeNote(${idx})" class="text-zinc-600 hover:text-red-500 text-lg sm:text-base p-1.5 sm:p-1 opacity-70 sm:opacity-0 sm:group-hover/ctx:opacity-100 transition-all flex-shrink-0" title="${deleteTitle}">✕</button>
+                        <div class="expanded-context-tag text-xs sm:text-sm font-black uppercase tracking-wide px-2 py-1 border-l-2 flex-1 ${contextClass}">${autoExpandIcon}${escapeHtml(ctx)}${dashBadge}</div>
+                        <button onclick="event.stopPropagation(); removeNote(${idx})" class="text-zinc-600 hover:text-red-500 text-lg sm:text-base p-1.5 sm:p-1 opacity-70 sm:opacity-0 sm:group-hover/ctx:opacity-100 transition-all flex-shrink-0 ${deleteDisabled}" title="${deleteTitle}">✕</button>
                     </div>`;
                 }).join('');
                 
@@ -5934,10 +6499,8 @@
                 const warnKey = `${char}:${template.id}`;
                 if (!state.templateModifyWarned[warnKey]) {
                     showTemplateModifyWarning(template.name, () => {
-                        state.templateModifyWarned[warnKey] = true;
-                        saveTemplateModifyWarned();
                         _performToggleMixupAll(adv, remain, item, template);
-                    });
+                    }, warnKey);
                     return;
                 }
             }
@@ -6126,7 +6689,7 @@
             const templateItems = [];
             
             Object.entries(templates).forEach(([id, template]) => {
-                // "我的收藏"和"推荐收藏"可以重命名，但不可删除
+                // "我的收藏"和"默认推荐"可以重命名，但不可删除
                 const canDelete = id !== 'my' && id !== 'director';
                 const favCount = (template.favorites || []).length + (template.mixupFavorites || []).length;
                 templateItems.push(`
@@ -6523,7 +7086,7 @@
         }
         
         // 显示模板修改警告
-        function showTemplateModifyWarning(templateName, onConfirm) {
+        function showTemplateModifyWarning(templateName, onConfirm, warnKey) {
             const modalHtml = `
                 <div id="templateModifyWarning" class="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
                     <div class="bg-zinc-900 border-2 w-full max-w-md p-6" style="border-color: var(--theme-primary);">
@@ -6546,20 +7109,30 @@
             
             document.body.insertAdjacentHTML('beforeend', modalHtml);
             
-            // 存储回调
+            // 存储回调和警告键
             window._templateModifyCallback = onConfirm;
+            window._templateModifyWarnKey = warnKey;
         }
         
         function closeTemplateModifyWarning() {
             const modal = document.getElementById('templateModifyWarning');
             if (modal) modal.remove();
             delete window._templateModifyCallback;
+            delete window._templateModifyWarnKey;
         }
         
         function confirmTemplateModify() {
-            const dontShow = document.getElementById('dontShowAgain').checked;
+            const dontShow = document.getElementById('dontShowAgain')?.checked || false;
+            
+            // 保存"不再提示"设置（如果用户勾选了）
+            if (dontShow && window._templateModifyWarnKey) {
+                state.templateModifyWarned[window._templateModifyWarnKey] = true;
+                saveTemplateModifyWarned();
+            }
+            
             closeTemplateModifyWarning();
             
+            // 执行回调（收藏操作）
             if (window._templateModifyCallback) {
                 window._templateModifyCallback();
                 delete window._templateModifyCallback;
@@ -7994,6 +8567,9 @@
             document.getElementById('expectResult').classList.add('hidden');
             setExpectMode('remain');
             
+            // 重置位移接近选项
+            document.getElementById('inputRequiresDash').checked = false;
+            
             // 更新招式下拉框
             updateExpectOptions();
             
@@ -8089,6 +8665,10 @@
                 }
                 
                 saveScenarios(state.currentCharacter, state.notes);
+                
+                // 重新加载场景（包括自动扩展）
+                state.notes = loadAllScenarios(state.currentCharacter);
+                
                 document.getElementById('inputAdvMin').value = '';
                 document.getElementById('inputAdvMax').value = '';
                 removeFuzzyPreview();
@@ -8133,6 +8713,10 @@
             
             state.notes.push({ adv, context: ctx || "自定义场景", isUserAdded: true });
             saveScenarios(state.currentCharacter, state.notes); // 只保存用户自定义的部分
+            
+            // 重新加载场景（包括自动扩展）
+            state.notes = loadAllScenarios(state.currentCharacter);
+            
             document.getElementById('inputAdv').value = '';
             document.getElementById('inputContext').value = '';
             closeModal();
@@ -8143,6 +8727,30 @@
         function removeNote(idx) {
             const note = state.notes[idx];
             const isPreset = !note.isUserAdded;
+            const isAutoExpanded = note.isAutoExpanded;
+            
+            // 如果是自动扩展的场景，添加到排除列表
+            if (isAutoExpanded) {
+                if (!confirm(`确定要隐藏自动扩展的场景 "${note.context}" 吗？\n\n如需恢复，可通过"重置"按钮恢复。`)) {
+                    return;
+                }
+                
+                const char = state.currentCharacter;
+                if (!state.excludedAutoExpanded[char]) {
+                    state.excludedAutoExpanded[char] = [];
+                }
+                
+                if (!state.excludedAutoExpanded[char].includes(note.context)) {
+                    state.excludedAutoExpanded[char].push(note.context);
+                    saveExcludedAutoExpanded(char, state.excludedAutoExpanded[char]);
+                }
+                
+                // 重新加载场景
+                state.notes = loadAllScenarios(char);
+                renderNotes();
+                showToast(`已隐藏场景 "${note.context}"`);
+                return;
+            }
             
             // 如果是预设场景，给出提示
             if (isPreset) {
@@ -8153,6 +8761,10 @@
             
             state.notes.splice(idx, 1);
             saveScenarios(state.currentCharacter, state.notes); // 只保存用户自定义的部分
+            
+            // 重新加载场景（包括自动扩展）
+            state.notes = loadAllScenarios(state.currentCharacter);
+            
             renderNotes();
             
             const tipMsg = isPreset ? '已隐藏预设场景（可通过重置恢复）' : '已删除场景';
@@ -8162,11 +8774,22 @@
         function resetToDefault() {
             const userCount = state.notes.filter(n => n.isUserAdded).length;
             const confirmMsg = userCount > 0 
-                ? `重置 ${state.currentCharacter} 的 Scenarios 为预设值？\n（将清除 ${userCount} 个用户自定义场景，保留所有预设场景）`
-                : `重置 ${state.currentCharacter} 的 Scenarios 为预设值？`;
+                ? `重置 ${state.currentCharacter} 的 Scenarios 为预设值？\n（将清除 ${userCount} 个用户自定义场景，保留所有预设场景，并恢复所有隐藏的自动扩展场景）`
+                : `重置 ${state.currentCharacter} 的 Scenarios 为预设值？\n（将恢复所有隐藏的自动扩展场景）`;
             
             if (confirm(confirmMsg)) {
-                state.notes = resetScenarios(state.currentCharacter);
+                const char = state.currentCharacter;
+                
+                // 重置场景
+                state.notes = resetScenarios(char);
+                
+                // 清除排除的自动扩展场景
+                state.excludedAutoExpanded[char] = [];
+                saveExcludedAutoExpanded(char, []);
+                
+                // 重新加载场景（包括自动扩展）
+                state.notes = loadAllScenarios(char);
+                
                 renderNotes();
                 showToast('已重置为预设场景');
             }
@@ -8368,10 +8991,27 @@
             // 初始化当前角色的模板结构
             initCharacterTemplates(state.currentCharacter);
             
+            // 检查是否是首次使用新版本
+            const lastSeenVersion = localStorage.getItem('sf6_last_seen_version');
+            if (lastSeenVersion !== String(DATA_VERSION)) {
+                localStorage.setItem('sf6_last_seen_version', String(DATA_VERSION));
+                // 只在非首次访问时显示更新提示
+                if (lastSeenVersion !== null) {
+                    console.log('SF6 帧数计算器已更新到 v2');
+                    // 可选：显示一个小提示
+                    setTimeout(() => {
+                        showToast('✨ 数据已更新：支持自动位移组合计算', 4000);
+                    }, 1000);
+                }
+            }
+            
             // 5.2 加载最小化状态
             state.minimized = loadMinimized();
             
             state.mixupHidden = loadMixupHidden();
+            
+            // 5.3 加载排除的自动扩展场景
+            state.excludedAutoExpanded[state.currentCharacter] = loadExcludedAutoExpanded(state.currentCharacter);
             
             updateSortOrderUI();
             renderAll();
