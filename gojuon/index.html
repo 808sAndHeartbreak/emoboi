@@ -100,7 +100,6 @@
                 url("data:image/svg+xml,%3Csvg viewBox='0%200%20200%20200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
             color: var(--drain-white);
             font-family: "Impact", "Arial Black", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
-            min-height: 100vh;
             margin: 0;
             overflow-x: hidden;
         }
@@ -943,7 +942,7 @@
 
         /* ========== 主内容区域 ========== */
         #main-grid {
-            margin-top: 60px; /* 为固定导航留空间 (52px header + 8px spacing) */
+            margin-top: 52px; /* 为固定导航留空间，与header高度一致 */
         }
 
         /* ========== Controls ========== */
@@ -1305,10 +1304,6 @@
             }
         }
 
-        footer {
-            height: 20px;
-            border-top: 1px solid var(--grid-line);
-        }
 
         /* ========== 工具类 ========== */
         .mono { font-family: 'Space Mono', monospace; }
@@ -1318,7 +1313,7 @@
         /* 平板竖屏 */
         @media (max-width: 768px) {
             #main-grid {
-                margin-top: 60px;
+                margin-top: 52px;
             }
             .dropdown-trigger, .quiz-btn {
                 font-size: 11px;
@@ -1356,7 +1351,7 @@
             }
             #main-grid {
                 grid-template-columns: repeat(5, 1fr);
-                margin-top: 60px;
+                margin-top: 52px;
             }
             .kana-cell {
                 max-height: 90px;
@@ -1464,7 +1459,7 @@
         /* 小手机 - 继续保持5列 */
         @media (max-width: 360px) {
             #main-grid {
-                margin-top: 60px;
+                margin-top: 52px;
             }
             .dropdown-trigger, .quiz-btn {
                 font-size: 9px;
@@ -1669,13 +1664,6 @@
         </div>
     </div>
 
-    <footer class="w-full px-6 py-4 border-t border-zinc-900/50" style="font-family: 'Syne', sans-serif;">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-2 text-[10px] tracking-widest text-zinc-600">
-            <div class="text-center md:text-left">
-                天的QQ空间 <span style="font-family: 'Space Mono', monospace;">^^</span>
-            </div>
-        </div>
-    </footer>
 
     <script>
     // ==================== 自定义光标 ====================
