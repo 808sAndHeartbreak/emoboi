@@ -378,6 +378,97 @@
             box-shadow: 2px 2px 0 color-mix(in srgb, var(--theme-primary) 40%, transparent);
         }
 
+        /* 笔记模块样式 */
+        .char-notes-textarea {
+            background: color-mix(in srgb, var(--theme-primary) 5%, #0a0a0c);
+            border: 2px solid color-mix(in srgb, var(--theme-primary) 25%, #333);
+            padding: 16px;
+            font-family: 'Syne', system-ui, -apple-system, sans-serif;
+            color: #d4d4d8;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            min-height: 160px;
+            max-height: 600px;
+        }
+        .char-notes-textarea:focus {
+            border-color: var(--theme-primary);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-primary) 15%, transparent);
+        }
+        .char-notes-textarea::placeholder {
+            color: #3f3f46;
+        }
+        .char-notes-display {
+            padding: 16px 20px;
+        }
+        .char-notes-display.preset-notes {
+            background: color-mix(in srgb, var(--theme-secondary) 5%, #0a0a0c);
+            border: 2px solid color-mix(in srgb, var(--theme-secondary) 20%, #222);
+            border-left: 4px solid var(--theme-secondary);
+        }
+        .char-notes-display.user-notes {
+            background: color-mix(in srgb, var(--theme-primary) 4%, #0a0a0c);
+            border: 2px solid color-mix(in srgb, var(--theme-primary) 15%, #222);
+        }
+        /* 笔记格式化：大标题 */
+        .notes-section {
+            font-weight: 900;
+            font-size: 15px;
+            color: var(--theme-primary);
+            border-bottom: 2px solid color-mix(in srgb, var(--theme-primary) 40%, transparent);
+            padding-bottom: 4px;
+            margin-top: 16px;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        .notes-section:first-child { margin-top: 0; }
+        /* 笔记格式化：帧数标签 */
+        .notes-frame-tag {
+            display: inline-block;
+            background: color-mix(in srgb, var(--theme-secondary) 12%, transparent);
+            color: var(--theme-secondary);
+            font-weight: 800;
+            font-size: 14px;
+            padding: 3px 12px;
+            margin: 10px 0 6px;
+            border-left: 3px solid var(--theme-secondary);
+        }
+        /* 笔记格式化：条件标记 */
+        .notes-cond {
+            color: #787878;
+            font-size: 0.88em;
+        }
+        /* 笔记格式化：子标签 */
+        .notes-label {
+            color: var(--theme-accent);
+            font-weight: 800;
+            margin-right: 2px;
+        }
+        /* 笔记格式化：普通行 */
+        .notes-text-line {
+            padding: 2px 0 2px 10px;
+            line-height: 1.9;
+            border-left: 2px solid transparent;
+            transition: border-color 0.15s;
+        }
+        .notes-text-line:hover {
+            border-left-color: color-mix(in srgb, var(--theme-primary) 30%, transparent);
+        }
+        /* 笔记格式化：分隔空行 */
+        .notes-sep { height: 10px; }
+        /* 笔记空状态 */
+        .notes-empty-prompt {
+            border: 2px dashed color-mix(in srgb, var(--theme-primary) 20%, #333);
+            transition: border-color 0.2s, background 0.2s;
+            cursor: pointer;
+        }
+        .notes-empty-prompt:hover {
+            border-color: color-mix(in srgb, var(--theme-primary) 50%, #333);
+            background: color-mix(in srgb, var(--theme-primary) 5%, transparent);
+        }
+        /* 笔记折叠箭头 */
+        #charNotesDetails[open] .notes-arrow { transform: rotate(0deg); }
+        #charNotesDetails:not([open]) .notes-arrow { transform: rotate(-90deg); }
+
         .btn-hype {
             background: var(--theme-secondary);
             color: #000;
@@ -2016,6 +2107,60 @@
                         
                         <!-- 内容区 -->
                         <div id="throwMixupContent" class="min-h-[80px]"></div>
+                    </div>
+                </details>
+            </div>
+            
+            <!-- 模块：笔记 -->
+            <div class="mb-10">
+                <h3 class="text-xl sm:text-2xl font-black text-zinc-300 mb-2 border-l-4 pl-4" style="border-color: var(--theme-primary);">笔记</h3>
+                <p class="text-xs text-zinc-500 mb-4 pl-4">角色要点、个人心得、对局备忘 · 自动保存</p>
+                
+                <details class="trend-card" id="charNotesDetails" open>
+                    <summary class="px-5 py-3 cursor-pointer text-zinc-300 hover:text-white text-sm font-bold transition-colors select-none flex items-center gap-2">
+                        <span class="text-zinc-500 text-xs notes-arrow transition-transform duration-200">▼</span>
+                        <span id="notesSummaryText">收起笔记</span>
+                    </summary>
+                    <div class="px-5 pb-5 pt-3 border-t" style="border-color: var(--theme-card-border);">
+                        <!-- 预设笔记（开发者预写的） -->
+                        <div id="presetNotesArea" class="hidden mb-5">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider">预设笔记</span>
+                            </div>
+                            <div id="presetNotesContent" class="char-notes-display preset-notes text-sm text-zinc-300 leading-relaxed"></div>
+                        </div>
+                        <!-- 用户笔记 -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider">我的笔记</span>
+                                    <span id="notesSaveStatus" class="text-[10px] text-zinc-600 transition-opacity"></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="clearCharacterNotes()" id="notesClearBtn" class="hidden text-[10px] text-zinc-600 hover:text-red-400 transition-colors" title="清空笔记">清空</button>
+                                    <button onclick="toggleNotesEdit()" id="notesEditBtn" class="text-[10px] px-2.5 py-1 font-bold transition-all" style="color: var(--theme-secondary); border: 1px solid color-mix(in srgb, var(--theme-secondary) 40%, transparent);">编辑</button>
+                                </div>
+                            </div>
+                            <!-- 格式化显示模式 -->
+                            <div id="userNotesDisplay" class="char-notes-display user-notes text-sm text-zinc-300 leading-relaxed hidden"></div>
+                            <!-- 空状态提示 -->
+                            <div id="userNotesEmpty" class="notes-empty-prompt text-center py-8 hidden" onclick="toggleNotesEdit()">
+                                <div class="text-zinc-600 text-sm mb-1">暂无笔记</div>
+                                <div class="text-zinc-700 text-xs">点击开始编写</div>
+                            </div>
+                            <!-- 编辑模式 -->
+                            <div id="userNotesEditArea" class="hidden">
+                                <textarea id="userNotesTextarea" 
+                                    class="char-notes-textarea w-full text-sm text-zinc-300 leading-relaxed resize-vertical"
+                                    placeholder="在这里写下角色笔记...&#10;&#10;格式提示：&#10;· 短行以 ： 结尾 → 显示为标题&#10;· 【+数字】 → 帧数标签&#10;· （条件） → 条件标记"
+                                    rows="12"
+                                    oninput="onNotesInput()"
+                                ></textarea>
+                                <div class="flex justify-end mt-2">
+                                    <button onclick="finishNotesEdit()" class="text-xs px-5 py-1.5 font-bold transition-all" style="background: color-mix(in srgb, var(--theme-secondary) 15%, transparent); color: var(--theme-secondary); border: 1px solid color-mix(in srgb, var(--theme-secondary) 40%, transparent);">完成</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </details>
             </div>
@@ -5558,8 +5703,10 @@
             state.notes.forEach((note, idx) => {
                 if (note.advRange) {
                     // 模糊场景（有 advRange 就是模糊场景）
+                    // 防御：advRange 如果误写为单个数字，自动转为 [n, n]
+                    const range = Array.isArray(note.advRange) ? note.advRange : [note.advRange, note.advRange];
                     fuzzyGroups.push({
-                        advRange: note.advRange,
+                        advRange: range,
                         context: note.context || '未命名',
                         idx: idx,
                         isFuzzy: true
@@ -6175,17 +6322,267 @@
                         <td class="p-4 text-center font-mono text-zinc-500">${m.startup}</td>
                         <td class="p-4 text-center font-mono text-zinc-500">${m.active}</td>
                         <td class="p-4 text-center font-mono text-zinc-500">${m.recovery}</td>
-                        <td class="p-4 text-center font-mono ${getFrameColorClass(m.hit)}">${m.hit >= 0 ? '+' : ''}${m.hit}</td>
-                        <td class="p-4 text-center font-mono ${getFrameColorClass(m.block)}">${m.block >= 0 ? '+' : ''}${m.block}</td>
+                        <td class="p-4 text-center font-mono ${m.hit != null ? getFrameColorClass(m.hit) : 'text-zinc-700'}">${m.hit != null ? (m.hit >= 0 ? '+' : '') + m.hit : '-'}</td>
+                        <td class="p-4 text-center font-mono ${m.block != null ? getFrameColorClass(m.block) : 'text-zinc-700'}">${m.block != null ? (m.block >= 0 ? '+' : '') + m.block : '-'}</td>
                         <td class="p-4 text-right">${deleteBtn}</td>
                     </tr>
                 `;
             }).join('');
         }
 
+        // ==================== 角色笔记模块 ====================
+        let notesAutoSaveTimer = null;
+        let notesIsEditing = false;
+
+        // 加载角色笔记（用户自定义）
+        function loadUserNotes(char) {
+            try {
+                const saved = localStorage.getItem(getStorageKey(char, 'charNotes'));
+                return saved || '';
+            } catch (e) {
+                return '';
+            }
+        }
+
+        // 保存角色笔记
+        function saveUserNotes(char, text) {
+            try {
+                if (text.trim()) {
+                    localStorage.setItem(getStorageKey(char, 'charNotes'), text);
+                } else {
+                    localStorage.removeItem(getStorageKey(char, 'charNotes'));
+                }
+            } catch (e) {
+                // 静默失败
+            }
+        }
+
+        // 获取预设笔记（开发者在角色数据中预写的）
+        function getPresetNotes(char) {
+            const key = state.controlMode === 'modern' ? char + '_MODERN' : char;
+            const data = CHARACTER_DATA[key];
+            return (data && data.notes) ? data.notes : '';
+        }
+
+        // ========== 笔记智能格式化渲染 ==========
+        // 将纯文本笔记转换为格式化HTML
+        // 识别规则：
+        //   【...】 独立行  → 帧数标签（青色高亮）
+        //   短行以 ：结尾   → 大标题 / 子标签（根据上下文判断）
+        //   （...）         → 条件标记（灰色弱化）
+        //   空行            → 段落分隔
+        //   其余            → 普通文本行
+        function formatNotesHtml(text) {
+            if (!text) return '';
+            const lines = text.split('\n');
+            let html = '';
+            let afterBlank = true; // 开头视为在空行之后
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+
+                // 空行 → 分隔
+                if (!trimmed) {
+                    html += '<div class="notes-sep"></div>';
+                    afterBlank = true;
+                    continue;
+                }
+
+                // 【...】 独立行 → 帧数标签
+                if (/^【[^】]+】$/.test(trimmed)) {
+                    html += '<div class="notes-frame-tag">' + escapeHtml(trimmed) + '</div>';
+                    afterBlank = false;
+                    continue;
+                }
+
+                // 判断是否为标题行：短行(≤20字符)以 ： 或 : 结尾
+                const isColonHeader = trimmed.length <= 20 && /[：:]$/.test(trimmed);
+                // 判断是否为纯中文短词（空行后，2~10个汉字，无标点/运算符）→ 无冒号的标题
+                const isPureCJKHeader = afterBlank && /^[\u4e00-\u9fff]{2,10}$/.test(trimmed);
+
+                if (isColonHeader || isPureCJKHeader) {
+                    const headerText = trimmed.replace(/[：:]$/, '');
+                    // 空行后的标题 → 大标题；连续行内的短冒号行 → 子标签
+                    if (afterBlank || isPureCJKHeader) {
+                        html += '<div class="notes-section">' + escapeHtml(headerText) + '</div>';
+                    } else {
+                        html += '<div class="notes-text-line"><strong class="notes-label">' + escapeHtml(trimmed) + '</strong></div>';
+                    }
+                    afterBlank = false;
+                    continue;
+                }
+
+                // 普通行：应用行内格式化
+                let processed = escapeHtml(trimmed);
+
+                // 行内（...）→ 条件标记
+                processed = processed.replace(/（([^）]*)）/g, '<span class="notes-cond">（$1）</span>');
+
+                // 行内【...】→ 帧数内联高亮
+                processed = processed.replace(/【([^】]*)】/g, '<span style="color:var(--theme-secondary);font-weight:700;">【$1】</span>');
+
+                // 行首子标签：1~6个字符+：后面跟内容
+                processed = processed.replace(/^((?:<span[^>]*>)?[\d\w\u4e00-\u9fff]{1,6}(?:<\/span>)?[：:])/, '<strong class="notes-label">$1</strong>');
+
+                html += '<div class="notes-text-line">' + processed + '</div>';
+                afterBlank = false;
+            }
+
+            return html;
+        }
+
+        // ========== 渲染笔记区域 ==========
+        function renderCharacterNotes() {
+            const char = state.currentCharacter;
+            const presetArea = document.getElementById('presetNotesArea');
+            const presetContent = document.getElementById('presetNotesContent');
+            const userDisplay = document.getElementById('userNotesDisplay');
+            const userEmpty = document.getElementById('userNotesEmpty');
+            const userEditArea = document.getElementById('userNotesEditArea');
+            const editBtn = document.getElementById('notesEditBtn');
+            const clearBtn = document.getElementById('notesClearBtn');
+            const textarea = document.getElementById('userNotesTextarea');
+
+            if (!userDisplay) return;
+
+            // 退出编辑模式
+            notesIsEditing = false;
+
+            // ---- 预设笔记 ----
+            const presetNotes = getPresetNotes(char);
+            if (presetNotes) {
+                presetArea.classList.remove('hidden');
+                presetContent.innerHTML = formatNotesHtml(presetNotes);
+            } else {
+                presetArea.classList.add('hidden');
+                presetContent.innerHTML = '';
+            }
+
+            // ---- 用户笔记 ----
+            const userNotes = loadUserNotes(char);
+            textarea.value = userNotes;
+
+            if (userNotes.trim()) {
+                // 有内容 → 显示格式化视图
+                userDisplay.innerHTML = formatNotesHtml(userNotes);
+                userDisplay.classList.remove('hidden');
+                userEmpty.classList.add('hidden');
+                userEditArea.classList.add('hidden');
+                editBtn.textContent = '编辑';
+                clearBtn.classList.remove('hidden');
+            } else {
+                // 无内容 → 显示空状态提示
+                userDisplay.classList.add('hidden');
+                userEmpty.classList.remove('hidden');
+                userEditArea.classList.add('hidden');
+                editBtn.textContent = '编辑';
+                clearBtn.classList.add('hidden');
+            }
+
+            // 更新summary文本
+            updateNotesSummary();
+        }
+
+        // 切换编辑模式
+        function toggleNotesEdit() {
+            const userDisplay = document.getElementById('userNotesDisplay');
+            const userEmpty = document.getElementById('userNotesEmpty');
+            const userEditArea = document.getElementById('userNotesEditArea');
+            const editBtn = document.getElementById('notesEditBtn');
+            const textarea = document.getElementById('userNotesTextarea');
+
+            if (notesIsEditing) {
+                // 退出编辑 → 保存并显示格式化
+                finishNotesEdit();
+            } else {
+                // 进入编辑
+                notesIsEditing = true;
+                textarea.value = loadUserNotes(state.currentCharacter);
+                userDisplay.classList.add('hidden');
+                userEmpty.classList.add('hidden');
+                userEditArea.classList.remove('hidden');
+                editBtn.textContent = '完成';
+                // 聚焦并滚动到光标位置
+                textarea.focus();
+                textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+            }
+        }
+
+        // 完成编辑
+        function finishNotesEdit() {
+            const textarea = document.getElementById('userNotesTextarea');
+            if (textarea) {
+                saveUserNotes(state.currentCharacter, textarea.value);
+            }
+            notesIsEditing = false;
+            renderCharacterNotes();
+            const statusEl = document.getElementById('notesSaveStatus');
+            if (statusEl) {
+                statusEl.textContent = '已保存';
+                setTimeout(() => { statusEl.textContent = ''; }, 2000);
+            }
+        }
+
+        // 笔记输入事件（防抖自动保存）
+        function onNotesInput() {
+            const statusEl = document.getElementById('notesSaveStatus');
+            if (statusEl) statusEl.textContent = '编辑中...';
+
+            clearTimeout(notesAutoSaveTimer);
+            notesAutoSaveTimer = setTimeout(() => {
+                const textarea = document.getElementById('userNotesTextarea');
+                if (textarea) {
+                    saveUserNotes(state.currentCharacter, textarea.value);
+                    if (statusEl) {
+                        statusEl.textContent = '已保存';
+                        setTimeout(() => { statusEl.textContent = ''; }, 2000);
+                    }
+                }
+            }, 600);
+        }
+
+        // 清空用户笔记
+        function clearCharacterNotes() {
+            const userNotes = loadUserNotes(state.currentCharacter);
+            if (!userNotes.trim()) return;
+
+            if (confirm('确认清空当前角色的笔记？')) {
+                saveUserNotes(state.currentCharacter, '');
+                notesIsEditing = false;
+                renderCharacterNotes();
+                const statusEl = document.getElementById('notesSaveStatus');
+                if (statusEl) {
+                    statusEl.textContent = '已清空';
+                    setTimeout(() => { statusEl.textContent = ''; }, 2000);
+                }
+            }
+        }
+
+        // 更新笔记折叠摘要
+        function updateNotesSummary() {
+            const details = document.getElementById('charNotesDetails');
+            const summaryText = document.getElementById('notesSummaryText');
+            if (!details || !summaryText) return;
+
+            if (details.open) {
+                summaryText.textContent = '收起笔记';
+            } else {
+                summaryText.textContent = '展开笔记';
+            }
+        }
+
+        // 监听笔记折叠/展开
+        document.addEventListener('DOMContentLoaded', () => {
+            const details = document.getElementById('charNotesDetails');
+            if (details) {
+                details.addEventListener('toggle', updateNotesSummary);
+            }
+        });
+
         function renderAll() {
             renderThrowMixups();
             renderNotes();
+            renderCharacterNotes();
             renderLibrary();
             renderRules();
         }

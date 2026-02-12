@@ -20,19 +20,23 @@ CHARACTER_DATA["JURI"] = {
     { "name": "6MK", "startup": 21, "active": "21-22", "recovery": 23, "hit": 2, "block": -3 },  // Senkai Kick
     { "name": "6HK", "startup": 15, "active": "15-17,23-25", "recovery": 20, "hit": 2, "block": -4 },  // Renko Kicks (二段)
     { "name": "4HK", "startup": 10, "active": "10-12,19-21", "recovery": 19, "hit": 2, "block": -6 },  // Korenzan (二段)
+    { "name": "空挥轻风破刃", "startup": 10, "active": "10-13", "recovery": 21},  // 仅卡帧使用因此无需hit和block
     // 投技和冲刺
     { "name": "投", "startup": 5, "active": "5-7", "recovery": 23, "isThrow": true, "isKnockdown": true },
     { "name": "66", "isDash": true, "dashFrames": 22 }
   ],
+  "notes": "压制笔记：\n【+26~28】\n前前+下中脚符合风破刃（近轻 远中）\n（近距离重升龙+26限定）绿冲前中脚+下中拳+中风破刃\n绿冲前中脚（相杀）+重脚连段\n（版边限定）前前+中拳+下中拳\n绿冲中拳+下重拳，打防复合轻风破刃，打中+重风破刃\n【+37】\n前前+前重拳复合轻风破刃\n绿冲骗拆\n（版边限定）绿冲+迸放\n\n连段推荐：\n1球：\n重拳+下劈+前中拳+重升龙\n（3斗气）下中拳+OD回旋踢-下劈+重升龙\n2球：下中拳+地波下劈+前中拳+重升龙\n3球：下中拳+回旋踢地波下劈+前中拳+重升龙\n反迸：\n前重拳+下中拳+OD回旋踢下劈+重升龙\n晕连：\n后跳+轻风破刃+前跳重脚+下重拳+任意收尾\n打拆连：\n重拳+OD/一球地波，命中接重升龙，打防接前中拳+轻风破刃\n风水引擎组件：\n下轻拳+下中脚+中拳\n轻脚+前中拳+下中脚\n下重拳+重脚+重风破刃",
   "scenarios": [
     { "adv": 17, "context": "投技" },
     // 模糊场景：帧数不确定的情况
     { "advRange": [24, 30], "context": "模糊踩头", "isFuzzy": true },
-    { "advRange": [26, 28], "context": "模糊重升龙", "isFuzzy": true },
+    { "adv": 28, "context": "近距离重升龙"},
+    { "adv": 27, "context": "中距离重升龙"},
+    { "adv": 26, "context": "远距离重升龙"},
     { "adv": 37, "context": "中风破刃" },
     { "adv": 37, "context": "轻升龙" },
     { "adv": 37, "context": "轻风破刃" },
-    { "adv": 37, "context": "五黄杀" },
+    { "adv": 37, "context": "带球五黄杀" },
     { "adv": 38, "context": "下重脚" },
     { "adv": 42, "context": "站重拳确反" },
     { "adv": 42, "context": "重风破刃" },
