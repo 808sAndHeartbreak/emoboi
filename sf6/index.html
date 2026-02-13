@@ -2997,12 +2997,11 @@
                     "2MP||5MP|32",
                     "5LP||投|17",
                     "5HP||2MP|39",
-                    "66||2MP|27",
+                    "DIRECT||2MP|5",
                     "5MK||2MP|37",
                     "投||2MP|38",
                     "2LK||投|20",
                     "DIRECT||2MP|7",
-                    "66||投|23",
                     "2MP||投|29",
                     "5HP||2MP|40"
                 ],
@@ -3010,10 +3009,10 @@
             },
             "ZANGIEF": {
                 favorites: [
-                    "66||投|27",
+                    "DIRECT||投|5",
                     "↓L||Auto H|28",
-                    "66||Auto H|36",
-                    "66||Auto H|38",
+                    "DIRECT||Auto H|14",
+                    "DIRECT||Auto H|16",
                     "L||Auto H|40"
                 ],
                 mixupFavorites: [
@@ -3041,6 +3040,23 @@
                     "5LK||4MK|27": ["版边民工连升龙+66"],
                     "5HK||4MK|46": ["下重脚确反"]
                 }
+            },
+            "JURI": {
+                favorites: [
+                    "DIRECT||投|4",
+                    "DIRECT||5MP|5",
+                    "DIRECT||投|5",
+                    "DIRECT||5MP|6",
+                    "5MP||投|25",
+                    "5MP||5MP|26",
+                    "5MP||5MP|27",
+                    "5MP||5MP|28",
+                    "2MP||投|28",
+                    "2MK||5MP|37",
+                    "投||5MP|38",
+                    "5HK||5MP|47"
+                ],
+                mixupFavorites: []
             }
             // 其他角色暂无推荐，可以根据需要添加
         };
@@ -3611,10 +3627,12 @@
             return getMoveStrength(plan.meatyMove);
         }
 
-        function calculateBestPlan(adv, contexts = []) {
+        function calculateBestPlan(adv, contexts = [], options = {}) {
             const possiblePlans = [];
             // 获取当前角色的所有规则
             const rules = getAllRulesForCharacter(state.currentCharacter);
+            // 是否跳过 dash 卡帧（自动扩展场景已含dash，避免重复）
+            const skipDashKill = options.skipDashKill || false;
             
             // ========== 方案A: 直接压制（不需要卡帧）==========
             // 对方在 adv+1 帧起身，检查是否有招式的 active 能覆盖
@@ -3657,6 +3675,9 @@
             state.moveLibrary.forEach(killMove => {
                 // 检查是否被禁用用于卡帧
                 if (isMoveDisabled(killMove, 'kill', rules)) return;
+                
+                // 自动扩展场景跳过 dash 卡帧（auto-expansion 已处理 dash 组合）
+                if (skipDashKill && killMove.isDash) return;
                 
                 // Dash 只能卡帧，没有 active 判断
                 if (killMove.isDash) {
@@ -3752,6 +3773,8 @@
             // ========== 方案C: 两步卡帧后压制 ==========
             state.moveLibrary.forEach(killMove1 => {
                 if (isMoveDisabled(killMove1, 'kill', rules)) return;
+                // 自动扩展场景跳过 dash 卡帧
+                if (skipDashKill && killMove1.isDash) return;
                 
                 let killTotal1;
                 if (killMove1.isDash) {
@@ -3768,6 +3791,8 @@
                 
                 state.moveLibrary.forEach(killMove2 => {
                     if (isMoveDisabled(killMove2, 'kill', rules)) return;
+                    // 自动扩展场景跳过 dash 卡帧
+                    if (skipDashKill && killMove2.isDash) return;
                     
                     let killTotal2;
                     if (killMove2.isDash) {
@@ -5770,7 +5795,7 @@
                         return false;
                     } else {
                         // 检查该场景是否有任何收藏的方案
-                        const allPlans = calculateBestPlan(group.adv, group.contexts || []);
+                        const allPlans = calculateBestPlan(group.adv, group.contexts || [], { skipDashKill: true });
                         const hasFavoritePlan = allPlans.some(plan => 
                             isPlanFavorite(group.adv, getPlanKey(plan))
                         );
@@ -5793,7 +5818,7 @@
                 if (hasUserAdded) return true; // 有用户添加的场景，总是显示
                 
                 // 预设场景：检查是否有有利方案
-                const allPlans = calculateBestPlan(group.adv, group.contexts || []);
+                const allPlans = calculateBestPlan(group.adv, group.contexts || [], { skipDashKill: true });
                 const normalPlans = allPlans.filter(p => !p.isThrow && p.finalBlock > 0);
                 const throwPlans = allPlans.filter(p => p.isThrow && p.remain >= 4 && p.remain <= 5);
                 
@@ -5841,7 +5866,7 @@
                     return renderFuzzyScenario(group, cardIndex);
                 }
                 
-                const allPlans = calculateBestPlan(group.adv, group.contexts || []);
+                const allPlans = calculateBestPlan(group.adv, group.contexts || [], { skipDashKill: true });
                 
                 // 分离投技方案和普通方案
                 const throwPlans = allPlans.filter(p => p.isThrow && p.remain >= 4 && p.remain <= 5);
