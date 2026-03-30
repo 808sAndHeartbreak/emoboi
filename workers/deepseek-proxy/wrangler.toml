@@ -1,0 +1,11 @@
+# Cloudflare Worker：浏览器 → 本 Worker → DeepSeek API（解决 CORS + 隐藏 Key）
+# 部署：见同目录 README.md
+
+name = "deepseek-proxy-english"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+workers_dev = true
+
+# 允许的页面来源（逗号分隔，不要有空格问题可写紧凑）；* 表示不校验（仅调试）
+[vars]
+ALLOWED_ORIGINS = "https://emoboi.com,https://www.emoboi.com"

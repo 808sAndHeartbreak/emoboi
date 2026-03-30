@@ -1,0 +1,575 @@
+(function () {
+  "use strict";
+
+  const cfg = window.ENGLISH_LEXICON_CONFIG || {};
+  const SYSTEM_PROMPT = window.ENGLISH_LEXICON_SYSTEM_PROMPT || "";
+  const STORAGE_KEY = "english_lexicon_history_v1";
+  const MAX_HISTORY = 50;
+  const MD_STREAM_THROTTLE_MS = 180;
+
+  const MODEL_FAST = "deepseek-chat";
+  const MODEL_DEEP = "deepseek-reasoner";
+
+  const $ = (sel) => document.querySelector(sel);
+  const el = {
+    configBanner: $("#config-banner"),
+    inputShell: $("#input-shell"),
+    input: $("#word-input"),
+    btnClearInput: $("#btn-clear-input"),
+    charCount: $("#char-count"),
+    suggestions: $("#input-suggestions"),
+    helpCard: $("#help-card"),
+    btnFast: $("#btn-fast"),
+    btnDeep: $("#btn-deep"),
+    btnAbort: $("#btn-abort"),
+    btnCopy: $("#btn-copy"),
+    btnFullview: $("#btn-fullview"),
+    btnClear: $("#btn-clear"),
+    err: $("#error-msg"),
+    streamWrap: $("#stream-wrap"),
+    streamHdrLabel: $("#stream-hdr-label"),
+    streamRaw: $("#stream-raw"),
+    streamMd: $("#stream-md"),
+    thinking: $("#thinking-panel"),
+    thinkingLabel: $("#thinking-label"),
+    status: $("#status-text"),
+    historyList: $("#history-list"),
+    historySearch: $("#history-search"),
+    resultPanel: $("#result-panel"),
+    resultMdWrap: $("#result-md-wrap"),
+    resultTitle: $("#result-title"),
+    btnCloseResult: $("#btn-close-result"),
+    btnCopyResult: $("#btn-copy-result"),
+  };
+
+  let abortCtl = null;
+  let historyRecords = [];
+  let lastResultWord = "";
+  let lastResultText = "";
+  let mdStreamTimer = null;
+  let pendingMdText = "";
+
+  function apiBase() {
+    const b = (cfg.apiBase || "").trim().replace(/\/$/, "");
+    return b || null;
+  }
+
+  function showConfigError() {
+    if (el.configBanner) el.configBanner.hidden = false;
+  }
+
+  function hideConfigError() {
+    if (el.configBanner) el.configBanner.hidden = true;
+  }
+
+  function validateInput(raw) {
+    if (!raw || typeof raw !== "string") return { ok: false, msg: "请输入单词" };
+    const w = raw.trim();
+    if (!w.length) return { ok: false, msg: "单词不能为空" };
+    if (w.length > 20) return { ok: false, msg: "单词长度不能超过 20 个字符" };
+    if (!/^[a-zA-Z\s'-]+$/.test(w)) return { ok: false, msg: "请输入有效的英文单词" };
+    return { ok: true, word: w };
+  }
+
+  function setError(msg) {
+    if (!el.err) return;
+    el.err.textContent = msg || "";
+    el.err.hidden = !msg;
+    updateHelpVisibility();
+    updateSuggestionsVisibility();
+  }
+
+  function loadHistory() {
+    try {
+      const s = localStorage.getItem(STORAGE_KEY);
+      historyRecords = s ? JSON.parse(s) : [];
+      if (!Array.isArray(historyRecords)) historyRecords = [];
+    } catch {
+      historyRecords = [];
+    }
+  }
+
+  function saveHistory() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(historyRecords));
+    } catch (_) {}
+  }
+
+  function formatTime(ts) {
+    const d = Date.now() - ts;
+    if (d < 60000) return "刚刚";
+    if (d < 3600000) return Math.floor(d / 60000) + " 分钟前";
+    if (d < 86400000) return Math.floor(d / 3600000) + " 小时前";
+    if (d < 604800000) return Math.floor(d / 86400000) + " 天前";
+    const dt = new Date(ts);
+    return dt.getMonth() + 1 + " 月" + dt.getDate() + " 日";
+  }
+
+  function setupMarked() {
+    if (window.marked && typeof marked.setOptions === "function") {
+      marked.setOptions({
+        gfm: true,
+        breaks: true,
+        headerIds: false,
+        mangle: false,
+      });
+    }
+  }
+
+  function renderMarkdownInto(container, text) {
+    if (!container) return;
+    if (!window.marked || !window.DOMPurify) {
+      container.textContent = text;
+      return;
+    }
+    const html = window.marked.parse(text || "", { breaks: true });
+    container.innerHTML = window.DOMPurify.sanitize(html);
+  }
+
+  function flushMdStream() {
+    if (mdStreamTimer) {
+      clearTimeout(mdStreamTimer);
+      mdStreamTimer = null;
+    }
+    if (pendingMdText !== "") {
+      renderMarkdownInto(el.streamMd, pendingMdText);
+      el.streamMd.scrollTop = el.streamMd.scrollHeight;
+      pendingMdText = "";
+    }
+  }
+
+  function scheduleStreamMarkdown(full) {
+    pendingMdText = full;
+    if (mdStreamTimer) return;
+    mdStreamTimer = setTimeout(function () {
+      mdStreamTimer = null;
+      renderMarkdownInto(el.streamMd, pendingMdText);
+      el.streamMd.scrollTop = el.streamMd.scrollHeight;
+    }, MD_STREAM_THROTTLE_MS);
+  }
+
+  function updateCharUi() {
+    const len = el.input.value.length;
+    if (el.charCount) {
+      el.charCount.textContent = len + "/20";
+      el.charCount.classList.toggle("warn", len > 16);
+    }
+    if (el.btnClearInput) {
+      el.btnClearInput.classList.toggle("visible", len > 0);
+    }
+  }
+
+  function updateSuggestionsVisibility() {
+    if (!el.suggestions) return;
+    const focused = document.activeElement === el.input;
+    const empty = el.input.value.length === 0;
+    const noHist = historyRecords.length === 0;
+    const noErr = el.err.hidden || !el.err.textContent;
+    const show = empty && focused && noHist && !busy && noErr;
+    el.suggestions.hidden = !show;
+  }
+
+  function updateHelpVisibility() {
+    if (!el.helpCard) return;
+    const noHist = historyRecords.length === 0;
+    const noErr = el.err.hidden || !el.err.textContent;
+    const notBusy = !busy;
+    const streamHidden = el.streamWrap.hidden;
+    el.helpCard.hidden = !(noHist && noErr && notBusy && streamHidden);
+  }
+
+  function renderHistory() {
+    if (!el.historyList) return;
+    const kw = (el.historySearch && el.historySearch.value) || "";
+    const lower = kw.trim().toLowerCase();
+    let list = historyRecords;
+    if (lower) {
+      list = historyRecords.filter((r) => r.word.toLowerCase().includes(lower));
+    }
+    el.historyList.innerHTML = "";
+    if (!list.length) {
+      const p = document.createElement("p");
+      p.className = "history-empty";
+      p.textContent = lower ? "没有匹配的条目" : "暂无历史";
+      el.historyList.appendChild(p);
+      return;
+    }
+    list.slice(0, 20).forEach((r) => {
+      const div = document.createElement("button");
+      div.type = "button";
+      div.className = "history-item";
+      div.innerHTML =
+        '<span class="history-word">' +
+        escapeHtml(r.word) +
+        "</span>" +
+        '<span class="history-meta">' +
+        (r.mode === "deep" ? "🧠" : "⚡") +
+        " " +
+        formatTime(r.timestamp) +
+        "</span>";
+      div.addEventListener("click", () => openResult(r.word, r.text, r.mode));
+      el.historyList.appendChild(div);
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function pushHistory(word, text, mode) {
+    const id = Date.now();
+    historyRecords.unshift({
+      id,
+      word: word.toLowerCase(),
+      text,
+      mode,
+      timestamp: id,
+    });
+    if (historyRecords.length > MAX_HISTORY) {
+      historyRecords = historyRecords.slice(0, MAX_HISTORY);
+    }
+    saveHistory();
+    renderHistory();
+    updateHelpVisibility();
+    updateSuggestionsVisibility();
+  }
+
+  async function streamChat({ model, userWord, signal, onDelta }) {
+    const base = apiBase();
+    if (!base) throw new Error("未配置 API：请编辑 english/config.js 中的 apiBase");
+
+    const res = await fetch(base + "/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: userWord },
+        ],
+        stream: true,
+      }),
+      signal,
+    });
+
+    if (!res.ok) {
+      const t = await res.text();
+      let msg = t || res.statusText;
+      try {
+        const j = JSON.parse(t);
+        if (j.error) msg = typeof j.error === "string" ? j.error : j.error.message || msg;
+      } catch (_) {}
+      throw new Error(msg || "请求失败 " + res.status);
+    }
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let full = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() || "";
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith("data:")) continue;
+        const data = trimmed.slice(5).trim();
+        if (data === "[DONE]") continue;
+        try {
+          const json = JSON.parse(data);
+          if (json.error) {
+            const err = json.error;
+            throw new Error(typeof err === "string" ? err : err.message || JSON.stringify(err));
+          }
+          const delta = json.choices && json.choices[0] && json.choices[0].delta;
+          const piece = (delta && delta.content) || "";
+          if (piece) {
+            full += piece;
+            onDelta(piece, full);
+          }
+        } catch (e) {
+          if (e instanceof SyntaxError) continue;
+          throw e;
+        }
+      }
+    }
+
+    return full;
+  }
+
+  let busy = false;
+
+  async function run(mode) {
+    if (busy) return;
+    const v = validateInput(el.input.value);
+    if (!v.ok) {
+      setError(v.msg);
+      return;
+    }
+    if (!apiBase()) {
+      showConfigError();
+      setError("请先在 config.js 中填写 Worker 地址");
+      return;
+    }
+    hideConfigError();
+
+    busy = true;
+    flushMdStream();
+    lastResultWord = "";
+    lastResultText = "";
+    if (el.btnFullview) el.btnFullview.disabled = true;
+    setError("");
+    abortCtl = new AbortController();
+
+    el.btnFast.disabled = true;
+    el.btnDeep.disabled = true;
+    el.btnAbort.hidden = false;
+    el.streamWrap.hidden = false;
+    el.thinking.hidden = false;
+    el.streamRaw.hidden = false;
+    el.streamMd.hidden = true;
+    el.streamRaw.textContent = "";
+    el.streamMd.innerHTML = "";
+    if (el.streamHdrLabel) el.streamHdrLabel.textContent = "实时分析中";
+    if (el.thinkingLabel) {
+      el.thinkingLabel.textContent =
+        mode === "deep" ? "深度推理中，请稍候…" : "快速分析中…";
+    }
+    el.status.textContent = "";
+
+    updateHelpVisibility();
+    updateSuggestionsVisibility();
+
+    const model = mode === "deep" ? MODEL_DEEP : MODEL_FAST;
+
+    try {
+      const fullText = await streamChat({
+        model,
+        userWord: v.word,
+        signal: abortCtl.signal,
+        onDelta: function (_piece, full) {
+          el.thinking.hidden = true;
+          if (full.length > 40) {
+            el.streamRaw.hidden = true;
+            el.streamMd.hidden = false;
+            scheduleStreamMarkdown(full);
+          } else {
+            el.streamRaw.textContent = full;
+            el.streamRaw.scrollTop = el.streamRaw.scrollHeight;
+          }
+        },
+      });
+
+      flushMdStream();
+
+      if (!fullText || !String(fullText).trim()) {
+        throw new Error("未收到模型正文，请重试或使用快速分析");
+      }
+
+      el.thinking.hidden = true;
+      el.streamRaw.hidden = true;
+      el.streamMd.hidden = false;
+      renderMarkdownInto(el.streamMd, fullText);
+      lastResultWord = v.word;
+      lastResultText = fullText;
+      if (el.btnFullview) el.btnFullview.disabled = false;
+      pushHistory(v.word, fullText, mode);
+      if (el.streamHdrLabel) el.streamHdrLabel.textContent = "📋 分析结果";
+      el.status.textContent = "完成";
+    } catch (e) {
+      if (e.name === "AbortError") {
+        setError("已中止");
+      } else {
+        const msg = (e && e.message) || String(e);
+        if (/Failed to fetch|NetworkError|Load failed|timed out/i.test(msg) || e.name === "TypeError") {
+          setError(
+            "无法连接 API：请用在线地址打开本页（https://emoboi.com/english/），不要双击本地 HTML。若仍失败，多为访问 Cloudflare 线路不稳定，可换手机热点或 VPN 后再试。"
+          );
+        } else {
+          setError(msg || "分析失败");
+        }
+      }
+      el.thinking.hidden = true;
+      flushMdStream();
+    } finally {
+      busy = false;
+      el.btnFast.disabled = false;
+      el.btnDeep.disabled = false;
+      el.btnAbort.hidden = true;
+      if (el.btnFullview && !lastResultText) el.btnFullview.disabled = true;
+      abortCtl = null;
+      updateHelpVisibility();
+      updateSuggestionsVisibility();
+    }
+  }
+
+  function openResult(word, text, _mode) {
+    el.resultTitle.textContent = word;
+    renderMarkdownInto(el.resultMdWrap, text);
+    el.resultPanel.hidden = false;
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeResult() {
+    el.resultPanel.hidden = true;
+    document.body.style.overflow = "";
+  }
+
+  function getCopyableText() {
+    if (el.streamRaw && !el.streamRaw.hidden && el.streamRaw.textContent) {
+      return el.streamRaw.textContent;
+    }
+    if (el.streamMd && !el.streamMd.hidden) {
+      return lastResultText || el.streamMd.innerText;
+    }
+    return lastResultText || "";
+  }
+
+  async function copyText(text) {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      el.status.textContent = "已复制";
+      setTimeout(function () {
+        el.status.textContent = "";
+      }, 1500);
+    } catch (_) {
+      setError("复制失败（浏览器权限）");
+    }
+  }
+
+  function init() {
+    setupMarked();
+
+    if (!SYSTEM_PROMPT) {
+      setError("提示词未加载，请检查 prompts.js");
+    }
+    if (!apiBase()) showConfigError();
+
+    loadHistory();
+    renderHistory();
+    updateCharUi();
+    updateHelpVisibility();
+    updateSuggestionsVisibility();
+    if (el.btnFullview) el.btnFullview.disabled = true;
+
+    el.input.addEventListener("input", function () {
+      updateCharUi();
+      updateSuggestionsVisibility();
+    });
+    el.input.addEventListener("focus", function () {
+      if (el.inputShell) el.inputShell.classList.add("focused");
+      updateSuggestionsVisibility();
+    });
+    el.input.addEventListener("blur", function () {
+      if (el.inputShell) el.inputShell.classList.remove("focused");
+      setTimeout(updateSuggestionsVisibility, 120);
+    });
+
+    el.btnClearInput.addEventListener("click", function () {
+      el.input.value = "";
+      updateCharUi();
+      el.input.focus();
+      updateSuggestionsVisibility();
+    });
+
+    document.querySelectorAll(".suggestion-item").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        const w = btn.getAttribute("data-word");
+        if (w) {
+          el.input.value = w;
+          updateCharUi();
+          el.input.blur();
+          updateSuggestionsVisibility();
+        }
+      });
+    });
+
+    el.btnFast.addEventListener("click", () => run("fast"));
+    el.btnDeep.addEventListener("click", () => run("deep"));
+    el.btnAbort.addEventListener("click", () => {
+      if (abortCtl) abortCtl.abort();
+    });
+    el.btnCopy.addEventListener("click", () => copyText(getCopyableText()));
+    el.btnCopyResult.addEventListener("click", () =>
+      copyText(el.resultMdWrap ? el.resultMdWrap.innerText : "")
+    );
+    el.btnFullview.addEventListener("click", () => {
+      if (lastResultText && lastResultWord) {
+        openResult(lastResultWord, lastResultText);
+      }
+    });
+    el.btnClear.addEventListener("click", () => {
+      flushMdStream();
+      el.input.value = "";
+      updateCharUi();
+      el.streamRaw.textContent = "";
+      el.streamMd.innerHTML = "";
+      el.streamWrap.hidden = true;
+      lastResultWord = "";
+      lastResultText = "";
+      setError("");
+      el.status.textContent = "";
+      if (el.streamHdrLabel) el.streamHdrLabel.textContent = "输出";
+      updateHelpVisibility();
+      updateSuggestionsVisibility();
+    });
+    el.btnCloseResult.addEventListener("click", closeResult);
+    if (el.historySearch) {
+      el.historySearch.addEventListener("input", renderHistory);
+    }
+    el.input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") run("fast");
+    });
+
+    if (window.lucide) window.lucide.createIcons();
+
+    (function initSiteMenu() {
+      const btn = document.getElementById("english-menu-btn");
+      const panel = document.getElementById("english-fs-menu");
+      const closeBtn = document.getElementById("english-fs-close");
+      if (!btn || !panel || !closeBtn) return;
+
+      function openMenu() {
+        panel.classList.add("active");
+        panel.setAttribute("aria-hidden", "false");
+        btn.setAttribute("aria-expanded", "true");
+        document.body.classList.add("english-menu-open");
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      function closeMenu() {
+        panel.classList.remove("active");
+        panel.setAttribute("aria-hidden", "true");
+        btn.setAttribute("aria-expanded", "false");
+        document.body.classList.remove("english-menu-open");
+      }
+
+      btn.addEventListener("click", function () {
+        if (panel.classList.contains("active")) closeMenu();
+        else openMenu();
+      });
+      closeBtn.addEventListener("click", closeMenu);
+      panel.querySelectorAll('a.english-fs-link').forEach(function (a) {
+        a.addEventListener("click", closeMenu);
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && panel.classList.contains("active")) closeMenu();
+      });
+    })();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
