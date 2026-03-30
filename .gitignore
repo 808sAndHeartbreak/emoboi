@@ -1,0 +1,5 @@
+# 嵌套仓库勿当子模块提交（会导致 GitHub Pages Checkout 失败）
+wechat-program-englishstudy/
+
+# Wrangler 本地缓存（勿提交，可能含账号信息）
+**/.wrangler/
