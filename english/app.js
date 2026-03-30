@@ -49,9 +49,40 @@
   let mdStreamTimer = null;
   let pendingMdText = "";
 
+  var LEXICON_LOG = "[English Lexicon API]";
+
+  function logApi(tag, detail) {
+    try {
+      var fn = console.warn || console.log;
+      fn.call(console, LEXICON_LOG, tag, detail || "");
+    } catch (_) {}
+  }
+
   function apiBase() {
     const b = (cfg.apiBase || "").trim().replace(/\/$/, "");
     return b || null;
+  }
+
+  function hostLooksLikeWorkersDev(base) {
+    try {
+      return /\.workers\.dev$/i.test(new URL(base).hostname);
+    } catch (_) {
+      return String(base).indexOf("workers.dev") !== -1;
+    }
+  }
+
+  function isLikelyNetworkFailure(e, msg) {
+    if (!e || e.name === "AbortError") return false;
+    if (e.name === "TypeError") return true;
+    var m = (msg || "").toLowerCase();
+    return (
+      m.indexOf("failed to fetch") !== -1 ||
+      m.indexOf("networkerror") !== -1 ||
+      m.indexOf("load failed") !== -1 ||
+      m.indexOf("timed out") !== -1 ||
+      m.indexOf("err_connection") !== -1 ||
+      m.indexOf("network") !== -1
+    );
   }
 
   function showConfigError() {
@@ -242,18 +273,49 @@
     const base = apiBase();
     if (!base) throw new Error("未配置 API：请编辑 english/config.js 中的 apiBase");
 
-    const res = await fetch(base + "/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: userWord },
-        ],
-        stream: true,
-      }),
-      signal,
+    const url = base + "/v1/chat/completions";
+    const t0 = typeof performance !== "undefined" ? performance.now() : 0;
+    logApi("fetch:start", {
+      url: url,
+      pageOrigin: location.origin,
+      pageUrl: location.href,
+      workersDevHost: hostLooksLikeWorkersDev(base),
+    });
+
+    let res;
+    try {
+      res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: userWord },
+          ],
+          stream: true,
+        }),
+        signal,
+      });
+    } catch (err) {
+      var elapsed =
+        typeof performance !== "undefined" ? Math.round(performance.now() - t0) : -1;
+      logApi("fetch:error", {
+        url: url,
+        elapsedMs: elapsed,
+        name: err && err.name,
+        message: err && err.message,
+        tip: "打开 F12 → Network，找到上述 url，查看 Status / (blocked) / 是否长时间 Pending。",
+      });
+      throw err;
+    }
+
+    logApi("fetch:response", {
+      url: url,
+      status: res.status,
+      ok: res.ok,
+      elapsedMs:
+        typeof performance !== "undefined" ? Math.round(performance.now() - t0) : -1,
     });
 
     if (!res.ok) {
@@ -389,10 +451,30 @@
         setError("已中止");
       } else {
         const msg = (e && e.message) || String(e);
-        if (/Failed to fetch|NetworkError|Load failed|timed out/i.test(msg) || e.name === "TypeError") {
-          setError(
-            "无法连接 API：请用在线地址打开本页（https://emoboi.com/english/），不要双击本地 HTML。若仍失败，多为访问 Cloudflare 线路不稳定，可换手机热点或 VPN 后再试。"
-          );
+        if (isLikelyNetworkFailure(e, msg)) {
+          const base = apiBase() || "";
+          const online = location.protocol === "https:" || location.protocol === "http:";
+          const workersDev = hostLooksLikeWorkersDev(base);
+          let lines = [];
+          if (online) {
+            lines.push(
+              "无法连上 API 服务器（浏览器报网络/超时）。你当前是在线页面，不是 file:// 的问题。"
+            );
+          } else {
+            lines.push(
+              "无法连接 API。若当前是本地文件打开，请改用 https://emoboi.com/english/ 或本地 http 服务。"
+            );
+          }
+          if (workersDev) {
+            lines.push(
+              "你的 apiBase 指向 *.workers.dev：在国内网络下经常出现连接超时。根治：在 Cloudflare 给该 Worker 绑定自定义域（如 https://api.emoboi.com），把 english/config.js 里 apiBase 改成该域名（见 workers/deepseek-proxy/README.md）。临时：换手机热点或 VPN。"
+            );
+          } else {
+            lines.push(
+              "请检查 config.js 的 apiBase 是否正确、本机网络与 DNS；仍失败可换网络或 VPN。F12 → Console 搜索 「English Lexicon API」 查看详细日志。"
+            );
+          }
+          setError(lines.join(" "));
         } else {
           setError(msg || "分析失败");
         }
@@ -474,12 +556,14 @@
       setTimeout(updateSuggestionsVisibility, 120);
     });
 
-    el.btnClearInput.addEventListener("click", function () {
-      el.input.value = "";
-      updateCharUi();
-      el.input.focus();
-      updateSuggestionsVisibility();
-    });
+    if (el.btnClearInput) {
+      el.btnClearInput.addEventListener("click", function () {
+        el.input.value = "";
+        updateCharUi();
+        el.input.focus();
+        updateSuggestionsVisibility();
+      });
+    }
 
     document.querySelectorAll(".suggestion-item").forEach(function (btn) {
       btn.addEventListener("click", function () {
@@ -499,9 +583,11 @@
       if (abortCtl) abortCtl.abort();
     });
     el.btnCopy.addEventListener("click", () => copyText(getCopyableText()));
-    el.btnCopyResult.addEventListener("click", () =>
-      copyText(el.resultMdWrap ? el.resultMdWrap.innerText : "")
-    );
+    if (el.btnCopyResult) {
+      el.btnCopyResult.addEventListener("click", () =>
+        copyText(el.resultMdWrap ? el.resultMdWrap.innerText : "")
+      );
+    }
     el.btnFullview.addEventListener("click", () => {
       if (lastResultText && lastResultWord) {
         openResult(lastResultWord, lastResultText);

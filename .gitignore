@@ -1,5 +1,5 @@
-# 嵌套仓库勿当子模块提交（会导致 GitHub Pages Checkout 失败）
+# 若本地仍保留小程序工程目录，勿加入 Git（嵌套 .git 会导致 GitHub Pages 部署 Checkout 失败）
 wechat-program-englishstudy/
 
-# Wrangler 本地缓存（勿提交，可能含账号信息）
+# Cloudflare Wrangler 本地缓存（勿提交，可能含账号信息）
 **/.wrangler/

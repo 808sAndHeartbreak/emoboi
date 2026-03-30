@@ -1,9 +1,4 @@
-/**
- * DeepSeek 流式代理（OpenAI 兼容 /v1/chat/completions）
- * Secrets：DEEPSEEK_API_KEY
- * [vars]：ALLOWED_ORIGINS — 逗号分隔多个来源，如 https://a.com,https://www.a.com
- *         兼容旧名 ALLOWED_ORIGIN（仅单个）；* 表示不校验来源
- */
+/* DeepSeek 代理：Secret DEEPSEEK_API_KEY；[vars] ALLOWED_ORIGINS 或 ALLOWED_ORIGIN；* 放行任意 Origin */
 
 const UPSTREAM = "https://api.deepseek.com/v1/chat/completions";
 
@@ -16,7 +11,20 @@ function parseAllowedOrigins(env) {
     .filter(Boolean);
 }
 
-/** 未在名单内的 Origin 不设置 ACAO（OPTIONS 仍返回 204，浏览器会拦截跨域） */
+function isReasonableOriginHeader(origin) {
+  if (origin == null || typeof origin !== "string") return false;
+  if (origin === "null") return true;
+  if (origin.length > 512 || /[\r\n\0]/.test(origin)) return false;
+  try {
+    const u = new URL(origin);
+    return (
+      (u.protocol === "https:" || u.protocol === "http:") && u.hostname.length > 0
+    );
+  } catch {
+    return false;
+  }
+}
+
 function corsHeaders(env, request) {
   const origin = request.headers.get("Origin");
   const allowed = parseAllowedOrigins(env);
@@ -57,15 +65,30 @@ export default {
 
     const origin = request.headers.get("Origin");
     const allowed = parseAllowedOrigins(env);
-    if (!allowed.includes("*") && origin && !allowed.includes(origin)) {
-      const hint =
-        origin === "null"
-          ? "不要用 file:// 打开 HTML，请使用 https://你的域名/english/ 或本地 http 服务器。"
-          : "Origin not allowed";
-      return new Response(JSON.stringify({ error: hint }), {
-        status: 403,
-        headers: { "Content-Type": "application/json" },
-      });
+    if (!allowed.includes("*")) {
+      if (!isReasonableOriginHeader(origin)) {
+        return new Response(
+          JSON.stringify({
+            error:
+              "缺少有效的 Origin。请用浏览器打开本站页面；若用 curl 测试请加 -H \"Origin: https://你的域名\"。",
+          }),
+          { status: 403, headers: { ...h, "Content-Type": "application/json" } }
+        );
+      }
+      if (!allowed.includes(origin)) {
+        const hint =
+          origin === "null"
+            ? "不要用 file:// 打开 HTML，请使用 https://你的域名/english/ 或本地 http 服务器。"
+            : "Origin not allowed";
+        return new Response(JSON.stringify({ error: hint }), {
+          status: 403,
+          headers: {
+            ...h,
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": origin,
+          },
+        });
+      }
     }
 
     const url = new URL(request.url);

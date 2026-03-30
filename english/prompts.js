@@ -1,6 +1,3 @@
-/**
- * 与微信小程序版一致的系统提示（工具说明改为「网页」）
- */
 window.ENGLISH_LEXICON_SYSTEM_PROMPT = `## English Lexicon Mentor
 
 ## 🧠 工具角色
