@@ -8,7 +8,6 @@
   const MD_STREAM_THROTTLE_MS = 180;
 
   const MODEL_FAST = "deepseek-chat";
-  const MODEL_DEEP = "deepseek-reasoner";
 
   const $ = (sel) => document.querySelector(sel);
   const el = {
@@ -20,11 +19,7 @@
     suggestions: $("#input-suggestions"),
     helpCard: $("#help-card"),
     btnFast: $("#btn-fast"),
-    btnDeep: $("#btn-deep"),
     btnAbort: $("#btn-abort"),
-    btnCopy: $("#btn-copy"),
-    btnFullview: $("#btn-fullview"),
-    btnClear: $("#btn-clear"),
     err: $("#error-msg"),
     streamWrap: $("#stream-wrap"),
     streamHdrLabel: $("#stream-hdr-label"),
@@ -39,7 +34,6 @@
     resultMdWrap: $("#result-md-wrap"),
     resultTitle: $("#result-title"),
     btnCloseResult: $("#btn-close-result"),
-    btnCopyResult: $("#btn-copy-result"),
   };
 
   let abortCtl = null;
@@ -115,6 +109,14 @@
       const s = localStorage.getItem(STORAGE_KEY);
       historyRecords = s ? JSON.parse(s) : [];
       if (!Array.isArray(historyRecords)) historyRecords = [];
+      historyRecords = historyRecords
+        .filter((r) => r && typeof r.word === "string" && typeof r.text === "string")
+        .map((r) => ({
+          id: Number(r.id) || Date.now(),
+          word: r.word.slice(0, 20).toLowerCase(),
+          text: r.text,
+          timestamp: Number(r.timestamp) || Date.now(),
+        }));
     } catch {
       historyRecords = [];
     }
@@ -234,11 +236,9 @@
         escapeHtml(r.word) +
         "</span>" +
         '<span class="history-meta">' +
-        (r.mode === "deep" ? "🧠" : "⚡") +
-        " " +
         formatTime(r.timestamp) +
         "</span>";
-      div.addEventListener("click", () => openResult(r.word, r.text, r.mode));
+      div.addEventListener("click", () => openResult(r.word, r.text));
       el.historyList.appendChild(div);
     });
   }
@@ -251,13 +251,12 @@
       .replace(/"/g, "&quot;");
   }
 
-  function pushHistory(word, text, mode) {
+  function pushHistory(word, text) {
     const id = Date.now();
     historyRecords.unshift({
       id,
       word: word.toLowerCase(),
       text,
-      mode,
       timestamp: id,
     });
     if (historyRecords.length > MAX_HISTORY) {
@@ -332,6 +331,28 @@
     const decoder = new TextDecoder();
     let buffer = "";
     let full = "";
+    const processSseLine = (line) => {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("data:")) return;
+      const data = trimmed.slice(5).trim();
+      if (data === "[DONE]") return;
+      try {
+        const json = JSON.parse(data);
+        if (json.error) {
+          const err = json.error;
+          throw new Error(typeof err === "string" ? err : err.message || JSON.stringify(err));
+        }
+        const delta = json.choices && json.choices[0] && json.choices[0].delta;
+        const piece = (delta && delta.content) || "";
+        if (piece) {
+          full += piece;
+          onDelta(piece, full);
+        }
+      } catch (e) {
+        if (e instanceof SyntaxError) return;
+        throw e;
+      }
+    };
 
     while (true) {
       const { done, value } = await reader.read();
@@ -341,35 +362,17 @@
       buffer = lines.pop() || "";
 
       for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed.startsWith("data:")) continue;
-        const data = trimmed.slice(5).trim();
-        if (data === "[DONE]") continue;
-        try {
-          const json = JSON.parse(data);
-          if (json.error) {
-            const err = json.error;
-            throw new Error(typeof err === "string" ? err : err.message || JSON.stringify(err));
-          }
-          const delta = json.choices && json.choices[0] && json.choices[0].delta;
-          const piece = (delta && delta.content) || "";
-          if (piece) {
-            full += piece;
-            onDelta(piece, full);
-          }
-        } catch (e) {
-          if (e instanceof SyntaxError) continue;
-          throw e;
-        }
+        processSseLine(line);
       }
     }
+    if (buffer.trim()) processSseLine(buffer);
 
     return full;
   }
 
   let busy = false;
 
-  async function run(mode) {
+  async function run() {
     if (busy) return;
     const v = validateInput(el.input.value);
     if (!v.ok) {
@@ -387,12 +390,12 @@
     flushMdStream();
     lastResultWord = "";
     lastResultText = "";
-    if (el.btnFullview) el.btnFullview.disabled = true;
     setError("");
     abortCtl = new AbortController();
 
     el.btnFast.disabled = true;
-    el.btnDeep.disabled = true;
+    el.btnFast.classList.add("is-loading");
+    el.btnFast.textContent = "查询中...";
     el.btnAbort.hidden = false;
     el.streamWrap.hidden = false;
     el.thinking.hidden = false;
@@ -402,15 +405,14 @@
     el.streamMd.innerHTML = "";
     if (el.streamHdrLabel) el.streamHdrLabel.textContent = "实时分析中";
     if (el.thinkingLabel) {
-      el.thinkingLabel.textContent =
-        mode === "deep" ? "深度推理中，请稍候…" : "快速分析中…";
+      el.thinkingLabel.textContent = "快速分析中…";
     }
     el.status.textContent = "";
 
     updateHelpVisibility();
     updateSuggestionsVisibility();
 
-    const model = mode === "deep" ? MODEL_DEEP : MODEL_FAST;
+    const model = MODEL_FAST;
 
     try {
       const fullText = await streamChat({
@@ -442,8 +444,7 @@
       renderMarkdownInto(el.streamMd, fullText);
       lastResultWord = v.word;
       lastResultText = fullText;
-      if (el.btnFullview) el.btnFullview.disabled = false;
-      pushHistory(v.word, fullText, mode);
+      pushHistory(v.word, fullText);
       if (el.streamHdrLabel) el.streamHdrLabel.textContent = "📋 分析结果";
       el.status.textContent = "完成";
     } catch (e) {
@@ -484,9 +485,9 @@
     } finally {
       busy = false;
       el.btnFast.disabled = false;
-      el.btnDeep.disabled = false;
+      el.btnFast.classList.remove("is-loading");
+      el.btnFast.textContent = "查询";
       el.btnAbort.hidden = true;
-      if (el.btnFullview && !lastResultText) el.btnFullview.disabled = true;
       abortCtl = null;
       updateHelpVisibility();
       updateSuggestionsVisibility();
@@ -505,29 +506,6 @@
     document.body.style.overflow = "";
   }
 
-  function getCopyableText() {
-    if (el.streamRaw && !el.streamRaw.hidden && el.streamRaw.textContent) {
-      return el.streamRaw.textContent;
-    }
-    if (el.streamMd && !el.streamMd.hidden) {
-      return lastResultText || el.streamMd.innerText;
-    }
-    return lastResultText || "";
-  }
-
-  async function copyText(text) {
-    if (!text) return;
-    try {
-      await navigator.clipboard.writeText(text);
-      el.status.textContent = "已复制";
-      setTimeout(function () {
-        el.status.textContent = "";
-      }, 1500);
-    } catch (_) {
-      setError("复制失败（浏览器权限）");
-    }
-  }
-
   function init() {
     setupMarked();
 
@@ -541,7 +519,6 @@
     updateCharUi();
     updateHelpVisibility();
     updateSuggestionsVisibility();
-    if (el.btnFullview) el.btnFullview.disabled = true;
 
     el.input.addEventListener("input", function () {
       updateCharUi();
@@ -577,43 +554,17 @@
       });
     });
 
-    el.btnFast.addEventListener("click", () => run("fast"));
-    el.btnDeep.addEventListener("click", () => run("deep"));
+    el.btnFast.addEventListener("click", () => run());
     el.btnAbort.addEventListener("click", () => {
       if (abortCtl) abortCtl.abort();
-    });
-    el.btnCopy.addEventListener("click", () => copyText(getCopyableText()));
-    if (el.btnCopyResult) {
-      el.btnCopyResult.addEventListener("click", () =>
-        copyText(el.resultMdWrap ? el.resultMdWrap.innerText : "")
-      );
-    }
-    el.btnFullview.addEventListener("click", () => {
-      if (lastResultText && lastResultWord) {
-        openResult(lastResultWord, lastResultText);
-      }
-    });
-    el.btnClear.addEventListener("click", () => {
-      flushMdStream();
-      el.input.value = "";
-      updateCharUi();
-      el.streamRaw.textContent = "";
-      el.streamMd.innerHTML = "";
-      el.streamWrap.hidden = true;
-      lastResultWord = "";
-      lastResultText = "";
-      setError("");
-      el.status.textContent = "";
-      if (el.streamHdrLabel) el.streamHdrLabel.textContent = "输出";
-      updateHelpVisibility();
-      updateSuggestionsVisibility();
     });
     el.btnCloseResult.addEventListener("click", closeResult);
     if (el.historySearch) {
       el.historySearch.addEventListener("input", renderHistory);
     }
     el.input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") run("fast");
+      if (e.isComposing) return;
+      if (e.key === "Enter") run();
     });
 
     if (window.lucide) window.lucide.createIcons();
