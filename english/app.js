@@ -36,8 +36,8 @@
     resultWordHero: $("#result-word-hero"),
     resultMdWrap: $("#result-md-wrap"),
     resultTitle: $("#result-title"),
-    btnCloseResult: $("#btn-close-result"),
     btnExpandResult: $("#btn-expand-result"),
+    btnStreamExpand: $("#btn-stream-expand"),
   };
 
   let abortCtl = null;
@@ -48,6 +48,7 @@
   let pendingMdText = "";
   let currentQueryWord = "";
   let resultExpanded = false;
+  let streamExpanded = false;
 
   var LEXICON_LOG = "[English Lexicon API]";
 
@@ -214,8 +215,28 @@
     elm.hidden = !w;
   }
 
+  function normalizeMorphologyInlineCode(text) {
+    let t = String(text || "");
+    t = t.replace(
+      /(\*\*拆解：\*\*\s*)([a-zA-Z][a-zA-Z0-9]*-（[^）\n]+）)\s*([：:])/g,
+      function (full, pre, label, colon) {
+        if (full.indexOf("`") !== -1) return full;
+        return pre + "`" + label + "`" + colon;
+      }
+    );
+    t = t.replace(
+      /^(\s*)([a-zA-Z][a-zA-Z0-9]*-（[^）\n]+）)\s*([：:])/gm,
+      function (full, indent, label, colon) {
+        if (full.indexOf("`") !== -1) return full;
+        return indent + "`" + label + "`" + colon;
+      }
+    );
+    return t;
+  }
+
   function renderLexiconMarkdown(container, text, word) {
-    renderMarkdownInto(container, stripPrimarySectionWordLine(text, word));
+    const stripped = stripPrimarySectionWordLine(text, word);
+    renderMarkdownInto(container, normalizeMorphologyInlineCode(stripped));
   }
 
   function flushMdStream() {
@@ -278,6 +299,23 @@
     el.helpCard.hidden = !(noHist && noErr && notBusy && streamHidden);
   }
 
+  function clearHistoryPeek() {
+    if (!el.historyList) return;
+    el.historyList.querySelectorAll(".history-item--peek").forEach(function (node) {
+      node.classList.remove("history-item--peek");
+    });
+  }
+
+  function removeHistoryById(id) {
+    historyRecords = historyRecords.filter(function (r) {
+      return r.id !== id;
+    });
+    saveHistory();
+    renderHistory();
+    updateHelpVisibility();
+    updateSuggestionsVisibility();
+  }
+
   function renderHistory() {
     if (!el.historyList) return;
     const kw = (el.historySearch && el.historySearch.value) || "";
@@ -295,18 +333,82 @@
       return;
     }
     list.slice(0, 20).forEach((r) => {
-      const div = document.createElement("button");
-      div.type = "button";
-      div.className = "history-item";
-      div.innerHTML =
+      const wrap = document.createElement("div");
+      wrap.className = "history-item";
+      wrap.setAttribute("data-history-id", String(r.id));
+
+      const main = document.createElement("button");
+      main.type = "button";
+      main.className = "history-item-main";
+      main.innerHTML =
         '<span class="history-word">' +
         escapeHtml(r.word) +
         "</span>" +
         '<span class="history-meta">' +
         formatTime(r.timestamp) +
         "</span>";
-      div.addEventListener("click", () => openResult(r.word, r.text));
-      el.historyList.appendChild(div);
+
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "history-item-del";
+      delBtn.setAttribute("aria-label", "删除此条历史");
+      delBtn.textContent = "×";
+
+      delBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        removeHistoryById(r.id);
+      });
+
+      main.addEventListener("click", function () {
+        clearHistoryPeek();
+        openResult(r.word, r.text);
+      });
+
+      let lpTimer = null;
+      let longPressActivated = false;
+      wrap.addEventListener(
+        "touchstart",
+        function () {
+          longPressActivated = false;
+          if (lpTimer) clearTimeout(lpTimer);
+          lpTimer = setTimeout(function () {
+            longPressActivated = true;
+            wrap.classList.add("history-item--peek");
+            if (navigator.vibrate) navigator.vibrate(12);
+          }, 500);
+        },
+        { passive: true }
+      );
+      wrap.addEventListener(
+        "touchmove",
+        function () {
+          if (lpTimer) clearTimeout(lpTimer);
+          lpTimer = null;
+        },
+        { passive: true }
+      );
+      wrap.addEventListener(
+        "touchend",
+        function () {
+          if (lpTimer) clearTimeout(lpTimer);
+          lpTimer = null;
+          if (longPressActivated) {
+            longPressActivated = false;
+            const swallow = function (ev) {
+              ev.preventDefault();
+              ev.stopImmediatePropagation();
+              main.removeEventListener("click", swallow, true);
+            };
+            main.addEventListener("click", swallow, true);
+          }
+        },
+        { passive: true }
+      );
+
+      wrap.appendChild(main);
+      wrap.appendChild(delBtn);
+      el.historyList.appendChild(wrap);
     });
   }
 
@@ -466,6 +568,8 @@
     el.btnFast.textContent = "查询中...";
     el.btnAbort.hidden = false;
     el.streamWrap.hidden = false;
+    setStreamExpanded(false);
+    if (el.btnStreamExpand) el.btnStreamExpand.hidden = false;
     el.thinking.hidden = false;
     el.streamRaw.hidden = false;
     el.streamMd.hidden = true;
@@ -569,20 +673,49 @@
     }
   }
 
+  function syncBodyOverflow() {
+    if (el.resultPanel && !el.resultPanel.hidden) {
+      document.body.style.overflow = resultExpanded ? "" : "hidden";
+    } else if (streamExpanded) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  }
+
+  function setStreamExpanded(expanded) {
+    streamExpanded = !!expanded;
+    if (el.streamWrap) {
+      el.streamWrap.classList.toggle("stream-expanded", streamExpanded);
+    }
+    if (el.btnStreamExpand) {
+      el.btnStreamExpand.setAttribute("title", streamExpanded ? "退出全屏阅读" : "全屏阅读");
+      el.btnStreamExpand.setAttribute(
+        "aria-label",
+        streamExpanded ? "退出全屏阅读" : "全屏阅读"
+      );
+      const icon = streamExpanded ? "minimize" : "maximize";
+      el.btnStreamExpand.innerHTML = '<i data-lucide="' + icon + '"></i>';
+      if (window.lucide) window.lucide.createIcons();
+    }
+    syncBodyOverflow();
+  }
+
   function openResult(word, text, _mode) {
+    setStreamExpanded(false);
     el.resultTitle.textContent = "";
     setWordHero(el.resultWordHero, word);
     renderLexiconMarkdown(el.resultMdWrap, text, word);
-    setResultExpanded(false);
     el.resultPanel.hidden = false;
-    document.body.style.overflow = "hidden";
+    setResultExpanded(false);
+    syncBodyOverflow();
   }
 
   function closeResult() {
     setResultExpanded(false);
     setWordHero(el.resultWordHero, "");
     el.resultPanel.hidden = true;
-    document.body.style.overflow = "";
+    syncBodyOverflow();
   }
 
   function setResultExpanded(expanded) {
@@ -600,8 +733,7 @@
       el.btnExpandResult.innerHTML = '<i data-lucide="' + icon + '"></i>';
       if (window.lucide) window.lucide.createIcons();
     }
-    if (!el.resultPanel || el.resultPanel.hidden) return;
-    document.body.style.overflow = resultExpanded ? "" : "hidden";
+    syncBodyOverflow();
   }
 
   function init() {
@@ -656,12 +788,42 @@
     el.btnAbort.addEventListener("click", () => {
       if (abortCtl) abortCtl.abort();
     });
-    el.btnCloseResult.addEventListener("click", closeResult);
+    if (el.btnStreamExpand) {
+      el.btnStreamExpand.addEventListener("click", function () {
+        setStreamExpanded(!streamExpanded);
+      });
+    }
     if (el.btnExpandResult) {
       el.btnExpandResult.addEventListener("click", function () {
         setResultExpanded(!resultExpanded);
       });
     }
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      const menu = document.getElementById("english-fs-menu");
+      const menuBtn = document.getElementById("english-menu-btn");
+      if (menu && menu.classList.contains("active")) {
+        menu.classList.remove("active");
+        menu.setAttribute("aria-hidden", "true");
+        if (menuBtn) menuBtn.setAttribute("aria-expanded", "false");
+        document.body.classList.remove("english-menu-open");
+        e.preventDefault();
+        return;
+      }
+      if (el.resultPanel && !el.resultPanel.hidden) {
+        if (resultExpanded) {
+          setResultExpanded(false);
+        } else {
+          closeResult();
+        }
+        e.preventDefault();
+        return;
+      }
+      if (streamExpanded) {
+        setStreamExpanded(false);
+        e.preventDefault();
+      }
+    });
     if (el.btnClearHistory) {
       el.btnClearHistory.addEventListener("click", function () {
         historyRecords = [];
@@ -674,6 +836,10 @@
     if (el.historySearch) {
       el.historySearch.addEventListener("input", renderHistory);
     }
+    document.addEventListener("click", function (e) {
+      if (e.target.closest(".history-item")) return;
+      clearHistoryPeek();
+    });
     el.input.addEventListener("keydown", (e) => {
       if (e.isComposing) return;
       if (e.key === "Enter") run();
@@ -709,9 +875,6 @@
       closeBtn.addEventListener("click", closeMenu);
       panel.querySelectorAll('a.english-fs-link').forEach(function (a) {
         a.addEventListener("click", closeMenu);
-      });
-      document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape" && panel.classList.contains("active")) closeMenu();
       });
     })();
   }

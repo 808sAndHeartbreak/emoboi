@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="description" content="抽象学英语 — 单词解析">
     <meta name="theme-color" content="#0a0f1a">
     <title>英语 Lexicon | EMOBOI</title>
@@ -25,6 +25,13 @@
         }
         * { box-sizing: border-box; }
         html { scrollbar-gutter: stable; }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
         body {
             margin: 0;
             min-height: 100vh;
@@ -48,7 +55,7 @@
             z-index: 1;
             max-width: 780px;
             margin: 0 auto;
-            padding: 5rem 1.25rem 3rem;
+            padding: calc(5rem + env(safe-area-inset-top, 0px)) max(1.25rem, env(safe-area-inset-left, 0px)) calc(3rem + env(safe-area-inset-bottom, 0px)) max(1.25rem, env(safe-area-inset-right, 0px));
         }
         .wrap::before {
             content: "";
@@ -63,19 +70,24 @@
         .english-site-nav {
             position: fixed;
             top: 0; left: 0; right: 0;
-            height: 52px;
+            min-height: 52px;
             z-index: 40;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 1rem;
+            padding: max(0px, env(safe-area-inset-top, 0px)) max(1rem, env(safe-area-inset-right, 0px)) 0 max(1rem, env(safe-area-inset-left, 0px));
             background: linear-gradient(180deg, rgba(10,10,10,0.98) 0%, rgba(5,5,5,0.95) 100%);
             border-bottom: 1px solid rgba(188, 254, 45, 0.15);
             box-shadow: 0 1px 20px rgba(0,0,0,0.5), 0 1px 0 rgba(188,254,45,0.08);
             backdrop-filter: blur(8px);
         }
         @media (min-width: 768px) {
-            .english-site-nav { padding: 0 1.5rem; }
+            .english-site-nav {
+                padding-top: max(0px, env(safe-area-inset-top, 0px));
+                padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+                padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+                padding-bottom: 0;
+            }
         }
         .english-nav-brand {
             display: flex;
@@ -167,8 +179,8 @@
         }
         .english-fs-close {
             position: absolute;
-            top: 1.25rem;
-            right: 1.25rem;
+            top: max(1.25rem, env(safe-area-inset-top, 0px));
+            right: max(1.25rem, env(safe-area-inset-right, 0px));
             width: 48px; height: 48px;
             display: flex;
             align-items: center;
@@ -559,6 +571,12 @@
             font-size: 0.85rem;
             color: var(--muted);
         }
+        .stream-hdr-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            flex-shrink: 0;
+        }
         #stream-raw {
             max-height: 42vh;
             overflow: auto;
@@ -574,6 +592,45 @@
             overflow: auto;
             font-size: 0.95rem;
             line-height: 1.75;
+        }
+        #stream-wrap.stream-expanded {
+            position: fixed;
+            inset: 0;
+            z-index: 92;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            margin: 0;
+            border-radius: 0;
+            min-height: 100vh;
+            max-height: none;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding: 0.75rem 1rem 1.25rem;
+            box-shadow: none;
+            animation: none;
+        }
+        #stream-wrap.stream-expanded .hdr {
+            position: sticky;
+            top: 0;
+            z-index: 6;
+            margin-bottom: 0.65rem;
+            padding: 0.35rem 0;
+            background: rgba(8, 8, 10, 0.92);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        #stream-wrap.stream-expanded #stream-raw,
+        #stream-wrap.stream-expanded #stream-md {
+            max-height: none;
+            overflow: visible;
+        }
+        #stream-wrap.stream-expanded #stream-word-hero {
+            position: sticky;
+            top: 48px;
+            z-index: 5;
+            padding-top: 0.35rem;
+            margin-bottom: 0.75rem;
+            background: linear-gradient(180deg, rgba(8, 8, 10, 0.96), rgba(8, 8, 10, 0.75));
         }
         .word-hero {
             margin: 0.1rem 0 0.9rem;
@@ -665,21 +722,73 @@
         }
         .history-item {
             display: flex;
-            justify-content: space-between;
+            align-items: stretch;
+            gap: 0.35rem;
             width: 100%;
-            text-align: left;
-            padding: 0.65rem 0.85rem;
             margin-bottom: 0.5rem;
             border-radius: 10px;
             border: 1px solid rgba(255,255,255,0.08);
             background: rgba(0,0,0,0.2);
             color: var(--text);
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            user-select: none;
+        }
+        .history-item:hover,
+        .history-item:focus-within {
+            border-color: rgba(188,254,45,0.32);
+            background: rgba(188, 254, 45, 0.08);
+        }
+        .history-item-main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            text-align: left;
+            padding: 0.65rem 0.5rem 0.65rem 0.85rem;
+            margin: 0;
+            border: none;
+            background: transparent;
+            color: inherit;
             cursor: pointer;
             font: inherit;
         }
-        .history-item:hover {
-            border-color: rgba(188,254,45,0.32);
-            background: rgba(188, 254, 45, 0.08);
+        .history-item-del {
+            flex-shrink: 0;
+            width: 36px;
+            margin: 0;
+            padding: 0;
+            border: none;
+            border-left: 1px solid rgba(255,255,255,0.08);
+            background: transparent;
+            color: rgba(255, 160, 180, 0.85);
+            font-size: 1.15rem;
+            line-height: 1;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s, color 0.15s, background 0.15s;
+            border-radius: 0 10px 10px 0;
+        }
+        @media (hover: hover) {
+            .history-item:hover .history-item-del {
+                opacity: 1;
+                pointer-events: auto;
+            }
+        }
+        .history-item:focus-within .history-item-del {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .history-item--peek .history-item-del {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .history-item-del:hover {
+            color: #ff6b8a;
+            background: rgba(255, 80, 120, 0.12);
         }
         .history-word { font-weight: 700; }
         .history-meta { font-size: 0.8rem; color: var(--muted); }
@@ -691,6 +800,7 @@
             background: #0a0f1a;
             display: flex;
             flex-direction: column;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
         }
         #result-panel[hidden] { display: none !important; }
         .result-head {
@@ -701,34 +811,47 @@
             padding: 0.75rem 1rem;
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-        #btn-close-result {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.25);
-            color: var(--text);
-            padding: 0.4rem 0.75rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font: inherit;
-        }
-        #btn-expand-result {
+        .btn-icon-expand {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             width: 34px;
             height: 34px;
-            margin-left: auto;
             background: transparent;
             border: 1px solid rgba(255,255,255,0.25);
             border-radius: 8px;
             color: var(--text);
             cursor: pointer;
+            flex-shrink: 0;
+            -webkit-tap-highlight-color: transparent;
         }
-        #btn-expand-result:hover {
+        .btn-icon-expand:hover {
             border-color: rgba(188, 254, 45, 0.55);
             color: #e8ffd0;
         }
-        #btn-expand-result svg { width: 17px; height: 17px; }
-        #result-title { flex: 1; font-weight: 800; font-size: 1.1rem; }
+        .btn-icon-expand svg { width: 17px; height: 17px; }
+        button:focus-visible,
+        .english-nav-square:focus-visible,
+        .btn-icon-expand:focus-visible,
+        #btn-clear-history:focus-visible,
+        #btn-abort:focus-visible,
+        .history-item-main:focus-visible,
+        .history-item-del:focus-visible {
+            outline: 2px solid rgba(188, 254, 45, 0.65);
+            outline-offset: 2px;
+        }
+        #btn-expand-result {
+            margin-left: auto;
+        }
+        #result-title,
+        .result-head-fill {
+            flex: 1;
+            min-width: 0;
+        }
+        #result-title {
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
         #result-md-wrap {
             flex: 1;
             overflow: auto;
@@ -810,6 +933,11 @@
             color: #fff;
             border-bottom-color: #fff;
         }
+        @media (hover: none) {
+            .lexicon-md a:active {
+                opacity: 0.88;
+            }
+        }
         .lexicon-md table {
             width: 100%;
             border-collapse: collapse;
@@ -868,12 +996,32 @@
             padding-bottom: 0.7rem;
         }
         @media (max-width: 640px) {
+            .english-nav-square {
+                min-width: 44px;
+                min-height: 44px;
+            }
+            .btn-icon-expand {
+                min-width: 44px;
+                min-height: 44px;
+            }
+            #btn-abort {
+                min-height: 44px;
+                padding: 0.55rem 1rem;
+            }
+            #btn-clear-history {
+                min-height: 44px;
+                padding: 0.4rem 0.65rem;
+                font-size: 0.75rem;
+            }
+            .history-item-del {
+                min-width: 44px;
+            }
             .wrap {
-                padding: 4.6rem 0.95rem 2.2rem;
+                padding: calc(4.6rem + env(safe-area-inset-top, 0px)) max(0.95rem, env(safe-area-inset-left, 0px)) calc(2.2rem + env(safe-area-inset-bottom, 0px)) max(0.95rem, env(safe-area-inset-right, 0px));
             }
             .wrap::before {
-                left: 0.95rem;
-                right: 0.95rem;
+                left: max(0.95rem, env(safe-area-inset-left, 0px));
+                right: max(0.95rem, env(safe-area-inset-right, 0px));
             }
             .hero-subline {
                 font-size: 0.84rem;
@@ -973,9 +1121,12 @@
         <div id="stream-wrap" hidden>
             <div class="hdr">
                 <span id="stream-hdr-label">输出</span>
-                <span>
+                <div class="stream-hdr-actions">
                     <button type="button" id="btn-abort" hidden>中止</button>
-                </span>
+                    <button type="button" id="btn-stream-expand" class="btn-icon-expand" title="全屏阅读" aria-label="全屏阅读" hidden>
+                        <i data-lucide="maximize"></i>
+                    </button>
+                </div>
             </div>
             <div id="stream-word-hero" class="word-hero" hidden></div>
             <div id="thinking-panel">
@@ -1000,9 +1151,8 @@
 
     <div id="result-panel" hidden>
         <div class="result-head">
-            <button type="button" id="btn-close-result">← 返回</button>
-            <span id="result-title"></span>
-            <button type="button" id="btn-expand-result" title="全屏阅读" aria-label="全屏阅读">
+            <span id="result-title" class="result-head-fill"></span>
+            <button type="button" id="btn-expand-result" class="btn-icon-expand" title="全屏阅读" aria-label="全屏阅读">
                 <i data-lucide="maximize"></i>
             </button>
         </div>

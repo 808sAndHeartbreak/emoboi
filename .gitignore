@@ -3,3 +3,6 @@ wechat-program-englishstudy/
 
 # Cloudflare Wrangler 本地缓存（勿提交，可能含账号信息）
 **/.wrangler/
+
+# 本地 npm 依赖（静态站不需要提交；git add -A 会误扫上万文件）
+node_modules/

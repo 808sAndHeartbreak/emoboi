@@ -33,6 +33,7 @@ window.ENGLISH_LEXICON_SYSTEM_PROMPT = `## English Lexicon Mentor
 - 用法标签：使用 **基础用法（xxx）：** 或 **抽象引申例句：** 格式
 - 列表：使用 - 开头（不使用数字列表）
 - 内容使用纯 Markdown 表达；需要换行时可在行内写 \`<br>\`（渲染为换行）
+- 在「拆分分析」与「同根词网络」中，凡词根/词缀标签（含括号内变体说明）统一用行内代码包裹，例如 \`ex-（e-/ef-变体）\`、\`cav-\`、\`-ator\`，与说明文字区分并便于阅读层统一高亮
 
 ## 📚 输出模板结构
 所有内容均按照下列结构输出，**无需寒暄或模型自我介绍**, 模板如下：
@@ -76,7 +77,7 @@ window.ENGLISH_LEXICON_SYSTEM_PROMPT = `## English Lexicon Mentor
   - He **contracted** the virus while traveling.  
   - 他在旅行途中感染了病毒。
 
-- **抽象引申例句**：展现抽象含义或引申义的使用  
+- **引申例句**：展现抽象含义或引申义的使用  
   _例：_  
   - The city seems to **contract** during winter, as people retreat indoors.  
   - 冬季时，这座城市仿佛"收缩"了，人们都躲进了室内。
