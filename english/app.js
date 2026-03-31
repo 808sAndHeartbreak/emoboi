@@ -6,6 +6,7 @@
   const STORAGE_KEY = "english_lexicon_history_v1";
   const MAX_HISTORY = 50;
   const MD_STREAM_THROTTLE_MS = 180;
+  const MAX_WORD_LEN = 15;
 
   const MODEL_FAST = "deepseek-chat";
 
@@ -98,7 +99,8 @@
     if (!raw || typeof raw !== "string") return { ok: false, msg: "请输入单词" };
     const w = raw.trim();
     if (!w.length) return { ok: false, msg: "单词不能为空" };
-    if (w.length > 20) return { ok: false, msg: "单词长度不能超过 20 个字符" };
+    if (w.length > MAX_WORD_LEN)
+      return { ok: false, msg: "单词长度不能超过 " + MAX_WORD_LEN + " 个字母" };
     if (!/^[a-zA-Z\s'-]+$/.test(w)) return { ok: false, msg: "请输入有效的英文单词" };
     return { ok: true, word: w };
   }
@@ -120,7 +122,7 @@
         .filter((r) => r && typeof r.word === "string" && typeof r.text === "string")
         .map((r) => ({
           id: Number(r.id) || Date.now(),
-          word: r.word.slice(0, 20).toLowerCase(),
+          word: r.word.slice(0, MAX_WORD_LEN).toLowerCase(),
           text: r.text,
           timestamp: Number(r.timestamp) || Date.now(),
         }));
@@ -272,11 +274,13 @@
   function updateCharUi() {
     const len = el.input.value.length;
     if (el.charCount) {
-      el.charCount.textContent = len + "/20";
-      el.charCount.classList.toggle("warn", len > 16);
+      el.charCount.textContent = len + "/" + MAX_WORD_LEN;
+      el.charCount.classList.toggle("warn", len > Math.floor(MAX_WORD_LEN * 0.8));
     }
     if (el.btnClearInput) {
-      el.btnClearInput.classList.toggle("visible", len > 0);
+      const has = len > 0;
+      el.btnClearInput.classList.toggle("visible", has);
+      el.btnClearInput.tabIndex = has ? 0 : -1;
     }
   }
 
@@ -724,16 +728,26 @@
       el.resultPanel.classList.toggle("expanded", resultExpanded);
     }
     if (el.btnExpandResult) {
-      el.btnExpandResult.setAttribute("title", resultExpanded ? "退出全屏阅读" : "全屏阅读");
+      el.btnExpandResult.setAttribute("title", resultExpanded ? "返回" : "全屏阅读");
       el.btnExpandResult.setAttribute(
         "aria-label",
-        resultExpanded ? "退出全屏阅读" : "全屏阅读"
+        resultExpanded ? "返回" : "全屏阅读"
       );
       const icon = resultExpanded ? "minimize" : "maximize";
       el.btnExpandResult.innerHTML = '<i data-lucide="' + icon + '"></i>';
       if (window.lucide) window.lucide.createIcons();
     }
     syncBodyOverflow();
+  }
+
+  function syncHistorySearchTabIndex() {
+    if (!el.historySearch) return;
+    try {
+      var mq = window.matchMedia("(max-width: 640px) and (hover: none)");
+      el.historySearch.tabIndex = mq.matches ? -1 : 0;
+    } catch (_) {
+      el.historySearch.tabIndex = 0;
+    }
   }
 
   function init() {
@@ -747,6 +761,12 @@
     loadHistory();
     renderHistory();
     updateCharUi();
+    syncHistorySearchTabIndex();
+    try {
+      var mqHist = window.matchMedia("(max-width: 640px) and (hover: none)");
+      if (mqHist.addEventListener) mqHist.addEventListener("change", syncHistorySearchTabIndex);
+      else if (mqHist.addListener) mqHist.addListener(syncHistorySearchTabIndex);
+    } catch (_) {}
     updateHelpVisibility();
     updateSuggestionsVisibility();
 
@@ -784,7 +804,13 @@
       });
     });
 
-    el.btnFast.addEventListener("click", () => run());
+    const queryForm = document.getElementById("lexicon-query-form");
+    if (queryForm) {
+      queryForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        run();
+      });
+    }
     el.btnAbort.addEventListener("click", () => {
       if (abortCtl) abortCtl.abort();
     });
@@ -795,7 +821,8 @@
     }
     if (el.btnExpandResult) {
       el.btnExpandResult.addEventListener("click", function () {
-        setResultExpanded(!resultExpanded);
+        if (resultExpanded) closeResult();
+        else setResultExpanded(true);
       });
     }
     document.addEventListener("keydown", function (e) {
@@ -811,11 +838,7 @@
         return;
       }
       if (el.resultPanel && !el.resultPanel.hidden) {
-        if (resultExpanded) {
-          setResultExpanded(false);
-        } else {
-          closeResult();
-        }
+        closeResult();
         e.preventDefault();
         return;
       }
@@ -842,7 +865,10 @@
     });
     el.input.addEventListener("keydown", (e) => {
       if (e.isComposing) return;
-      if (e.key === "Enter") run();
+      if (e.key === "Enter") {
+        e.preventDefault();
+        run();
+      }
     });
 
     if (window.lucide) window.lucide.createIcons();

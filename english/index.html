@@ -299,6 +299,10 @@
             letter-spacing: 0.045em;
             opacity: 0.86;
         }
+        #lexicon-query-form {
+            margin: 0;
+            padding: 0;
+        }
         .query-row {
             display: flex;
             align-items: stretch;
@@ -1037,16 +1041,30 @@
                 padding: 0.38rem 0.72rem;
             }
             .query-row {
-                gap: 0.5rem;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.55rem;
             }
             .btn-row {
-                width: 92px;
-                flex-basis: 92px;
+                width: 100%;
+                flex: 1 1 auto;
+                max-width: none;
+            }
+            .input-row-inner {
+                padding: 0.16rem 0.45rem 0.16rem 0.72rem;
+            }
+            #word-input {
+                font-size: 1rem;
+                padding: 0.62rem 0;
+            }
+            #char-count {
+                min-width: 2.1rem;
+                font-size: 0.7rem;
             }
             button.action {
                 min-height: 44px;
-                font-size: 0.9rem;
-                padding: 0.62rem 0.45rem;
+                font-size: 0.88rem;
+                padding: 0.58rem 0.5rem;
             }
         }
     </style>
@@ -1083,20 +1101,34 @@
             请先在 <code>english/config.js</code> 里填写 <code>apiBase</code>（Cloudflare Worker 地址），详见仓库 <code>workers/deepseek-proxy/README.md</code>。
         </div>
 
-        <div class="query-row">
-            <div class="input-shell" id="input-shell">
-                <div class="input-row-inner">
-                    <input id="word-input" type="text" maxlength="20" placeholder="请输入英文单词…" autocomplete="off" />
-                    <div class="input-actions">
-                        <span id="char-count">0/20</span>
-                        <button type="button" id="btn-clear-input" aria-label="清空">×</button>
+        <form id="lexicon-query-form" novalidate>
+            <div class="query-row">
+                <div class="input-shell" id="input-shell">
+                    <div class="input-row-inner">
+                        <input
+                            id="word-input"
+                            type="text"
+                            name="word"
+                            maxlength="15"
+                            placeholder="请输入英文单词…"
+                            autocomplete="off"
+                            autocorrect="off"
+                            autocapitalize="off"
+                            spellcheck="false"
+                            enterkeyhint="search"
+                            inputmode="text"
+                        />
+                        <div class="input-actions">
+                            <span id="char-count" aria-live="polite">0/15</span>
+                            <button type="button" id="btn-clear-input" aria-label="清空" tabindex="-1">×</button>
+                        </div>
                     </div>
                 </div>
+                <div class="btn-row">
+                    <button type="submit" class="action" id="btn-fast">查询</button>
+                </div>
             </div>
-            <div class="btn-row">
-                <button type="button" class="action" id="btn-fast">查询</button>
-            </div>
-        </div>
+        </form>
 
         <div id="input-suggestions" class="input-suggestions" hidden>
             <span class="suggestions-title">💡 试试这些</span>
@@ -1144,7 +1176,7 @@
                 <h2>📖 搜索历史</h2>
                 <button type="button" id="btn-clear-history">清空历史</button>
             </div>
-            <input id="history-search" type="search" placeholder="搜索历史…" maxlength="20" />
+            <input id="history-search" type="search" placeholder="搜索历史…" maxlength="20" enterkeyhint="search" />
             <div id="history-list"></div>
         </div>
     </div>
