@@ -54,6 +54,30 @@
 
 绑定后，浏览器只访问你的主站域名与 `api.*` 同一家 CDN，往往比直连 `workers.dev` 稳定。
 
+### GitHub Pages + `emoboi.com`：提示「Only domains active on your Cloudflare account」
+
+Cloudflare 给 Worker 加 **`api.emoboi.com`** 的前提是：**根域 `emoboi.com` 必须在你这个 Cloudflare 账号里作为「站点 / Zone」托管 DNS**。  
+GitHub Pages 只负责托管网页，域名可以在别处解析；若你**从未**把 `emoboi.com` 的 nameserver 指到 Cloudflare，就会出现这句报错，**与 Secret、Worker 代码无关**。
+
+你可以任选其一：
+
+**方案 A（推荐，仍用 emoboi.com 作 API 子域）**
+
+1. 在 Cloudflare：**Add a site** → 输入 **`emoboi.com`** → 按向导拿到 **两条 Cloudflare nameserver**。  
+2. 到**买域名的注册商**（不是 GitHub），把域名的 **DNS / nameserver** 改成 Cloudflare 给你的这两条（整站 DNS 交给 Cloudflare，**网站仍可以是 GitHub Pages**）。  
+3. 在 Cloudflare **DNS** 里按 [GitHub Pages 自定义域说明](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site) 配置 **apex / `www`**（例如 GitHub 要求的 **A 记录** 或 **CNAME**），与现在能打开 `https://emoboi.com` 时一致即可。  
+4. 再回 Worker → **Custom domain** 添加 **`api.emoboi.com`**（通常会自动多一条指向 Worker 的记录）。  
+5. `english/config.js` 的 `apiBase` 改为 `https://api.emoboi.com`。`ALLOWED_ORIGINS` **仍写** `https://emoboi.com`（页面来源不变）。
+
+**方案 B（不动 emoboi.com 的 DNS）**
+
+- 在 Cloudflare 里添加**另一个**你已控制、且 DNS 已在 Cloudflare 的域名（例如单独买一个便宜域名），只为 Worker 使用，例如 `https://api-你的域.com`。  
+- `config.js` 里 `apiBase` 写该地址；Worker 的 `ALLOWED_ORIGINS` **照样写** `https://emoboi.com`（跨域允许即可）。
+
+**临时**
+
+- 继续用 `*.workers.dev` 作 `apiBase`，在能访问该域名的网络下使用，或 VPN / 热点。
+
 ## 常见问题
 
 - **429 / 限流**：DeepSeek 或 Worker 侧限流，稍后再试。

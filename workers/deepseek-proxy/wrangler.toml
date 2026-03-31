@@ -6,6 +6,11 @@ main = "src/index.js"
 compatibility_date = "2024-11-01"
 workers_dev = true
 
+# 国内常连不上 *.workers.dev：在 Cloudflare 本 Worker → Domains 添加自定义域（如 api.emoboi.com），
+# 再把 english/config.js 的 apiBase 改为 https://api.emoboi.com。详见 README「自定义域名」。
+# 可选：若域名已在该账号的 Cloudflare DNS，可取消下行注释并 deploy（把 zone 换成你的根域）
+# routes = [{ pattern = "api.emoboi.com/*", zone_name = "emoboi.com" }]
+
 # 允许的页面来源（逗号分隔，不要有空格问题可写紧凑）；* 表示不校验（仅调试）
 [vars]
 ALLOWED_ORIGINS = "https://emoboi.com,https://www.emoboi.com"
