@@ -710,33 +710,27 @@
     el.resultTitle.textContent = "";
     setWordHero(el.resultWordHero, word);
     renderLexiconMarkdown(el.resultMdWrap, text, word);
-    el.resultPanel.hidden = false;
-    setResultExpanded(false);
+    resultExpanded = true;
+    if (el.resultPanel) {
+      el.resultPanel.classList.add("expanded");
+      el.resultPanel.hidden = false;
+    }
+    if (el.btnExpandResult) {
+      el.btnExpandResult.setAttribute("title", "返回");
+      el.btnExpandResult.setAttribute("aria-label", "返回");
+      el.btnExpandResult.innerHTML = '<i data-lucide="minimize"></i>';
+    }
+    if (window.lucide) window.lucide.createIcons();
     syncBodyOverflow();
   }
 
   function closeResult() {
-    setResultExpanded(false);
-    setWordHero(el.resultWordHero, "");
-    el.resultPanel.hidden = true;
-    syncBodyOverflow();
-  }
-
-  function setResultExpanded(expanded) {
-    resultExpanded = !!expanded;
+    resultExpanded = false;
     if (el.resultPanel) {
-      el.resultPanel.classList.toggle("expanded", resultExpanded);
+      el.resultPanel.classList.remove("expanded");
+      el.resultPanel.hidden = true;
     }
-    if (el.btnExpandResult) {
-      el.btnExpandResult.setAttribute("title", resultExpanded ? "返回" : "全屏阅读");
-      el.btnExpandResult.setAttribute(
-        "aria-label",
-        resultExpanded ? "返回" : "全屏阅读"
-      );
-      const icon = resultExpanded ? "minimize" : "maximize";
-      el.btnExpandResult.innerHTML = '<i data-lucide="' + icon + '"></i>';
-      if (window.lucide) window.lucide.createIcons();
-    }
+    setWordHero(el.resultWordHero, "");
     syncBodyOverflow();
   }
 
@@ -820,9 +814,10 @@
       });
     }
     if (el.btnExpandResult) {
-      el.btnExpandResult.addEventListener("click", function () {
-        if (resultExpanded) closeResult();
-        else setResultExpanded(true);
+      el.btnExpandResult.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeResult();
       });
     }
     document.addEventListener("keydown", function (e) {
