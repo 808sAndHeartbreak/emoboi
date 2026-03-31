@@ -23,6 +23,7 @@
     err: $("#error-msg"),
     streamWrap: $("#stream-wrap"),
     streamHdrLabel: $("#stream-hdr-label"),
+    streamWordHero: $("#stream-word-hero"),
     streamRaw: $("#stream-raw"),
     streamMd: $("#stream-md"),
     thinking: $("#thinking-panel"),
@@ -30,10 +31,13 @@
     status: $("#status-text"),
     historyList: $("#history-list"),
     historySearch: $("#history-search"),
+    btnClearHistory: $("#btn-clear-history"),
     resultPanel: $("#result-panel"),
+    resultWordHero: $("#result-word-hero"),
     resultMdWrap: $("#result-md-wrap"),
     resultTitle: $("#result-title"),
     btnCloseResult: $("#btn-close-result"),
+    btnExpandResult: $("#btn-expand-result"),
   };
 
   let abortCtl = null;
@@ -42,6 +46,8 @@
   let lastResultText = "";
   let mdStreamTimer = null;
   let pendingMdText = "";
+  let currentQueryWord = "";
+  let resultExpanded = false;
 
   var LEXICON_LOG = "[English Lexicon API]";
 
@@ -159,14 +165,71 @@
     container.innerHTML = window.DOMPurify.sanitize(html);
   }
 
+  function normalizeWordToken(v) {
+    return String(v || "")
+      .toLowerCase()
+      .replace(/[`*_~]/g, "")
+      .replace(/^[^a-z0-9]+|[^a-z0-9]+$/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function stripPrimarySectionWordLine(text, queryWord) {
+    if (!text) return "";
+    const target = normalizeWordToken(queryWord);
+    if (!target) return text;
+    const lines = String(text).split("\n");
+    let secIdx = -1;
+    for (let i = 0; i < lines.length; i++) {
+      if (/^#{2,6}\s*1[\.、]?\s*\*\*?\s*主要义项/i.test(lines[i].trim())) {
+        secIdx = i;
+        break;
+      }
+    }
+    if (secIdx < 0) return text;
+    let candidate = -1;
+    for (let i = secIdx + 1; i < lines.length; i++) {
+      const t = lines[i].trim();
+      if (!t) continue;
+      if (/^#{2,6}\s+/.test(t)) break;
+      candidate = i;
+      break;
+    }
+    if (candidate < 0) return text;
+    const plain = lines[candidate]
+      .replace(/^\s*>\s*/, "")
+      .replace(/\*\*/g, "")
+      .replace(/__/g, "")
+      .replace(/`/g, "")
+      .trim();
+    if (normalizeWordToken(plain) !== target) return text;
+    lines.splice(candidate, 1);
+    return lines.join("\n");
+  }
+
+  function setWordHero(elm, word) {
+    if (!elm) return;
+    const w = String(word || "").trim();
+    elm.textContent = w;
+    elm.hidden = !w;
+  }
+
+  function renderLexiconMarkdown(container, text, word) {
+    renderMarkdownInto(container, stripPrimarySectionWordLine(text, word));
+  }
+
   function flushMdStream() {
     if (mdStreamTimer) {
       clearTimeout(mdStreamTimer);
       mdStreamTimer = null;
     }
     if (pendingMdText !== "") {
-      renderMarkdownInto(el.streamMd, pendingMdText);
-      el.streamMd.scrollTop = el.streamMd.scrollHeight;
+      const shouldStickToBottom =
+        el.streamMd.scrollHeight - el.streamMd.scrollTop - el.streamMd.clientHeight < 24;
+      renderLexiconMarkdown(el.streamMd, pendingMdText, currentQueryWord);
+      if (shouldStickToBottom) {
+        el.streamMd.scrollTop = el.streamMd.scrollHeight;
+      }
       pendingMdText = "";
     }
   }
@@ -176,8 +239,12 @@
     if (mdStreamTimer) return;
     mdStreamTimer = setTimeout(function () {
       mdStreamTimer = null;
-      renderMarkdownInto(el.streamMd, pendingMdText);
-      el.streamMd.scrollTop = el.streamMd.scrollHeight;
+      const shouldStickToBottom =
+        el.streamMd.scrollHeight - el.streamMd.scrollTop - el.streamMd.clientHeight < 24;
+      renderLexiconMarkdown(el.streamMd, pendingMdText, currentQueryWord);
+      if (shouldStickToBottom) {
+        el.streamMd.scrollTop = el.streamMd.scrollHeight;
+      }
     }, MD_STREAM_THROTTLE_MS);
   }
 
@@ -390,6 +457,7 @@
     flushMdStream();
     lastResultWord = "";
     lastResultText = "";
+    currentQueryWord = v.word;
     setError("");
     abortCtl = new AbortController();
 
@@ -401,6 +469,7 @@
     el.thinking.hidden = false;
     el.streamRaw.hidden = false;
     el.streamMd.hidden = true;
+    setWordHero(el.streamWordHero, v.word);
     el.streamRaw.textContent = "";
     el.streamMd.innerHTML = "";
     if (el.streamHdrLabel) el.streamHdrLabel.textContent = "实时分析中";
@@ -426,8 +495,13 @@
             el.streamMd.hidden = false;
             scheduleStreamMarkdown(full);
           } else {
+            const shouldStickToBottom =
+              el.streamRaw.scrollHeight - el.streamRaw.scrollTop - el.streamRaw.clientHeight <
+              24;
             el.streamRaw.textContent = full;
-            el.streamRaw.scrollTop = el.streamRaw.scrollHeight;
+            if (shouldStickToBottom) {
+              el.streamRaw.scrollTop = el.streamRaw.scrollHeight;
+            }
           }
         },
       });
@@ -441,13 +515,14 @@
       el.thinking.hidden = true;
       el.streamRaw.hidden = true;
       el.streamMd.hidden = false;
-      renderMarkdownInto(el.streamMd, fullText);
+      renderLexiconMarkdown(el.streamMd, fullText, v.word);
       lastResultWord = v.word;
       lastResultText = fullText;
       pushHistory(v.word, fullText);
-      if (el.streamHdrLabel) el.streamHdrLabel.textContent = "📋 分析结果";
-      el.status.textContent = "完成";
+      if (el.streamHdrLabel) el.streamHdrLabel.textContent = "";
+      el.status.textContent = "";
     } catch (e) {
+      setWordHero(el.streamWordHero, "");
       if (e.name === "AbortError") {
         setError("已中止");
       } else {
@@ -495,15 +570,38 @@
   }
 
   function openResult(word, text, _mode) {
-    el.resultTitle.textContent = word;
-    renderMarkdownInto(el.resultMdWrap, text);
+    el.resultTitle.textContent = "";
+    setWordHero(el.resultWordHero, word);
+    renderLexiconMarkdown(el.resultMdWrap, text, word);
+    setResultExpanded(false);
     el.resultPanel.hidden = false;
     document.body.style.overflow = "hidden";
   }
 
   function closeResult() {
+    setResultExpanded(false);
+    setWordHero(el.resultWordHero, "");
     el.resultPanel.hidden = true;
     document.body.style.overflow = "";
+  }
+
+  function setResultExpanded(expanded) {
+    resultExpanded = !!expanded;
+    if (el.resultPanel) {
+      el.resultPanel.classList.toggle("expanded", resultExpanded);
+    }
+    if (el.btnExpandResult) {
+      el.btnExpandResult.setAttribute("title", resultExpanded ? "退出全屏阅读" : "全屏阅读");
+      el.btnExpandResult.setAttribute(
+        "aria-label",
+        resultExpanded ? "退出全屏阅读" : "全屏阅读"
+      );
+      const icon = resultExpanded ? "minimize" : "maximize";
+      el.btnExpandResult.innerHTML = '<i data-lucide="' + icon + '"></i>';
+      if (window.lucide) window.lucide.createIcons();
+    }
+    if (!el.resultPanel || el.resultPanel.hidden) return;
+    document.body.style.overflow = resultExpanded ? "" : "hidden";
   }
 
   function init() {
@@ -559,6 +657,20 @@
       if (abortCtl) abortCtl.abort();
     });
     el.btnCloseResult.addEventListener("click", closeResult);
+    if (el.btnExpandResult) {
+      el.btnExpandResult.addEventListener("click", function () {
+        setResultExpanded(!resultExpanded);
+      });
+    }
+    if (el.btnClearHistory) {
+      el.btnClearHistory.addEventListener("click", function () {
+        historyRecords = [];
+        saveHistory();
+        renderHistory();
+        updateHelpVisibility();
+        updateSuggestionsVisibility();
+      });
+    }
     if (el.historySearch) {
       el.historySearch.addEventListener("input", renderHistory);
     }
