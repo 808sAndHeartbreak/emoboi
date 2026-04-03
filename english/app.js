@@ -6,6 +6,7 @@
   const STORAGE_KEY = "english_lexicon_history_v1";
   const MAX_HISTORY = 50;
   const MD_STREAM_THROTTLE_MS = 180;
+  const STREAM_BOTTOM_THRESHOLD_PX = 24;
   const MAX_WORD_LEN = 15;
 
   const MODEL_FAST = "deepseek-chat";
@@ -50,6 +51,8 @@
   let currentQueryWord = "";
   let resultExpanded = false;
   let streamExpanded = false;
+  /** 流式输出时是否跟随滚到底部；用户上滑后为 false，滑回底部后立即为 true */
+  let streamStickToBottom = true;
 
   var LEXICON_LOG = "[English Lexicon API]";
 
@@ -241,18 +244,40 @@
     renderMarkdownInto(container, normalizeMorphologyInlineCode(stripped));
   }
 
+  function getStreamScrollContainer() {
+    if (!el.streamWrap || el.streamWrap.hidden) return null;
+    if (streamExpanded) return el.streamWrap;
+    if (el.streamMd && !el.streamMd.hidden) return el.streamMd;
+    if (el.streamRaw && !el.streamRaw.hidden) return el.streamRaw;
+    return null;
+  }
+
+  function isStreamNearBottom(sc) {
+    if (!sc) return true;
+    return sc.scrollHeight - sc.scrollTop - sc.clientHeight < STREAM_BOTTOM_THRESHOLD_PX;
+  }
+
+  function scrollStreamToBottomIfPinned() {
+    const sc = getStreamScrollContainer();
+    if (!streamStickToBottom || !sc) return;
+    sc.scrollTop = sc.scrollHeight;
+  }
+
+  function onStreamAreaScroll(ev) {
+    if (!busy) return;
+    const active = getStreamScrollContainer();
+    if (ev.currentTarget !== active) return;
+    streamStickToBottom = isStreamNearBottom(active);
+  }
+
   function flushMdStream() {
     if (mdStreamTimer) {
       clearTimeout(mdStreamTimer);
       mdStreamTimer = null;
     }
     if (pendingMdText !== "") {
-      const shouldStickToBottom =
-        el.streamMd.scrollHeight - el.streamMd.scrollTop - el.streamMd.clientHeight < 24;
       renderLexiconMarkdown(el.streamMd, pendingMdText, currentQueryWord);
-      if (shouldStickToBottom) {
-        el.streamMd.scrollTop = el.streamMd.scrollHeight;
-      }
+      scrollStreamToBottomIfPinned();
       pendingMdText = "";
     }
   }
@@ -262,12 +287,8 @@
     if (mdStreamTimer) return;
     mdStreamTimer = setTimeout(function () {
       mdStreamTimer = null;
-      const shouldStickToBottom =
-        el.streamMd.scrollHeight - el.streamMd.scrollTop - el.streamMd.clientHeight < 24;
       renderLexiconMarkdown(el.streamMd, pendingMdText, currentQueryWord);
-      if (shouldStickToBottom) {
-        el.streamMd.scrollTop = el.streamMd.scrollHeight;
-      }
+      scrollStreamToBottomIfPinned();
     }, MD_STREAM_THROTTLE_MS);
   }
 
@@ -560,6 +581,7 @@
     hideConfigError();
 
     busy = true;
+    streamStickToBottom = true;
     flushMdStream();
     lastResultWord = "";
     lastResultText = "";
@@ -603,13 +625,8 @@
             el.streamMd.hidden = false;
             scheduleStreamMarkdown(full);
           } else {
-            const shouldStickToBottom =
-              el.streamRaw.scrollHeight - el.streamRaw.scrollTop - el.streamRaw.clientHeight <
-              24;
             el.streamRaw.textContent = full;
-            if (shouldStickToBottom) {
-              el.streamRaw.scrollTop = el.streamRaw.scrollHeight;
-            }
+            scrollStreamToBottomIfPinned();
           }
         },
       });
@@ -624,6 +641,7 @@
       el.streamRaw.hidden = true;
       el.streamMd.hidden = false;
       renderLexiconMarkdown(el.streamMd, fullText, v.word);
+      scrollStreamToBottomIfPinned();
       lastResultWord = v.word;
       lastResultText = fullText;
       pushHistory(v.word, fullText);
@@ -689,6 +707,9 @@
 
   function setStreamExpanded(expanded) {
     streamExpanded = !!expanded;
+    if (document.body) {
+      document.body.classList.toggle("lexicon-stream-expanded", streamExpanded);
+    }
     if (el.streamWrap) {
       el.streamWrap.classList.toggle("stream-expanded", streamExpanded);
     }
@@ -701,6 +722,10 @@
       const icon = streamExpanded ? "minimize" : "maximize";
       el.btnStreamExpand.innerHTML = '<i data-lucide="' + icon + '"></i>';
       if (window.lucide) window.lucide.createIcons();
+    }
+    if (busy) {
+      const sc = getStreamScrollContainer();
+      if (sc) streamStickToBottom = isStreamNearBottom(sc);
     }
     syncBodyOverflow();
   }
@@ -763,6 +788,10 @@
     } catch (_) {}
     updateHelpVisibility();
     updateSuggestionsVisibility();
+
+    [el.streamWrap, el.streamMd, el.streamRaw].forEach(function (node) {
+      if (node) node.addEventListener("scroll", onStreamAreaScroll, { passive: true });
+    });
 
     el.input.addEventListener("input", function () {
       updateCharUi();
