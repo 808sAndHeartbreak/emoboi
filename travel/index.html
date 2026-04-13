@@ -3,93 +3,45 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>日本旅行</title>
-  <meta
-    name="description"
-    content="为情侣出行准备的日本旅行方案初版网页，集中对比关西、东京伊豆和中部几条路线。"
-  >
-  <link rel="stylesheet" href="styles.css">
+  <title>日本旅行详情</title>
+  <meta name="description" content="日本旅行详情页，直接切换查看关东 7 天与关西 4 天两条完整路线。">
+  <link rel="stylesheet" href="details.css?v=20260413">
 </head>
 <body>
-  <div class="page-shell">
+  <div class="wrap">
     <header class="hero">
-      <p class="eyebrow">初版提案网页</p>
+      <p class="kicker">旅行详情</p>
       <h1>日本旅行</h1>
-    
-      <nav class="quick-nav" aria-label="页面快速导航">
+      <p id="hero-subtitle">页面直接展示完整内容，可切换查看关东 7 天与关西 4 天的完整路线细节。</p>
+      <div class="hero-actions">
         <a href="../">返回 Home</a>
-        <a href="#filter-panel">筛选方案</a>
-        <a href="#compare-panel">横向对比</a>
-        <a href="#detail-panel">看详细日程</a>
-        <a href="#fact-panel">校对依据</a>
-        <a href="details.html">进入完整版攻略</a>
-      </nav>
+        <a href="https://tenki.auone.jp/weather/22222" target="_blank" rel="noreferrer">查看日本天气</a>
+      </div>
     </header>
 
-    <main>
-      <section id="filter-panel" class="panel">
-        <div class="section-head">
-          <div>
-            <p class="section-kicker">快速筛选</p>
-            <h2>先按区域和天数筛选，再进入横向对比</h2>
+    <main class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="kicker">路线切换</p>
+          <h2>切换路线，直接看完整详情</h2>
+        </div>
+        <div class="panel-tools">
+          <p id="route-meta" class="meta"></p>
+          <div class="panel-actions">
+            <button id="expand-all-btn" class="action-btn" type="button">展开全部</button>
+            <button id="collapse-all-btn" class="action-btn" type="button">收起折叠项</button>
           </div>
         </div>
-        <div id="filter-bar" class="filter-bar" aria-label="方案筛选"></div>
-      </section>
+      </div>
 
-      <section id="compare-panel" class="panel">
-        <div class="section-head">
-          <div>
-            <p class="section-kicker">一眼对比</p>
-            <h2>横向看 6 条路线风格与节奏，再决定深入哪条</h2>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table class="compare-table">
-            <thead id="compare-head"></thead>
-            <tbody id="compare-body"></tbody>
-          </table>
-        </div>
-      </section>
+      <div id="route-tabs" class="tabs" aria-label="路线切换"></div>
 
-      <section id="detail-panel" class="panel">
-        <div class="section-head">
-          <div>
-            <p class="section-kicker">详细方案</p>
-            <h2>每条路线都能展开看日程、住宿结构和适配人群</h2>
-          </div>
-          <div class="detail-actions">
-            <button type="button" id="expand-all-btn" class="mini-action">展开全部</button>
-            <button type="button" id="collapse-all-btn" class="mini-action">收起全部</button>
-            <p id="result-count" class="result-count"></p>
-          </div>
-        </div>
-        <div id="itinerary-grid" class="itinerary-grid"></div>
-      </section>
-
-      <section id="fact-panel" class="panel">
-        <div class="section-head">
-          <div>
-            <p class="section-kicker">关键事实核验</p>
-            <h2>交通与票务校对依据</h2>
-          </div>
-        </div>
-        <details class="fact-collapse">
-          <summary>展开</summary>
-          <div id="fact-check-grid" class="fact-grid"></div>
-        </details>
-      </section>
+      <section id="route-content" class="route-content" aria-live="polite"></section>
     </main>
-
   </div>
 
-  <div id="image-modal" class="image-modal" hidden aria-hidden="true">
-    <button id="image-modal-close" class="image-modal-close" type="button" aria-label="关闭图片预览">×</button>
-    <img id="image-modal-img" src="" alt="">
-    <p id="image-modal-caption"></p>
-  </div>
-
-  <script src="images-manifest.js"></script>
-  <script src="app.js" defer></script>
+  <script src="images-manifest.js?v=20260413"></script>
+  <script src="itinerary-details.js?v=20260413"></script>
+  <script src="details.js?v=20260413" defer></script>
 </body>
 </html>
