@@ -1,11 +1,8 @@
 const routes = Array.isArray(window.ITINERARY_DETAILS) ? window.ITINERARY_DETAILS : [];
-const travelPhotos = Array.isArray(window.TRAVEL_IMAGES) ? window.TRAVEL_IMAGES : [];
 
 const routeTabs = document.querySelector("#route-tabs");
 const routeMeta = document.querySelector("#route-meta");
 const routeContent = document.querySelector("#route-content");
-const expandAllBtn = document.querySelector("#expand-all-btn");
-const collapseAllBtn = document.querySelector("#collapse-all-btn");
 const heroSubtitle = document.querySelector("#hero-subtitle");
 
 const defaultRouteId = routes.find((item) => item.id.includes("kanto"))?.id || routes[0]?.id || "";
@@ -28,31 +25,6 @@ function applyInlineMarkdown(line) {
   return withCode;
 }
 
-function normalizeRouteKey(value) {
-  return String(value || "")
-    .toLowerCase()
-    .replaceAll("_", "-")
-    .replaceAll(" ", "-")
-    .replaceAll(/-?days/g, "")
-    .trim();
-}
-
-function matchImageToRoute(photo, routeId) {
-  const routeKey = normalizeRouteKey(routeId);
-  const rawRoutes = Array.isArray(photo?.routes) ? photo.routes : [];
-  if (!rawRoutes.length) {
-    return false;
-  }
-  return rawRoutes.some((raw) => {
-    const candidate = normalizeRouteKey(raw);
-    return candidate === routeKey || routeKey.includes(candidate) || candidate.includes(routeKey);
-  });
-}
-
-function getRouteImages(routeId) {
-  return travelPhotos.filter((photo) => typeof photo === "object" && matchImageToRoute(photo, routeId));
-}
-
 function renderImageGallery(images) {
   if (!images.length) {
     return "";
@@ -71,6 +43,29 @@ function renderImageGallery(images) {
               <img src="${src}" alt="${caption}" loading="lazy" decoding="async">
               <p>${caption}</p>
             </a>
+          `;
+        })
+        .join("")}
+    </div>
+  `;
+}
+
+function renderMiniDetails(items) {
+  const details = Array.isArray(items) ? items : [];
+  if (!details.length) {
+    return "";
+  }
+
+  return `
+    <div class="subdetails">
+      ${details
+        .map((item) => {
+          const isOpen = item.open ? " open" : "";
+          return `
+            <details class="mini-details"${isOpen}>
+              <summary class="mini-summary">${escapeHtml(item.title || "补充信息")}</summary>
+              <div class="mini-body markdown">${renderMarkdown(item.lines || [])}</div>
+            </details>
           `;
         })
         .join("")}
@@ -114,17 +109,30 @@ function renderMarkdown(lines) {
 function normalizeSections(route) {
   const sections = Array.isArray(route.sections) ? route.sections : [];
   const days = [];
-  const generals = [];
+  const leadSections = [];
+  const middleSections = [];
+  const tailSections = [];
 
   sections.forEach((section) => {
     if (/^D\d+/.test(section.title)) {
       days.push(section);
-    } else {
-      generals.push(section);
+      return;
     }
+
+    if (section.placement === "top") {
+      leadSections.push(section);
+      return;
+    }
+
+    if (section.placement === "tail") {
+      tailSections.push(section);
+      return;
+    }
+
+    middleSections.push(section);
   });
 
-  return { days, generals };
+  return { days, leadSections, middleSections, tailSections };
 }
 
 function getRouteSwitchLabel(route) {
@@ -154,12 +162,8 @@ function shouldSectionDefaultOpen(title, type) {
     return true;
   }
 
-  if (type === "images") {
-    return false;
-  }
-
   if (type === "general") {
-    return ["出行准备", "住哪里最顺", "机场、住哪、吃哪", "为什么这样设计", "交通怎么安排", "天气查看", "票券怎么选", "伊豆分区和轨道看图版", "箱根主线看图版"].includes(title);
+    return ["天气查看", "7天总览"].includes(title);
   }
 
   if (type === "day") {
@@ -173,6 +177,7 @@ function renderCollapsibleCard(title, body, options = {}) {
   const className = options.className ? ` ${options.className}` : "";
   const isOpen = options.open ? " open" : "";
   const isPinned = options.pinned ? ' data-pinned="true"' : "";
+  const nestedDetails = renderMiniDetails(options.subDetails || []);
   const imageGallery = Array.isArray(options.images) && options.images.length
     ? `<div class="section-image-wrap">${renderImageGallery(options.images)}</div>`
     : "";
@@ -181,14 +186,15 @@ function renderCollapsibleCard(title, body, options = {}) {
       <summary class="section-head"><span>${escapeHtml(title)}</span></summary>
       <div class="section-body${options.bodyClassName ? ` ${options.bodyClassName}` : ""}">
         ${body}
+        ${nestedDetails}
         ${imageGallery}
       </div>
     </details>
   `;
 }
 
-function getRouteSummary(route, days, generals) {
-  return `${getRouteSwitchLabel(route)} · 共 ${days.length} 个行程段 · ${generals.length} 个补充信息块`;
+function getRouteSummary(route, days) {
+  return route.metaText || `${getRouteSwitchLabel(route)} · 共 ${days.length} 个行程段`;
 }
 
 function updatePageHeader(route) {
@@ -199,16 +205,6 @@ function updatePageHeader(route) {
   }
 
   document.title = `日本旅行详情｜${getRouteSwitchLabel(route)}`;
-}
-
-function setAllSections(open) {
-  routeContent.querySelectorAll(".section-card").forEach((card) => {
-    if (!open && card.dataset.pinned === "true") {
-      card.open = true;
-      return;
-    }
-    card.open = open;
-  });
 }
 
 function renderRouteTabs() {
@@ -237,10 +233,9 @@ function renderRouteContent() {
     return;
   }
 
-  const { days, generals } = normalizeSections(route);
+  const { days, leadSections, middleSections, tailSections } = normalizeSections(route);
   updatePageHeader(route);
-  routeMeta.textContent = getRouteSummary(route, days, generals);
-  const routeImages = getRouteImages(route.id);
+  routeMeta.textContent = getRouteSummary(route, days);
 
   const summaryCard = renderCollapsibleCard(
     "路线摘要",
@@ -248,19 +243,26 @@ function renderRouteContent() {
     { bodyClassName: "markdown", open: shouldSectionDefaultOpen("路线摘要", "summary"), pinned: true }
   );
 
-  const imageCard = routeImages.length
-    ? renderCollapsibleCard("路线关联图片", renderImageGallery(routeImages), {
-        open: shouldSectionDefaultOpen("路线关联图片", "images")
-      })
-    : "";
-
-  const generalCards = generals
+  const leadCards = leadSections
     .map(
       (section) =>
         renderCollapsibleCard(section.title, renderMarkdown(section.lines || []), {
           bodyClassName: "markdown",
           open: shouldSectionDefaultOpen(section.title, "general"),
-          images: section.images || []
+          images: section.images || [],
+          subDetails: section.subDetails || []
+        })
+    )
+    .join("");
+
+  const middleCards = middleSections
+    .map(
+      (section) =>
+        renderCollapsibleCard(section.title, renderMarkdown(section.lines || []), {
+          bodyClassName: "markdown",
+          open: shouldSectionDefaultOpen(section.title, "general"),
+          images: section.images || [],
+          subDetails: section.subDetails || []
         })
     )
     .join("");
@@ -272,22 +274,25 @@ function renderRouteContent() {
           className: "day-card",
           bodyClassName: "markdown",
           open: shouldSectionDefaultOpen(day.title, "day"),
-          images: day.images || []
+          images: day.images || [],
+          subDetails: day.subDetails || []
         })
     )
     .join("");
 
-  routeContent.innerHTML = `${summaryCard}${imageCard}${generalCards}${dayCards}`;
-}
+  const tailCards = tailSections
+    .map(
+      (section) =>
+        renderCollapsibleCard(section.title, renderMarkdown(section.lines || []), {
+          bodyClassName: "markdown",
+          open: shouldSectionDefaultOpen(section.title, "general"),
+          images: section.images || [],
+          subDetails: section.subDetails || []
+        })
+    )
+    .join("");
 
-function bindPanelActions() {
-  expandAllBtn?.addEventListener("click", () => {
-    setAllSections(true);
-  });
-
-  collapseAllBtn?.addEventListener("click", () => {
-    setAllSections(false);
-  });
+  routeContent.innerHTML = `${leadCards}${summaryCard}${middleCards}${dayCards}${tailCards}`;
 }
 
 function init() {
@@ -297,7 +302,6 @@ function init() {
   }
   activeRouteId = getRouteIdFromUrl() || defaultRouteId;
   syncUrlState();
-  bindPanelActions();
   renderRouteTabs();
   renderRouteContent();
 }

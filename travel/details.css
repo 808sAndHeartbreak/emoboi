@@ -100,29 +100,6 @@ body {
   font-size: 14px;
 }
 
-.panel-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.action-btn {
-  border: 1px solid rgba(154, 93, 53, 0.26);
-  border-radius: 999px;
-  background: #fff;
-  color: var(--text);
-  padding: 8px 14px;
-  cursor: pointer;
-  font: inherit;
-}
-
-.action-btn:hover,
-.action-btn:focus-visible {
-  border-color: rgba(154, 93, 53, 0.5);
-  outline: none;
-}
-
 .tabs {
   margin-top: 14px;
   display: flex;
@@ -237,6 +214,52 @@ summary.section-head::after {
   margin-top: 14px;
 }
 
+.subdetails {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.mini-details {
+  border: 1px dashed rgba(154, 93, 53, 0.28);
+  border-radius: 14px;
+  background: rgba(249, 244, 236, 0.48);
+  overflow: hidden;
+}
+
+.mini-summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 11px 13px;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.mini-summary::-webkit-details-marker {
+  display: none;
+}
+
+.mini-summary::after {
+  content: "展开细节";
+  float: right;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.mini-details[open] > .mini-summary::after {
+  content: "收起细节";
+}
+
+.mini-body {
+  padding: 0 13px 12px;
+}
+
+.mini-body p,
+.mini-body li {
+  font-size: 13px;
+}
+
 .route-image-card {
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -293,13 +316,6 @@ summary.section-head::after {
     align-items: start;
   }
 
-  .panel-actions {
-    display: grid;
-    grid-template-columns: 1fr;
-    justify-items: stretch;
-    width: 100%;
-  }
-
   .hero-actions {
     display: flex;
     flex-wrap: wrap;
@@ -308,14 +324,6 @@ summary.section-head::after {
 
   .hero-actions a {
     min-height: 40px;
-  }
-
-  .action-btn {
-    display: block;
-    width: 100%;
-    inline-size: 100%;
-    min-height: 40px;
-    text-align: center;
   }
 
   .tabs {
