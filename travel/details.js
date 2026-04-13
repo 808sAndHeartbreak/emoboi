@@ -61,13 +61,37 @@ function renderMiniDetails(items) {
       ${details
         .map((item) => {
           const isOpen = item.open ? " open" : "";
+          const imageGallery = Array.isArray(item.images) && item.images.length
+            ? `<div class="section-image-wrap">${renderImageGallery(item.images)}</div>`
+            : "";
           return `
             <details class="mini-details"${isOpen}>
               <summary class="mini-summary">${escapeHtml(item.title || "补充信息")}</summary>
-              <div class="mini-body markdown">${renderMarkdown(item.lines || [])}</div>
+              <div class="mini-body markdown">
+                ${renderMarkdown(item.lines || [])}
+                ${imageGallery}
+              </div>
             </details>
           `;
         })
+        .join("")}
+    </div>
+  `;
+}
+
+function renderSectionNav(items) {
+  const links = Array.isArray(items) ? items.filter(Boolean) : [];
+  if (!links.length) {
+    return "";
+  }
+
+  return `
+    <div class="section-nav">
+      ${links
+        .map(
+          (item) =>
+            `<a class="nav-chip" href="#${escapeHtml(item.id)}" data-target="${escapeHtml(item.id)}">${escapeHtml(item.label)}</a>`
+        )
         .join("")}
     </div>
   `;
@@ -132,6 +156,21 @@ function normalizeSections(route) {
     middleSections.push(section);
   });
 
+  if (route.id.includes("kanto")) {
+    middleSections.sort((a, b) => {
+      const getPriority = (title) => {
+        if (title.startsWith("箱根")) {
+          return 0;
+        }
+        if (title.startsWith("伊豆")) {
+          return 1;
+        }
+        return 2;
+      };
+      return getPriority(a.title) - getPriority(b.title);
+    });
+  }
+
   return { days, leadSections, middleSections, tailSections };
 }
 
@@ -163,11 +202,11 @@ function shouldSectionDefaultOpen(title, type) {
   }
 
   if (type === "general") {
-    return ["天气查看", "7天总览"].includes(title);
+    return ["7天总览"].includes(title);
   }
 
   if (type === "day") {
-    return /^D1/.test(title) || /^D2/.test(title);
+    return false;
   }
 
   return false;
@@ -177,15 +216,18 @@ function renderCollapsibleCard(title, body, options = {}) {
   const className = options.className ? ` ${options.className}` : "";
   const isOpen = options.open ? " open" : "";
   const isPinned = options.pinned ? ' data-pinned="true"' : "";
+  const anchorId = options.anchorId ? ` id="${escapeHtml(options.anchorId)}"` : "";
   const nestedDetails = renderMiniDetails(options.subDetails || []);
+  const sectionNav = renderSectionNav(options.navItems || []);
   const imageGallery = Array.isArray(options.images) && options.images.length
     ? `<div class="section-image-wrap">${renderImageGallery(options.images)}</div>`
     : "";
   return `
-    <details class="section-card${className}"${isOpen}${isPinned}>
+    <details class="section-card${className}"${isOpen}${isPinned}${anchorId}>
       <summary class="section-head"><span>${escapeHtml(title)}</span></summary>
       <div class="section-body${options.bodyClassName ? ` ${options.bodyClassName}` : ""}">
         ${body}
+        ${sectionNav}
         ${nestedDetails}
         ${imageGallery}
       </div>
@@ -200,8 +242,8 @@ function getRouteSummary(route, days) {
 function updatePageHeader(route) {
   if (heroSubtitle) {
     heroSubtitle.textContent = route.id.includes("kanto")
-      ? "当前是关东 7 天完整版：东京轻松逛、箱根公共交通主线、伊豆 3 到 4 天深度安排。"
-      : "当前是关西 4 天完整版：大阪进出、京都 2 天、奈良 2 天，整体保持慢节奏。";
+      ? "关东 7 天：东京轻松逛、箱根主线、伊豆东南中西分区安排。"
+      : "关西 4 天：大阪进出、京都 2 天、奈良 2 天，整体保持慢节奏。";
   }
 
   document.title = `日本旅行详情｜${getRouteSwitchLabel(route)}`;
@@ -237,37 +279,68 @@ function renderRouteContent() {
   updatePageHeader(route);
   routeMeta.textContent = getRouteSummary(route, days);
 
+  let sectionIndex = 0;
+  const withAnchorId = (section, prefix) => ({
+    ...section,
+    anchorId: `${prefix}-${sectionIndex++}`
+  });
+
+  const anchoredLeadSections = leadSections.map((section) => withAnchorId(section, "lead"));
+  const anchoredMiddleSections = middleSections.map((section) => withAnchorId(section, "middle"));
+  const anchoredDays = days.map((section) => withAnchorId(section, "day"));
+  const anchoredTailSections = tailSections.map((section) => withAnchorId(section, "tail"));
+
+  const navItems = [
+    ...anchoredMiddleSections
+      .filter((section) => section.title.startsWith("箱根") || section.title.startsWith("伊豆"))
+      .map((section) => ({ id: section.anchorId, label: section.title })),
+    ...anchoredDays.map((section) => ({
+      id: section.anchorId,
+      label: section.title.match(/^D\d+/)?.[0] || section.title
+    })),
+    ...anchoredTailSections
+      .filter((section) => section.title.includes("参考") || section.title.includes("链接"))
+      .map((section) => ({ id: section.anchorId, label: "参考/天气" }))
+  ];
+
   const summaryCard = renderCollapsibleCard(
     "路线摘要",
     renderMarkdown(route.summaryLines || []),
-    { bodyClassName: "markdown", open: shouldSectionDefaultOpen("路线摘要", "summary"), pinned: true }
+    {
+      bodyClassName: "markdown",
+      open: shouldSectionDefaultOpen("路线摘要", "summary"),
+      pinned: true,
+      navItems
+    }
   );
 
-  const leadCards = leadSections
+  const leadCards = anchoredLeadSections
     .map(
       (section) =>
         renderCollapsibleCard(section.title, renderMarkdown(section.lines || []), {
           bodyClassName: "markdown",
           open: shouldSectionDefaultOpen(section.title, "general"),
           images: section.images || [],
-          subDetails: section.subDetails || []
+          subDetails: section.subDetails || [],
+          anchorId: section.anchorId
         })
     )
     .join("");
 
-  const middleCards = middleSections
+  const middleCards = anchoredMiddleSections
     .map(
       (section) =>
         renderCollapsibleCard(section.title, renderMarkdown(section.lines || []), {
           bodyClassName: "markdown",
           open: shouldSectionDefaultOpen(section.title, "general"),
           images: section.images || [],
-          subDetails: section.subDetails || []
+          subDetails: section.subDetails || [],
+          anchorId: section.anchorId
         })
     )
     .join("");
 
-  const dayCards = days
+  const dayCards = anchoredDays
     .map(
       (day) =>
         renderCollapsibleCard(day.title, renderMarkdown(day.lines || []), {
@@ -275,24 +348,52 @@ function renderRouteContent() {
           bodyClassName: "markdown",
           open: shouldSectionDefaultOpen(day.title, "day"),
           images: day.images || [],
-          subDetails: day.subDetails || []
+          subDetails: day.subDetails || [],
+          anchorId: day.anchorId
         })
     )
     .join("");
 
-  const tailCards = tailSections
+  const tailCards = anchoredTailSections
     .map(
       (section) =>
         renderCollapsibleCard(section.title, renderMarkdown(section.lines || []), {
           bodyClassName: "markdown",
           open: shouldSectionDefaultOpen(section.title, "general"),
           images: section.images || [],
-          subDetails: section.subDetails || []
+          subDetails: section.subDetails || [],
+          anchorId: section.anchorId
         })
     )
     .join("");
 
   routeContent.innerHTML = `${leadCards}${summaryCard}${middleCards}${dayCards}${tailCards}`;
+}
+
+function bindRouteInteractions() {
+  routeContent?.addEventListener("click", (event) => {
+    const trigger = event.target.closest("[data-target]");
+    if (!trigger) {
+      return;
+    }
+
+    event.preventDefault();
+    const targetId = trigger.getAttribute("data-target");
+    if (!targetId) {
+      return;
+    }
+
+    const target = document.getElementById(targetId);
+    if (!target) {
+      return;
+    }
+
+    if (target.tagName === "DETAILS") {
+      target.open = true;
+    }
+
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
 }
 
 function init() {
@@ -302,6 +403,7 @@ function init() {
   }
   activeRouteId = getRouteIdFromUrl() || defaultRouteId;
   syncUrlState();
+  bindRouteInteractions();
   renderRouteTabs();
   renderRouteContent();
 }

@@ -220,6 +220,32 @@ summary.section-head::after {
   gap: 10px;
 }
 
+.section-nav {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nav-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(154, 93, 53, 0.22);
+  background: rgba(154, 93, 53, 0.08);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.nav-chip:hover {
+  background: rgba(154, 93, 53, 0.14);
+}
+
 .mini-details {
   border: 1px dashed rgba(154, 93, 53, 0.28);
   border-radius: 14px;
@@ -258,6 +284,10 @@ summary.section-head::after {
 .mini-body p,
 .mini-body li {
   font-size: 13px;
+}
+
+.mini-body .section-image-wrap {
+  margin-top: 8px;
 }
 
 .route-image-card {
@@ -327,6 +357,12 @@ summary.section-head::after {
   }
 
   .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .section-nav {
     flex-wrap: nowrap;
     overflow-x: auto;
     padding-bottom: 4px;
