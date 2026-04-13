@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>日本旅行攻略完整版</title>
+  <meta name="description" content="旅行攻略完整版，按路线结构化阅读，不是纯 markdown 堆叠。">
+  <link rel="stylesheet" href="details.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <p class="kicker">完整版攻略</p>
+      <h1>逐条完整阅读版</h1>
+      <p>保留 `itineraries` 里的完整信息密度，并重排成更适合网页阅读的结构。</p>
+      <div class="hero-actions">
+        <a href="index.html">返回提案版</a>
+        <a href="../">返回 Home</a>
+      </div>
+    </header>
+
+    <main class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="kicker">路线选择</p>
+          <h2>先选路线，再看完整细节</h2>
+        </div>
+        <p id="route-meta" class="meta"></p>
+      </div>
+      <div id="route-tabs" class="tabs" aria-label="路线切换"></div>
+
+      <section id="route-content" class="route-content" aria-live="polite"></section>
+    </main>
+  </div>
+
+  <script src="images-manifest.js"></script>
+  <script src="itinerary-details.js"></script>
+  <script src="details.js" defer></script>
+</body>
+</html>
