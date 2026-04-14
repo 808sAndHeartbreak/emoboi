@@ -3,9 +3,10 @@ const routes = Array.isArray(window.ITINERARY_DETAILS) ? window.ITINERARY_DETAIL
 const routeTabs = document.querySelector("#route-tabs");
 const routeMeta = document.querySelector("#route-meta");
 const routeContent = document.querySelector("#route-content");
-const heroSubtitle = document.querySelector("#hero-subtitle");
+const heroRouteTitle = document.querySelector("#hero-route-title");
+const heroRouteSubtitle = document.querySelector("#hero-route-subtitle");
 
-const defaultRouteId = routes.find((item) => item.id.includes("kanto"))?.id || routes[0]?.id || "";
+const defaultRouteId = routes[0]?.id || "";
 let activeRouteId = defaultRouteId;
 
 function escapeHtml(text) {
@@ -156,32 +157,24 @@ function normalizeSections(route) {
     middleSections.push(section);
   });
 
-  if (route.id.includes("kanto")) {
-    middleSections.sort((a, b) => {
-      const getPriority = (title) => {
-        if (title.startsWith("箱根")) {
-          return 0;
-        }
-        if (title.startsWith("伊豆")) {
-          return 1;
-        }
-        return 2;
-      };
-      return getPriority(a.title) - getPriority(b.title);
-    });
-  }
+  middleSections.sort((a, b) => {
+    const getPriority = (title) => {
+      if (title.startsWith("箱根")) {
+        return 0;
+      }
+      if (title.startsWith("伊豆")) {
+        return 1;
+      }
+      return 2;
+    };
+    return getPriority(a.title) - getPriority(b.title);
+  });
 
   return { days, leadSections, middleSections, tailSections };
 }
 
 function getRouteSwitchLabel(route) {
-  if (route.id.includes("kanto")) {
-    return "关东 7 天";
-  }
-  if (route.id.includes("kansai")) {
-    return "关西 4 天";
-  }
-  return route.routeTitle;
+  return route.switchLabel || route.routeTitle;
 }
 
 function getRouteIdFromUrl() {
@@ -202,7 +195,7 @@ function shouldSectionDefaultOpen(title, type) {
   }
 
   if (type === "general") {
-    return ["7天总览"].includes(title);
+    return false;
   }
 
   if (type === "day") {
@@ -240,13 +233,13 @@ function getRouteSummary(route, days) {
 }
 
 function updatePageHeader(route) {
-  if (heroSubtitle) {
-    heroSubtitle.textContent = route.id.includes("kanto")
-      ? "关东 7 天：东京轻松逛、箱根主线、伊豆东南中西分区安排。"
-      : "关西 4 天：大阪进出、京都 2 天、奈良 2 天，整体保持慢节奏。";
+  document.title = `日本旅行详情｜${route.routeTitle || getRouteSwitchLabel(route)}`;
+  if (heroRouteTitle) {
+    heroRouteTitle.textContent = route.routeTitle || getRouteSwitchLabel(route);
   }
-
-  document.title = `日本旅行详情｜${getRouteSwitchLabel(route)}`;
+  if (heroRouteSubtitle) {
+    heroRouteSubtitle.textContent = route.heroSubtitle || "";
+  }
 }
 
 function renderRouteTabs() {
@@ -299,12 +292,15 @@ function renderRouteContent() {
       label: section.title.match(/^D\d+/)?.[0] || section.title
     })),
     ...anchoredTailSections
+      .filter((section) => section.title.includes("Google Map") || section.title.includes("收藏地点"))
+      .map((section) => ({ id: section.anchorId, label: "地图收藏" })),
+    ...anchoredTailSections
       .filter((section) => section.title.includes("参考") || section.title.includes("链接"))
       .map((section) => ({ id: section.anchorId, label: "参考/天气" }))
   ];
 
   const summaryCard = renderCollapsibleCard(
-    "路线摘要",
+    "先看这一版",
     renderMarkdown(route.summaryLines || []),
     {
       bodyClassName: "markdown",

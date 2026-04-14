@@ -4,39 +4,54 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>日本旅行详情</title>
-  <meta name="description" content="日本旅行详情页，直接切换查看关东 7 天与关西 4 天两条完整路线。">
-  <link rel="stylesheet" href="details.css?v=20260413-6">
+  <meta name="description" content="日本旅行详情页，在已定机票前提下切换查看伊豆全包车、伊豆全不包车、伊豆半强化箱根 3 个变体。">
+  <link rel="stylesheet" href="details.css?v=20260414-1">
 </head>
 <body>
   <div class="wrap">
     <header class="hero">
-      <p class="kicker">旅行详情</p>
-      <h1>日本旅行</h1>
-      <p id="hero-subtitle">页面直接展示完整内容，可切换查看关东 7 天与关西 4 天的完整路线细节。</p>
-      <div class="hero-actions">
-        <a href="../">返回 Home</a>
-        <a href="https://tenki.auone.jp/weather/22222" target="_blank" rel="noreferrer">查看日本天气</a>
+      <div class="hero-top">
+        <div class="hero-copy">
+          <p class="hero-label">当前方案</p>
+          <h1>日本旅行</h1>
+          <p id="hero-route-title" class="hero-route-title"></p>
+          <p id="hero-route-subtitle" class="hero-route-subtitle"></p>
+        </div>
+        <a
+          class="weather-link"
+          href="https://tenki.auone.jp/weather/22222"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="查看日本天气"
+          title="查看日本天气"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 15.5a3.5 3.5 0 0 1 .58-6.95A5.5 5.5 0 0 1 17 7a4 4 0 1 1 .5 8.5H6Z" />
+            <path d="M12 2.75v2.5M12 18.75v2.5M4.05 5.05l1.77 1.77M18.18 19.18l1.77 1.77M2.75 12h2.5M18.75 12h2.5M4.05 18.95l1.77-1.77M18.18 4.82l1.77-1.77" />
+          </svg>
+          <span>查看天气</span>
+        </a>
       </div>
     </header>
 
     <main class="panel">
       <div class="panel-head">
         <div>
-          <p class="kicker">路线切换</p>
-          <h2>切换路线，直接看完整详情</h2>
+          <p class="kicker">变体切换</p>
+          <h2>在已定机票下切换 3 个变体</h2>
         </div>
         <div class="panel-tools">
           <p id="route-meta" class="meta"></p>
         </div>
       </div>
 
-      <div id="route-tabs" class="tabs" aria-label="路线切换"></div>
+      <div id="route-tabs" class="tabs" aria-label="方案变体切换"></div>
 
       <section id="route-content" class="route-content" aria-live="polite"></section>
     </main>
   </div>
 
-  <script src="itinerary-details.js?v=20260413-6"></script>
-  <script src="details.js?v=20260413-6" defer></script>
+  <script src="itinerary-details.js?v=20260414-1"></script>
+  <script src="details.js?v=20260414-1" defer></script>
 </body>
 </html>

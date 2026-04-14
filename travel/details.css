@@ -34,7 +34,27 @@ body {
 }
 
 .hero {
-  padding: 26px;
+  padding: 18px 22px;
+  background: linear-gradient(135deg, rgba(255, 248, 240, 0.98), rgba(247, 238, 228, 0.95));
+}
+
+.hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.hero-copy {
+  min-width: 0;
+}
+
+.hero-label {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  font-weight: 700;
 }
 
 .kicker {
@@ -48,26 +68,71 @@ body {
 
 .hero h1 {
   margin: 0;
-  font-size: clamp(28px, 5vw, 44px);
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.1;
 }
 
-.hero p {
+.hero-route-title {
   margin: 12px 0 0;
+  font-size: clamp(18px, 2.6vw, 26px);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.hero-route-subtitle {
+  margin: 8px 0 0;
   color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 720px;
 }
 
-.hero-actions {
-  margin-top: 16px;
-}
-
-.hero-actions a {
-  display: inline-block;
+.weather-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  flex: 0 0 auto;
   text-decoration: none;
-  color: var(--text);
-  background: var(--accent-soft);
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(154, 93, 53, 0.3);
   border-radius: 999px;
-  padding: 9px 14px;
+  box-shadow: 0 10px 24px rgba(72, 46, 28, 0.08);
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.weather-link:hover {
+  transform: translateY(-1px);
+  background: #fff;
+  border-color: rgba(154, 93, 53, 0.42);
+}
+
+.weather-link:focus-visible {
+  outline: 2px solid rgba(154, 93, 53, 0.35);
+  outline-offset: 2px;
+}
+
+.weather-link svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.weather-link svg path:first-child {
+  fill: rgba(154, 93, 53, 0.1);
+}
+
+.weather-link span {
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .panel {
@@ -346,14 +411,14 @@ summary.section-head::after {
     align-items: start;
   }
 
-  .hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+  .hero-top {
+    align-items: flex-start;
+    gap: 12px;
   }
 
-  .hero-actions a {
+  .weather-link {
     min-height: 40px;
+    padding: 0 12px;
   }
 
   .tabs {
