@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>日本旅行详情</title>
-  <meta name="description" content="日本旅行详情页，在已定机票前提下切换查看伊豆全包车、伊豆全不包车、伊豆半强化箱根 3 个变体。">
-  <link rel="stylesheet" href="details.css?v=20260414-1">
+  <meta name="description" content="日本旅行详情页，按东京+伊豆、箱根+伊豆两个大方向，切换查看包车与不包车 4 套可直接执行的行程版本。">
+  <link rel="stylesheet" href="details.css?v=20260414-5">
 </head>
 <body>
   <div class="wrap">
@@ -37,21 +37,30 @@
     <main class="panel">
       <div class="panel-head">
         <div>
-          <p class="kicker">变体切换</p>
-          <h2>在已定机票下切换 3 个变体</h2>
+          <p class="kicker">方案切换</p>
+          <h2>先选方向，再选包车方式</h2>
         </div>
         <div class="panel-tools">
           <p id="route-meta" class="meta"></p>
         </div>
       </div>
 
-      <div id="route-tabs" class="tabs" aria-label="方案变体切换"></div>
+      <div class="tab-stack" aria-label="方案切换区">
+        <div class="tab-block">
+          <p class="tab-caption">大方向</p>
+          <div id="direction-tabs" class="tabs" aria-label="大方向切换"></div>
+        </div>
+        <div class="tab-block">
+          <p class="tab-caption">是否包车</p>
+          <div id="plan-tabs" class="tabs" aria-label="包车状态切换"></div>
+        </div>
+      </div>
 
       <section id="route-content" class="route-content" aria-live="polite"></section>
     </main>
   </div>
 
-  <script src="itinerary-details.js?v=20260414-1"></script>
-  <script src="details.js?v=20260414-1" defer></script>
+  <script src="itinerary-details.js?v=20260414-5"></script>
+  <script src="details.js?v=20260414-5" defer></script>
 </body>
 </html>

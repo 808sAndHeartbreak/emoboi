@@ -1,13 +1,16 @@
 const routes = Array.isArray(window.ITINERARY_DETAILS) ? window.ITINERARY_DETAILS : [];
 
-const routeTabs = document.querySelector("#route-tabs");
+const directionTabs = document.querySelector("#direction-tabs");
+const planTabs = document.querySelector("#plan-tabs");
 const routeMeta = document.querySelector("#route-meta");
 const routeContent = document.querySelector("#route-content");
 const heroRouteTitle = document.querySelector("#hero-route-title");
 const heroRouteSubtitle = document.querySelector("#hero-route-subtitle");
 
-const defaultRouteId = routes[0]?.id || "";
-let activeRouteId = defaultRouteId;
+const defaultDirectionId = routes[0]?.directionId || "";
+const defaultPlanId = routes[0]?.planId || "";
+let activeDirectionId = defaultDirectionId;
+let activePlanId = defaultPlanId;
 
 function escapeHtml(text) {
   return String(text)
@@ -98,6 +101,22 @@ function renderSectionNav(items) {
   `;
 }
 
+function renderQuickNavCard(items) {
+  const nav = renderSectionNav(items);
+  if (!nav) {
+    return "";
+  }
+
+  return `
+    <section class="section-card quick-nav-card" data-pinned="true">
+      <div class="section-body">
+        <p class="quick-nav-label">快速跳转</p>
+        ${nav}
+      </div>
+    </section>
+  `;
+}
+
 function renderMarkdown(lines) {
   const blocks = [];
   let listItems = [];
@@ -159,13 +178,16 @@ function normalizeSections(route) {
 
   middleSections.sort((a, b) => {
     const getPriority = (title) => {
-      if (title.startsWith("箱根")) {
+      if (title.startsWith("东京")) {
         return 0;
       }
-      if (title.startsWith("伊豆")) {
+      if (title.startsWith("箱根")) {
         return 1;
       }
-      return 2;
+      if (title.startsWith("伊豆")) {
+        return 2;
+      }
+      return 3;
     };
     return getPriority(a.title) - getPriority(b.title);
   });
@@ -174,18 +196,57 @@ function normalizeSections(route) {
 }
 
 function getRouteSwitchLabel(route) {
-  return route.switchLabel || route.routeTitle;
+  return route.planLabel || route.switchLabel || route.routeTitle;
 }
 
-function getRouteIdFromUrl() {
+function getDirectionOptions() {
+  return Array.from(
+    new Map(
+      routes.map((route) => [
+        route.directionId,
+        { id: route.directionId, label: route.directionLabel || route.directionId }
+      ])
+    ).values()
+  );
+}
+
+function getPlanOptions(directionId) {
+  return Array.from(
+    new Map(
+      routes
+        .filter((route) => route.directionId === directionId)
+        .map((route) => [
+          route.planId,
+          { id: route.planId, label: route.planLabel || route.planId }
+        ])
+    ).values()
+  );
+}
+
+function getRouteByState(directionId, planId) {
+  return (
+    routes.find((route) => route.directionId === directionId && route.planId === planId) ||
+    routes.find((route) => route.directionId === directionId) ||
+    routes[0]
+  );
+}
+
+function getRouteFromUrl() {
   const params = new URLSearchParams(window.location.search);
-  const route = params.get("route");
-  return routes.some((item) => item.id === route) ? route : "";
+  const direction = params.get("direction");
+  const plan = params.get("plan");
+  if (direction && plan) {
+    return getRouteByState(direction, plan);
+  }
+  const routeId = params.get("route");
+  return routes.find((route) => route.id === routeId) || null;
 }
 
 function syncUrlState() {
   const url = new URL(window.location.href);
-  url.searchParams.set("route", activeRouteId);
+  url.searchParams.set("direction", activeDirectionId);
+  url.searchParams.set("plan", activePlanId);
+  url.searchParams.delete("route");
   window.history.replaceState({}, "", url);
 }
 
@@ -242,26 +303,51 @@ function updatePageHeader(route) {
   }
 }
 
-function renderRouteTabs() {
-  routeTabs.innerHTML = routes
-    .map((route) => {
-      const active = route.id === activeRouteId ? "is-active" : "";
-      return `<button type="button" class="tab-btn ${active}" data-route="${route.id}">${getRouteSwitchLabel(route)}</button>`;
+function renderDirectionTabs() {
+  const directions = getDirectionOptions();
+  directionTabs.innerHTML = directions
+    .map((direction) => {
+      const active = direction.id === activeDirectionId ? "is-active" : "";
+      return `<button type="button" class="tab-btn tab-btn-direction ${active}" data-direction="${direction.id}">${escapeHtml(direction.label)}</button>`;
     })
     .join("");
 
-  routeTabs.querySelectorAll("[data-route]").forEach((button) => {
+  directionTabs.querySelectorAll("[data-direction]").forEach((button) => {
     button.addEventListener("click", () => {
-      activeRouteId = button.getAttribute("data-route") || "";
+      activeDirectionId = button.getAttribute("data-direction") || "";
+      const plans = getPlanOptions(activeDirectionId);
+      if (!plans.some((plan) => plan.id === activePlanId)) {
+        activePlanId = plans[0]?.id || "";
+      }
       syncUrlState();
-      renderRouteTabs();
+      renderDirectionTabs();
+      renderPlanTabs();
+      renderRouteContent();
+    });
+  });
+}
+
+function renderPlanTabs() {
+  const plans = getPlanOptions(activeDirectionId);
+  planTabs.innerHTML = plans
+    .map((plan) => {
+      const active = plan.id === activePlanId ? "is-active" : "";
+      return `<button type="button" class="tab-btn tab-btn-plan ${active}" data-plan="${plan.id}">${escapeHtml(plan.label)}</button>`;
+    })
+    .join("");
+
+  planTabs.querySelectorAll("[data-plan]").forEach((button) => {
+    button.addEventListener("click", () => {
+      activePlanId = button.getAttribute("data-plan") || "";
+      syncUrlState();
+      renderPlanTabs();
       renderRouteContent();
     });
   });
 }
 
 function renderRouteContent() {
-  const route = routes.find((item) => item.id === activeRouteId);
+  const route = getRouteByState(activeDirectionId, activePlanId);
   if (!route) {
     routeMeta.textContent = "未找到路线数据";
     routeContent.innerHTML = "";
@@ -285,7 +371,12 @@ function renderRouteContent() {
 
   const navItems = [
     ...anchoredMiddleSections
-      .filter((section) => section.title.startsWith("箱根") || section.title.startsWith("伊豆"))
+      .filter(
+        (section) =>
+          section.title.startsWith("东京") ||
+          section.title.startsWith("箱根") ||
+          section.title.startsWith("伊豆")
+      )
       .map((section) => ({ id: section.anchorId, label: section.title })),
     ...anchoredDays.map((section) => ({
       id: section.anchorId,
@@ -293,22 +384,23 @@ function renderRouteContent() {
     })),
     ...anchoredTailSections
       .filter((section) => section.title.includes("Google Map") || section.title.includes("收藏地点"))
-      .map((section) => ({ id: section.anchorId, label: "地图收藏" })),
+      .map((section) => ({ id: section.anchorId, label: "待收藏地点" })),
     ...anchoredTailSections
       .filter((section) => section.title.includes("参考") || section.title.includes("链接"))
-      .map((section) => ({ id: section.anchorId, label: "参考/天气" }))
+      .map((section) => ({ id: section.anchorId, label: "官方链接" }))
   ];
 
   const summaryCard = renderCollapsibleCard(
-    "先看这一版",
+    "方案摘要",
     renderMarkdown(route.summaryLines || []),
     {
       bodyClassName: "markdown",
       open: shouldSectionDefaultOpen("路线摘要", "summary"),
-      pinned: true,
-      navItems
+      pinned: true
     }
   );
+
+  const quickNavCard = renderQuickNavCard(navItems);
 
   const leadCards = anchoredLeadSections
     .map(
@@ -363,7 +455,7 @@ function renderRouteContent() {
     )
     .join("");
 
-  routeContent.innerHTML = `${leadCards}${summaryCard}${middleCards}${dayCards}${tailCards}`;
+  routeContent.innerHTML = `${summaryCard}${quickNavCard}${leadCards}${middleCards}${dayCards}${tailCards}`;
 }
 
 function bindRouteInteractions() {
@@ -397,10 +489,13 @@ function init() {
     routeMeta.textContent = "暂无详细路线数据，请运行生成脚本。";
     return;
   }
-  activeRouteId = getRouteIdFromUrl() || defaultRouteId;
+  const initialRoute = getRouteFromUrl() || routes[0];
+  activeDirectionId = initialRoute?.directionId || defaultDirectionId;
+  activePlanId = initialRoute?.planId || defaultPlanId;
   syncUrlState();
   bindRouteInteractions();
-  renderRouteTabs();
+  renderDirectionTabs();
+  renderPlanTabs();
   renderRouteContent();
 }
 
