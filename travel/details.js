@@ -7,8 +7,10 @@ const routeContent = document.querySelector("#route-content");
 const heroRouteTitle = document.querySelector("#hero-route-title");
 const heroRouteSubtitle = document.querySelector("#hero-route-subtitle");
 
-const defaultDirectionId = routes[0]?.directionId || "";
-const defaultPlanId = routes[0]?.planId || "";
+const preferredRouteId = "tokyo-izu-no-charter";
+const preferredRoute = routes.find((route) => route.id === preferredRouteId) || routes[0];
+const defaultDirectionId = preferredRoute?.directionId || "";
+const defaultPlanId = preferredRoute?.planId || "";
 let activeDirectionId = defaultDirectionId;
 let activePlanId = defaultPlanId;
 
@@ -211,10 +213,12 @@ function getDirectionOptions() {
 }
 
 function getPlanOptions(directionId) {
+  const preferredOrder = { "tokyo-izu-no-charter": 0, "tokyo-izu-charter": 1 };
   return Array.from(
     new Map(
       routes
         .filter((route) => route.directionId === directionId)
+        .sort((a, b) => (preferredOrder[a.id] ?? 99) - (preferredOrder[b.id] ?? 99))
         .map((route) => [
           route.planId,
           { id: route.planId, label: route.planLabel || route.planId }
@@ -489,7 +493,7 @@ function init() {
     routeMeta.textContent = "暂无详细路线数据，请运行生成脚本。";
     return;
   }
-  const initialRoute = getRouteFromUrl() || routes[0];
+  const initialRoute = getRouteFromUrl() || preferredRoute || routes[0];
   activeDirectionId = initialRoute?.directionId || defaultDirectionId;
   activePlanId = initialRoute?.planId || defaultPlanId;
   syncUrlState();
