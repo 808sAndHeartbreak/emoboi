@@ -103,6 +103,34 @@ function renderSectionNav(items) {
   `;
 }
 
+function renderQueryButtons(items) {
+  const queries = Array.isArray(items) ? items.filter(Boolean) : [];
+  if (!queries.length) {
+    return "";
+  }
+
+  return `
+    <div class="info-query-grid">
+      ${queries
+        .map((item) => {
+          const title = item.title || "信息";
+          const lines = encodeURIComponent(JSON.stringify(item.lines || []));
+          return `
+            <button
+              type="button"
+              class="info-query-btn"
+              data-info-title="${escapeHtml(title)}"
+              data-info-lines="${escapeHtml(lines)}"
+            >
+              ${escapeHtml(title)}
+            </button>
+          `;
+        })
+        .join("")}
+    </div>
+  `;
+}
+
 function renderQuickNavCard(items) {
   const nav = renderSectionNav(items);
   if (!nav) {
@@ -275,6 +303,7 @@ function renderCollapsibleCard(title, body, options = {}) {
   const isOpen = options.open ? " open" : "";
   const isPinned = options.pinned ? ' data-pinned="true"' : "";
   const anchorId = options.anchorId ? ` id="${escapeHtml(options.anchorId)}"` : "";
+  const queryButtons = renderQueryButtons(options.queryItems || []);
   const nestedDetails = renderMiniDetails(options.subDetails || []);
   const sectionNav = renderSectionNav(options.navItems || []);
   const imageGallery = Array.isArray(options.images) && options.images.length
@@ -285,6 +314,7 @@ function renderCollapsibleCard(title, body, options = {}) {
       <summary class="section-head"><span>${escapeHtml(title)}</span></summary>
       <div class="section-body${options.bodyClassName ? ` ${options.bodyClassName}` : ""}">
         ${body}
+        ${queryButtons}
         ${sectionNav}
         ${nestedDetails}
         ${imageGallery}
@@ -305,6 +335,65 @@ function updatePageHeader(route) {
   if (heroRouteSubtitle) {
     heroRouteSubtitle.textContent = route.heroSubtitle || "";
   }
+}
+
+function ensureInfoModal() {
+  if (document.querySelector("#info-query-modal")) {
+    return;
+  }
+
+  document.body.insertAdjacentHTML(
+    "beforeend",
+    `
+      <div id="info-query-modal" class="info-modal" hidden>
+        <div class="info-modal-backdrop" data-info-close="true"></div>
+        <div class="info-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="info-modal-title">
+          <button type="button" class="info-modal-close" data-info-close="true" aria-label="关闭弹窗">关闭</button>
+          <p class="info-modal-kicker">信息查询</p>
+          <h3 id="info-modal-title" class="info-modal-title"></h3>
+          <div id="info-modal-body" class="info-modal-body markdown"></div>
+        </div>
+      </div>
+    `
+  );
+
+  const modal = document.querySelector("#info-query-modal");
+  modal?.addEventListener("click", (event) => {
+    if (event.target.closest("[data-info-close='true']")) {
+      closeInfoModal();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeInfoModal();
+    }
+  });
+}
+
+function openInfoModal(title, lines) {
+  ensureInfoModal();
+  const modal = document.querySelector("#info-query-modal");
+  const modalTitle = document.querySelector("#info-modal-title");
+  const modalBody = document.querySelector("#info-modal-body");
+  if (!modal || !modalTitle || !modalBody) {
+    return;
+  }
+
+  modalTitle.textContent = title || "信息";
+  modalBody.innerHTML = renderMarkdown(Array.isArray(lines) ? lines : []);
+  modal.hidden = false;
+  document.body.classList.add("has-info-modal");
+}
+
+function closeInfoModal() {
+  const modal = document.querySelector("#info-query-modal");
+  if (!modal) {
+    return;
+  }
+
+  modal.hidden = true;
+  document.body.classList.remove("has-info-modal");
 }
 
 function renderDirectionTabs() {
@@ -362,13 +451,20 @@ function renderRouteContent() {
   updatePageHeader(route);
   routeMeta.textContent = getRouteSummary(route, days);
 
+  const overviewSection = leadSections.find((section) => section.title === "7天总览");
+  const mergedSummaryLines = [
+    ...(Array.isArray(route.summaryLines) ? route.summaryLines : []),
+    ...(overviewSection?.lines?.length ? ["", "7天总览", ...overviewSection.lines] : [])
+  ];
+  const visibleLeadSections = leadSections.filter((section) => section.title !== "7天总览");
+
   let sectionIndex = 0;
   const withAnchorId = (section, prefix) => ({
     ...section,
     anchorId: `${prefix}-${sectionIndex++}`
   });
 
-  const anchoredLeadSections = leadSections.map((section) => withAnchorId(section, "lead"));
+  const anchoredLeadSections = visibleLeadSections.map((section) => withAnchorId(section, "lead"));
   const anchoredMiddleSections = middleSections.map((section) => withAnchorId(section, "middle"));
   const anchoredDays = days.map((section) => withAnchorId(section, "day"));
   const anchoredTailSections = tailSections.map((section) => withAnchorId(section, "tail"));
@@ -390,13 +486,18 @@ function renderRouteContent() {
       .filter((section) => section.title.includes("Google Map") || section.title.includes("收藏地点"))
       .map((section) => ({ id: section.anchorId, label: "待收藏地点" })),
     ...anchoredTailSections
-      .filter((section) => section.title.includes("参考") || section.title.includes("链接"))
-      .map((section) => ({ id: section.anchorId, label: "官方链接" }))
+      .filter(
+        (section) =>
+          section.title.includes("参考") ||
+          section.title.includes("链接") ||
+          section.title.includes("信息查询")
+      )
+      .map((section) => ({ id: section.anchorId, label: "信息查询" }))
   ];
 
   const summaryCard = renderCollapsibleCard(
     "方案摘要",
-    renderMarkdown(route.summaryLines || []),
+    renderMarkdown(mergedSummaryLines),
     {
       bodyClassName: "markdown",
       open: shouldSectionDefaultOpen("路线摘要", "summary"),
@@ -413,6 +514,7 @@ function renderRouteContent() {
           bodyClassName: "markdown",
           open: shouldSectionDefaultOpen(section.title, "general"),
           images: section.images || [],
+          queryItems: section.queryItems || [],
           subDetails: section.subDetails || [],
           anchorId: section.anchorId
         })
@@ -453,6 +555,7 @@ function renderRouteContent() {
           bodyClassName: "markdown",
           open: shouldSectionDefaultOpen(section.title, "general"),
           images: section.images || [],
+          queryItems: section.queryItems || [],
           subDetails: section.subDetails || [],
           anchorId: section.anchorId
         })
@@ -464,6 +567,19 @@ function renderRouteContent() {
 
 function bindRouteInteractions() {
   routeContent?.addEventListener("click", (event) => {
+    const infoTrigger = event.target.closest("[data-info-title]");
+    if (infoTrigger) {
+      event.preventDefault();
+      const title = infoTrigger.getAttribute("data-info-title") || "信息";
+      const rawLines = infoTrigger.getAttribute("data-info-lines") || "";
+      try {
+        openInfoModal(title, JSON.parse(decodeURIComponent(rawLines)));
+      } catch {
+        openInfoModal(title, []);
+      }
+      return;
+    }
+
     const trigger = event.target.closest("[data-target]");
     if (!trigger) {
       return;
@@ -493,6 +609,7 @@ function init() {
     routeMeta.textContent = "暂无详细路线数据，请运行生成脚本。";
     return;
   }
+  ensureInfoModal();
   const initialRoute = getRouteFromUrl() || preferredRoute || routes[0];
   activeDirectionId = initialRoute?.directionId || defaultDirectionId;
   activePlanId = initialRoute?.planId || defaultPlanId;
