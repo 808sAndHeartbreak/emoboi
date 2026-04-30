@@ -217,7 +217,10 @@ function normalizeSections(route) {
       if (title.startsWith("伊豆")) {
         return 2;
       }
-      return 3;
+      if (title.includes("五一")) {
+        return 3;
+      }
+      return 4;
     };
     return getPriority(a.title) - getPriority(b.title);
   });
@@ -475,7 +478,8 @@ function renderRouteContent() {
         (section) =>
           section.title.startsWith("东京") ||
           section.title.startsWith("箱根") ||
-          section.title.startsWith("伊豆")
+          section.title.startsWith("伊豆") ||
+          section.title.includes("五一")
       )
       .map((section) => ({ id: section.anchorId, label: section.title })),
     ...anchoredDays.map((section) => ({
