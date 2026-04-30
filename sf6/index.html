@@ -922,17 +922,22 @@
             opacity: 1;
         }
         
-        /* 完全无数据：更暗的灰色，无边框 */
+        /* 完全无内置数据：灰色可选中，进入后可自行录入/导入 */
         .char-item.no-data { 
             opacity: 0.25 !important;
-            cursor: not-allowed !important;
+            cursor: pointer !important;
             filter: grayscale(0.9) !important;
             border: none !important;  /* 去掉边框，与 other-mode-only 区分 */
             background: #0f0f0f !important;
         }
         .char-item.no-data:hover { 
-            opacity: 0.28 !important;
-            transform: none !important;
+            opacity: 0.36 !important;
+            transform: scale(1.02) !important;
+        }
+        .char-item.no-data.selected {
+            opacity: 0.48 !important;
+            border: 2px solid var(--theme-primary) !important;
+            box-shadow: 0 0 14px color-mix(in srgb, var(--theme-primary) 32%, transparent) !important;
         }
         
         /* 操作模式切换按钮 */
@@ -3946,14 +3951,8 @@
 
         // ==================== 角色切换 ====================
         function selectCharacter(char) {
-            // 检查是否有数据，无数据角色不可选
-            const hasData = state.controlMode === 'classic' ? 
-                CONFIG.CHARACTERS_WITH_DATA.includes(char) :
-                CONFIG.CHARACTERS_WITH_DATA_MODERN.includes(char);
-            
-            if (!hasData) {
-                return; // 阻止选择
-            }
+            // 无内置数据的角色也可选：界面为空，用户可自行录入或导入数据
+            if (!CONFIG.ALL_CHARACTERS.includes(char)) return;
             
             state.currentCharacter = char;
             
@@ -4073,10 +4072,10 @@
                     tooltip = `当前仅有${otherMode}操作数据`;
                     clickHandler = ''; // 不可点击
                 } else {
-                    // 完全无数据：灰色
-                    cssClass = 'no-data';
-                    tooltip = '暂无数据';
-                    clickHandler = '';
+                    // 完全无内置数据：灰色样式，仍可点击进入空白档案
+                    cssClass = ['no-data', isSelected ? 'selected' : ''].filter(Boolean).join(' ');
+                    tooltip = '暂无内置数据，可自行录入或导入';
+                    clickHandler = `onclick="selectCharacter('${char}')"`;
                 }
                 
                 return `
@@ -9375,8 +9374,8 @@
             
             // 0. 从 localStorage 恢复上次选择的角色
             let savedCharacter = loadCurrentCharacter();
-            // 确保保存的角色有数据，否则回退到JURI
-            if (!CONFIG.CHARACTERS_WITH_DATA.includes(savedCharacter)) {
+            // 未知角色名回退；无内置数据的合法角色仍保留
+            if (!CONFIG.ALL_CHARACTERS.includes(savedCharacter)) {
                 savedCharacter = 'JURI';
             }
             state.currentCharacter = savedCharacter;
