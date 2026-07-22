@@ -10,4 +10,3 @@ node_modules/
 # Codex 本地页面渲染检查产物
 .tmp-chrome*/
 .tmp-chromedriver*/
-travel/render-check.png
