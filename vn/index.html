@@ -140,31 +140,6 @@
       font-variant-numeric: tabular-nums;
     }
 
-    .reference-trigger {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      min-height: 38px;
-      padding: 6px 0 6px 7px;
-      border: 0;
-      background: transparent;
-      color: var(--jade);
-      cursor: pointer;
-      font-size: 11px;
-      font-weight: 850;
-    }
-
-    .reference-trigger .glyph {
-      display: grid;
-      width: 22px;
-      height: 22px;
-      place-items: center;
-      border: 1px solid currentColor;
-      border-radius: 5px;
-      font-size: 13px;
-      line-height: 1;
-    }
-
     .route-head {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
@@ -176,6 +151,7 @@
 
     .route-title {
       margin: 0;
+      font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", serif;
       font-size: clamp(25px, 3.2vw, 43px);
       font-weight: 920;
       line-height: 1.1;
@@ -397,12 +373,104 @@
       margin: 0;
       padding: 8px 11px;
       border-left: 3px solid var(--amber);
+      border-radius: 0 5px 5px 0;
       background: var(--amber-soft);
       color: var(--muted);
       font-size: 11px;
     }
 
     .route-note strong { color: var(--ink); }
+
+    .utility-disclosure,
+    .reference-section {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .utility-disclosure {
+      margin-top: 13px;
+      background: rgba(255, 254, 250, .58);
+    }
+
+    .utility-summary,
+    .reference-section > summary {
+      display: grid;
+      grid-template-columns: 25px minmax(0, 1fr) auto 18px;
+      gap: 9px;
+      align-items: center;
+      min-height: 48px;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .utility-summary::-webkit-details-marker,
+    .reference-section > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .disclosure-mark,
+    .reference-summary-mark {
+      display: grid;
+      width: 23px;
+      height: 23px;
+      place-items: center;
+      border: 1px solid var(--line-dark);
+      border-radius: 50%;
+      color: var(--jade);
+      font-size: 16px;
+      line-height: 1;
+      transition: transform .2s ease, background .2s ease;
+    }
+
+    .utility-disclosure[open] .disclosure-mark,
+    .reference-section[open] .reference-summary-mark {
+      transform: rotate(45deg);
+      background: var(--jade-soft);
+    }
+
+    .disclosure-title,
+    .disclosure-meta,
+    .reference-summary-title,
+    .reference-summary-meta {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .disclosure-title,
+    .reference-summary-title {
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .disclosure-meta,
+    .reference-summary-meta {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .disclosure-action {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 750;
+    }
+
+    .disclosure-action::before { content: "展开"; }
+    .utility-disclosure[open] .disclosure-action::before,
+    .reference-section[open] .disclosure-action::before { content: "收起"; }
+
+    .utility-summary,
+    .reference-section > summary {
+      padding: 0 1px;
+    }
+
+    .utility-disclosure > .utility-grid {
+      margin-top: 0;
+      padding: 0 0 13px;
+      animation: detailIn .2s ease both;
+    }
 
     .utility-grid {
       display: grid;
@@ -806,6 +874,47 @@
 
     .city-detail strong { color: var(--ink); }
 
+    .city-detail-label {
+      color: var(--jade);
+      font-size: 9px;
+      font-weight: 900;
+    }
+
+    .attraction-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px 18px;
+      margin: 7px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .attraction-list li {
+      position: relative;
+      min-width: 0;
+      padding-left: 12px;
+      color: var(--ink);
+      font-size: 10px;
+      font-weight: 750;
+    }
+
+    .attraction-list li::before {
+      position: absolute;
+      top: .5em;
+      left: 0;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--coral);
+      content: "";
+    }
+
+    .city-detail-note {
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
     @keyframes detailIn {
       from { opacity: 0; transform: translateY(-3px); }
       to { opacity: 1; transform: translateY(0); }
@@ -1000,34 +1109,6 @@
       font-size: 9px;
     }
 
-    .reference-drawer {
-      position: fixed;
-      z-index: 30;
-      top: 67px;
-      right: max(20px, calc((100vw - 1320px) / 2));
-      display: none;
-      width: min(362px, calc(100vw - 40px));
-      padding: 11px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--surface);
-      box-shadow: 0 18px 45px rgba(20, 45, 43, .16);
-      animation: drawerIn .18s ease both;
-    }
-
-    .reference-drawer.open { display: block; }
-
-    .reference-drawer-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 9px;
-      color: var(--muted);
-      font-size: 10px;
-      font-weight: 850;
-    }
-
-    .reference-close,
     .modal-close {
       display: grid;
       width: 28px;
@@ -1041,10 +1122,20 @@
       line-height: 1;
     }
 
+    .reference-section {
+      margin-top: 18px;
+    }
+
+    .reference-section > summary {
+      grid-template-columns: 25px minmax(0, 1fr) auto 18px;
+    }
+
     .reference-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
+      padding: 0 0 13px;
+      animation: detailIn .2s ease both;
     }
 
     .reference-thumb {
@@ -1063,9 +1154,10 @@
     .reference-thumb img {
       display: block;
       width: 100%;
-      height: 118px;
-      object-fit: cover;
-      object-position: top;
+      height: 190px;
+      object-fit: contain;
+      object-position: center;
+      background: var(--surface-2);
     }
 
     .reference-thumb span {
@@ -1073,11 +1165,6 @@
       padding: 6px 7px;
       color: var(--muted);
       font-size: 9px;
-    }
-
-    @keyframes drawerIn {
-      from { opacity: 0; transform: translateY(-5px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     .modal {
@@ -1173,6 +1260,10 @@
         position: static;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         align-items: start;
+      }
+
+      .reference-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
     }
 
@@ -1297,12 +1388,6 @@
       .tab-meta { font-size: 9px; }
       .top-actions { gap: 2px; }
       .year { display: none; }
-
-      .reference-trigger {
-        padding-left: 3px;
-      }
-
-      .reference-trigger span:last-child { display: none; }
 
       .route-head {
         display: block;
@@ -1440,6 +1525,10 @@
         font-size: 10px;
       }
 
+      .attraction-list {
+        gap: 6px 12px;
+      }
+
       .budget {
         margin-left: 12px;
         margin-right: 12px;
@@ -1462,13 +1551,11 @@
       .transport-route,
       .transport-time { font-size: 10px; }
 
-      .reference-drawer {
-        top: 54px;
-        right: 10px;
-        width: min(350px, calc(100vw - 20px));
+      .reference-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .reference-thumb img { height: 108px; }
+      .reference-thumb img { height: 150px; }
       .modal { padding: 12px; }
       .modal-close { top: -9px; right: -9px; }
     }
@@ -1500,10 +1587,6 @@
       </nav>
       <div class="top-actions">
         <span class="year">2026</span>
-        <button class="reference-trigger" id="reference-trigger" type="button" aria-label="打开参考图" aria-expanded="false" aria-controls="reference-drawer">
-          <span class="glyph" aria-hidden="true">▧</span>
-          <span>参考图</span>
-        </button>
       </div>
     </header>
 
@@ -1533,50 +1616,61 @@
     </section>
     <p class="route-note" id="route-note"></p>
 
-    <section class="utility-grid" aria-label="旅行小工具">
-      <section class="tool-panel weather-tool">
-        <div class="tool-head">
-          <h2>天气</h2>
-          <span id="weather-meta">实时</span>
-          <button class="icon-button" id="weather-refresh" type="button" title="刷新天气" aria-label="刷新天气">↻</button>
-        </div>
-        <div class="weather-list" id="weather-list" aria-live="polite"></div>
-      </section>
+    <details class="utility-disclosure">
+      <summary class="utility-summary">
+        <span class="disclosure-mark" aria-hidden="true">+</span>
+        <span>
+          <span class="disclosure-title">小工具</span>
+          <span class="disclosure-meta">天气 · 汇率 · 常用语</span>
+        </span>
+        <span class="disclosure-action" aria-hidden="true"></span>
+        <span class="sr-only">展开或收起旅行小工具</span>
+      </summary>
+      <section class="utility-grid" aria-label="旅行小工具">
+        <section class="tool-panel weather-tool">
+          <div class="tool-head">
+            <h2>天气</h2>
+            <span id="weather-meta">实时</span>
+            <button class="icon-button" id="weather-refresh" type="button" title="刷新天气" aria-label="刷新天气">↻</button>
+          </div>
+          <div class="weather-list" id="weather-list" aria-live="polite"></div>
+        </section>
 
-      <section class="tool-panel exchange-tool">
-        <div class="tool-head">
-          <h2>汇率</h2>
-          <span>1 CNY = 3,880 VND</span>
-        </div>
-        <div class="exchange-body">
-          <div class="fx-row">
-            <div class="fx-input-wrap">
-              <label class="sr-only" for="fx-input">换算金额</label>
-              <input class="fx-input" id="fx-input" type="number" value="1" min="0" step="0.01" inputmode="decimal">
-              <div class="fx-mode" role="group" aria-label="输入币种">
-                <button type="button" data-currency="CNY" class="active" aria-pressed="true">¥</button>
-                <button type="button" data-currency="VND" aria-pressed="false">₫</button>
+        <section class="tool-panel exchange-tool">
+          <div class="tool-head">
+            <h2>汇率</h2>
+            <span>1 CNY = 3,880 VND</span>
+          </div>
+          <div class="exchange-body">
+            <div class="fx-row">
+              <div class="fx-input-wrap">
+                <label class="sr-only" for="fx-input">换算金额</label>
+                <input class="fx-input" id="fx-input" type="number" value="1" min="0" step="0.01" inputmode="decimal">
+                <div class="fx-mode" role="group" aria-label="输入币种">
+                  <button type="button" data-currency="CNY" class="active" aria-pressed="true">¥</button>
+                  <button type="button" data-currency="VND" aria-pressed="false">₫</button>
+                </div>
               </div>
+              <button class="fx-swap" id="fx-swap" type="button" title="交换输入币种" aria-label="交换输入币种">⇄</button>
             </div>
-            <button class="fx-swap" id="fx-swap" type="button" title="交换输入币种" aria-label="交换输入币种">⇄</button>
+            <output class="fx-result" id="fx-result" for="fx-input">₫ 3,880</output>
+            <div class="fx-presets" aria-label="快捷金额">
+              <button class="fx-preset" type="button" data-value="1">¥1</button>
+              <button class="fx-preset" type="button" data-value="50">¥50</button>
+              <button class="fx-preset" type="button" data-value="100">¥100</button>
+              <button class="fx-preset" type="button" data-value="500">¥500</button>
+            </div>
           </div>
-          <output class="fx-result" id="fx-result" for="fx-input">₫ 3,880</output>
-          <div class="fx-presets" aria-label="快捷金额">
-            <button class="fx-preset" type="button" data-value="1">¥1</button>
-            <button class="fx-preset" type="button" data-value="50">¥50</button>
-            <button class="fx-preset" type="button" data-value="100">¥100</button>
-            <button class="fx-preset" type="button" data-value="500">¥500</button>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="tool-panel phrase-tool">
-        <div class="tool-head">
-          <h2>常用语</h2>
-        </div>
-        <div class="phrase-list" id="phrase-list"></div>
+        <section class="tool-panel phrase-tool">
+          <div class="tool-head">
+            <h2>常用语</h2>
+          </div>
+          <div class="phrase-list" id="phrase-list"></div>
+        </section>
       </section>
-    </section>
+    </details>
 
     <section class="workspace">
       <section class="content-panel">
@@ -1613,36 +1707,40 @@
     </section>
 
     <p class="footnote">交通时长为常见值；航班班次、价格与当日路况以出行日查询为准。</p>
+    <details class="reference-section">
+      <summary>
+        <span class="reference-summary-mark" aria-hidden="true">+</span>
+        <span>
+          <span class="reference-summary-title">参考资料</span>
+          <span class="reference-summary-meta">区域 · 景点 · 交通</span>
+        </span>
+        <span class="disclosure-action" aria-hidden="true"></span>
+        <span class="sr-only">展开或收起参考资料</span>
+      </summary>
+      <div class="reference-grid">
+        <button class="reference-thumb" type="button" data-image="vietnam-overview.jpg" data-caption="越南区域与城市分布">
+          <img src="vietnam-overview.jpg" alt="越南区域与城市分布">
+          <span>区域总览</span>
+        </button>
+        <button class="reference-thumb" type="button" data-image="vietnam-regions.jpg" data-caption="原始区域划分参考">
+          <img src="vietnam-regions.jpg" alt="原始区域划分参考">
+          <span>区域划分</span>
+        </button>
+        <button class="reference-thumb" type="button" data-image="vietnam-city-guide.jpg" data-caption="热门城市与景点">
+          <img src="vietnam-city-guide.jpg" alt="热门城市与景点">
+          <span>城市景点</span>
+        </button>
+        <button class="reference-thumb" type="button" data-image="vietnam-transport.jpg" data-caption="南下交通时间">
+          <img src="vietnam-transport.jpg" alt="交通时间">
+          <span>交通时间</span>
+        </button>
+        <button class="reference-thumb" type="button" data-image="vietnam-south-route.jpg" data-caption="越南一路南下路线">
+          <img src="vietnam-south-route.jpg" alt="越南一路南下路线">
+          <span>南下路线</span>
+        </button>
+      </div>
+    </details>
   </main>
-
-  <aside class="reference-drawer" id="reference-drawer" aria-hidden="true">
-    <div class="reference-drawer-head">
-      <span>参考图</span>
-      <button class="reference-close" id="reference-close" type="button" aria-label="关闭参考图">×</button>
-    </div>
-    <div class="reference-grid">
-      <button class="reference-thumb" type="button" data-image="vietnam-overview.jpg" data-caption="越南区域与城市分布">
-        <img src="vietnam-overview.jpg" alt="越南区域与城市分布">
-        <span>区域总览</span>
-      </button>
-      <button class="reference-thumb" type="button" data-image="vietnam-regions.jpg" data-caption="原始区域划分参考">
-        <img src="vietnam-regions.jpg" alt="原始区域划分参考">
-        <span>区域划分</span>
-      </button>
-      <button class="reference-thumb" type="button" data-image="vietnam-city-guide.jpg" data-caption="热门城市与景点">
-        <img src="vietnam-city-guide.jpg" alt="热门城市与景点">
-        <span>城市景点</span>
-      </button>
-      <button class="reference-thumb" type="button" data-image="vietnam-transport.jpg" data-caption="南下交通时间">
-        <img src="vietnam-transport.jpg" alt="交通时间">
-        <span>交通时间</span>
-      </button>
-      <button class="reference-thumb" type="button" data-image="vietnam-south-route.jpg" data-caption="越南一路南下路线">
-        <img src="vietnam-south-route.jpg" alt="越南一路南下路线">
-        <span>南下路线</span>
-      </button>
-    </div>
-  </aside>
 
   <div class="modal" id="image-modal" role="dialog" aria-modal="true" aria-label="参考图预览">
     <div class="modal-card">
@@ -1667,27 +1765,32 @@
       "河内": {
         region: "北越 · 河内附近",
         highlights: "还剑湖 · 老城区 · 火车街",
-        detail: "<strong>入境后的固定起点。</strong> 只保留城市核心，避免在短时间里叠加北部远郊。"
+        detail: "入境后的固定起点，适合只看城市核心。",
+        attractions: ["还剑湖", "三十六行街 / 老城区", "圣若瑟主教座堂", "火车街", "巴亭广场", "文庙"]
       },
       "岘港 + 会安": {
         region: "中越 · 岘港 / 会安",
         highlights: "美溪海滩 · 龙桥 · 会安古城",
-        detail: "<strong>会安没有机场。</strong> 以岘港作为进出节点，岘港机场到会安通常约 45–90 分钟车程。"
+        detail: "以岘港作为进出节点，会安安排一日往返或住一晚。",
+        attractions: ["美溪海滩", "龙桥", "山茶半岛", "五行山", "会安古城", "日本桥", "会安夜市", "椰林竹篮船"]
       },
       "芽庄": {
         region: "南中 · 芽庄附近",
         highlights: "海滨 · 珍珠岛 · 出海",
-        detail: "<strong>使用金兰机场 CXR。</strong> 适合把海岸线活动集中安排，减少换城。"
+        detail: "使用金兰机场 CXR，把海滨与海岛活动集中安排。",
+        attractions: ["芽庄海滩", "婆那加占婆塔", "珍珠岛 / 跨海缆车", "钟屿石岬角", "芽庄夜市", "出海浮潜"]
       },
       "大叻": {
         region: "南中 · 大叻附近",
         highlights: "春香湖 · 疯狂屋 · 达坦拉瀑布",
-        detail: "<strong>使用莲姜机场 DLI。</strong> 机场到市区约 30–45 分钟；大叻与芽庄之间直接走车更省事。"
+        detail: "使用莲姜机场 DLI；与芽庄之间直接走车更省事。",
+        attractions: ["春香湖", "大叻旧火车站", "疯狂屋", "大叻夜市", "达坦拉瀑布", "竹林禅院 / 缆车"]
       },
       "胡志明市": {
         region: "南越 · 胡志明市附近",
         highlights: "红教堂 · 中央邮局 · 阮惠街",
-        detail: "<strong>可只作出境点。</strong> 如果想停留，最多安排 1 天，不要牺牲前面城市的完整度。"
+        detail: "可只作出境点；若停留，安排半天至一天即可。",
+        attractions: ["中央邮局", "红教堂", "统一宫", "阮惠步行街", "滨城市场", "咖啡公寓"]
       }
     };
 
@@ -2031,7 +2134,13 @@
             </span>
             <span class="city-chevron" aria-hidden="true">+</span>
           </summary>
-          <div class="city-detail">${city.detail}</div>
+          <div class="city-detail">
+            <div class="city-detail-label">主要景点</div>
+            <ul class="attraction-list">
+              ${city.attractions.map(attraction => `<li>${attraction}</li>`).join("")}
+            </ul>
+            <div class="city-detail-note">${city.detail}</div>
+          </div>
         </details>
       `).join("");
     }
@@ -2309,28 +2418,13 @@
       });
     });
 
-    const referenceTrigger = document.querySelector("#reference-trigger");
-    const referenceDrawer = document.querySelector("#reference-drawer");
     const imageModal = document.querySelector("#image-modal");
     const modalImage = document.querySelector("#modal-image");
-
-    const closeReferences = () => {
-      referenceDrawer.classList.remove("open");
-      referenceDrawer.setAttribute("aria-hidden", "true");
-      referenceTrigger.setAttribute("aria-expanded", "false");
-    };
 
     const closeModal = () => {
       imageModal.classList.remove("open");
       modalImage.removeAttribute("src");
     };
-
-    referenceTrigger.addEventListener("click", () => {
-      const open = referenceDrawer.classList.toggle("open");
-      referenceDrawer.setAttribute("aria-hidden", String(!open));
-      referenceTrigger.setAttribute("aria-expanded", String(open));
-    });
-    document.querySelector("#reference-close").addEventListener("click", closeReferences);
 
     document.querySelectorAll(".reference-thumb").forEach(button => {
       button.addEventListener("click", () => {
@@ -2344,14 +2438,8 @@
     imageModal.addEventListener("click", event => {
       if (event.target === imageModal) closeModal();
     });
-    document.addEventListener("click", event => {
-      if (!referenceDrawer.contains(event.target) && !referenceTrigger.contains(event.target)) closeReferences();
-    });
     document.addEventListener("keydown", event => {
-      if (event.key === "Escape") {
-        closeModal();
-        closeReferences();
-      }
+      if (event.key === "Escape") closeModal();
     });
 
     renderPhrases();
