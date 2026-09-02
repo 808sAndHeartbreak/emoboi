@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>越南路线</title>
+  <style>
+    :root {
+      --ink: #192928;
+      --muted: #70807a;
+      --line: #d8ded7;
+      --paper: #f4f3ed;
+      --surface: #fffefa;
+      --blue: #236f8f;
+      --blue-soft: #e7f0f0;
+      --coral: #d85c43;
+      --coral-soft: #faeae4;
+      --yellow: #e8ad45;
+      --shadow: 0 12px 32px rgba(39, 57, 53, .07);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Inter, "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+      line-height: 1.35;
+    }
+
+    button, summary { font: inherit; }
+    button { color: inherit; }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 18px 0 28px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-height: 42px;
+    }
+
+    .tabs {
+      display: inline-flex;
+      gap: 4px;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #e9ebe4;
+    }
+
+    .tab {
+      min-height: 40px;
+      padding: 5px 12px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .tab:hover { color: var(--blue); }
+    .tab.active {
+      background: var(--surface);
+      box-shadow: 0 3px 10px rgba(39, 57, 53, .08);
+    }
+
+    .top-meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .map-toggle {
+      position: relative;
+    }
+
+    .map-toggle summary {
+      padding: 8px 2px;
+      color: var(--blue);
+      cursor: pointer;
+      font-weight: 800;
+      list-style: none;
+    }
+
+    .map-toggle summary::-webkit-details-marker { display: none; }
+
+    .map-toggle[open] summary { color: var(--coral); }
+
+    .map-popover {
+      position: absolute;
+      z-index: 5;
+      top: 28px;
+      right: 0;
+      width: 245px;
+      padding: 6px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .map-popover img {
+      display: block;
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .route-summary {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 22px;
+      align-items: end;
+      padding: 26px 0 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .route {
+      margin: 0 0 6px;
+      font-size: 32px;
+      font-weight: 850;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .route .arrow { color: var(--coral); }
+
+    .route-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px 16px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .total {
+      min-width: 164px;
+      padding: 10px 14px;
+      border-left: 3px solid var(--coral);
+      background: var(--coral-soft);
+    }
+
+    .total span, .total small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .total strong {
+      display: block;
+      margin: 2px 0;
+      font-size: 25px;
+      line-height: 1;
+    }
+
+    .route-track {
+      padding: 18px 0 15px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .track-inner {
+      display: flex;
+      align-items: start;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .track-stop {
+      display: grid;
+      flex: 1 1 0;
+      min-width: 0;
+      grid-template-rows: 13px 18px 17px;
+      position: relative;
+      text-align: center;
+    }
+
+    .track-stop::before {
+      position: absolute;
+      z-index: 0;
+      top: 9px;
+      right: 0;
+      left: 0;
+      height: 2px;
+      background: var(--line);
+      content: "";
+    }
+
+    .track-stop:first-child::before { left: 50%; }
+    .track-stop:last-child::before { right: 50%; }
+
+    .track-dot {
+      position: relative;
+      z-index: 1;
+      width: 13px;
+      height: 13px;
+      margin: 3px auto 0;
+      border: 3px solid var(--surface);
+      border-radius: 50%;
+      background: var(--blue);
+      box-shadow: 0 0 0 2px var(--blue);
+    }
+
+    .track-stop.move .track-dot {
+      background: var(--yellow);
+      box-shadow: 0 0 0 2px var(--yellow);
+    }
+
+    .track-stop.end .track-dot {
+      background: var(--coral);
+      box-shadow: 0 0 0 2px var(--coral);
+    }
+
+    .track-label {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .track-place {
+      display: block;
+      overflow: hidden;
+      font-size: 15px;
+      font-weight: 850;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .track-time {
+      display: block;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .track-note {
+      margin: 15px 0 0;
+      padding: 9px 12px;
+      border-left: 3px solid var(--coral);
+      background: #f6f4ed;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .track-note strong { color: var(--ink); }
+
+    .content {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .panel {
+      min-width: 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    .panel-head span {
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .plan-list {
+      display: grid;
+      gap: 0;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .plan-item {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      gap: 12px;
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .plan-item:first-child {
+      padding-top: 2px;
+      border-top: 0;
+    }
+
+    .plan-date {
+      color: var(--coral);
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .plan-text {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .plan-text small {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    details.insight {
+      margin-top: 11px;
+      border-top: 1px solid var(--line);
+    }
+
+    .insight summary {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 11px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 850;
+      list-style: none;
+    }
+
+    .insight summary::-webkit-details-marker { display: none; }
+    .insight summary::after { color: var(--coral); content: "+"; font-size: 17px; line-height: 1; }
+    .insight[open] summary::after { content: "−"; }
+
+    .insight p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .flight-groups {
+      display: grid;
+      gap: 13px;
+    }
+
+    .flight-group {
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .flight-group:first-child {
+      padding-top: 2px;
+      border-top: 0;
+    }
+
+    .group-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .flight-options {
+      display: grid;
+      gap: 6px;
+    }
+
+    .flight-option {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      background: #fbfbf7;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+
+    .flight-option:hover {
+      border-color: var(--blue);
+      transform: translateY(-1px);
+    }
+
+    .flight-option.selected {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+    }
+
+    .flight-name, .flight-time, .flight-detail {
+      display: block;
+    }
+
+    .flight-name {
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .flight-time {
+      margin-top: 1px;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .flight-detail {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .flight-price {
+      align-self: center;
+      color: var(--coral);
+      font-size: 16px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .flight-price small {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .budget {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 7px 14px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      font-size: 12px;
+    }
+
+    .budget div:nth-child(odd) { color: var(--muted); }
+    .budget-total {
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+      font-size: 15px;
+      font-weight: 850;
+    }
+
+    .budget-note {
+      grid-column: 1 / -1;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    button:focus-visible, summary:focus-visible {
+      outline: 3px solid rgba(35, 111, 143, .25);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 820px) {
+      .content { grid-template-columns: 1fr; }
+      .map-popover { right: -8px; }
+    }
+
+    @media (orientation: landscape) and (max-height: 560px) and (max-width: 920px) {
+      .page { padding-top: 8px; }
+      .route-summary { padding: 15px 0 11px; }
+      .route { font-size: 27px; }
+      .route-track { padding: 12px 0 10px; }
+      .content {
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 14px;
+      }
+      .panel { padding: 14px; }
+      .plan-item { padding: 7px 0; }
+      .flight-groups { gap: 8px; }
+      .map-popover {
+        max-height: calc(100vh - 70px);
+        overflow: auto;
+      }
+      .map-popover img { height: 240px; }
+    }
+
+    @media (max-width: 600px) {
+      .page { width: min(100% - 20px, 540px); padding-top: 10px; }
+      .topbar { gap: 8px; }
+      .tabs { max-width: calc(100% - 64px); }
+      .tab { min-width: 0; min-height: 42px; padding: 6px 8px; font-size: 11px; }
+      .top-meta { gap: 8px; font-size: 10px; }
+      .top-meta > span { display: none; }
+      .route-summary { display: block; padding-top: 18px; }
+      .route { font-size: 24px; line-height: 1.15; }
+      .route-meta { gap: 5px 10px; font-size: 11px; }
+      .total { width: fit-content; min-width: 0; margin-top: 12px; }
+      .route-track { padding-top: 15px; }
+      .track-place { font-size: 12px; }
+      .track-label, .track-time { font-size: 9px; }
+      .track-note { font-size: 11px; }
+      .panel { padding: 15px; }
+      .plan-item { grid-template-columns: 75px minmax(0, 1fr); gap: 9px; }
+      .plan-text { font-size: 12px; }
+      .plan-text small { font-size: 10px; }
+      .map-popover { position: fixed; top: 48px; right: 10px; width: min(245px, calc(100vw - 30px)); }
+    }
+
+    @media (hover: none) {
+      .tab:hover { color: inherit; }
+      .flight-option:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <nav class="tabs" aria-label="路线选择">
+        <button class="tab active" type="button" data-route="a" aria-selected="true">A · 河内 + 岘港</button>
+        <button class="tab" type="button" data-route="b" aria-selected="false">B · 河内 + 大叻 + 芽庄</button>
+      </nav>
+      <div class="top-meta">
+        <span>2026 · 9月—10月</span>
+        <details class="map-toggle">
+          <summary>区域图</summary>
+          <div class="map-popover">
+            <img src="vietnam-regions.jpg" alt="越南南北区域示意图">
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <section class="route-summary" aria-live="polite">
+      <div>
+        <h1 class="route" id="route-title">上海 <span class="arrow">→</span> 河内 <span class="arrow">→</span> 岘港 + 会安 <span class="arrow">→</span> 河内 <span class="arrow">→</span> 上海</h1>
+        <div class="route-meta">
+          <span id="route-dates">09.25 深夜 → 10.03 凌晨</span>
+          <span id="route-duration">约7天</span>
+          <span id="route-stay">A区2天 · B区4天 · 通勤1天</span>
+        </div>
+      </div>
+      <div class="total">
+        <span>机票 + 国内转场</span>
+        <strong id="overview-total">¥4,067</strong>
+        <small>未含燃油、基建及税费</small>
+      </div>
+    </section>
+
+    <section class="route-track" aria-label="完整路线">
+      <div class="track-inner" id="track"></div>
+      <p class="track-note" id="track-note"></p>
+    </section>
+
+    <section class="content">
+      <section class="panel">
+        <div class="panel-head">
+          <h2>时间</h2>
+          <span id="plan-label">A区2天 · B区4天 · 通勤1天</span>
+        </div>
+        <ol class="plan-list" id="plan-list"></ol>
+        <details class="insight">
+          <summary>安排重点</summary>
+          <p id="planning-note"></p>
+        </details>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>机票</h2>
+          <span>点击选择组合</span>
+        </div>
+        <div class="flight-groups" id="flight-groups"></div>
+        <div class="budget" aria-live="polite">
+          <div>国际段</div><div id="budget-international">¥3,367</div>
+          <div>国内转场</div><div id="budget-domestic">¥700</div>
+          <div class="budget-total">合计参考</div><div class="budget-total" id="budget-total">¥4,067</div>
+          <div class="budget-note" id="budget-note">国内航班飞行约1.5小时，机场往返、值机和候机按半天至一天预留。</div>
+        </div>
+      </section>
+    </section>
+
+  </main>
+
+  <script>
+    const domesticPerSegment = 350;
+    const data = {
+      a: {
+        title: "上海 <span class=\"arrow\">→</span> 河内 <span class=\"arrow\">→</span> 岘港 + 会安 <span class=\"arrow\">→</span> 河内 <span class=\"arrow\">→</span> 上海",
+        dates: "09.25 深夜 → 10.03 凌晨",
+        duration: "约7天",
+        stay: "A区2天 · B区4天 · 通勤1天",
+        planLabel: "A区2天 · B区4天 · 通勤1天",
+        domesticSegments: 2,
+        note: "<strong>岘港 + 会安</strong> 合并安排在 B 区4天；10月3日 01:20 从河内出境，10月2日前必须完成岘港→河内。",
+        budgetNote: "河内↔岘港按2段国内航班估算；每段约¥350，机场往返与候机按半天至一天预留。",
+        stops: [
+          { type: "进境", place: "上海", time: "09.25 深夜", kind: "city" },
+          { type: "停留", place: "河内", time: "09.26—27", kind: "city" },
+          { type: "转场", place: "岘港 + 会安", time: "B区4天", kind: "move" },
+          { type: "返程", place: "河内", time: "最晚10.02", kind: "move" },
+          { type: "回程", place: "上海", time: "10.03 凌晨", kind: "end" }
+        ],
+        plan: [
+          ["09.25 深夜", "上海 → 河内", "HO1329 · 22:00 → 00:20 次日"],
+          ["09.26—27", "河内 · A区", "停留2天"],
+          ["中段", "河内 → 岘港", "国内转场，预留半天至一天"],
+          ["随后4天", "岘港 + 会安 · B区", "海滨、古城、夜景"],
+          ["10.02前", "岘港 → 河内", "回到河内，准备凌晨出境"],
+          ["10.03 凌晨", "河内 → 上海", "HO1330 · 01:20 → 05:35"]
+        ],
+        flights: [
+          {
+            title: "上海 → 河内",
+            options: [
+              { id: "a-in-25", name: "09.25 · 吉祥航空 HO1329", time: "22:00 → 00:20 次日", detail: "浦东T2 → 河内T2 · 空客321 · 进境", price: 1397 },
+              { id: "a-in-26", name: "09.26 · 吉祥航空 HO1329", time: "22:00 → 00:20 次日", detail: "浦东T2 → 河内T2 · 空客321 · 备选", price: 1197 }
+            ],
+            selected: "a-in-25"
+          },
+          {
+            title: "河内 → 上海",
+            options: [
+              { id: "a-out-3", name: "10.03 · 吉祥航空 HO1330", time: "01:20 → 05:35", detail: "河内T2 → 浦东T2 · 公务舱标注 · 匹配计划", price: 1970 },
+              { id: "a-out-4", name: "10.04 · 吉祥航空 HO1330", time: "01:20 → 05:35", detail: "河内T2 → 浦东T2 · 经济舱标注 · 备选", price: 1170 }
+            ],
+            selected: "a-out-3"
+          }
+        ]
+      },
+      b: {
+        title: "上海 <span class=\"arrow\">→</span> 河内 <span class=\"arrow\">→</span> 大叻 <span class=\"arrow\">→</span> 芽庄 <span class=\"arrow\">→</span> 胡志明市 <span class=\"arrow\">→</span> 上海",
+        dates: "09.27 深夜 → 10.08 晚间",
+        duration: "约10.5天",
+        stay: "A区2天 · C区约6.5天 · 通勤2天",
+        planLabel: "A区2天 · C区约6.5天 · 通勤2天",
+        domesticSegments: 3,
+        note: "<strong>大叻 + 芽庄</strong> 作为 C 区主行程；胡志明市可只作出境点，若停留建议最多1天。国内转场按2–3段估算，预算取3段上限。",
+        budgetNote: "河内→大叻→芽庄→胡志明市按3段国内转场上限估算；每段约¥350，地面交通另计。",
+        stops: [
+          { type: "进境", place: "上海", time: "09.27 深夜", kind: "city" },
+          { type: "停留", place: "河内", time: "09.28—29", kind: "city" },
+          { type: "停留", place: "大叻", time: "C区", kind: "city" },
+          { type: "停留", place: "芽庄", time: "C区", kind: "city" },
+          { type: "出境点", place: "胡志明市", time: "10.08 下午", kind: "move" },
+          { type: "回程", place: "上海", time: "10.09 凌晨", kind: "end" }
+        ],
+        plan: [
+          ["09.27 深夜", "上海 → 河内", "HO1329 · 22:00 → 00:20 次日"],
+          ["09.28—29", "河内 · A区", "停留2天"],
+          ["中段", "河内 → 大叻", "国内转场，预留半天至一天"],
+          ["随后约6.5天", "大叻 + 芽庄 · C区", "大叻2–3天，芽庄3–4天"],
+          ["10.07前后", "芽庄 → 胡志明市", "完成最后转场"],
+          ["10.08 下午", "胡志明市", "停留1天或直接去机场"],
+          ["10.08 晚间", "胡志明市 → 上海", "VJ3900 · 20:00 → 01:00 次日"]
+        ],
+        flights: [
+          {
+            title: "上海 → 河内",
+            options: [
+              { id: "b-in-ho", name: "09.27 · 吉祥航空 HO1329", time: "22:00 → 00:20 次日", detail: "浦东T2 → 河内T2 · 空客321 · 匹配计划", price: 937 },
+              { id: "b-in-vj", name: "09.27 · 越捷航空 VJ7239", time: "02:20 → 04:50", detail: "浦东T2 → 河内T2 · 空客320 · 更早航班", price: 872 }
+            ],
+            selected: "b-in-ho"
+          },
+          {
+            title: "胡志明市 → 上海",
+            options: [
+              { id: "b-out", name: "10.08 · 越捷航空 VJ3900", time: "20:00 → 01:00 次日", detail: "新山一T2 → 浦东T2 · 空客321 · 匹配计划", price: 1605 }
+            ],
+            selected: "b-out"
+          }
+        ]
+      }
+    };
+
+    const selectedFlights = {};
+    let activeRoute = "a";
+
+    const money = value => `¥${value.toLocaleString("zh-CN")}`;
+
+    function renderRoute(routeKey) {
+      activeRoute = routeKey;
+      const route = data[routeKey];
+      document.querySelectorAll(".tab").forEach(tab => {
+        const active = tab.dataset.route === routeKey;
+        tab.classList.toggle("active", active);
+        tab.setAttribute("aria-selected", String(active));
+      });
+
+      document.querySelector("#route-title").innerHTML = route.title;
+      document.querySelector("#route-dates").textContent = route.dates;
+      document.querySelector("#route-duration").textContent = route.duration;
+      document.querySelector("#route-stay").textContent = route.stay;
+      document.querySelector("#plan-label").textContent = route.planLabel;
+      document.querySelector("#planning-note").innerHTML = route.note;
+      document.querySelector("#budget-note").textContent = route.budgetNote;
+
+      document.querySelector("#track").innerHTML = route.stops.map(stop => `
+        <div class="track-stop ${stop.kind}">
+          <span class="track-label">${stop.type}</span>
+          <span class="track-dot"></span>
+          <span class="track-place">${stop.place}</span>
+          <span class="track-time">${stop.time}</span>
+        </div>
+      `).join("");
+      document.querySelector("#track-note").innerHTML = route.note;
+
+      document.querySelector("#plan-list").innerHTML = route.plan.map(item => `
+        <li class="plan-item">
+          <span class="plan-date">${item[0]}</span>
+          <p class="plan-text">${item[1]}<small>${item[2]}</small></p>
+        </li>
+      `).join("");
+
+      renderFlights(route);
+    }
+
+    function renderFlights(route) {
+      route.flights.forEach(group => {
+        group.options.forEach(option => {
+          if (!(option.id in selectedFlights)) selectedFlights[option.id] = group.selected === option.id;
+        });
+      });
+
+      document.querySelector("#flight-groups").innerHTML = route.flights.map(group => `
+        <div class="flight-group">
+          <div class="group-title">
+            <span>${group.title}</span>
+            <span>选择一项</span>
+          </div>
+          <div class="flight-options">
+            ${group.options.map(option => `
+              <button class="flight-option ${selectedFlights[option.id] ? "selected" : ""}" type="button" data-flight="${option.id}" aria-pressed="${selectedFlights[option.id]}">
+                <span>
+                  <span class="flight-name">${option.name}</span>
+                  <span class="flight-time">${option.time}</span>
+                  <span class="flight-detail">${option.detail}</span>
+                </span>
+                <span class="flight-price">${money(option.price)}<small>参考</small></span>
+              </button>
+            `).join("")}
+          </div>
+        </div>
+      `).join("");
+
+      document.querySelectorAll(".flight-option").forEach(button => {
+        button.addEventListener("click", () => {
+          const id = button.dataset.flight;
+          route.flights.forEach(group => {
+            if (group.options.some(option => option.id === id)) {
+              group.options.forEach(option => selectedFlights[option.id] = option.id === id);
+            }
+          });
+          renderFlights(route);
+        });
+      });
+
+      updateBudget(route);
+    }
+
+    function updateBudget(route) {
+      const international = route.flights.reduce((sum, group) => {
+        const selected = group.options.find(option => selectedFlights[option.id]);
+        return sum + (selected ? selected.price : 0);
+      }, 0);
+      const domestic = route.domesticSegments * domesticPerSegment;
+      const total = international + domestic;
+      document.querySelector("#budget-international").textContent = money(international);
+      document.querySelector("#budget-domestic").textContent = money(domestic);
+      document.querySelector("#budget-total").textContent = money(total);
+      document.querySelector("#overview-total").textContent = money(total);
+    }
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => renderRoute(tab.dataset.route));
+    });
+
+    renderRoute(activeRoute);
+  </script>
+</body>
+</html>
