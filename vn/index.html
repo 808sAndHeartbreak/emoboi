@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f3f5f1">
-  <title>越南行程 · 2026</title>
+  <title>越南行程</title>
   <style>
     :root {
       --bg: #f3f5f1;
@@ -127,19 +127,6 @@
       font-weight: 650;
     }
 
-    .top-actions {
-      display: flex;
-      align-items: center;
-      gap: 13px;
-      margin-left: auto;
-    }
-
-    .year {
-      color: var(--muted);
-      font-size: 11px;
-      font-variant-numeric: tabular-nums;
-    }
-
     .route-head {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
@@ -218,12 +205,23 @@
     }
 
     .route-picker {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 15px;
-      align-items: center;
-      padding: 12px 0;
       border-bottom: 1px solid var(--line);
+    }
+
+    .route-picker > summary {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr) auto;
+      gap: 13px;
+      align-items: center;
+      min-height: 58px;
+      padding: 7px 1px;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .route-picker > summary::-webkit-details-marker,
+    .flight-group > summary::-webkit-details-marker {
+      display: none;
     }
 
     .section-label {
@@ -233,11 +231,63 @@
       white-space: nowrap;
     }
 
+    .route-current {
+      min-width: 0;
+    }
+
+    .route-current-name,
+    .route-current-meta {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .route-current-name {
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .route-current-meta {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .route-chevron,
+    .flight-chevron {
+      display: grid;
+      width: 25px;
+      height: 25px;
+      place-items: center;
+      border: 1px solid var(--line-dark);
+      border-radius: 50%;
+      color: var(--jade);
+      font-size: 16px;
+      line-height: 1;
+      transition: transform .2s ease, background .2s ease;
+    }
+
+    .route-picker[open] .route-chevron,
+    .flight-group[open] .flight-chevron {
+      transform: rotate(45deg);
+      background: var(--jade-soft);
+    }
+
+    .route-picker:not([open]) > .route-options,
+    .flight-group:not([open]) > .flight-options,
+    .utility-disclosure:not([open]) > .utility-grid,
+    .reference-section:not([open]) > .reference-grid {
+      display: none;
+    }
+
     .route-options {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 7px;
+      padding: 0 0 12px 85px;
       min-width: 0;
+      animation: detailIn .18s ease both;
     }
 
     .route-option {
@@ -474,7 +524,7 @@
 
     .utility-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.22fr) minmax(250px, .8fr) minmax(0, 1.16fr);
+      grid-template-columns: minmax(0, 1.15fr) minmax(250px, .85fr);
       gap: 12px;
       margin-top: 13px;
       align-items: start;
@@ -506,10 +556,6 @@
       font-weight: 900;
     }
 
-    .phrase-tool .tool-head {
-      border-bottom: 0;
-    }
-
     .tool-head span,
     .content-head span {
       margin-left: auto;
@@ -520,8 +566,7 @@
       white-space: nowrap;
     }
 
-    .icon-button,
-    .copy-button {
+    .icon-button {
       display: grid;
       flex: 0 0 auto;
       place-items: center;
@@ -537,6 +582,7 @@
     .icon-button {
       width: 25px;
       height: 25px;
+      margin-left: auto;
       font-size: 15px;
     }
 
@@ -557,8 +603,7 @@
     }
 
     .weather-city,
-    .weather-main,
-    .weather-detail {
+    .weather-main {
       display: block;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -581,12 +626,6 @@
     .weather-icon {
       margin-right: 3px;
       font-size: 14px;
-    }
-
-    .weather-detail {
-      margin-top: 2px;
-      color: var(--muted);
-      font-size: 9px;
     }
 
     .weather-loading {
@@ -700,24 +739,65 @@
       font-weight: 850;
     }
 
+    .phrase-tool {
+      grid-column: 1 / -1;
+    }
+
+    .phrase-categories {
+      display: flex;
+      gap: 5px;
+      padding: 9px 12px 5px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .phrase-categories::-webkit-scrollbar { display: none; }
+
+    .phrase-category {
+      flex: 0 0 auto;
+      min-height: 29px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 850;
+      transition: border-color .18s ease, background .18s ease, color .18s ease;
+    }
+
+    .phrase-category.active {
+      border-color: var(--jade);
+      background: var(--jade-soft);
+      color: var(--jade);
+    }
+
     .phrase-list {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 0 15px;
-      padding: 2px 12px 7px;
+      padding: 2px 12px 9px;
     }
 
     .phrase-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto auto;
-      gap: 6px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
       align-items: center;
+      width: 100%;
       min-width: 0;
-      min-height: 42px;
+      min-height: 45px;
+      padding: 5px 2px;
+      border: 0;
       border-top: 1px solid var(--line);
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      transition: color .18s ease, background .18s ease;
     }
 
-    .phrase-row:nth-child(-n + 2) { border-top: 0; }
+    .phrase-row:nth-child(-n + 3) { border-top: 0; }
 
     .phrase-copy-block {
       min-width: 0;
@@ -744,21 +824,15 @@
     }
 
     .phrase-meaning {
-      max-width: 76px;
+      max-width: 88px;
       color: var(--muted);
-      font-size: 9px;
+      font-size: 10px;
+      text-align: right;
     }
 
-    .copy-button {
-      width: 23px;
-      height: 23px;
-      border-color: transparent;
-      font-size: 12px;
-    }
-
-    .copy-button.copied {
-      border-color: var(--jade);
+    .phrase-row.copied {
       background: var(--jade-soft);
+      color: var(--jade);
     }
 
     .workspace {
@@ -932,25 +1006,68 @@
     }
 
     .flight-group {
-      padding: 11px 0 12px;
       border-top: 1px solid var(--line);
     }
 
     .flight-group:first-child { border-top: 0; }
 
-    .flight-group-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 7px;
+    .flight-summary {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto 25px;
+      gap: 9px;
+      align-items: center;
+      min-height: 72px;
+      padding: 10px 0;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .flight-summary-copy {
+      min-width: 0;
+    }
+
+    .flight-route,
+    .flight-summary-name,
+    .flight-summary-time {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .flight-route {
       color: var(--muted);
-      font-size: 10px;
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    .flight-summary-name {
+      margin-top: 2px;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .flight-summary-time {
+      margin-top: 2px;
+      color: var(--jade);
+      font-size: 11px;
       font-weight: 850;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .flight-summary-price {
+      color: var(--coral);
+      font-size: 15px;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
     }
 
     .flight-options {
       display: grid;
       gap: 6px;
+      padding: 0 0 11px;
+      animation: detailIn .18s ease both;
     }
 
     .flight-option {
@@ -1228,7 +1345,8 @@
       .route-option:hover,
       .flight-option:hover,
       .reference-thumb:hover,
-      .fx-preset:hover {
+      .fx-preset:hover,
+      .phrase-row:hover {
         transform: translateY(-1px);
       }
 
@@ -1236,7 +1354,13 @@
       .route-option:hover,
       .flight-option:hover,
       .reference-thumb:hover,
-      .fx-preset:hover { border-color: var(--jade); }
+      .fx-preset:hover,
+      .phrase-category:hover { border-color: var(--jade); }
+
+      .phrase-row:hover {
+        color: var(--jade);
+        background: var(--jade-soft);
+      }
     }
 
     @media (max-width: 980px) {
@@ -1246,10 +1370,6 @@
 
       .utility-grid {
         grid-template-columns: minmax(0, 1.1fr) minmax(240px, .9fr);
-      }
-
-      .phrase-tool {
-        grid-column: 1 / -1;
       }
 
       .workspace {
@@ -1286,12 +1406,13 @@
         font-size: 27px;
       }
 
-      .route-picker {
-        padding: 8px 0;
+      .route-picker > summary {
+        min-height: 52px;
       }
 
       .route-options {
         display: flex;
+        padding-left: 85px;
         overflow-x: auto;
         scrollbar-color: var(--line-dark) transparent;
         scrollbar-width: thin;
@@ -1337,10 +1458,6 @@
         min-height: 71px;
       }
 
-      .phrase-row {
-        min-height: 34px;
-      }
-
       .workspace {
         margin-top: 10px;
       }
@@ -1376,7 +1493,7 @@
       }
 
       .time-switch {
-        width: calc(100% - 40px);
+        width: 100%;
       }
 
       .time-tab {
@@ -1386,8 +1503,6 @@
 
       .tab-main { font-size: 10px; }
       .tab-meta { font-size: 9px; }
-      .top-actions { gap: 2px; }
-      .year { display: none; }
 
       .route-head {
         display: block;
@@ -1418,15 +1533,16 @@
 
       .route-total strong { font-size: 22px; }
 
-      .route-picker {
-        grid-template-columns: 1fr;
-        gap: 7px;
-        padding: 10px 0;
+      .route-picker > summary {
+        grid-template-columns: 62px minmax(0, 1fr) auto;
+        gap: 8px;
+        min-height: 56px;
       }
 
       .route-options {
         display: flex;
         width: 100%;
+        padding: 0 0 10px 0;
         overflow-x: auto;
         scrollbar-color: var(--line-dark) transparent;
         scrollbar-width: thin;
@@ -1465,10 +1581,6 @@
         margin-top: 11px;
       }
 
-      .phrase-tool {
-        grid-column: auto;
-      }
-
       .weather-list {
         grid-template-columns: repeat(auto-fit, minmax(106px, 1fr));
         min-height: 77px;
@@ -1479,7 +1591,8 @@
         gap: 0;
       }
 
-      .phrase-row:nth-child(2) { border-top: 1px solid var(--line); }
+      .phrase-row:nth-child(2),
+      .phrase-row:nth-child(3) { border-top: 1px solid var(--line); }
       .phrase-row:first-child { border-top: 0; }
 
       .workspace {
@@ -1539,6 +1652,10 @@
         padding: 8px;
       }
 
+      .flight-summary {
+        min-height: 68px;
+      }
+
       .flight-name { font-size: 10px; }
       .flight-time { font-size: 11px; }
       .flight-detail { font-size: 8px; }
@@ -1585,9 +1702,6 @@
           <span class="tab-meta">河内进 · 胡志明市出 · 约 10.5 天</span>
         </button>
       </nav>
-      <div class="top-actions">
-        <span class="year">2026</span>
-      </div>
     </header>
 
     <section class="route-head" aria-live="polite">
@@ -1606,10 +1720,17 @@
       </div>
     </section>
 
-    <section class="route-picker">
-      <span class="section-label">中间路线</span>
-      <div class="route-options" id="route-options" role="tablist" aria-label="具体路线"></div>
-    </section>
+    <details class="route-picker" id="route-picker">
+      <summary>
+        <span class="section-label">中间路线</span>
+        <span class="route-current">
+          <span class="route-current-name" id="route-current-name"></span>
+          <span class="route-current-meta" id="route-current-meta"></span>
+        </span>
+        <span class="route-chevron" aria-hidden="true">+</span>
+      </summary>
+      <div class="route-options" id="route-options" role="listbox" aria-label="具体路线"></div>
+    </details>
 
     <section class="route-track" aria-label="完整路线">
       <div class="track-inner" id="track-inner"></div>
@@ -1630,7 +1751,6 @@
         <section class="tool-panel weather-tool">
           <div class="tool-head">
             <h2>天气</h2>
-            <span id="weather-meta">实时</span>
             <button class="icon-button" id="weather-refresh" type="button" title="刷新天气" aria-label="刷新天气">↻</button>
           </div>
           <div class="weather-list" id="weather-list" aria-live="polite"></div>
@@ -1667,6 +1787,7 @@
           <div class="tool-head">
             <h2>常用语</h2>
           </div>
+          <div class="phrase-categories" id="phrase-categories" role="tablist" aria-label="常用语分类"></div>
           <div class="phrase-list" id="phrase-list"></div>
         </section>
       </section>
@@ -2046,18 +2167,99 @@
     };
 
     const phrases = [
-      { original: "Xin chào", pronunciation: "sin chow", meaning: "你好" },
-      { original: "Cảm ơn", pronunciation: "gahm uhn", meaning: "谢谢" },
-      { original: "Xin lỗi", pronunciation: "sin loy", meaning: "对不起" },
-      { original: "Bao nhiêu tiền?", pronunciation: "bow nyew tyen", meaning: "多少钱？" },
-      { original: "Nhà vệ sinh ở đâu?", pronunciation: "nya veh sing uh dow", meaning: "洗手间在哪里？" },
-      { original: "Không cay", pronunciation: "khong kai", meaning: "不辣" },
-      { original: "Tính tiền", pronunciation: "ting tyen", meaning: "结账" },
-      { original: "Tôi không hiểu", pronunciation: "toy khong hee-oo", meaning: "我不明白" }
+      { category: "基础", original: "Xin chào", pronunciation: "sin chao", meaning: "你好" },
+      { category: "基础", original: "Chào buổi sáng", pronunciation: "chao boo-ee sang", meaning: "早上好" },
+      { category: "基础", original: "Chào buổi tối", pronunciation: "chao boo-ee toy", meaning: "晚上好" },
+      { category: "基础", original: "Tạm biệt", pronunciation: "tam byet", meaning: "再见" },
+      { category: "基础", original: "Cảm ơn", pronunciation: "gam uhn", meaning: "谢谢" },
+      { category: "基础", original: "Không có gì", pronunciation: "khong gaw zee", meaning: "不客气" },
+      { category: "基础", original: "Xin lỗi", pronunciation: "sin loy", meaning: "对不起 / 劳驾" },
+      { category: "基础", original: "Vâng", pronunciation: "vung", meaning: "是的" },
+      { category: "基础", original: "Không", pronunciation: "khong", meaning: "不是 / 不要" },
+      { category: "基础", original: "Được", pronunciation: "duhk", meaning: "可以" },
+      { category: "基础", original: "Tôi không hiểu", pronunciation: "toy khong hyew", meaning: "我不明白" },
+      { category: "基础", original: "Nói chậm một chút", pronunciation: "noy cham mote choot", meaning: "请说慢一点" },
+      { category: "基础", original: "Xin nhắc lại", pronunciation: "sin nyak lai", meaning: "请再说一遍" },
+      { category: "基础", original: "Bạn có nói tiếng Anh không?", pronunciation: "ban gaw noy tyeng anh khong", meaning: "会说英语吗？" },
+
+      { category: "问路", original: "Ở đâu?", pronunciation: "uh dow", meaning: "在哪里？" },
+      { category: "问路", original: "Nhà vệ sinh ở đâu?", pronunciation: "nya veh sing uh dow", meaning: "洗手间在哪里？" },
+      { category: "问路", original: "Lối ra ở đâu?", pronunciation: "loy ra uh dow", meaning: "出口在哪里？" },
+      { category: "问路", original: "Sân bay ở đâu?", pronunciation: "sun bai uh dow", meaning: "机场在哪里？" },
+      { category: "问路", original: "Ga tàu ở đâu?", pronunciation: "ga tao uh dow", meaning: "火车站在哪里？" },
+      { category: "问路", original: "Bến xe buýt ở đâu?", pronunciation: "ben seh beet uh dow", meaning: "公交站在哪里？" },
+      { category: "问路", original: "Đi thẳng", pronunciation: "dee thang", meaning: "直走" },
+      { category: "问路", original: "Rẽ trái", pronunciation: "reh chai", meaning: "左转" },
+      { category: "问路", original: "Rẽ phải", pronunciation: "reh fai", meaning: "右转" },
+      { category: "问路", original: "Gần đây không?", pronunciation: "gun day khong", meaning: "离这里近吗？" },
+      { category: "问路", original: "Xa không?", pronunciation: "sa khong", meaning: "远吗？" },
+      { category: "问路", original: "Chỉ cho tôi trên bản đồ", pronunciation: "chee cho toy chen ban doh", meaning: "请在地图上指给我" },
+      { category: "问路", original: "Tôi bị lạc", pronunciation: "toy bee lak", meaning: "我迷路了" },
+
+      { category: "交通", original: "Tôi muốn đi đến đây", pronunciation: "toy moon dee den day", meaning: "我想去这里" },
+      { category: "交通", original: "Đến đây bao nhiêu tiền?", pronunciation: "den day bao nyew tyen", meaning: "到这里多少钱？" },
+      { category: "交通", original: "Làm ơn bật đồng hồ tính tiền", pronunciation: "lam uhn but dong ho ting tyen", meaning: "请打表" },
+      { category: "交通", original: "Dừng ở đây", pronunciation: "zoong uh day", meaning: "停在这里" },
+      { category: "交通", original: "Cho tôi xuống đây", pronunciation: "cho toy soong day", meaning: "让我在这里下车" },
+      { category: "交通", original: "Một vé đi Hà Nội", pronunciation: "mote veh dee ha noy", meaning: "一张去河内的票" },
+      { category: "交通", original: "Vé khứ hồi", pronunciation: "veh khoo hoy", meaning: "往返票" },
+      { category: "交通", original: "Mấy giờ khởi hành?", pronunciation: "may zuh khoy hanh", meaning: "几点出发？" },
+      { category: "交通", original: "Mấy giờ đến?", pronunciation: "may zuh den", meaning: "几点到？" },
+      { category: "交通", original: "Cổng nào?", pronunciation: "gong nao", meaning: "哪个登机口？" },
+      { category: "交通", original: "Chuyến bay bị hoãn", pronunciation: "chwen bai bee hwan", meaning: "航班延误了" },
+      { category: "交通", original: "Gọi taxi giúp tôi", pronunciation: "goy taxi zoop toy", meaning: "请帮我叫出租车" },
+
+      { category: "餐饮", original: "Cho tôi xem thực đơn", pronunciation: "cho toy sem thook duhn", meaning: "请给我菜单" },
+      { category: "餐饮", original: "Tôi muốn gọi món", pronunciation: "toy moon goy mon", meaning: "我要点餐" },
+      { category: "餐饮", original: "Cái này là gì?", pronunciation: "gai nai la zee", meaning: "这是什么？" },
+      { category: "餐饮", original: "Không cay", pronunciation: "khong kai", meaning: "不辣" },
+      { category: "餐饮", original: "Ít cay", pronunciation: "eet kai", meaning: "少辣" },
+      { category: "餐饮", original: "Không thịt", pronunciation: "khong thit", meaning: "不要肉" },
+      { category: "餐饮", original: "Tôi ăn chay", pronunciation: "toy un chai", meaning: "我吃素" },
+      { category: "餐饮", original: "Không có đậu phộng", pronunciation: "khong gaw dao fong", meaning: "不要花生" },
+      { category: "餐饮", original: "Không đường", pronunciation: "khong duong", meaning: "不加糖" },
+      { category: "餐饮", original: "Không đá", pronunciation: "khong da", meaning: "不加冰" },
+      { category: "餐饮", original: "Một chai nước", pronunciation: "mote chai nook", meaning: "一瓶水" },
+      { category: "餐饮", original: "Một ly cà phê sữa đá", pronunciation: "mote lee ga feh soo-ah da", meaning: "一杯冰炼乳咖啡" },
+      { category: "餐饮", original: "Ngon quá", pronunciation: "ngon gwa", meaning: "太好吃了" },
+      { category: "餐饮", original: "Tính tiền", pronunciation: "ting tyen", meaning: "结账" },
+      { category: "餐饮", original: "Cho tôi hóa đơn", pronunciation: "cho toy hwa duhn", meaning: "请给我账单" },
+
+      { category: "购物", original: "Bao nhiêu tiền?", pronunciation: "bao nyew tyen", meaning: "多少钱？" },
+      { category: "购物", original: "Đắt quá", pronunciation: "dut gwa", meaning: "太贵了" },
+      { category: "购物", original: "Bớt một chút được không?", pronunciation: "buht mote choot duhk khong", meaning: "能便宜一点吗？" },
+      { category: "购物", original: "Tôi chỉ xem thôi", pronunciation: "toy chee sem toy", meaning: "我只是看看" },
+      { category: "购物", original: "Tôi lấy cái này", pronunciation: "toy lay gai nai", meaning: "我要这个" },
+      { category: "购物", original: "Có cỡ lớn hơn không?", pronunciation: "gaw guh luhn hun khong", meaning: "有大一号吗？" },
+      { category: "购物", original: "Có cỡ nhỏ hơn không?", pronunciation: "gaw guh nyaw hun khong", meaning: "有小一号吗？" },
+      { category: "购物", original: "Có màu khác không?", pronunciation: "gaw mao khak khong", meaning: "有别的颜色吗？" },
+      { category: "购物", original: "Có thanh toán bằng thẻ không?", pronunciation: "gaw thanh twan bang teh khong", meaning: "可以刷卡吗？" },
+
+      { category: "住宿", original: "Tôi đã đặt phòng", pronunciation: "toy da dat fong", meaning: "我订了房" },
+      { category: "住宿", original: "Tên tôi là…", pronunciation: "ten toy la", meaning: "我的名字是……" },
+      { category: "住宿", original: "Tôi muốn nhận phòng", pronunciation: "toy moon nyan fong", meaning: "我要办理入住" },
+      { category: "住宿", original: "Tôi muốn trả phòng", pronunciation: "toy moon cha fong", meaning: "我要退房" },
+      { category: "住宿", original: "Mật khẩu Wi-Fi là gì?", pronunciation: "mut khao wifi la zee", meaning: "Wi-Fi 密码是什么？" },
+      { category: "住宿", original: "Có nước nóng không?", pronunciation: "gaw nook nong khong", meaning: "有热水吗？" },
+      { category: "住宿", original: "Máy lạnh không hoạt động", pronunciation: "mai lanh khong hwat dong", meaning: "空调坏了" },
+      { category: "住宿", original: "Cho tôi thêm một khăn tắm", pronunciation: "cho toy them mote khan tam", meaning: "请再给我一条毛巾" },
+      { category: "住宿", original: "Giữ hành lý giúp tôi", pronunciation: "zoo hanh lee zoop toy", meaning: "请帮我寄存行李" },
+
+      { category: "应急", original: "Giúp tôi với!", pronunciation: "zoop toy voy", meaning: "请帮帮我！" },
+      { category: "应急", original: "Gọi cảnh sát!", pronunciation: "goy ganh sat", meaning: "请报警！" },
+      { category: "应急", original: "Gọi xe cấp cứu!", pronunciation: "goy seh gap goo", meaning: "请叫救护车！" },
+      { category: "应急", original: "Tôi cần bác sĩ", pronunciation: "toy gun bak see", meaning: "我需要医生" },
+      { category: "应急", original: "Bệnh viện ở đâu?", pronunciation: "benh vyen uh dow", meaning: "医院在哪里？" },
+      { category: "应急", original: "Tôi bị ốm", pronunciation: "toy bee ohm", meaning: "我生病了" },
+      { category: "应急", original: "Tôi đau ở đây", pronunciation: "toy dao uh day", meaning: "我这里痛" },
+      { category: "应急", original: "Tôi bị mất hộ chiếu", pronunciation: "toy bee mut ho cheew", meaning: "我的护照丢了" },
+      { category: "应急", original: "Tôi bị mất điện thoại", pronunciation: "toy bee mut dyen twai", meaning: "我的手机丢了" },
+      { category: "应急", original: "Nguy hiểm", pronunciation: "ngwee hyem", meaning: "危险" }
     ];
 
     let activePlan = "a";
     let activeRoute = plans.a.defaultRoute;
+    let activePhraseCategory = "基础";
     let fxCurrency = "CNY";
     let weatherRequestId = 0;
     const selectedFlights = {};
@@ -2077,9 +2279,12 @@
 
     function renderRouteOptions() {
       const list = document.querySelector("#route-options");
+      const route = getRoute();
+      document.querySelector("#route-current-name").textContent = route.name;
+      document.querySelector("#route-current-meta").textContent = route.meta;
       list.innerHTML = getPlan().routes.map(route => `
         <button class="route-option ${route.id === activeRoute ? "active" : ""}" type="button"
-          data-route="${route.id}" role="tab" aria-selected="${route.id === activeRoute}">
+          data-route="${route.id}" role="option" aria-selected="${route.id === activeRoute}">
           <span class="option-main">${route.name}</span>
           <span class="option-meta">${route.meta}</span>
         </button>
@@ -2088,6 +2293,7 @@
       list.querySelectorAll(".route-option").forEach(button => {
         button.addEventListener("click", () => {
           activeRoute = button.dataset.route;
+          document.querySelector("#route-picker").open = false;
           renderPage(true);
         });
       });
@@ -2166,11 +2372,21 @@
     function renderFlights(plan) {
       ensureFlightSelections(plan);
       document.querySelector("#flight-groups").innerHTML = plan.flights.map(group => `
-        <div class="flight-group">
-          <div class="flight-group-head">
-            <span>${group.title}</span>
-            <span>选择一项</span>
-          </div>
+        <details class="flight-group" data-flight-disclosure="${group.id}">
+          ${(() => {
+            const selected = group.options.find(option => option.id === selectedFlights[group.id]) || group.options[0];
+            return `
+              <summary class="flight-summary">
+                <span class="flight-summary-copy">
+                  <span class="flight-route">${group.title}</span>
+                  <span class="flight-summary-name">${selected.name}</span>
+                  <span class="flight-summary-time">${selected.time}</span>
+                </span>
+                <span class="flight-summary-price">${money(selected.price)}</span>
+                <span class="flight-chevron" aria-hidden="true">+</span>
+              </summary>
+            `;
+          })()}
           <div class="flight-options">
             ${group.options.map(option => {
               const selected = selectedFlights[group.id] === option.id;
@@ -2188,12 +2404,14 @@
               `;
             }).join("")}
           </div>
-        </div>
+        </details>
       `).join("");
 
       document.querySelectorAll(".flight-option").forEach(button => {
         button.addEventListener("click", () => {
           selectedFlights[button.dataset.flightGroup] = button.dataset.flight;
+          const disclosure = button.closest(".flight-group");
+          if (disclosure) disclosure.open = false;
           renderFlights(plan);
           updateBudget(plan, getRoute());
         });
@@ -2257,7 +2475,6 @@
           <span class="weather-loading">读取中…</span>
         </div>
       `).join("");
-      document.querySelector("#weather-meta").textContent = "读取中";
     }
 
     async function loadWeather(route, force = false) {
@@ -2289,8 +2506,7 @@
           return `
             <div class="weather-item">
               <span class="weather-city">${result.label}</span>
-              <span class="weather-main">—</span>
-              <span class="weather-detail">暂不可用</span>
+              <span class="weather-main">— 暂不可用</span>
             </div>
           `;
         }
@@ -2299,46 +2515,70 @@
           <div class="weather-item">
             <span class="weather-city">${result.label}</span>
             <span class="weather-main"><span class="weather-icon" aria-hidden="true">${weatherIconFor(data.weather || "")}</span>${weatherTemperature(data.temperature)} ${data.weather || ""}</span>
-            <span class="weather-detail">${data.humidity == null ? "" : `湿度 ${data.humidity}% · `}${data.report_time ? `更新 ${data.report_time.slice(11, 16)}` : ""}</span>
           </div>
         `;
       }).join("");
-      document.querySelector("#weather-meta").textContent = "实时";
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const helper = document.createElement("textarea");
+        helper.value = text;
+        helper.setAttribute("readonly", "");
+        helper.style.position = "fixed";
+        helper.style.opacity = "0";
+        document.body.appendChild(helper);
+        helper.select();
+        document.execCommand("copy");
+        helper.remove();
+      }
     }
 
     function renderPhrases() {
-      document.querySelector("#phrase-list").innerHTML = phrases.map(phrase => `
-        <div class="phrase-row">
+      const categories = ["全部", ...new Set(phrases.map(phrase => phrase.category))];
+      document.querySelector("#phrase-categories").innerHTML = categories.map(category => `
+        <button class="phrase-category ${category === activePhraseCategory ? "active" : ""}" type="button"
+          data-phrase-category="${category}" role="tab" aria-selected="${category === activePhraseCategory}">
+          ${category}
+        </button>
+      `).join("");
+
+      const visiblePhrases = activePhraseCategory === "全部"
+        ? phrases
+        : phrases.filter(phrase => phrase.category === activePhraseCategory);
+
+      document.querySelector("#phrase-list").innerHTML = visiblePhrases.map(phrase => `
+        <button class="phrase-row" type="button" data-phrase="${phrase.original}" aria-label="复制：${phrase.original}">
           <span class="phrase-copy-block">
             <span class="phrase-original">${phrase.original}</span>
             <span class="phrase-pronunciation">${phrase.pronunciation}</span>
           </span>
           <span class="phrase-meaning">${phrase.meaning}</span>
-          <button class="copy-button" type="button" data-phrase="${phrase.original}" title="复制越南语" aria-label="复制：${phrase.original}">⧉</button>
-        </div>
+        </button>
       `).join("");
 
-      document.querySelectorAll(".copy-button").forEach(button => {
+      document.querySelectorAll(".phrase-category").forEach(button => {
+        button.addEventListener("click", () => {
+          activePhraseCategory = button.dataset.phraseCategory;
+          renderPhrases();
+        });
+      });
+
+      document.querySelectorAll(".phrase-row").forEach(button => {
         button.addEventListener("click", async () => {
           const text = button.dataset.phrase;
-          try {
-            await navigator.clipboard.writeText(text);
-          } catch {
-            const helper = document.createElement("textarea");
-            helper.value = text;
-            helper.setAttribute("readonly", "");
-            helper.style.position = "fixed";
-            helper.style.opacity = "0";
-            document.body.appendChild(helper);
-            helper.select();
-            document.execCommand("copy");
-            helper.remove();
-          }
+          await copyText(text);
+          const meaning = button.querySelector(".phrase-meaning");
+          const originalMeaning = meaning.textContent;
           button.classList.add("copied");
           button.setAttribute("aria-label", `已复制：${text}`);
+          meaning.textContent = "已复制";
           window.setTimeout(() => {
             button.classList.remove("copied");
             button.setAttribute("aria-label", `复制：${text}`);
+            meaning.textContent = originalMeaning;
           }, 900);
         });
       });
@@ -2397,6 +2637,7 @@
       tab.addEventListener("click", () => {
         activePlan = tab.dataset.plan;
         activeRoute = getPlan().defaultRoute;
+        document.querySelector("#route-picker").open = false;
         renderPage(true);
         window.scrollTo(0, 0);
       });
