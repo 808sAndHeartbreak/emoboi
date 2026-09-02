@@ -50,6 +50,18 @@
       outline-offset: 2px;
     }
 
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
     .page {
       width: min(1220px, calc(100% - 36px));
       margin: 0 auto;
@@ -377,6 +389,292 @@
     }
 
     .route-callout strong { color: var(--ink); }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(250px, .82fr) minmax(0, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+      align-items: start;
+    }
+
+    .tool-panel {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .tool-head {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 42px;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tool-head h2 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .tool-head span {
+      margin-left: auto;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 9px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .icon-button {
+      display: grid;
+      width: 25px;
+      height: 25px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      background: transparent;
+      color: var(--teal);
+      cursor: pointer;
+      font-size: 15px;
+      line-height: 1;
+      transition: background .2s ease, transform .2s ease;
+    }
+
+    .weather-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(114px, 1fr));
+      gap: 6px;
+      min-height: 88px;
+      padding: 9px 12px 11px;
+    }
+
+    .weather-item {
+      min-width: 0;
+      padding: 7px 8px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--paper-alt);
+    }
+
+    .weather-city,
+    .weather-main,
+    .weather-detail {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .weather-city {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    .weather-main {
+      margin-top: 3px;
+      font-size: 15px;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .weather-main .weather-icon {
+      margin-right: 3px;
+      font-size: 14px;
+    }
+
+    .weather-detail {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .weather-loading {
+      color: var(--muted);
+      font-size: 10px;
+      align-self: center;
+    }
+
+    .weather-error {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .weather-error button {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--teal);
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 850;
+    }
+
+    .exchange-body {
+      padding: 9px 12px 11px;
+    }
+
+    .fx-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .fx-input-wrap {
+      display: flex;
+      min-width: 0;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      background: var(--paper-alt);
+    }
+
+    .fx-input {
+      width: 100%;
+      min-width: 0;
+      padding: 9px 9px;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 850;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .fx-mode {
+      display: flex;
+      align-items: center;
+      padding-right: 4px;
+    }
+
+    .fx-mode button {
+      padding: 4px 5px;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .fx-mode button.active {
+      background: var(--teal-soft);
+      color: var(--teal);
+    }
+
+    .fx-swap {
+      display: grid;
+      width: 27px;
+      height: 27px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: var(--paper-alt);
+      color: var(--teal);
+      cursor: pointer;
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .fx-result {
+      min-height: 33px;
+      margin-top: 7px;
+      padding: 5px 8px;
+      border-left: 2px solid var(--coral);
+      background: var(--coral-soft);
+      font-size: 14px;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.6;
+      text-align: right;
+    }
+
+    .fx-presets {
+      display: flex;
+      gap: 5px;
+      margin-top: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .fx-presets::-webkit-scrollbar { display: none; }
+
+    .fx-preset {
+      flex: 0 0 auto;
+      min-width: 48px;
+      padding: 5px 7px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: var(--paper-alt);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 850;
+    }
+
+    .phrase-list {
+      display: grid;
+      padding: 2px 12px 7px;
+    }
+
+    .phrase-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, .9fr) minmax(0, .95fr) 25px;
+      gap: 6px;
+      align-items: center;
+      min-height: 34px;
+      border-top: 1px solid var(--line);
+    }
+
+    .phrase-row:first-child { border-top: 0; }
+
+    .phrase-original,
+    .phrase-pronunciation,
+    .phrase-meaning {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .phrase-original {
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .phrase-pronunciation,
+    .phrase-meaning {
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .phrase-copy {
+      display: grid;
+      width: 24px;
+      height: 24px;
+      place-items: center;
+      border: 1px solid transparent;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--teal);
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .phrase-copy.copied {
+      border-color: var(--teal);
+      background: var(--teal-soft);
+    }
 
     .workspace {
       display: grid;
@@ -881,6 +1179,11 @@
         gap: 12px;
       }
 
+      .tools-grid {
+        grid-template-columns: minmax(0, 1.1fr) minmax(230px, .9fr) minmax(0, 1fr);
+        gap: 8px;
+      }
+
       .side-stack {
         display: grid;
         grid-template-columns: 1fr;
@@ -891,6 +1194,10 @@
       .city-list, .flight-groups, .transport-list { padding-left: 13px; padding-right: 13px; }
       .budget { margin-left: 13px; margin-right: 13px; }
       .flight-option { min-height: 51px; padding: 6px 8px; }
+      .tool-head { min-height: 37px; padding: 6px 9px; }
+      .weather-list { padding: 7px 9px 8px; }
+      .exchange-body { padding: 7px 9px 8px; }
+      .phrase-list { padding-left: 9px; padding-right: 9px; }
       .reference-drawer { top: 54px; }
     }
 
@@ -985,6 +1292,12 @@
         margin-top: 13px;
       }
 
+      .tools-grid {
+        grid-template-columns: 1fr;
+        gap: 9px;
+        margin-top: 11px;
+      }
+
       .side-stack {
         grid-template-columns: 1fr;
         gap: 12px;
@@ -1039,6 +1352,15 @@
       .flight-time { font-size: 11px; }
       .flight-detail { font-size: 8px; }
       .flight-price { font-size: 14px; }
+
+      .weather-list {
+        grid-template-columns: repeat(auto-fit, minmax(106px, 1fr));
+        min-height: 77px;
+      }
+
+      .phrase-row {
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, .9fr) minmax(0, .9fr) 25px;
+      }
 
       .transport-row {
         grid-template-columns: minmax(0, 1fr) auto;
@@ -1117,6 +1439,52 @@
       <div class="route-rail" id="route-rail"></div>
     </section>
     <p class="route-callout" id="route-callout"></p>
+
+    <section class="tools-grid" aria-label="旅行小工具">
+      <section class="tool-panel weather-tool">
+        <div class="tool-head">
+          <h2>天气</h2>
+          <span id="weather-meta">实时</span>
+          <button class="icon-button" id="weather-refresh" type="button" title="刷新天气" aria-label="刷新天气">↻</button>
+        </div>
+        <div class="weather-list" id="weather-list" aria-live="polite"></div>
+      </section>
+
+      <section class="tool-panel exchange-tool">
+        <div class="tool-head">
+          <h2>汇率</h2>
+          <span>1 CNY = 3,880 VND</span>
+        </div>
+        <div class="exchange-body">
+          <div class="fx-row">
+            <div class="fx-input-wrap">
+              <label class="sr-only" for="fx-input">换算金额</label>
+              <input class="fx-input" id="fx-input" type="number" value="1" min="0" step="0.01" inputmode="decimal">
+              <div class="fx-mode" role="group" aria-label="输入币种">
+                <button type="button" data-currency="CNY" class="active" aria-pressed="true">¥</button>
+                <button type="button" data-currency="VND" aria-pressed="false">₫</button>
+              </div>
+            </div>
+            <button class="fx-swap" id="fx-swap" type="button" title="交换输入币种" aria-label="交换输入币种">⇄</button>
+          </div>
+          <output class="fx-result" id="fx-result" for="fx-input">₫ 3,880</output>
+          <div class="fx-presets" aria-label="快捷金额">
+            <button class="fx-preset" type="button" data-value="1">¥1</button>
+            <button class="fx-preset" type="button" data-value="50">¥50</button>
+            <button class="fx-preset" type="button" data-value="100">¥100</button>
+            <button class="fx-preset" type="button" data-value="500">¥500</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="tool-panel phrase-tool">
+        <div class="tool-head">
+          <h2>常用语</h2>
+          <span>点 ⧉ 复制</span>
+        </div>
+        <div class="phrase-list" id="phrase-list"></div>
+      </section>
+    </section>
 
     <section class="workspace">
       <section class="panel">
@@ -1440,6 +1808,27 @@
     let activePlan = "a";
     let activeRoute = plans.a.defaultRoute;
     const selectedFlights = {};
+    const weatherCache = new Map();
+    let weatherRequestId = 0;
+    const cnyToVnd = 3880;
+    const weatherApi = "https://uapis.cn/api/v1/misc/weather";
+    const weatherQueries = {
+      "河内": "Hanoi",
+      "岘港 + 会安": "Da Nang",
+      "芽庄": "Nha Trang",
+      "大叻": "Da Lat",
+      "胡志明市": "Ho Chi Minh City"
+    };
+    const phrases = [
+      { original: "Xin chào", pronunciation: "sin chow", meaning: "你好" },
+      { original: "Cảm ơn", pronunciation: "gam uhn", meaning: "谢谢" },
+      { original: "Xin lỗi", pronunciation: "sin loy", meaning: "对不起 / 抱歉" },
+      { original: "Bao nhiêu tiền?", pronunciation: "bow nyew tyen", meaning: "多少钱？" },
+      { original: "Nhà vệ sinh ở đâu?", pronunciation: "nya veh sing uh dow", meaning: "洗手间在哪里？" },
+      { original: "Không cay", pronunciation: "kohng kai", meaning: "不辣" },
+      { original: "Tính tiền", pronunciation: "ting tyen", meaning: "结账" },
+      { original: "Tôi không hiểu", pronunciation: "toy kohng hee-oo", meaning: "我不明白" }
+    ];
 
     const money = value => `¥${value.toLocaleString("zh-CN")}`;
     const getPlan = () => plans[activePlan];
@@ -1477,6 +1866,126 @@
       document.querySelector("#route-duration").textContent = plan.duration;
       document.querySelector("#route-stay").textContent = plan.stay;
       document.querySelector("#route-callout").innerHTML = route.callout;
+    }
+
+    function weatherLocationsFor(route) {
+      const locations = [];
+      const seen = new Set();
+      route.cities.forEach(city => {
+        const query = weatherQueries[city.name];
+        if (query && !seen.has(query)) {
+          seen.add(query);
+          locations.push({ label: city.name, query });
+        }
+      });
+      return locations;
+    }
+
+    function weatherIconFor(description) {
+      if (/雷/.test(description)) return "⚡";
+      if (/雪/.test(description)) return "❄";
+      if (/雨/.test(description)) return "☂";
+      if (/晴/.test(description)) return "☀";
+      if (/云|阴|雾|霾/.test(description)) return "☁";
+      return "◌";
+    }
+
+    function weatherTemperature(value) {
+      const temperature = Number(value);
+      if (!Number.isFinite(temperature)) return "—";
+      return `${Number.isInteger(temperature) ? temperature : temperature.toFixed(1)}°`;
+    }
+
+    function renderWeatherLoading(locations) {
+      document.querySelector("#weather-list").innerHTML = locations.map(location => `
+        <div class="weather-item">
+          <span class="weather-city">${location.label}</span>
+          <span class="weather-loading">读取中…</span>
+        </div>
+      `).join("");
+      document.querySelector("#weather-meta").textContent = "读取中";
+    }
+
+    async function loadWeather(route, force = false) {
+      const requestId = ++weatherRequestId;
+      const locations = weatherLocationsFor(route);
+      renderWeatherLoading(locations);
+
+      const results = await Promise.all(locations.map(async location => {
+        const cached = weatherCache.get(location.query);
+        if (!force && cached && Date.now() - cached.timestamp < 10 * 60 * 1000) {
+          return { ...location, data: cached.data };
+        }
+
+        try {
+          const response = await fetch(`${weatherApi}?city=${encodeURIComponent(location.query)}&lang=zh`);
+          if (!response.ok) throw new Error(`weather-${response.status}`);
+          const data = await response.json();
+          weatherCache.set(location.query, { data, timestamp: Date.now() });
+          return { ...location, data };
+        } catch {
+          return { ...location, error: true };
+        }
+      }));
+
+      if (requestId !== weatherRequestId) return;
+
+      document.querySelector("#weather-list").innerHTML = results.map(result => {
+        if (result.error || !result.data) {
+          return `
+            <div class="weather-item">
+              <span class="weather-city">${result.label}</span>
+              <span class="weather-main">—</span>
+              <span class="weather-detail">暂不可用</span>
+            </div>
+          `;
+        }
+        const data = result.data;
+        return `
+          <div class="weather-item">
+            <span class="weather-city">${result.label}</span>
+            <span class="weather-main"><span class="weather-icon" aria-hidden="true">${weatherIconFor(data.weather || "")}</span>${weatherTemperature(data.temperature)} ${data.weather || ""}</span>
+            <span class="weather-detail">${data.humidity == null ? "" : `湿度 ${data.humidity}% · `}${data.report_time ? `更新 ${data.report_time.slice(11, 16)}` : ""}</span>
+          </div>
+        `;
+      }).join("");
+      document.querySelector("#weather-meta").textContent = "实时";
+    }
+
+    function renderPhrases() {
+      document.querySelector("#phrase-list").innerHTML = phrases.map(phrase => `
+        <div class="phrase-row">
+          <span class="phrase-original">${phrase.original}</span>
+          <span class="phrase-pronunciation">${phrase.pronunciation}</span>
+          <span class="phrase-meaning">${phrase.meaning}</span>
+          <button class="phrase-copy" type="button" data-phrase="${phrase.original}" title="复制越南语" aria-label="复制：${phrase.original}">⧉</button>
+        </div>
+      `).join("");
+
+      document.querySelectorAll(".phrase-copy").forEach(button => {
+        button.addEventListener("click", async () => {
+          const text = button.dataset.phrase;
+          try {
+            await navigator.clipboard.writeText(text);
+          } catch {
+            const helper = document.createElement("textarea");
+            helper.value = text;
+            helper.setAttribute("readonly", "");
+            helper.style.position = "fixed";
+            helper.style.opacity = "0";
+            document.body.appendChild(helper);
+            helper.select();
+            document.execCommand("copy");
+            helper.remove();
+          }
+          button.classList.add("copied");
+          button.setAttribute("aria-label", `已复制：${text}`);
+          window.setTimeout(() => {
+            button.classList.remove("copied");
+            button.setAttribute("aria-label", `复制：${text}`);
+          }, 900);
+        });
+      });
     }
 
     function renderRail(route) {
@@ -1587,6 +2096,35 @@
       });
     }
 
+    let fxCurrency = "CNY";
+
+    function updateExchange() {
+      const input = document.querySelector("#fx-input");
+      const rawValue = Number.parseFloat(input.value);
+      const value = Number.isFinite(rawValue) && rawValue >= 0 ? rawValue : 0;
+      const result = fxCurrency === "CNY"
+        ? `₫ ${Math.round(value * cnyToVnd).toLocaleString("en-US")}`
+        : `¥ ${(value / cnyToVnd).toFixed(2)}`;
+      document.querySelector("#fx-result").textContent = result;
+
+      document.querySelectorAll(".fx-mode button").forEach(button => {
+        const active = button.dataset.currency === fxCurrency;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-pressed", String(active));
+      });
+    }
+
+    function switchFxCurrency(currency) {
+      if (currency === fxCurrency) return;
+      const input = document.querySelector("#fx-input");
+      const current = Number.parseFloat(input.value);
+      const value = Number.isFinite(current) && current >= 0 ? current : 0;
+      const converted = fxCurrency === "CNY" ? value * cnyToVnd : value / cnyToVnd;
+      fxCurrency = currency;
+      input.value = currency === "CNY" ? converted.toFixed(2) : String(Math.round(converted));
+      updateExchange();
+    }
+
     function renderPage(animate = false) {
       const plan = getPlan();
       const route = getRoute();
@@ -1598,6 +2136,7 @@
       renderTransport(route);
       renderFlights(plan);
       updateBudget(plan, route);
+      loadWeather(route);
 
       if (animate) {
         const sections = [
@@ -1620,6 +2159,22 @@
         renderPage(true);
       });
     });
+
+    document.querySelector("#fx-input").addEventListener("input", updateExchange);
+    document.querySelectorAll(".fx-mode button").forEach(button => {
+      button.addEventListener("click", () => switchFxCurrency(button.dataset.currency));
+    });
+    document.querySelector("#fx-swap").addEventListener("click", () => {
+      switchFxCurrency(fxCurrency === "CNY" ? "VND" : "CNY");
+    });
+    document.querySelectorAll(".fx-preset").forEach(button => {
+      button.addEventListener("click", () => {
+        fxCurrency = "CNY";
+        document.querySelector("#fx-input").value = button.dataset.value;
+        updateExchange();
+      });
+    });
+    document.querySelector("#weather-refresh").addEventListener("click", () => loadWeather(getRoute(), true));
 
     const referenceTrigger = document.querySelector("#reference-trigger");
     const referenceDrawer = document.querySelector("#reference-drawer");
@@ -1667,6 +2222,8 @@
       }
     });
 
+    renderPhrases();
+    updateExchange();
     renderPage();
   </script>
 </body>
