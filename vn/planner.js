@@ -179,7 +179,7 @@ leg("dalat", "hue", { mode: "飞机中转 / 长途巴士", duration: [5, 14], pr
 leg("dalat", "hcmc", { mode: "飞机 / 巴士", duration: [1, 7], price: [300000, 1600000], note: "飞机约 1 小时；巴士可从市区直接出发，但需约 6–8 小时。", warning: "节省预算可选白天巴士，节省时间选飞机。" });
 leg("dalat", "phuquoc", { mode: "飞机中转", duration: [3.5, 6], price: [1400000, 3200000], note: "通常经胡志明市中转，没有合适衔接时可能需住一晚。", warning: "务必按日期核对联程与行李规则。" });
 leg("hue", "hcmc", { mode: "飞机", duration: [1.4, 1.7], price: [900000, 2100000], note: "HUI 与 SGN 之间直飞最适合短行程。", warning: "航班选择少于岘港出发。" });
-leg("hue", "phuquoc", { mode: "飞机中转", duration: [4, 7], price: [1500000, 3400000], note: "通常经胡志明市中转；也可先陆路到岘港再飞。", warning: "转场成本较高，12 晚路线不建议同时保留过多节点。" });
+leg("hue", "phuquoc", { mode: "飞机中转", duration: [4, 7], price: [1500000, 3400000], note: "通常经胡志明市中转；也可先陆路到岘港再飞。", warning: "转场成本较高，本次行程不建议同时保留过多节点。" });
 leg("hcmc", "phuquoc", { mode: "飞机", duration: [1, 1.2], price: [700000, 1700000], note: "SGN 与 PQC 之间飞行最省时；巴士加轮渡通常约 10–12 小时。", warning: "雨季尾段可能影响海上活动，但通常不影响航空主线。", window: "优先上午直飞；下午只安排酒店周边活动。" });
 
 const PHRASES = {
@@ -325,6 +325,7 @@ let activePhraseCategory = Object.keys(PHRASES)[0];
 let revealObserver = null;
 let activePresetId = matchingPreset(route)?.id || "custom";
 let customRoute = activePresetId === "custom" ? cloneRoute(route) : null;
+let activeNodeId = route[0]?.id || null;
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -396,6 +397,10 @@ function createId() {
 
 function saveRoute() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(route));
+}
+
+function ensureActiveNode() {
+  if (!route.some(node => node.id === activeNodeId)) activeNodeId = route[0]?.id || null;
 }
 
 function esc(value) {
@@ -507,6 +512,7 @@ function plansForNode(node, index, dates) {
 }
 
 function render() {
+  ensureActiveNode();
   renderRoute();
   renderHeroRail();
   renderPresets();
@@ -526,20 +532,18 @@ function renderHeroRail() {
   rail.innerHTML = route.map((node, index) => {
     const city = CITIES[node.city];
     const period = compactDateRange(dates[index].start, dates[index].end);
-    return `<span class="rail-stop ${node.role}" role="listitem"><button type="button" data-jump-node="${esc(node.id)}" aria-label="查看${city.name} ${period} 规划"><i aria-hidden="true"></i><b>${city.name}<em>${city.airport}</em></b><small>${period}</small></button></span>`;
+    const active = node.id === activeNodeId;
+    return `<span class="rail-stop ${node.role}${active ? " is-active" : ""}" role="listitem"><button type="button" data-jump-node="${esc(node.id)}" aria-label="查看${city.name} ${period} 规划"${active ? ' aria-current="step"' : ""}><i aria-hidden="true"></i><b>${city.name}<em>${city.airport}</em></b><small>${period}</small></button></span>`;
   }).join("");
 }
 
 $(".planner-hero").addEventListener("click", event => {
   const button = event.target.closest("button[data-jump-node]");
   if (!button) return;
-  const node = routeEditor.querySelector(`[data-id="${CSS.escape(button.dataset.jumpNode)}"]`);
-  if (!node) return;
-  node.querySelector("details").open = true;
-  $$(".route-node.node-focus", routeEditor).forEach(item => item.classList.remove("node-focus"));
-  node.classList.add("node-focus");
-  window.setTimeout(() => node.classList.remove("node-focus"), 1300);
-  node.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  if (!route.some(node => node.id === button.dataset.jumpNode)) return;
+  activeNodeId = button.dataset.jumpNode;
+  renderRoute();
+  renderHeroRail();
 });
 
 function renderPresets() {
@@ -557,7 +561,7 @@ function renderPresets() {
 }
 
 function setupReveals() {
-  const items = $$(".route-node, .transport-row");
+  const items = $$(".transport-row");
   document.documentElement.classList.add("motion-ready");
   if (!("IntersectionObserver" in window) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     items.forEach(item => item.classList.add("is-visible"));
@@ -601,7 +605,9 @@ function renderRoute() {
       </li>`;
     }).join("");
 
-    return `<li class="route-node${fixed ? "" : " sortable"}" data-id="${esc(node.id)}"${fixed ? "" : ' draggable="true"'}>
+    const active = node.id === activeNodeId;
+    const compactPeriod = compactDateRange(dates[index].start, dates[index].end);
+    return `<li class="route-node ${active ? "is-active" : "is-compact"}${fixed ? "" : " sortable"}" data-id="${esc(node.id)}" data-select-node tabindex="${active ? "-1" : "0"}" aria-label="${active ? "当前节点" : "展开"}${city.name}，${compactPeriod}"${fixed ? "" : ' draggable="true"'}>
       ${fixed ? "" : `<div class="node-actions" aria-label="${city.name}节点操作">
         <span class="drag-handle" data-drag-handle draggable="true" role="button" tabindex="0" aria-label="拖动${city.name}调整顺序" data-tooltip="拖动排序" title="拖动调整顺序">⠿</span>
         <button type="button" class="move-button" data-action="up" aria-label="上移${city.name}" data-tooltip="上移" title="上移"${index === 1 ? " disabled" : ""}>↑</button>
@@ -612,6 +618,8 @@ function renderRoute() {
         <span class="node-number">${String(index + 1).padStart(2, "0")}</span>
         <div class="node-city">
           <span class="node-anchor">${roleLabel}</span>
+          <strong class="compact-city-name">${city.name}</strong>
+          <span class="compact-period">${compactPeriod}</span>
           ${fixed ? `<strong class="fixed-city">${city.name}</strong>` : `<select class="city-select" aria-label="选择第 ${index + 1} 站城市">${options}</select>`}
           <span class="city-meta">${city.local} · ${city.airport} · ${city.region}</span>
         </div>
@@ -622,6 +630,7 @@ function renderRoute() {
           <p class="node-caution">${city.caution}</p>
         </div>
         <div class="node-side">
+          <span class="compact-night-count"><strong>${node.nights}</strong> 晚</span>
           <div class="night-stepper">
             <button type="button" data-action="decrease" aria-label="减少${city.name}住宿晚数"${node.nights <= 1 ? " disabled" : ""}>−</button>
             <span class="night-count"><strong>${node.nights}</strong><span>晚</span></span>
@@ -630,7 +639,7 @@ function renderRoute() {
           <span class="node-budget"><strong>${formatCny(budgetMin)}–${formatCny(budgetMax)}</strong>本地停留 / 人<small>建议 ${city.recommendedNights} 晚 · 最多 ${city.maxNights} 晚</small></span>
         </div>
       </div>
-      <details class="city-detail"${openNodeIds.has(node.id) ? " open" : ""}>
+      <details class="city-detail"${active && openNodeIds.has(node.id) ? " open" : ""}>
         <summary><span>规划 <small>${node.nights} 晚</small></span><i aria-hidden="true">＋</i></summary>
         <div class="city-detail-body${city.image ? " has-image" : ""}">
           <div class="detail-copy">
@@ -813,9 +822,10 @@ routeEditor.addEventListener("pointerdown", event => {
 });
 
 routeEditor.addEventListener("mousedown", event => {
-  const node = event.target.closest(".route-node.sortable");
-  if (!node || event.button !== 0) return;
-  if (event.target.closest("button:not(.drag-handle), select, summary, .city-detail")) return;
+  const handle = event.target.closest("[data-drag-handle]");
+  if (!handle || event.button !== 0) return;
+  const node = handle.closest(".route-node.sortable");
+  if (!node) return;
   draggedNodeId = node?.dataset.id || null;
   if (!draggedNodeId) return;
   dragStartOrder = $$(".route-node", routeEditor).map(item => item.dataset.id).join("|");
@@ -900,7 +910,14 @@ routeEditor.addEventListener("dragend", finishDrag);
 
 routeEditor.addEventListener("click", event => {
   const button = event.target.closest("button[data-action]");
-  if (!button) return;
+  if (!button) {
+    const compactNode = event.target.closest(".route-node.is-compact[data-select-node]");
+    if (!compactNode || event.target.closest("[data-drag-handle], select")) return;
+    activeNodeId = compactNode.dataset.id;
+    renderRoute();
+    renderHeroRail();
+    return;
+  }
   const nodeElement = button.closest(".route-node");
   const id = nodeElement?.dataset.id;
   const action = button.dataset.action;
@@ -909,8 +926,21 @@ routeEditor.addEventListener("click", event => {
     if (action === "increase") route[index].nights = clampNights(route[index].nights + 1, route[index].city);
     if (action === "up" && index > 1) [route[index - 1], route[index]] = [route[index], route[index - 1]];
     if (action === "down" && index < route.length - 2) [route[index + 1], route[index]] = [route[index], route[index + 1]];
-    if (action === "delete" && route[index].role === "middle") route.splice(index, 1);
+    if (action === "delete" && route[index].role === "middle") {
+      if (route[index].id === activeNodeId) activeNodeId = route[index - 1]?.id || route[index + 1]?.id;
+      route.splice(index, 1);
+    }
   });
+});
+
+routeEditor.addEventListener("keydown", event => {
+  if (!['Enter', ' '].includes(event.key) || event.target.closest("button, select, summary, [data-drag-handle]")) return;
+  const compactNode = event.target.closest(".route-node.is-compact[data-select-node]");
+  if (!compactNode) return;
+  event.preventDefault();
+  activeNodeId = compactNode.dataset.id;
+  renderRoute();
+  renderHeroRail();
 });
 
 routeEditor.addEventListener("change", event => {
@@ -931,7 +961,9 @@ $("#city-options").addEventListener("click", event => {
   const option = event.target.closest("button[data-city]");
   if (!option || option.disabled) return;
   const city = option.dataset.city;
-  route.splice(route.length - 1, 0, { id: createId(), city, nights: CITIES[city].defaultNights, role: "middle" });
+  const id = createId();
+  route.splice(route.length - 1, 0, { id, city, nights: CITIES[city].defaultNights, role: "middle" });
+  activeNodeId = id;
   markCustom();
   $("#city-dialog").close();
   transitionUpdate(render);
@@ -952,6 +984,7 @@ $("#preset-options").addEventListener("click", event => {
     route = presetRoute(preset);
     activePresetId = preset.id;
   }
+  activeNodeId = route[0]?.id || null;
   render();
 });
 

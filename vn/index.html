@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#0d463e">
   <meta name="description" content="可编辑的 2026 越南路线规划器。">
   <title>越南路线规划器 · 2026</title>
-  <link rel="stylesheet" href="planner.css?v=20260903-20">
+  <link rel="stylesheet" href="planner.css?v=20260903-21">
 </head>
 <body class="night-atlas">
   <header class="appbar">
@@ -30,7 +30,6 @@
             <div class="journey-head">
               <div class="journey-heading">
                 <span class="section-kicker">越南 · 2026</span>
-                <p class="journey-title">12 晚路线</p>
                 <h1 class="sr-only" id="route-title">河内 → 岘港 → 芽庄 → 大叻 → 河内</h1>
               </div>
               <div class="trip-window" aria-label="国际航班时间">
@@ -48,13 +47,13 @@
       </div>
       <div class="workspace shell" id="route-planner">
         <div class="route-workspace">
+          <ol class="route-editor" id="route-editor" aria-label="行程节点" aria-live="polite"></ol>
+
           <div class="preset-bar">
             <div class="preset-label"><span>快速方案</span><small id="preset-caption">选择后仍可继续修改</small></div>
             <div class="preset-options" id="preset-options" role="tablist" aria-label="路线预设"></div>
           </div>
           <p class="preset-note" id="preset-note"></p>
-
-          <ol class="route-editor" id="route-editor" aria-label="行程节点"></ol>
 
           <button class="add-node" id="add-node" type="button">
             <span aria-hidden="true">＋</span>
@@ -175,6 +174,6 @@
 
   <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">已复制</div>
 
-  <script src="planner.js?v=20260903-20"></script>
+  <script src="planner.js?v=20260903-21"></script>
 </body>
 </html>
