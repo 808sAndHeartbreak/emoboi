@@ -7,20 +7,11 @@
   <meta name="theme-color" content="#0d463e">
   <meta name="description" content="可编辑的 2026 越南路线规划器。">
   <title>越南路线规划器 · 2026</title>
-  <link rel="stylesheet" href="planner.css?v=20260903-8">
+  <link rel="stylesheet" href="planner.css?v=20260903-11">
 </head>
 <body class="night-atlas">
   <header class="appbar">
     <div class="appbar-inner">
-      <div class="brand">
-        <span class="brand-mark" aria-hidden="true">V</span>
-        <span><strong>VIETNAM / 2026</strong><small>09.25—10.07 · 11 晚</small></span>
-      </div>
-      <div class="flight-window">
-        <span>抵达河内 09.25 · 17:45</span>
-        <i aria-hidden="true"></i>
-        <span>离开河内 10.07 · 02:20</span>
-      </div>
       <div class="tool-actions" aria-label="旅行工具">
         <button type="button" data-tool="weather" aria-expanded="false">天气</button>
         <button type="button" data-tool="exchange" aria-expanded="false">汇率</button>
@@ -34,14 +25,8 @@
       <div class="hero-map" aria-hidden="true"></div>
       <div class="hero-inner shell">
         <div class="hero-copy">
-          <span class="eyebrow">河内往返 · 11 晚</span>
           <h1 id="route-title">河内 → 岘港 → 芽庄 → 大叻 → 河内</h1>
-          <p>改城市、顺序、晚数；日期、交通、预算自动更新。</p>
-        </div>
-        <div class="hero-status">
-          <div><span>已分配</span><strong id="hero-nights">11 / 11 晚</strong></div>
-          <div><span>路线状态</span><strong id="hero-status">刚好排满</strong></div>
-          <button class="reset-button" id="reset-route" type="button">恢复默认路线</button>
+          <a class="hero-jump" href="#route-editor">查看详细日程 <span aria-hidden="true">↓</span></a>
         </div>
         <div class="route-rail" id="route-rail" aria-label="当前路线"></div>
       </div>
@@ -54,7 +39,6 @@
             <span class="section-kicker">01</span>
             <h2>路线</h2>
           </div>
-          <p>河内固定首尾；会安等周边目的地归入最近的机场城市。</p>
         </header>
 
         <div class="preset-bar">
@@ -85,7 +69,7 @@
             <div><dt>节点间交通</dt><dd id="transport-budget">¥0–¥0</dd></div>
             <div class="metric-total"><dt>境内合计 / 人</dt><dd id="total-budget">¥0–¥0</dd></div>
             <div><dt>转场次数</dt><dd id="transfer-count">0 次</dd></div>
-            <div><dt>门到门转场</dt><dd id="transport-hours">约 0h</dd></div>
+            <div><dt>路上总时间</dt><dd id="transport-hours">约 0h</dd></div>
           </dl>
           <p class="budget-note">每人估算；两人同住普通酒店。不含国际机票、购物和高价体验。</p>
           <ul class="advice-list" id="advice-list"></ul>
@@ -100,7 +84,6 @@
             <span class="section-kicker">02</span>
             <h2>节点之间怎么走</h2>
           </div>
-          <p>每人单程估算；具体班次和价格以预订日为准。</p>
         </header>
         <div class="transport-list" id="transport-list"></div>
       </div>
@@ -133,7 +116,6 @@
 
   <footer class="footer shell">
     <p>资料：<a href="https://vietnam.travel/place-to-go" target="_blank" rel="noopener">越南国家旅游局</a> · <a href="https://12go.asia/en" target="_blank" rel="noopener">12Go Asia</a></p>
-    <p>更新于 2026.09.03</p>
   </footer>
 
   <dialog class="city-dialog" id="city-dialog" aria-labelledby="city-dialog-title">
@@ -187,6 +169,6 @@
 
   <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">已复制</div>
 
-  <script src="planner.js?v=20260903-10"></script>
+  <script src="planner.js?v=20260903-11"></script>
 </body>
 </html>
