@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#0d463e">
   <meta name="description" content="可编辑的 2026 越南路线规划器。">
   <title>越南路线规划器 · 2026</title>
-  <link rel="stylesheet" href="planner.css?v=20260903-21">
+  <link rel="stylesheet" href="planner.css?v=20260903-23">
 </head>
 <body class="night-atlas">
   <header class="appbar">
@@ -30,13 +30,14 @@
             <div class="journey-head">
               <div class="journey-heading">
                 <span class="section-kicker">越南 · 2026</span>
-                <h1 class="sr-only" id="route-title">河内 → 岘港 → 芽庄 → 大叻 → 河内</h1>
+                <h1 class="sr-only" id="route-title">河内 → 岘港 → 大叻 → 芽庄 → 芽庄 · 金兰湾</h1>
               </div>
-              <div class="trip-window" aria-label="国际航班时间">
-                <span><b>09.25</b><strong>17:45 抵达 HAN T2</strong></span>
+              <div class="trip-window" aria-label="已确认的行程边界">
+                <span><b>09.25—27</b><strong>河内 2 晚 · 17:45 抵达</strong></span>
                 <i aria-hidden="true"></i>
-                <span><b>10.07</b><strong>18:45 从 HAN T2 起飞</strong></span>
-                <em>12 晚</em>
+                <span class="is-open"><b>09.27—10.05</b><strong>8 晚待规划</strong></span>
+                <i aria-hidden="true"></i>
+                <span><b>10.05—07</b><strong>Fusion · 7 日 14:05 飞</strong></span>
               </div>
             </div>
             <div class="route-rail-wrap">
@@ -64,11 +65,11 @@
         <aside class="analysis-panel" aria-live="polite">
           <div class="analysis-sticky">
             <div class="analysis-head">
-              <span class="section-kicker">当前</span>
-              <h2>路线分析</h2>
+              <span class="section-kicker">中段</span>
+              <h2>规划检查</h2>
               <div class="night-meter">
                 <div class="meter-track"><span id="night-meter-fill"></span></div>
-                <div class="meter-copy"><span id="night-meter-label">已分配 12 晚</span><strong id="night-balance">刚好</strong></div>
+                <div class="meter-copy"><span id="night-meter-label">中段 8 / 8 晚</span><strong id="night-balance">日期吻合</strong></div>
               </div>
             </div>
             <div class="analysis-content">
@@ -79,7 +80,7 @@
                 <div><dt>转场次数</dt><dd id="transfer-count">0 次</dd></div>
                 <div><dt>路上总时间</dt><dd id="transport-hours">约 0h</dd></div>
               </dl>
-              <p class="budget-note">每人估算；两人同住普通酒店。不含国际机票、购物和高价体验。</p>
+              <p class="budget-note">每人估算；不含已购买机票、已预订的 Fusion Resort、购物和高价体验。</p>
               <ul class="advice-list" id="advice-list"></ul>
             </div>
           </div>
@@ -102,7 +103,7 @@
   </main>
 
   <footer class="footer shell">
-    <p>资料：<a href="https://vietnam.travel/place-to-go" target="_blank" rel="noopener">越南国家旅游局</a> · <a href="https://12go.asia/en" target="_blank" rel="noopener">12Go Asia</a></p>
+    <p>资料：<a href="https://vietnam.travel/place-to-go" target="_blank" rel="noopener">越南国家旅游局</a> · <a href="https://www.vietjetair.com/en/pages/flight-procedures-1607050130104" target="_blank" rel="noopener">Vietjet 值机规则</a> · <a href="https://noibaiairport.vn/en/free-shuttle-bus-between-terminals-at-noi-bai-international-airport-nid178.html" target="_blank" rel="noopener">内排机场接驳</a></p>
   </footer>
 
   <dialog class="city-dialog" id="city-dialog" aria-labelledby="city-dialog-title">
@@ -110,7 +111,7 @@
       <div><span class="section-kicker">节点</span><h2 id="city-dialog-title">添加机场城市</h2></div>
       <button class="close-button" id="close-city-dialog" type="button" aria-label="关闭">×</button>
     </div>
-    <p class="dialog-intro">添加后可改顺序和晚数。</p>
+    <p class="dialog-intro">仅添加到 9 月 27 日至 10 月 5 日的 8 晚中段。</p>
     <div class="city-options" id="city-options"></div>
   </dialog>
 
@@ -156,24 +157,36 @@
     </section>
 
     <section class="tool-panel" data-tool-panel="flights" hidden>
-      <p class="tool-intro">当地时间 · 越南比上海慢 1 小时</p>
+      <p class="tool-intro">已确认订单 · 时间均为当地时间</p>
+      <article class="confirmed-hotel">
+        <div class="booking-status"><span>10.05—10.07 · 2 晚</span><strong>已确认</strong></div>
+        <h3>Fusion Resort Cam Ranh</h3>
+        <p>All Spa Inclusive · 10 月 5 日 15:00 入住 · 10 月 7 日 12:00 退房</p>
+        <small>金兰半岛 Cam Hai Dong · 距 CXR 约 5–6 公里</small>
+      </article>
       <div class="tool-flights">
         <article class="tool-flight" role="button" tabindex="0" title="点击复制航班信息" aria-label="复制去程航班信息" data-copy-text="09月25日 周五｜东方航空 MU6013｜14:45 上海浦东 T1 → 17:45 河内内排 T2｜4小时｜手提1×8kg｜托运1×23kg">
           <div class="tool-flight-head"><span>去程 · 09 月 25 日 周五</span><strong>MU6013</strong></div>
           <div class="tool-flight-time"><div><small>北京时间</small><strong>14:45</strong><span>PVG T1 · 上海浦东</span></div><i aria-hidden="true">→</i><div><small>河内时间</small><strong>17:45</strong><span>HAN T2 · 河内内排</span></div></div>
           <div class="tool-flight-meta"><span>东方航空</span><span>4h</span><span>手提 1×8kg</span><span>托运 1×23kg</span></div>
         </article>
+        <article class="tool-flight" role="button" tabindex="0" title="点击复制航班信息" aria-label="复制越捷返程国内航班信息" data-copy-text="10月07日 周三｜越捷航空 VJ772｜14:05 芽庄金兰 CXR T1 → 15:55 河内内排 HAN T1｜已确认">
+          <div class="tool-flight-head"><span>返程第一段 · 10 月 07 日 周三</span><strong>VJ772</strong></div>
+          <div class="tool-flight-time"><div><small>芽庄时间</small><strong>14:05</strong><span>CXR T1 · 芽庄金兰</span></div><i aria-hidden="true">→</i><div><small>河内时间</small><strong>15:55</strong><span>HAN T1 · 河内内排</span></div></div>
+          <div class="tool-flight-meta"><span>越捷航空</span><span>国内航班</span><span>已确认</span></div>
+        </article>
         <article class="tool-flight" role="button" tabindex="0" title="点击复制航班信息" aria-label="复制返程航班信息" data-copy-text="10月07日 周三｜东方航空 MU6014｜18:45 河内内排 T2 → 22:50 上海浦东 T1｜3小时5分｜手提1×8kg｜托运1×23kg">
-          <div class="tool-flight-head"><span>返程 · 10 月 07 日 周三</span><strong>MU6014</strong></div>
+          <div class="tool-flight-head"><span>返程第二段 · 10 月 07 日 周三</span><strong>MU6014</strong></div>
           <div class="tool-flight-time"><div><small>河内时间</small><strong>18:45</strong><span>HAN T2 · 河内内排</span></div><i aria-hidden="true">→</i><div><small>北京时间</small><strong>22:50</strong><span>PVG T1 · 上海浦东</span></div></div>
           <div class="tool-flight-meta"><span>东方航空</span><span>3h05</span><span>手提 1×8kg</span><span>托运 1×23kg</span></div>
         </article>
       </div>
+      <div class="connection-alert"><strong>HAN 衔接 2 小时 50 分</strong><p>VJ772 抵达 T1，MU6014 从 T2 起飞。若非联程且行李不能直挂，需要取行李、乘免费接驳到 T2，再重新值机和出境；不要在当天增加其他安排。</p></div>
     </section>
   </aside>
 
   <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">已复制</div>
 
-  <script src="planner.js?v=20260903-21"></script>
+  <script src="planner.js?v=20260903-23"></script>
 </body>
 </html>
