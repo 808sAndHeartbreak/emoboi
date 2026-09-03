@@ -3,6 +3,7 @@
 document.documentElement.classList.add("js");
 
 const MIDDLE_NIGHTS = 8;
+const TOTAL_DAYS = 13;
 const CNY_TO_VND = 3880;
 const STORAGE_KEY = "emoboi-vn-route-v5";
 const LEGACY_STORAGE_KEYS = ["emoboi-vn-route-v4", "emoboi-vn-route-v3", "emoboi-vn-route-v2"];
@@ -16,14 +17,20 @@ const CITIES = {
     name: "河内", local: "Hà Nội", airport: "HAN", region: "北部",
     minNights: 2, recommendedNights: 2, maxNights: 4, defaultNights: 2, budget: [850000, 1600000], order: 21.03,
     coordinates: [21.0285, 105.8542],
+    themes: ["建筑", "老城", "咖啡", "寺庙"],
+    durationGuide: {
+      2: "1 个完整日：老城、建筑与咖啡足够；27 日按航班保留半天机动。",
+      3: "2 个完整日：增加升龙皇城、西湖或一场博物馆，不必跑远郊。",
+      4: "3 个完整日：再加陶艺、街区慢走或酒店休息，避免连续安排历史景点。"
+    },
     summary: "老城区、大教堂、咖啡与历史建筑。",
     plays: ["还剑湖与老城区", "河内大教堂", "咖啡工作坊", "寺庙或博物馆选一"],
     caution: "9–10 月通常舒适；HAN 距市中心约 45 公里，单程按 60–90 分钟留量。",
     stay: "还剑湖西北侧或老城区边缘：步行方便，夜间比老城腹地安静。",
     move: "老城以步行为主，跨区用 Grab。9 月 27 日退房后可寄存行李；按下一站航班选择中午、下午或晚上前往 HAN。",
     days: [
-      { am: "还剑湖、老城区、河内大教堂；中午在老城吃粉或烤肉米线", pm: "预约咖啡工作坊；若留到大叻再做，就换成文庙或越南美术馆" },
-      { am: "西湖、镇国寺或其他寺庙选一，沿湖慢走", pm: "咖啡馆、自由觅食；把未完成的老城点位补上" }
+      { theme: "老城与咖啡", am: "还剑湖、老城区、河内大教堂；中午在老城吃粉或烤肉米线", pm: "预约咖啡工作坊；若留到大叻再做，就换成文庙或越南美术馆" },
+      { theme: "历史与寺庙", am: "升龙皇城或文庙；对历史兴趣不大就改去西湖慢走", pm: "镇国寺、咖啡馆与自由觅食；不再增加远郊" }
     ],
     restDay: { am: "睡到自然醒、酒店早餐或西湖散步", pm: "咖啡、SPA、自由觅食；不再增加远郊景点" }
   },
@@ -31,15 +38,22 @@ const CITIES = {
     name: "岘港", local: "Đà Nẵng", airport: "DAD", region: "中部",
     minNights: 3, recommendedNights: 3, maxNights: 5, defaultNights: 3, budget: [900000, 1800000], order: 16.0544,
     coordinates: [16.0544, 108.2022],
+    themes: ["海边", "会安", "占婆文化", "慢生活"],
+    durationGuide: {
+      2: "只有 1 个完整日：岘港与会安必须二选一，不建议这样排。",
+      3: "2 个完整日：一天岘港、一天会安，已经是舒服游玩的最低值。",
+      4: "3 个完整日：增加安邦海滩、Tra Que 菜园或完整酒店休息日。",
+      5: "4 个完整日：适合岘港与会安各住一段；新增时间只给海边和慢生活。"
+    },
     summary: "海滩、山茶半岛；以岘港为交通节点去会安。",
     plays: ["美溪海滩", "山茶半岛", "五行山", "会安"],
     caution: "9 月底通常仍温暖；会安 10 月起雨势和风暴风险上升，临行前按天气交换海滩与室内安排。",
     stay: "美溪海滩适合休闲；海州区适合餐饮和夜生活。两区车程约 10–20 分钟。",
     move: "DAD 到市区约 15 分钟；会安约 45–60 分钟；山茶半岛建议包车或摩托。",
     days: [
-      { am: "美溪海滩早晨；占婆雕刻博物馆", pm: "海州区吃喝、韩江散步；龙桥只在合适日期顺路看" },
-      { am: "五行山，避开正午；随后前往会安", pm: "会安古城、晚餐与灯笼夜景；约 21:00 返回或住会安" },
-      { am: "山茶半岛，雨雾或路况不好就取消", pm: "回酒店休息、海边散步，不连排远景点" }
+      { theme: "海边与占婆", am: "美溪海滩早晨；占婆雕刻博物馆", pm: "海州区吃喝、韩江散步；龙桥只在合适日期顺路看" },
+      { theme: "会安人文", am: "五行山后前往会安；或直接去 Tra Que 菜园、Cam Chau 稻田", pm: "会安古城、晚餐与灯笼夜景；约 21:00 返回或住会安" },
+      { theme: "半岛与休息", am: "山茶半岛，雨雾或路况不好就取消", pm: "安邦或美溪海边、酒店休息，不连排远景点" }
     ],
     restDay: { am: "酒店早餐、泳池或海边躺着", pm: "咖啡、按摩、海鲜；不安排巴拿山式长途打卡" }
   },
@@ -47,15 +61,22 @@ const CITIES = {
     name: "芽庄", local: "Nha Trang", airport: "CXR", region: "中南部",
     minNights: 2, recommendedNights: 3, maxNights: 5, defaultNights: 3, budget: [1000000, 2100000], order: 12.2388,
     coordinates: [12.2388, 109.1967],
+    themes: ["占婆文化", "泥浆浴", "海岛", "度假"],
+    durationGuide: {
+      2: "1 个完整日：婆那加塔与泥浆浴最稳妥，出海和珍珠岛先不塞。",
+      3: "2 个完整日：文化泥浴一天，跳岛或珍珠岛二选一。",
+      4: "3 个完整日：增加海洋博物馆、海边与半天休息，给风浪留替代方案。",
+      5: "4 个完整日：适合再留一整天给酒店、SPA 和海边，不连续两天出海。"
+    },
     summary: "泥浆浴、海岛活动、珍珠岛与纯度假。",
     plays: ["I-Resort 泥浆浴", "跳岛团 / 黑珍珠号候选", "珍珠岛与跨海缆车", "度假酒店躺平"],
     caution: "9–12 月是雨季；出海必须看风浪。CXR 到市区约 45–60 分钟。",
     stay: "陈富海滩中段最省事；北部安静但餐饮较少；离岛玩法从南部码头出发。",
     move: "市区用 Grab；婆那加塔与 I-Resort 可连排。跳岛团或珍珠岛都要单独占一天，不建议同一天安排。",
     days: [
-      { am: "婆那加塔、钟屿石岬，避开正午", pm: "I-Resort 泥浆浴；回市区吃海鲜" },
-      { am: "跳岛团与珍珠岛二选一：跳岛可比较飞猪‘黑珍珠号’的航线、船型和取消规则", pm: "跳岛继续出海；或乘跨海缆车去珍珠岛游乐园，晚上不要再排项目" },
-      { am: "市区海滩、晚起和长早餐", pm: "夜市、沿海散步；只选一个轻量点位" }
+      { theme: "占婆与泥浴", am: "婆那加塔、钟屿石岬，避开正午", pm: "I-Resort 泥浆浴；回市区吃海鲜" },
+      { theme: "海岛全天", am: "跳岛团与珍珠岛二选一：跳岛可比较飞猪‘黑珍珠号’的航线、船型和取消规则", pm: "跳岛继续出海；或乘跨海缆车去珍珠岛游乐园，晚上不要再排项目" },
+      { theme: "海洋与慢游", am: "越南国家海洋博物馆或市区海滩；风浪差时用作出海替代", pm: "晚起、长早餐、夜市或沿海散步；只选一个轻量点位" }
     ],
     restDay: { am: "度假酒店、泳池或海边躺着", pm: "继续待在酒店，或按摩、咖啡、找好吃的；不塞景点" },
     image: { src: "nha-trang-zones.jpg", alt: "芽庄市区、北部与南部离岛分区参考图", caption: "分区参考：北部看占婆塔并泡泥浴；市区最方便；南部码头连接离岛。" }
@@ -64,13 +85,15 @@ const CITIES = {
     name: "芽庄 · 金兰湾", shortName: "金兰湾", local: "Cam Ranh", airport: "CXR", region: "已确认度假村",
     minNights: 2, recommendedNights: 2, maxNights: 2, defaultNights: 2, budget: [500000, 1400000], order: 12.05,
     coordinates: [12.0447, 109.1951],
+    themes: ["度假村", "SPA", "海滩", "休息"],
+    durationGuide: { 2: "两晚已确认：入住日下午留白，完整日只安排 SPA、泳池与海滩。" },
     summary: "Fusion Resort Cam Ranh，两晚只安排度假、SPA 与返程。",
     plays: ["Fusion Resort Cam Ranh", "All Spa Inclusive", "泳池与海滩", "10.07 直接去 CXR"],
     caution: "10 月 5 日 15:00 入住，10 月 7 日 12:00 退房；酒店距 CXR 约 5–6 公里。",
     stay: "Fusion Resort Cam Ranh，Lot D10b, Cam Hai Dong, Cam Lam, Khanh Hoa。",
     move: "提前向酒店预约送机。10 月 7 日建议 11:30–11:45 办完退房，12:00 前后出发去 CXR T1。",
     days: [
-      { am: "睡到自然醒、早餐和海边散步", pm: "提前预约 SPA；其余时间留给泳池、午睡和度假村晚餐" }
+      { theme: "纯度假", am: "睡到自然醒、早餐和海边散步", pm: "提前预约 SPA；其余时间留给泳池、午睡和度假村晚餐" }
     ],
     restDay: { am: "酒店早餐、泳池与海滩", pm: "SPA、休息和晚餐；不再往返芽庄市区" }
   },
@@ -78,15 +101,21 @@ const CITIES = {
     name: "大叻", local: "Đà Lạt", airport: "DLI", region: "中部高原",
     minNights: 2, recommendedNights: 3, maxNights: 4, defaultNights: 3, budget: [850000, 1700000], order: 11.9404,
     coordinates: [11.9404, 108.4583],
+    themes: ["咖啡", "高原建筑", "瀑布", "慢生活"],
+    durationGuide: {
+      2: "1 个完整日：市区建筑与达坦拉二选一条主线，时间会偏紧。",
+      3: "2 个完整日：建筑咖啡一天、瀑布泉林湖一天，节奏最合适。",
+      4: "3 个完整日：增加咖啡农场或工作坊，并留半天给降雨和发呆。"
+    },
     summary: "高原气候、咖啡、建筑与瀑布。",
     plays: ["达坦拉瀑布", "春香湖与旧火车站", "咖啡店", "咖啡工作坊候选"],
     caution: "4–11 月多雨，早晚偏凉；山路与户外项目不要排满。DLI 到市区约 40 分钟。",
     stay: "春香湖西南与大叻市场周边适合步行；泉林湖更安静，但每天需要用车。",
     move: "景点分散。城区步行；北线、南线各用半天至一天，建议包车或摩托。",
     days: [
-      { am: "春香湖、旧火车站；班次合适再坐小火车去灵福寺", pm: "挑两家咖啡店慢慢坐；咖啡工作坊可改在大叻预约" },
-      { am: "达坦拉瀑布，雨大或路滑就取消", pm: "竹林禅院、泉林湖或回酒店休息，不把南线塞满" },
-      { am: "咖啡庄园或浪平山二选一", pm: "回城继续喝咖啡、逛市场，不再跨线赶景点" }
+      { theme: "建筑与咖啡", am: "春香湖、旧火车站；班次合适再坐小火车去灵福寺", pm: "挑两家咖啡店慢慢坐；咖啡工作坊可改在大叻预约" },
+      { theme: "瀑布与山湖", am: "达坦拉瀑布，雨大或路滑就取消", pm: "竹林禅院、泉林湖或回酒店休息，不把南线塞满" },
+      { theme: "产地咖啡", am: "Cầu Đất 茶咖啡产区或 K'Ho 咖啡农场，提前确认体验是否开放", pm: "回城继续喝咖啡、逛市场，不再跨线赶景点" }
     ],
     restDay: { am: "晚起、咖啡和酒店发呆", pm: "SPA、市场晚餐；留给降雨或体力恢复" }
   },
@@ -94,14 +123,20 @@ const CITIES = {
     name: "顺化", local: "Huế", airport: "HUI", region: "中部",
     minNights: 2, recommendedNights: 2, maxNights: 4, defaultNights: 2, budget: [750000, 1500000], order: 16.4637,
     coordinates: [16.4637, 107.5909],
+    themes: ["皇城", "陵墓", "寺庙", "地方饮食"],
+    durationGuide: {
+      2: "1 个完整日：皇城加一座皇陵或天姥寺，适合短停。",
+      3: "2 个完整日：皇城、两座皇陵、寺庙与饮食都能展开。",
+      4: "3 个完整日：增加香河慢游与雨天机动，不再堆更多陵墓。"
+    },
     summary: "皇城、皇陵、寺庙与中部饮食。",
     plays: ["顺化皇城", "阮朝皇陵", "天姥寺", "顺化小吃"],
     caution: "9 月后降雨增加；10 月需防积水。",
     stay: "香河南岸餐饮多；皇城南门一带更靠近古迹。",
     move: "皇城可步行；皇陵分散，适合包车或摩托串联。顺化到岘港约 2.5–3.5 小时。",
     days: [
-      { am: "顺化皇城，早到避开热和人流", pm: "启定陵或天姥寺二选一；晚餐吃顺化小吃" },
-      { am: "明命陵、东巴市场按天气二选一", pm: "香河沿岸、咖啡；雨天不再增加点位" }
+      { theme: "皇城与饮食", am: "顺化皇城，早到避开热和人流", pm: "天姥寺或东巴市场；晚餐吃顺化小吃" },
+      { theme: "阮朝陵墓", am: "启定陵与明命陵选一至两座，不追求全部打卡", pm: "香河沿岸、咖啡；雨天不再增加点位" }
     ],
     restDay: { am: "酒店早餐、香河慢走", pm: "找一家顺化菜餐厅，雨天不勉强跑远" }
   },
@@ -109,15 +144,22 @@ const CITIES = {
     name: "胡志明市", local: "TP. Hồ Chí Minh", airport: "SGN", region: "南部",
     minNights: 3, recommendedNights: 3, maxNights: 5, defaultNights: 3, budget: [1100000, 2200000], order: 10.8231,
     coordinates: [10.8231, 106.6297],
+    themes: ["建筑", "街区", "华人文化", "夜生活"],
+    durationGuide: {
+      2: "只有 1 个完整日：第一郡与第三郡为主，不建议加入远郊。",
+      3: "2 个完整日：中心建筑一天、堤岸与街区一天，最适合本次短停。",
+      4: "3 个完整日：再选古芝或湄公河一日游，也可改成城市休息日。",
+      5: "4 个完整日：增加咖啡、当代艺术、SPA 或完整酒店休息日。"
+    },
     summary: "城市建筑、市场、华人区与夜生活。",
     plays: ["第一郡建筑", "堤岸", "街头饮食", "一日游"],
     caution: "5–11 月雨季；加入后路线明显南延。",
     stay: "第一郡最方便；第三郡更安静、餐饮密集。",
     move: "核心区可步行加 Grab；堤岸需用车；古芝或湄公河各占一整天。",
     days: [
-      { am: "第一郡建筑与咖啡，避开正午暴晒", pm: "市场、步行街或河岸夜景" },
-      { am: "第三郡街区", pm: "堤岸与华人区；晚餐后直接回酒店" },
-      { am: "古芝或湄公河一日游二选一", pm: "一日游返程，不再安排夜间打卡" }
+      { theme: "建筑与城市", am: "第一郡建筑与咖啡，避开正午暴晒", pm: "市场、步行街或河岸夜景" },
+      { theme: "街区与华人文化", am: "第三郡街区", pm: "堤岸、天后宫与华人区；晚餐后直接回酒店" },
+      { theme: "近郊或休息", am: "古芝或湄公河一日游二选一；不想赶路就留在城市", pm: "一日游返程，或改成按摩、咖啡和慢晚餐" }
     ],
     restDay: { am: "晚起、酒店早餐和咖啡", pm: "按摩、商场避雨或自由觅食" }
   },
@@ -125,17 +167,67 @@ const CITIES = {
     name: "富国岛", local: "Phú Quốc", airport: "PQC", region: "南部海岛",
     minNights: 3, recommendedNights: 4, maxNights: 5, defaultNights: 4, budget: [1400000, 3000000], order: 10.226,
     coordinates: [10.2899, 103.984],
+    themes: ["海滩", "跳岛", "雨林", "度假村"],
+    durationGuide: {
+      3: "2 个完整日：天气允许时跳岛一天，其余时间留给海滩和休息。",
+      4: "3 个完整日：增加北岛雨林或渔村，并保留完整度假日。",
+      5: "4 个完整日：最能吸收雨季天气变化；新增时间不再安排打卡。"
+    },
     summary: "海滩、日落、跳岛与自然。",
     plays: ["海滩与日落", "跳岛", "国家公园", "夜市"],
     caution: "7–10 月风浪和强降雨风险较高；至少 3 晚。",
     stay: "长滩交通方便；翁朗更安静；南岛适合度假村但离市区远。",
     move: "岛内距离长，包车或摩托更实际；跳岛与南岛景点合并安排。",
     days: [
-      { am: "酒店和海滩，不急着出门", pm: "日落、夜市或度假村晚餐" },
-      { am: "天气允许再做南岛跳岛或缆车", pm: "返程休息；风浪大就留在酒店" },
-      { am: "北岛国家公园或渔村", pm: "回酒店游泳、看日落" }
+      { theme: "海滩与日落", am: "酒店和海滩，不急着出门", pm: "日落、夜市或度假村晚餐" },
+      { theme: "南岛海上活动", am: "天气允许再做南岛跳岛或缆车", pm: "返程休息；风浪大就留在酒店" },
+      { theme: "雨林与渔村", am: "北岛国家公园或渔村", pm: "回酒店游泳、看日落" }
     ],
     restDay: { am: "度假村、泳池和海滩", pm: "SPA、日落和晚餐；这一天本来就不需要景点" }
+  },
+  quynhon: {
+    name: "归仁", local: "Quy Nhơn", airport: "UIH", region: "中南部海岸",
+    minNights: 2, recommendedNights: 3, maxNights: 4, defaultNights: 3, budget: [800000, 1650000], order: 13.782,
+    coordinates: [13.782, 109.219],
+    themes: ["海滩", "占婆塔", "渔村", "慢旅行"],
+    durationGuide: {
+      2: "1 个完整日：市区海岸与一组占婆塔，适合顺路短停。",
+      3: "2 个完整日：增加半岛、渔村或海滩慢游，节奏更完整。",
+      4: "3 个完整日：再留一整天给安静海滩、温泉或酒店休息。"
+    },
+    summary: "安静海岸、占婆遗迹与渔村，比热门海滨城市更松弛。",
+    plays: ["Tháp Đôi 双塔", "Tháp Bánh Ít", "海滨步道", "渔村与海滩"],
+    caution: "9–12 月降雨和风浪增加；远海活动临近确认。UIH 到市区约 40–50 分钟。",
+    stay: "市区海滨步道附近吃饭方便；想安静可住半岛度假村，但进城距离更远。",
+    move: "市区用 Grab；占婆塔、Eo Gió 和渔村分散，半天包车比频繁叫车省事。",
+    days: [
+      { theme: "占婆与城市", am: "Tháp Đôi 双塔、市场或地方博物馆", pm: "海滨步道、海鲜和日落；不赶远郊" },
+      { theme: "半岛与渔村", am: "Eo Gió 或 Kỳ Co 按风浪二选一", pm: "渔村午餐后回酒店休息；天气差就改 Bánh Ít 占婆塔" },
+      { theme: "海滩休息", am: "睡到自然醒、安静海滩或温泉", pm: "酒店、咖啡和海鲜；不再增加景点" }
+    ],
+    restDay: { am: "海边、酒店早餐和泳池", pm: "按摩、咖啡或海鲜；给天气留白" }
+  },
+  buonmathuot: {
+    name: "邦美蜀", local: "Buôn Ma Thuột", airport: "BMV", region: "中部高原",
+    minNights: 2, recommendedNights: 3, maxNights: 4, defaultNights: 3, budget: [700000, 1450000], order: 12.666,
+    coordinates: [12.666, 108.038],
+    themes: ["咖啡", "埃地族文化", "瀑布", "高原"],
+    durationGuide: {
+      2: "1 个完整日：咖啡世界博物馆与城市咖啡，文化线只能浅尝。",
+      3: "2 个完整日：咖啡一天、埃地族文化或瀑布一天，最适合本次行程。",
+      4: "3 个完整日：增加 Lak 湖或 Yok Đôn 方向，但必须接受较长陆路。"
+    },
+    summary: "越南咖啡之都，能把咖啡、埃地族文化和高原自然放在一起。",
+    plays: ["咖啡世界博物馆", "咖啡庄园", "埃地族长屋", "Dray Nur 瀑布"],
+    caution: "5–10 月雨季；瀑布水量大但路面湿滑。BMV 到市区约 20 分钟。",
+    stay: "市中心咖啡和餐饮最方便；不建议为了景观住得过远。",
+    move: "市区用 Grab；瀑布、村落与 Lak 湖适合包车。去大叻约 5–6 小时山路。",
+    days: [
+      { theme: "咖啡文化", am: "咖啡世界博物馆，理解产区、器具与贸易", pm: "本地烘焙店或咖啡庄园；不要只做网红店巡游" },
+      { theme: "族群与自然", am: "埃地族长屋或 Ako Dhong 村，尊重当地拍摄规则", pm: "Dray Nur 瀑布；雨大路滑就换成城市咖啡与市场" },
+      { theme: "高原慢游", am: "Lak 湖或 Yok Đôn 方向二选一，提前确认车程", pm: "返城休息、按摩和早晚餐" }
+    ],
+    restDay: { am: "晚起、咖啡和市场", pm: "酒店休息或 SPA；不再增加长途自然点" }
   }
 };
 
@@ -143,7 +235,7 @@ const PRESETS = [
   {
     id: "classic", name: "海岸高原",
     stops: [["hanoi", 2], ["danang", 3], ["dalat", 3], ["nhatrang", 2], ["camranh", 2]],
-    note: "岘港 3 晚、大叻 3 晚、芽庄市区 2 晚，一路向南进入金兰湾。先确认 09.30 DAD → DLI 是否有合适直飞。"
+    note: "岘港 3 晚、大叻 3 晚、芽庄市区 2 晚，一路向南进入金兰湾。DAD → DLI 已恢复直飞，仍需确认 09.30 的具体班次。"
   },
   {
     id: "highland", name: "大叻慢住",
@@ -164,6 +256,16 @@ const PRESETS = [
     id: "south", name: "南部串联",
     stops: [["hanoi", 2], ["hcmc", 3], ["dalat", 3], ["nhatrang", 2], ["camranh", 2]],
     note: "中段：胡志明市 3 晚、大叻 3 晚、芽庄市区 2 晚。内容丰富，但南北飞行和陆路转场最多。"
+  },
+  {
+    id: "coffee", name: "咖啡高原",
+    stops: [["hanoi", 2], ["buonmathuot", 3], ["dalat", 3], ["nhatrang", 2], ["camranh", 2]],
+    note: "中段：邦美蜀 3 晚、大叻 3 晚、芽庄市区 2 晚。咖啡与高原内容最完整；两段山路都安排在白天。"
+  },
+  {
+    id: "cham", name: "占婆海岸",
+    stops: [["hanoi", 2], ["danang", 3], ["quynhon", 3], ["nhatrang", 2], ["camranh", 2]],
+    note: "中段：岘港 3 晚、归仁 3 晚、芽庄市区 2 晚。海岸与占婆文化清楚，但两次中段转场会各占半天。"
   }
 ];
 
@@ -172,14 +274,14 @@ const DEFAULT_ROUTE = presetRoute(PRESETS[0]);
 const TRANSPORT = {};
 const leg = (a, b, data) => { TRANSPORT[[a, b].sort().join("|")] = data; };
 
-leg("hanoi", "danang", { mode: "飞机", duration: [1.3, 1.5], price: [700000, 1500000], note: "HAN 与 DAD 之间直飞班次通常较多；另计往返机场时间。", warning: "两地酒店之间按 4–5 小时安排。", window: "优先 09:00–12:00 起飞；约 14:00–16:00 入住。" });
-leg("hanoi", "nhatrang", { mode: "飞机", duration: [1.8, 2.0], price: [1000000, 2200000], note: "HAN 与 CXR 之间通常可直飞；金兰机场到芽庄市区还需约 45–60 分钟。", warning: "两地酒店之间通常约 5 小时。", window: "优先上午直飞；抵达后只安排酒店周边散步与晚餐。" });
-leg("hanoi", "dalat", { mode: "飞机", duration: [1.6, 2], price: [1200000, 2500000], note: "HAN 与 DLI 有直飞；大叻一侧还需约 40 分钟机场接驳。", warning: "航班频次不如主干线，订票前复核日期。", window: "优先 10:00–15:00 直飞；避免晚班挤压抵达日。" });
-leg("hanoi", "hue", { mode: "飞机", duration: [1.2, 1.4], price: [800000, 1700000], note: "HAN 与 HUI 之间优先选直飞，是 12 晚行程最省时的选择。", warning: "另计两端机场接驳。", window: "优先上午直飞；下午入住后只安排酒店周边。" });
+leg("hanoi", "danang", { mode: "飞机", duration: [1.3, 1.5], price: [700000, 1500000], note: "HAN 与 DAD 直飞选择通常最多；另计两端机场时间。", warning: "两地酒店之间按 4–5 小时安排。", startWindow: "9 月 27 日优先 12:00–16:00 起飞：上午仍可留在河内，晚饭前抵达岘港；若票价明显更好，晚班也可。", window: "优先 09:00–12:00 起飞；约 14:00–16:00 入住。" });
+leg("hanoi", "nhatrang", { mode: "飞机", duration: [1.8, 2.0], price: [1000000, 2200000], note: "HAN 与 CXR 通常可直飞；金兰机场到芽庄市区还需约 45–60 分钟。", warning: "两地酒店之间通常约 5 小时。", startWindow: "9 月 27 日优先 11:00–15:00 起飞；落地、进城后只安排看海与晚餐。", window: "优先上午直飞；抵达后只安排酒店周边散步与晚餐。" });
+leg("hanoi", "dalat", { mode: "飞机", duration: [1.6, 2], price: [1200000, 2500000], note: "HAN 与 DLI 有直飞；大叻一侧还需约 40 分钟机场接驳。", warning: "航班频次不如主干线，订票前复核 9 月 27 日具体班次。", startWindow: "9 月 27 日优先 11:00–16:00 的直飞；若当天只有早班或晚班，再与先飞岘港的方案比较。", window: "优先 10:00–15:00 直飞；避免晚班挤压抵达日。" });
+leg("hanoi", "hue", { mode: "飞机", duration: [1.2, 1.4], price: [800000, 1700000], note: "HAN 与 HUI 之间优先选直飞。", warning: "另计两端机场接驳。", startWindow: "9 月 27 日优先中午至下午直飞；抵达后只沿香河吃饭散步。", window: "优先上午直飞；下午入住后只安排酒店周边。" });
 leg("hanoi", "hcmc", { mode: "飞机", duration: [2.0, 2.3], price: [1100000, 2400000], note: "HAN 与 SGN 之间航班密集，但这段会跨越越南南北。", warning: "若之后折返中部，会增加一次长距离转场。" });
 leg("hanoi", "phuquoc", { mode: "飞机", duration: [2.1, 2.4], price: [1400000, 3000000], note: "HAN 与 PQC 之间优先选直飞；部分时段可能需经胡志明市。", warning: "班次和直飞情况需按出发日确认。" });
 leg("danang", "nhatrang", { mode: "飞机", duration: [1.1, 1.3], price: [900000, 2300000], note: "当前航线资料显示约每日 1–2 班直飞；火车约 9–11 小时。", warning: "默认路线的关键航段：先确认当天直飞，再锁定酒店。", window: "优先 09:00–13:00 直飞；约 15:00–17:00 入住下一站。" });
-leg("danang", "dalat", { mode: "飞机或中转", duration: [1.1, 6], price: [900000, 2400000], note: "直飞班次可能有限；无合适航班时通常需要经胡志明市或走长途陆路。", warning: "不要在未查日期前假定一定有直飞。" });
+leg("danang", "dalat", { mode: "飞机", duration: [1.1, 1.3], price: [900000, 2400000], note: "DAD → DLI 直飞于 2026 年 8 月恢复，当前资料显示越航与越捷运营。", warning: "航线刚恢复，先核对具体日期、起飞时段与变更记录，再锁定酒店。", window: "有合适直飞就选 09:00–14:00；整段连机场接驳按半天计算。" });
 leg("danang", "hue", { mode: "火车 / 巴士 / 包车", duration: [2.5, 3.5], price: [120000, 450000], note: "经海云岭往返，陆路比坐飞机自然；火车景观较好。", warning: "雨天公路耗时可能增加。", window: "建议 08:00–09:00 出发；午后入住下一站。" });
 leg("danang", "hcmc", { mode: "飞机", duration: [1.4, 1.7], price: [900000, 2100000], note: "DAD 与 SGN 之间直飞通常较多。", warning: "两地酒店之间按 4–5 小时安排。" });
 leg("danang", "phuquoc", { mode: "飞机", duration: [1.7, 4.5], price: [1200000, 3000000], note: "有直飞时最方便，否则通常经胡志明市中转。", warning: "先按具体日期确认是否直飞。" });
@@ -200,6 +302,19 @@ leg("hanoi", "camranh", { mode: "飞机 + 接送", duration: [1.8, 2.0], price: 
 leg("hue", "camranh", { mode: "陆路到岘港后飞行", duration: [5, 8], price: [1300000, 3100000], note: "先从顺化到 DAD，再飞 CXR；不建议把这段留到入住日下午。", warning: "组合交通变数较多，最好提前一天到芽庄。" });
 leg("hcmc", "camranh", { mode: "飞机 + 接送", duration: [1, 1.2], price: [800000, 1900000], note: "SGN → CXR 航班较多；落地后直接去度假村。", warning: "仍要计入两端机场时间。" });
 leg("phuquoc", "camranh", { mode: "飞机中转", duration: [3.5, 6], price: [1500000, 3400000], note: "通常经胡志明市中转到 CXR。", warning: "10 月 5 日当天中转风险偏高，建议前一晚先到芽庄。" });
+leg("hanoi", "quynhon", { mode: "飞机", duration: [1.6, 1.8], price: [1000000, 2300000], note: "HAN → UIH 可查直飞；UIH 到归仁市区还需约 40–50 分钟。", warning: "班次少于河内—岘港，按 9 月 27 日复核。", startWindow: "9 月 27 日优先 11:00–16:00 直飞；晚班会浪费归仁第一晚，但仍可接受。" });
+leg("hanoi", "buonmathuot", { mode: "飞机", duration: [1.7, 1.9], price: [1000000, 2300000], note: "HAN → BMV 可查直飞；BMV 到市区约 20 分钟。", warning: "班次有限，先看 9 月 27 日是否有午后直飞。", startWindow: "9 月 27 日优先 11:00–16:00 直飞；抵达后只安排城市咖啡与晚餐。" });
+leg("danang", "quynhon", { mode: "火车 / 小车", duration: [5, 6.5], price: [250000, 1200000], note: "火车到 Diêu Trì 后再进归仁市区；包车更直接但价格高。", warning: "这段会占大半天，选早班并把抵达日留空。", window: "建议 07:00–08:30 出发；午后入住归仁。" });
+leg("danang", "buonmathuot", { mode: "飞机 / 巴士", duration: [1.1, 8], price: [450000, 1900000], note: "有直飞时优先飞；没有合适时段则需长途巴士。", warning: "航班频次有限，不能只按飞行时长规划。" });
+leg("quynhon", "nhatrang", { mode: "火车 / 小车", duration: [3.5, 5], price: [220000, 1000000], note: "沿海向南，火车或小车都比绕去机场自然。", warning: "雨天公路和火车都可能延误。", window: "建议 08:00–09:00 出发；午后抵达芽庄。" });
+leg("quynhon", "camranh", { mode: "火车 + 小车 / 包车", duration: [4.5, 6], price: [350000, 1600000], note: "可先到芽庄或金兰附近再接车去 Fusion Resort。", warning: "10 月 5 日当天必须早出发，包车风险更可控。", window: "10 月 5 日建议 07:00–08:00 出发，预留午后入住余量。" });
+leg("quynhon", "dalat", { mode: "小车 / 巴士", duration: [5.5, 7], price: [350000, 1500000], note: "跨海岸与高原，山路较长。", warning: "只选白天班次并准备晕车药。" });
+leg("quynhon", "buonmathuot", { mode: "小车 / 巴士", duration: [4.5, 6], price: [300000, 1400000], note: "跨中部高原的长距离陆路。", warning: "会消耗大半天，不建议在 8 晚中段再叠加过多节点。" });
+leg("buonmathuot", "dalat", { mode: "小车 / 巴士", duration: [5, 6.5], price: [280000, 1400000], note: "高原之间走白天陆路；包车可直接送酒店。", warning: "山路较多，留出休息并准备晕车药。", window: "建议 07:30–08:30 出发；下午抵达大叻后只喝咖啡。" });
+leg("buonmathuot", "nhatrang", { mode: "小车 / 巴士", duration: [4, 5.5], price: [260000, 1300000], note: "从高原下到海岸，白天巴士或包车都可。", warning: "雨季山路可能延误。", window: "建议 08:00 前后出发；午后抵达芽庄。" });
+leg("buonmathuot", "camranh", { mode: "小车 / 巴士", duration: [4.5, 6], price: [350000, 1500000], note: "从邦美蜀直接下到金兰湾，包车最省换乘。", warning: "10 月 5 日当天早出发，避免晚于入住时间。", window: "10 月 5 日建议 07:30 前后出发；午后到 Fusion Resort。" });
+leg("hcmc", "quynhon", { mode: "飞机 / 火车", duration: [1.2, 12], price: [600000, 2000000], note: "飞 UIH 最省时；夜车只适合愿意牺牲睡眠时。", warning: "另计 UIH 到市区接驳。" });
+leg("hcmc", "buonmathuot", { mode: "飞机 / 巴士", duration: [1, 7], price: [350000, 1600000], note: "飞行最快，巴士从市区出发更省预算。", warning: "巴士会消耗大半天。" });
 
 const PHRASES = {
   高频词: [
@@ -485,6 +600,8 @@ const ARRIVAL_PLANS = {
   hue: "入住后沿香河散步，晚餐吃顺化小吃",
   hcmc: "入住后在酒店附近吃饭，避开跨区赶景点",
   phuquoc: "留在酒店、泳池或海滩，看天气决定日落安排",
+  quynhon: "入住后沿海滨步道散步、吃海鲜，不再赶远郊",
+  buonmathuot: "入住后找一家本地咖啡店、吃晚饭，长途后的景点留到次日",
   camranh: "15:00 办理入住；预约 SPA，之后只留在度假村"
 };
 
@@ -496,18 +613,24 @@ function genericTransferWindow(data) {
 
 function transferWindow(data, previous) {
   if (previous?.role === "start") {
-    return "9 月 27 日中午、下午或晚上起飞均可；按直飞班次选择，退房后可寄存行李，国内航班提前约 2 小时到 HAN T1。";
+    return data.startWindow || "9 月 27 日中午、下午或晚上起飞均可；按直飞班次选择，退房后可寄存行李，国内航班提前约 2 小时到 HAN T1。";
   }
   return data.window || genericTransferWindow(data);
+}
+
+function durationGuide(city, nights) {
+  if (city.durationGuide?.[nights]) return city.durationGuide[nights];
+  if (nights > city.recommendedNights) return `${nights - 1} 个完整日：核心玩法后加入酒店、咖啡、SPA 或自由觅食，不继续堆景点。`;
+  return `${Math.max(0, nights - 1)} 个完整日：优先保留核心体验，抵达和离开日不安排远点。`;
 }
 
 function plansForNode(node, index, dates) {
   const city = CITIES[node.city];
   const plans = [];
-  const addPlan = (date, tag, am, pm, restful = false) => plans.push({ date: dateLabel(date), tag, am, pm, restful });
+  const addPlan = (date, tag, am, pm, restful = false, theme = "") => plans.push({ date: dateLabel(date), tag, am, pm, restful, theme });
 
   if (node.role === "start") {
-    addPlan(dates[index].start, "抵达日", "11:45 前抵达上海浦东 T1；托运、安检后吃午饭", "14:45 MU6013 起飞；17:45 抵达 HAN T2，约 19:30 入住后在老城附近吃饭");
+    addPlan(dates[index].start, "抵达日", "11:45 前抵达上海浦东 T1；托运、安检后吃午饭", "14:45 MU6013 起飞；17:45 抵达 HAN T2，约 19:30 入住后在老城附近吃饭", false, "轻量");
   } else {
     const previous = route[index - 1];
     const transfer = getLeg(previous.city, node.city);
@@ -516,7 +639,9 @@ function plansForNode(node, index, dates) {
       dates[index].start,
       "转场日",
       firstTransfer ? "退房后寄存行李；不安排远郊，按起飞时间在老城、咖啡馆或酒店附近活动。" : transferWindow(transfer, previous),
-      `${firstTransfer ? `${transferWindow(transfer, previous)} ` : ""}${ARRIVAL_PLANS[node.city]}。交通按 ${transfer.mode}，移动约 ${transfer.duration[0]}–${transfer.duration[1]} 小时。`
+      `${firstTransfer ? `${transferWindow(transfer, previous)} ` : ""}${ARRIVAL_PLANS[node.city]}。交通按 ${transfer.mode}，移动约 ${transfer.duration[0]}–${transfer.duration[1]} 小时。`,
+      false,
+      "移动"
     );
   }
 
@@ -524,7 +649,7 @@ function plansForNode(node, index, dates) {
     const restful = offset >= city.recommendedNights;
     const cityPlans = city.days;
     const plan = restful ? city.restDay : cityPlans[offset - 1] || city.restDay;
-    addPlan(addDays(dates[index].start, offset), restful ? "休息日" : "完整日", plan.am, plan.pm, restful);
+    addPlan(addDays(dates[index].start, offset), restful ? "休息日" : "完整日", plan.am, plan.pm, restful, plan.theme || (restful ? "放松" : "探索"));
   }
 
   if (node.role === "end") {
@@ -533,7 +658,8 @@ function plansForNode(node, index, dates) {
       "返程日",
       "11:30–11:45 办完退房，12:00 前后从 Fusion Resort 出发；14:05 VJ772 从 CXR T1 起飞",
       "15:55 抵达 HAN T1；取行李后乘免费接驳到 T2，重新值机、出境和安检；18:45 MU6014 起飞，22:50 抵达浦东 T1",
-      true
+      true,
+      "返程"
     );
   }
 
@@ -634,7 +760,7 @@ function renderRoute() {
     const dayPlanHtml = plansForNode(node, index, dates).map(plan => {
       const copyText = `${plan.date} ${city.name}｜${plan.tag}\n上午：${plan.am}\n下午/晚上：${plan.pm}`;
       return `<li class="copyable-plan ${plan.restful ? "restful" : ""}" role="button" tabindex="0" title="点击复制这一天" aria-label="复制 ${plan.date} ${city.name} ${plan.tag}" data-copy-text="${esc(copyText)}">
-        <div class="day-marker"><span>${plan.date}</span><strong>${plan.tag}</strong></div>
+        <div class="day-marker"><span>${plan.date}</span><strong>${plan.tag}${plan.theme ? ` · ${esc(plan.theme)}` : ""}</strong></div>
         <div class="halfday-copy"><p><b>上午</b>${esc(plan.am)}</p><p><b>下午 / 晚上</b>${esc(plan.pm)}</p></div>
       </li>`;
     }).join("");
@@ -677,6 +803,11 @@ function renderRoute() {
         <summary><span>规划 <small>${node.nights} 晚</small></span><i aria-hidden="true">＋</i></summary>
         <div class="city-detail-body${city.image ? " has-image" : ""}">
           <div class="detail-copy">
+            <div class="stay-guide">
+              <span><strong>${node.nights} 晚</strong>${Math.max(0, node.nights - 1)} 个完整日</span>
+              <p>${esc(durationGuide(city, node.nights))}</p>
+              <div class="theme-list">${city.themes.map(theme => `<span>${esc(theme)}</span>`).join("")}</div>
+            </div>
             <dl class="city-facts">
               <div><dt>住</dt><dd>${city.stay}</dd></div>
               <div><dt>走</dt><dd>${city.move}</dd></div>
@@ -694,6 +825,7 @@ function renderRoute() {
 
 function routeTotals() {
   const middleNights = route.filter(node => node.role === "middle").reduce((sum, node) => sum + node.nights, 0);
+  const plannedDays = route.reduce((sum, node) => sum + node.nights, 0) + 1;
   const cityBudget = route.reduce((sum, node) => [sum[0] + CITIES[node.city].budget[0] * node.nights, sum[1] + CITIES[node.city].budget[1] * node.nights], [0, 0]);
   const legs = route.slice(0, -1).map((node, index) => getLeg(node.city, route[index + 1].city));
   const transportBudget = legs.reduce((sum, item) => [sum[0] + item.price[0], sum[1] + item.price[1]], [0, 0]);
@@ -701,7 +833,7 @@ function routeTotals() {
     const airportTime = /飞机/.test(item.mode) ? 3 : 0;
     return [sum[0] + item.duration[0] + airportTime, sum[1] + item.duration[1] + airportTime];
   }, [0, 0]);
-  return { middleNights, cityBudget, transportBudget, hours };
+  return { middleNights, plannedDays, cityBudget, transportBudget, hours };
 }
 
 function renderAnalysis() {
@@ -709,6 +841,15 @@ function renderAnalysis() {
   const balance = MIDDLE_NIGHTS - totals.middleNights;
   const balanceLabel = balance === 0 ? "日期吻合" : balance > 0 ? `还剩 ${balance} 晚` : `超出 ${Math.abs(balance)} 晚`;
   const fill = Math.min(100, totals.middleNights / MIDDLE_NIGHTS * 100);
+  const dayBalance = TOTAL_DAYS - totals.plannedDays;
+  const allocation = $("#trip-allocation");
+
+  allocation.querySelector("strong").textContent = `${totals.plannedDays} / ${TOTAL_DAYS} 天`;
+  allocation.querySelector("span").textContent = dayBalance === 0 ? "已排满" : dayBalance > 0 ? `还差 ${dayBalance} 天` : `超出 ${Math.abs(dayBalance)} 天`;
+  allocation.classList.toggle("is-balanced", dayBalance === 0);
+  allocation.classList.toggle("is-under", dayBalance > 0);
+  allocation.classList.toggle("is-over", dayBalance < 0);
+  allocation.setAttribute("aria-label", `已规划 ${totals.plannedDays} / ${TOTAL_DAYS} 天，${allocation.querySelector("span").textContent}`);
 
   $("#night-meter-label").textContent = `中段 ${totals.middleNights} / ${MIDDLE_NIGHTS} 晚`;
   $("#night-balance").textContent = balanceLabel;
@@ -755,8 +896,13 @@ function renderAnalysis() {
   }
   if (middle.length > 3) advice.push("8 晚中段超过 3 个节点会频繁收拾行李，建议删减一站。 ");
   if (middle.some(node => node.city === "phuquoc") && middle.find(node => node.city === "phuquoc")?.nights < 3) advice.push("富国岛受天气影响较大，少于 3 晚不容易留出机动空间。 ");
+  if (middle.some(node => node.city === "buonmathuot") && middle.some(node => node.city === "dalat")) advice.push("邦美蜀与大叻都是高原咖啡节点，但风格不同；两地之间约 5–6.5 小时山路，建议各至少 3 晚才值得同时保留。");
+  if (middle.some(node => node.city === "quynhon") && !middle.some(node => node.city === "nhatrang")) advice.push("归仁之后仍要在 10 月 5 日到金兰湾；最好把芽庄作为顺路缓冲，或当天很早包车南下。");
 
-  const uncertain = route.slice(0, -1).some((node, index) => /中转|有限|并非每天/.test(getLeg(node.city, route[index + 1].city).note));
+  const uncertain = route.slice(0, -1).some((node, index) => {
+    const legData = getLeg(node.city, route[index + 1].city);
+    return /中转|有限|并非每天|刚恢复|恢复/.test(`${legData.note} ${legData.warning || ""}`);
+  });
   if (uncertain) advice.push("路线含班次有限或需要中转的航段，最终锁定顺序前应按 2026 年出发日复核。 ");
 
   const cityKeys = new Set(route.map(node => node.city));
@@ -796,11 +942,13 @@ function renderTransport() {
 function renderCityOptions() {
   const used = new Set(route.filter(node => node.role === "middle").map(node => node.city));
   const options = Object.entries(CITIES).filter(([key]) => !["hanoi", "camranh"].includes(key));
+  const remainingNights = Math.max(0, MIDDLE_NIGHTS - routeTotals().middleNights);
   $("#city-options").innerHTML = options.map(([key, city]) => {
     const disabled = used.has(key);
+    const addedNights = remainingNights > 0 ? Math.min(city.defaultNights, remainingNights) : city.defaultNights;
     return `<button class="city-option" type="button" data-city="${key}"${disabled ? " disabled" : ""}>
-      <span><strong>${city.name}</strong><span>${city.local} · ${city.airport} · ${city.region}</span><small>建议 ${city.recommendedNights} 晚 · 最多 ${city.maxNights} 晚</small></span>
-      <b>${disabled ? "已在路线" : "添加 ＋"}</b>
+      <span><strong>${city.name}</strong><span>${city.local} · ${city.airport} · ${city.region}</span><p>${esc(city.summary)}</p><small>建议 ${city.recommendedNights} 晚 · 最多 ${city.maxNights} 晚</small></span>
+      <b>${disabled ? "已在路线" : `添加 ${addedNights} 晚 ＋`}</b>
     </button>`;
   }).join("");
   $("#add-node").disabled = used.size >= options.length;
@@ -946,7 +1094,9 @@ $("#city-options").addEventListener("click", event => {
   if (!option || option.disabled) return;
   const city = option.dataset.city;
   const id = createId();
-  route.splice(route.length - 1, 0, { id, city, nights: CITIES[city].defaultNights, role: "middle" });
+  const remainingNights = Math.max(0, MIDDLE_NIGHTS - routeTotals().middleNights);
+  const nights = remainingNights > 0 ? Math.min(CITIES[city].defaultNights, remainingNights) : CITIES[city].defaultNights;
+  route.splice(route.length - 1, 0, { id, city, nights, role: "middle" });
   activeNodeId = id;
   markCustom();
   $("#city-dialog").close();
