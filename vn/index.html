@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#0d463e">
   <meta name="description" content="可编辑的 2026 越南路线规划器。">
   <title>越南路线规划器 · 2026</title>
-  <link rel="stylesheet" href="planner.css?v=20260903-13">
+  <link rel="stylesheet" href="planner.css?v=20260903-14">
 </head>
 <body class="night-atlas">
   <header class="appbar">
@@ -28,6 +28,12 @@
         <div class="hero-inner shell">
           <div class="hero-copy">
             <h1 id="route-title">河内 → 岘港 → 芽庄 → 大叻 → 河内</h1>
+            <div class="trip-window" aria-label="国际航班时间">
+              <span><b>09.25</b><strong>17:45 抵达 HAN T2</strong></span>
+              <i aria-hidden="true"></i>
+              <span><b>10.07</b><strong>18:45 从 HAN T2 起飞</strong></span>
+              <em>12 晚</em>
+            </div>
           </div>
           <div class="route-rail" id="route-rail" aria-label="当前路线日期"></div>
         </div>
@@ -55,7 +61,7 @@
               <h2>路线分析</h2>
               <div class="night-meter">
                 <div class="meter-track"><span id="night-meter-fill"></span></div>
-                <div class="meter-copy"><span id="night-meter-label">已分配 11 晚</span><strong id="night-balance">刚好</strong></div>
+                <div class="meter-copy"><span id="night-meter-label">已分配 12 晚</span><strong id="night-balance">刚好</strong></div>
               </div>
             </div>
             <div class="analysis-content">
@@ -145,15 +151,15 @@
     <section class="tool-panel" data-tool-panel="flights" hidden>
       <p class="tool-intro">当地时间 · 越南比上海慢 1 小时</p>
       <div class="tool-flights">
-        <article class="tool-flight" role="button" tabindex="0" title="点击复制航班信息" aria-label="复制去程航班信息" data-copy-text="09月25日 周五｜东方航空 MU6013｜14:45 上海浦东 T1 → 17:45 河内内排 T2｜4小时｜Airbus A321｜正餐">
+        <article class="tool-flight" role="button" tabindex="0" title="点击复制航班信息" aria-label="复制去程航班信息" data-copy-text="09月25日 周五｜东方航空 MU6013｜14:45 上海浦东 T1 → 17:45 河内内排 T2｜4小时｜手提1×8kg｜托运1×23kg">
           <div class="tool-flight-head"><span>去程 · 09 月 25 日 周五</span><strong>MU6013</strong></div>
-          <div class="tool-flight-time"><div><strong>14:45</strong><span>PVG T1 · 上海浦东</span></div><i aria-hidden="true">→</i><div><strong>17:45</strong><span>HAN T2 · 河内内排</span></div></div>
-          <div class="tool-flight-meta"><span>东方航空</span><span>4h</span><span>Airbus A321</span><span>正餐</span></div>
+          <div class="tool-flight-time"><div><small>北京时间</small><strong>14:45</strong><span>PVG T1 · 上海浦东</span></div><i aria-hidden="true">→</i><div><small>河内时间</small><strong>17:45</strong><span>HAN T2 · 河内内排</span></div></div>
+          <div class="tool-flight-meta"><span>东方航空</span><span>4h</span><span>手提 1×8kg</span><span>托运 1×23kg</span></div>
         </article>
-        <article class="tool-flight" role="button" tabindex="0" title="点击复制航班信息" aria-label="复制返程航班信息" data-copy-text="10月07日 周三｜东方航空 MU5076｜02:20 河内内排 T2 → 06:35 上海浦东 T1｜3小时15分｜Boeing 737｜早餐">
-          <div class="tool-flight-head"><span>返程 · 10 月 07 日 周三</span><strong>MU5076</strong></div>
-          <div class="tool-flight-time"><div><strong>02:20</strong><span>HAN T2 · 河内内排</span></div><i aria-hidden="true">→</i><div><strong>06:35</strong><span>PVG T1 · 上海浦东</span></div></div>
-          <div class="tool-flight-meta"><span>东方航空</span><span>3h15</span><span>Boeing 737</span><span>早餐</span></div>
+        <article class="tool-flight" role="button" tabindex="0" title="点击复制航班信息" aria-label="复制返程航班信息" data-copy-text="10月07日 周三｜东方航空 MU6014｜18:45 河内内排 T2 → 22:50 上海浦东 T1｜3小时5分｜手提1×8kg｜托运1×23kg">
+          <div class="tool-flight-head"><span>返程 · 10 月 07 日 周三</span><strong>MU6014</strong></div>
+          <div class="tool-flight-time"><div><small>河内时间</small><strong>18:45</strong><span>HAN T2 · 河内内排</span></div><i aria-hidden="true">→</i><div><small>北京时间</small><strong>22:50</strong><span>PVG T1 · 上海浦东</span></div></div>
+          <div class="tool-flight-meta"><span>东方航空</span><span>3h05</span><span>手提 1×8kg</span><span>托运 1×23kg</span></div>
         </article>
       </div>
     </section>
@@ -161,6 +167,6 @@
 
   <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">已复制</div>
 
-  <script src="planner.js?v=20260903-13"></script>
+  <script src="planner.js?v=20260903-14"></script>
 </body>
 </html>

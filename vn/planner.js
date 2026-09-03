@@ -2,10 +2,12 @@
 
 document.documentElement.classList.add("js");
 
-const TRIP_NIGHTS = 11;
+const TRIP_NIGHTS = 12;
 const CNY_TO_VND = 3880;
-const STORAGE_KEY = "emoboi-vn-route-v2";
+const STORAGE_KEY = "emoboi-vn-route-v3";
+const LEGACY_STORAGE_KEY = "emoboi-vn-route-v2";
 const ARRIVAL_DATE = new Date("2026-09-25T12:00:00+07:00");
+const DEPARTURE_DATE = new Date("2026-10-07T12:00:00+07:00");
 
 const CITIES = {
   hanoi: {
@@ -16,10 +18,14 @@ const CITIES = {
     plays: ["还剑湖与老城区", "河内大教堂", "咖啡工作坊", "寺庙或博物馆选一"],
     caution: "9–10 月通常舒适；HAN 距市中心约 45 公里，单程按 60–90 分钟留量。",
     stay: "还剑湖西北侧或老城区边缘：步行方便，夜间比老城腹地安静。",
-    move: "老城以步行为主；跨区用 Grab。返程航班 02:20，10 月 6 日约 22:30 出发去机场。",
+    move: "老城以步行为主；跨区用 Grab。返程日约 14:30 从市区前往 HAN T2，18:45 起飞。",
     days: [
       { am: "还剑湖、老城区、河内大教堂；中午在老城吃粉或烤肉米线", pm: "预约咖啡工作坊；若留到大叻再做，就换成文庙或越南美术馆" },
       { am: "西湖、镇国寺或其他寺庙选一，沿湖慢走", pm: "咖啡馆、自由觅食；把未完成的老城点位补上" }
+    ],
+    returnDays: [
+      { am: "西湖、镇国寺或越南民族学博物馆选一", pm: "咖啡馆、按摩和自由觅食；只补真正想去的点位" },
+      { am: "晚起、酒店早餐；按天气补老城或博物馆", pm: "整理行李、买伴手礼，不再安排远郊" }
     ],
     restDay: { am: "睡到自然醒、酒店早餐或西湖散步", pm: "咖啡、SPA、自由觅食；不再增加远郊景点" }
   },
@@ -124,28 +130,28 @@ const CITIES = {
 const PRESETS = [
   {
     id: "classic", name: "海岸高原",
-    stops: [["hanoi", 2], ["danang", 3], ["nhatrang", 3], ["dalat", 2], ["hanoi", 1]],
+    stops: [["hanoi", 2], ["danang", 3], ["nhatrang", 3], ["dalat", 2], ["hanoi", 2]],
     note: "4 次转场 · 7 个完整游玩日。覆盖最全；大叻只有 1 个完整日，先锁定 09.30 DAD → CXR 与 10.05 DLI → HAN。"
   },
   {
     id: "highland", name: "高原优先",
-    stops: [["hanoi", 2], ["danang", 3], ["nhatrang", 2], ["dalat", 3], ["hanoi", 1]],
+    stops: [["hanoi", 2], ["danang", 3], ["nhatrang", 2], ["dalat", 3], ["hanoi", 2]],
     note: "4 次转场 · 芽庄压缩为市区与泥浴，大叻获得 2 个完整日；跳岛仅在天气稳定时临时加入。"
   },
   {
     id: "coast", name: "海边慢行",
-    stops: [["hanoi", 2], ["danang", 4], ["nhatrang", 4], ["hanoi", 1]],
+    stops: [["hanoi", 2], ["danang", 4], ["nhatrang", 4], ["hanoi", 2]],
     note: "3 次转场 · 每个海边节点都有休息时间；10.01 DAD → CXR 直飞是路线成立的关键。"
   },
   {
     id: "central", name: "中部慢游",
-    stops: [["hanoi", 2], ["hue", 2], ["danang", 5], ["hanoi", 2]],
-    note: "3 次转场 · 顺化、岘港和会安展开最从容；岘港 5 晚含 1 个酒店或海边休息日，适合雨天机动。"
+    stops: [["hanoi", 2], ["hue", 3], ["danang", 5], ["hanoi", 2]],
+    note: "3 次转场 · 顺化、岘港和会安展开最从容；顺化与岘港都留有雨天机动，不需要赶景点。"
   },
   {
     id: "island", name: "南部海岛",
-    stops: [["hanoi", 2], ["hcmc", 3], ["phuquoc", 4], ["hanoi", 2]],
-    note: "3 次转场 · 度假比重最高；9 月底富国岛仍在雨季，只适合愿意接受风浪与行程调整。"
+    stops: [["hanoi", 2], ["hcmc", 3], ["phuquoc", 5], ["hanoi", 2]],
+    note: "3 次转场 · 度假比重最高；富国岛 5 晚包含完整休息日，但雨季风浪仍可能取消出海。"
   }
 ];
 
@@ -154,27 +160,27 @@ const DEFAULT_ROUTE = presetRoute(PRESETS[0]);
 const TRANSPORT = {};
 const leg = (a, b, data) => { TRANSPORT[[a, b].sort().join("|")] = data; };
 
-leg("hanoi", "danang", { mode: "飞机", duration: [1.3, 1.5], price: [700000, 1500000], note: "HAN 与 DAD 之间直飞班次通常较多；另计往返机场时间。", warning: "从河内酒店出发到岘港酒店，按 4–5 小时安排。", window: "优先 09:00–12:00 起飞；约 14:00–16:00 入住。" });
-leg("hanoi", "nhatrang", { mode: "飞机", duration: [1.8, 2.0], price: [1000000, 2200000], note: "HAN 与 CXR 之间通常可直飞；金兰机场到芽庄市区还需约 45–60 分钟。", warning: "从河内酒店出发到芽庄酒店，通常约 5 小时。", window: "优先上午直飞；抵达后只安排海边与晚餐。" });
+leg("hanoi", "danang", { mode: "飞机", duration: [1.3, 1.5], price: [700000, 1500000], note: "HAN 与 DAD 之间直飞班次通常较多；另计往返机场时间。", warning: "两地酒店之间按 4–5 小时安排。", window: "优先 09:00–12:00 起飞；约 14:00–16:00 入住。" });
+leg("hanoi", "nhatrang", { mode: "飞机", duration: [1.8, 2.0], price: [1000000, 2200000], note: "HAN 与 CXR 之间通常可直飞；金兰机场到芽庄市区还需约 45–60 分钟。", warning: "两地酒店之间通常约 5 小时。", window: "优先上午直飞；抵达后只安排酒店周边散步与晚餐。" });
 leg("hanoi", "dalat", { mode: "飞机", duration: [1.6, 2], price: [1200000, 2500000], note: "HAN 与 DLI 有直飞；大叻一侧还需约 40 分钟机场接驳。", warning: "航班频次不如主干线，订票前复核日期。", window: "优先 10:00–15:00 直飞；避免晚班挤压抵达日。" });
-leg("hanoi", "hue", { mode: "飞机", duration: [1.2, 1.4], price: [800000, 1700000], note: "HAN 与 HUI 之间优先选直飞，是 11 晚行程最省时的选择。", warning: "另计两端机场接驳。", window: "优先上午直飞；下午入住后只逛香河周边。" });
+leg("hanoi", "hue", { mode: "飞机", duration: [1.2, 1.4], price: [800000, 1700000], note: "HAN 与 HUI 之间优先选直飞，是 12 晚行程最省时的选择。", warning: "另计两端机场接驳。", window: "优先上午直飞；下午入住后只安排酒店周边。" });
 leg("hanoi", "hcmc", { mode: "飞机", duration: [2.0, 2.3], price: [1100000, 2400000], note: "HAN 与 SGN 之间航班密集，但这段会跨越越南南北。", warning: "若之后折返中部，会增加一次长距离转场。" });
 leg("hanoi", "phuquoc", { mode: "飞机", duration: [2.1, 2.4], price: [1400000, 3000000], note: "HAN 与 PQC 之间优先选直飞；部分时段可能需经胡志明市。", warning: "班次和直飞情况需按出发日确认。" });
-leg("danang", "nhatrang", { mode: "飞机", duration: [1.1, 1.3], price: [900000, 2300000], note: "当前航线资料显示约每日 1–2 班直飞；火车约 9–11 小时。", warning: "默认路线的关键航段：先确认当天直飞，再锁定酒店。", window: "优先 09:00–13:00 直飞；约 15:00–17:00 入住芽庄。" });
+leg("danang", "nhatrang", { mode: "飞机", duration: [1.1, 1.3], price: [900000, 2300000], note: "当前航线资料显示约每日 1–2 班直飞；火车约 9–11 小时。", warning: "默认路线的关键航段：先确认当天直飞，再锁定酒店。", window: "优先 09:00–13:00 直飞；约 15:00–17:00 入住下一站。" });
 leg("danang", "dalat", { mode: "飞机或中转", duration: [1.1, 6], price: [900000, 2400000], note: "直飞班次可能有限；无合适航班时通常需要经胡志明市或走长途陆路。", warning: "不要在未查日期前假定一定有直飞。" });
 leg("danang", "hue", { mode: "火车 / 巴士 / 包车", duration: [2.5, 3.5], price: [120000, 450000], note: "经海云岭往返，陆路比坐飞机自然；火车景观较好。", warning: "雨天公路耗时可能增加。", window: "建议 08:00–09:00 出发；午后入住下一站。" });
-leg("danang", "hcmc", { mode: "飞机", duration: [1.4, 1.7], price: [900000, 2100000], note: "DAD → SGN，直飞通常较多。", warning: "从岘港酒店出发到胡志明市酒店，按 4–5 小时安排。" });
+leg("danang", "hcmc", { mode: "飞机", duration: [1.4, 1.7], price: [900000, 2100000], note: "DAD 与 SGN 之间直飞通常较多。", warning: "两地酒店之间按 4–5 小时安排。" });
 leg("danang", "phuquoc", { mode: "飞机", duration: [1.7, 4.5], price: [1200000, 3000000], note: "有直飞时最方便，否则通常经胡志明市中转。", warning: "先按具体日期确认是否直飞。" });
-leg("nhatrang", "dalat", { mode: "巴士 / 小车", duration: [3, 4.5], price: [180000, 500000], note: "约 138 公里山路；班次多，不必飞行。", warning: "弯道多，选白天班次并准备晕车药。", window: "建议 08:00–09:00 出发；约 12:00–13:30 抵达大叻。" });
+leg("nhatrang", "dalat", { mode: "巴士 / 小车", duration: [3, 4.5], price: [180000, 500000], note: "约 138 公里山路；班次多，不必飞行。", warning: "弯道多，选白天班次并准备晕车药。", window: "建议 08:00–09:00 出发；约 12:00–13:30 抵达下一站。" });
 leg("nhatrang", "hue", { mode: "飞机或夜班卧铺", duration: [5, 13], price: [550000, 2200000], note: "通常没有稳定直飞；可经岘港接陆路，或乘夜班火车/巴士。", warning: "会消耗半天到一晚，不适合频繁插入。" });
 leg("nhatrang", "hcmc", { mode: "飞机 / 火车", duration: [1.1, 8], price: [450000, 1700000], note: "飞行最快；火车或卧铺巴士可节省住宿但更疲劳。", warning: "金兰机场接驳会增加约 1 小时。" });
 leg("nhatrang", "phuquoc", { mode: "飞机中转", duration: [3.5, 6], price: [1400000, 3200000], note: "通常经胡志明市中转；不建议走全程陆路。", warning: "中转时间随航班组合变化较大。" });
 leg("dalat", "hue", { mode: "飞机中转 / 长途巴士", duration: [5, 14], price: [700000, 2500000], note: "两地跨越中部较长距离，通常无稳定直飞。", warning: "这组顺序会形成明显北返，路线效率较低。" });
 leg("dalat", "hcmc", { mode: "飞机 / 巴士", duration: [1, 7], price: [300000, 1600000], note: "飞机约 1 小时；巴士可从市区直接出发，但需约 6–8 小时。", warning: "节省预算可选白天巴士，节省时间选飞机。" });
 leg("dalat", "phuquoc", { mode: "飞机中转", duration: [3.5, 6], price: [1400000, 3200000], note: "通常经胡志明市中转，没有合适衔接时可能需住一晚。", warning: "务必按日期核对联程与行李规则。" });
-leg("hue", "hcmc", { mode: "飞机", duration: [1.4, 1.7], price: [900000, 2100000], note: "HUI → SGN，直飞最适合短行程。", warning: "航班选择少于岘港出发。" });
-leg("hue", "phuquoc", { mode: "飞机中转", duration: [4, 7], price: [1500000, 3400000], note: "通常经胡志明市中转；也可先陆路到岘港再飞。", warning: "转场成本较高，11 晚路线不建议同时保留过多节点。" });
-leg("hcmc", "phuquoc", { mode: "飞机", duration: [1, 1.2], price: [700000, 1700000], note: "SGN → PQC 是最省时方案；巴士加轮渡通常约 10–12 小时。", warning: "雨季尾段可能影响海上活动，但通常不影响航空主线。", window: "优先上午直飞；下午留给酒店和海滩。" });
+leg("hue", "hcmc", { mode: "飞机", duration: [1.4, 1.7], price: [900000, 2100000], note: "HUI 与 SGN 之间直飞最适合短行程。", warning: "航班选择少于岘港出发。" });
+leg("hue", "phuquoc", { mode: "飞机中转", duration: [4, 7], price: [1500000, 3400000], note: "通常经胡志明市中转；也可先陆路到岘港再飞。", warning: "转场成本较高，12 晚路线不建议同时保留过多节点。" });
+leg("hcmc", "phuquoc", { mode: "飞机", duration: [1, 1.2], price: [700000, 1700000], note: "SGN 与 PQC 之间飞行最省时；巴士加轮渡通常约 10–12 小时。", warning: "雨季尾段可能影响海上活动，但通常不影响航空主线。", window: "优先上午直飞；下午只安排酒店周边活动。" });
 
 const PHRASES = {
   基础: [
@@ -286,15 +292,21 @@ function cloneDefaultRoute() {
 
 function loadRoute() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    const current = localStorage.getItem(STORAGE_KEY);
+    const legacy = current ? null : localStorage.getItem(LEGACY_STORAGE_KEY);
+    const parsed = JSON.parse(current || legacy);
     if (!Array.isArray(parsed) || parsed.length < 2) return cloneDefaultRoute();
     const middle = parsed.filter(node => node.role === "middle" && CITIES[node.city] && node.city !== "hanoi");
     const uniqueMiddle = middle.filter((node, index) => middle.findIndex(item => item.city === node.city) === index);
-    return [
+    const normalized = [
       { id: "start", city: "hanoi", nights: clampNights(parsed.find(node => node.role === "start")?.nights ?? 2, "hanoi"), role: "start" },
       ...uniqueMiddle.map(node => ({ id: String(node.id || createId()), city: node.city, nights: clampNights(node.nights, node.city), role: "middle" })),
-      { id: "end", city: "hanoi", nights: clampNights(parsed.find(node => node.role === "end")?.nights ?? 1, "hanoi"), role: "end" }
+      { id: "end", city: "hanoi", nights: clampNights(parsed.find(node => node.role === "end")?.nights ?? 2, "hanoi"), role: "end" }
     ];
+    if (legacy && normalized.reduce((sum, node) => sum + node.nights, 0) === 11 && normalized.at(-1).nights < CITIES.hanoi.maxNights) {
+      normalized.at(-1).nights += 1;
+    }
+    return normalized;
   } catch {
     return cloneDefaultRoute();
   }
@@ -403,16 +415,17 @@ function plansForNode(node, index, dates) {
 
   for (let offset = 1; offset < node.nights; offset += 1) {
     const restful = offset >= city.recommendedNights;
-    const plan = restful ? city.restDay : city.days[offset - 1] || city.restDay;
+    const cityPlans = node.role === "end" && city.returnDays ? city.returnDays : city.days;
+    const plan = restful ? city.restDay : cityPlans[offset - 1] || city.restDay;
     addPlan(addDays(dates[index].start, offset), restful ? "休息日" : "完整日", plan.am, plan.pm, restful);
   }
 
   if (node.role === "end") {
     addPlan(
-      dates[index].end,
+      DEPARTURE_DATE,
       "返程日",
-      "睡到自然醒；西湖、咖啡或购物，退房后把行李寄存在酒店",
-      "18:00 前吃晚餐；22:30 前往 HAN T2，次日 02:20 MU5076 飞回上海",
+      "睡到自然醒；老城或咖啡馆收尾，12:00 退房后寄存行李",
+      "约 14:30 从市区出发，15:30–15:45 抵达 HAN T2；18:45 MU6014 起飞，22:50 抵达浦东 T1",
       true
     );
   }
@@ -499,7 +512,7 @@ function renderRoute() {
   routeEditor.innerHTML = route.map((node, index) => {
     const city = CITIES[node.city];
     const fixed = node.role !== "middle";
-    const periodSuffix = node.role === "start" ? " · 17:45 抵达" : node.role === "end" ? " · 10.06 深夜前往机场" : "";
+    const periodSuffix = node.role === "start" ? " · 17:45 抵达" : node.role === "end" ? " · 10.07 14:30 去机场" : "";
     const options = Object.entries(CITIES)
       .filter(([key]) => key !== "hanoi" && (!usedMiddle.has(key) || key === node.city))
       .map(([key, item]) => `<option value="${key}"${key === node.city ? " selected" : ""}>${esc(item.name)} · ${item.airport}</option>`)
@@ -517,7 +530,7 @@ function renderRoute() {
 
     return `<li class="route-node${fixed ? "" : " sortable"}" data-id="${esc(node.id)}">
       ${fixed ? "" : `<div class="node-actions" aria-label="${city.name}节点操作">
-        <button type="button" class="drag-handle" data-drag-handle aria-label="拖动${city.name}调整顺序" data-tooltip="拖动排序" title="拖动调整顺序">⠿</button>
+        <button type="button" class="drag-handle" data-drag-handle draggable="true" aria-label="拖动${city.name}调整顺序" data-tooltip="拖动排序" title="拖动调整顺序">⠿</button>
         <button type="button" class="move-button" data-action="up" aria-label="上移${city.name}" data-tooltip="上移" title="上移"${index === 1 ? " disabled" : ""}>↑</button>
         <button type="button" class="move-button" data-action="down" aria-label="下移${city.name}" data-tooltip="下移" title="下移"${index === route.length - 2 ? " disabled" : ""}>↓</button>
         <button type="button" class="delete-node" data-action="delete" aria-label="删除${city.name}" data-tooltip="删除" title="删除城市">×</button>
@@ -595,19 +608,16 @@ function renderAnalysis() {
   $("#transfer-count").textContent = `${route.length - 1} 次`;
   $("#transport-hours").textContent = `约 ${Math.round(totals.hours[0] * 10) / 10}–${Math.round(totals.hours[1] * 10) / 10}h`;
 
-  const advice = [];
+  const advice = ["10 月 7 日 18:45 从 HAN T2 起飞；当天上午仍可活动，约 14:30 从市区前往机场。"];
   if (balance > 0) advice.push(`还有 ${balance} 晚未分配，可以增加喜欢的城市，或添加一个新节点。`);
   if (balance < 0) advice.push(`当前超出 ${Math.abs(balance)} 晚，实际日期会超过返程窗口，请先减少住宿。`);
-  if (balance === 0) advice.push("住宿晚数与 9 月 25 日至 10 月 6 日的 11 晚完全匹配。");
+  if (balance === 0) advice.push("住宿晚数与 9 月 25 日至 10 月 7 日的 12 晚完全匹配。");
 
-  const nightsByCity = route.reduce((result, node) => {
-    result[node.city] = (result[node.city] || 0) + node.nights;
-    return result;
-  }, {});
-  Object.entries(nightsByCity).forEach(([key, nights]) => {
-    const city = CITIES[key];
-    if (nights < city.minNights) advice.push(`${city.name}共 ${nights} 晚，建议至少 ${city.minNights} 晚，否则主要时间会耗在转场。`);
-    if (nights > city.recommendedNights) advice.push(`${city.name}共 ${nights} 晚，超过核心玩法建议的 ${city.recommendedNights} 晚；额外时间已优先安排休息、酒店和自由觅食。`);
+  route.forEach(node => {
+    const city = CITIES[node.city];
+    const position = node.role === "start" ? "去程段" : node.role === "end" ? "返程段" : "";
+    if (node.nights < city.minNights) advice.push(`${city.name}${position}只有 ${node.nights} 晚，建议至少 ${city.minNights} 晚，否则主要时间会耗在转场。`);
+    if (node.nights > city.recommendedNights) advice.push(`${city.name}${position}安排 ${node.nights} 晚；超出的时间已作为休息、酒店和自由觅食。`);
   });
 
   route.forEach(node => {
@@ -627,7 +637,7 @@ function renderAnalysis() {
       break;
     }
   }
-  if (middle.length > 4) advice.push("中间节点超过 4 个，11 晚内会频繁收拾行李，建议删减一站。 ");
+  if (middle.length > 4) advice.push("中间节点超过 4 个，12 晚内会频繁收拾行李，建议删减一站。 ");
   if (middle.some(node => node.city === "phuquoc") && middle.find(node => node.city === "phuquoc")?.nights < 3) advice.push("富国岛受天气影响较大，少于 3 晚不容易留出机动空间。 ");
 
   const uncertain = route.slice(0, -1).some((node, index) => /中转|有限|并非每天/.test(getLeg(node.city, route[index + 1].city).note));
@@ -637,8 +647,6 @@ function renderAnalysis() {
   if (cityKeys.has("danang") || cityKeys.has("hue")) advice.push("9 月底至 10 月初处在中部沿海天气转换期；会安 10 月起雨势和风暴风险上升，海滩、山路与室内项目要能互换。");
   if (cityKeys.has("nhatrang")) advice.push("芽庄 9–12 月为雨季；跳岛不是必做项，只在出发前 24 小时确认风浪后保留。");
   if (cityKeys.has("dalat")) advice.push("大叻 4–11 月多雨；瀑布和山路不连排，至少保留半天咖啡或酒店机动。");
-  advice.push("10 月 6 日不计住宿晚数：白天仍可活动，约 22:30 前往 HAN T2，乘次日 02:20 航班回上海。");
-
   $("#advice-list").innerHTML = [...new Set(advice)].slice(0, 7).map(item => `<li>${esc(item.trim())}</li>`).join("");
 }
 
@@ -697,6 +705,12 @@ function placeDraggedNode(overNode, clientY) {
   else routeEditor.insertBefore(draggedNode, overNode.nextSibling);
 }
 
+function autoScrollDuringDrag(clientY) {
+  const edge = Math.min(110, window.innerHeight * 0.16);
+  if (clientY < edge) window.scrollBy(0, -14);
+  if (clientY > window.innerHeight - edge) window.scrollBy(0, 14);
+}
+
 function finishDrag() {
   if (!draggedNodeId) return;
   const orderedIds = $$(".route-node", routeEditor).map(node => node.dataset.id);
@@ -713,6 +727,7 @@ function finishDrag() {
 routeEditor.addEventListener("pointerdown", event => {
   const handle = event.target.closest("[data-drag-handle]");
   if (!handle) return;
+  if (event.pointerType === "mouse") return;
   const node = handle.closest(".route-node");
   draggedNodeId = node?.dataset.id || null;
   if (!draggedNodeId) return;
@@ -723,21 +738,52 @@ routeEditor.addEventListener("pointerdown", event => {
 });
 
 routeEditor.addEventListener("pointermove", event => {
-  if (!draggedNodeId) return;
+  if (!draggedNodeId || event.pointerType === "mouse") return;
   event.preventDefault();
+  autoScrollDuringDrag(event.clientY);
   const overNode = document.elementFromPoint(event.clientX, event.clientY)?.closest(".route-node");
   placeDraggedNode(overNode, event.clientY);
 });
 
-routeEditor.addEventListener("pointerup", () => {
-  if (!draggedNodeId) return;
+routeEditor.addEventListener("pointerup", event => {
+  if (!draggedNodeId || event.pointerType === "mouse") return;
   finishDrag();
 });
 
-routeEditor.addEventListener("pointercancel", () => {
-  if (!draggedNodeId) return;
+routeEditor.addEventListener("pointercancel", event => {
+  if (!draggedNodeId || event.pointerType === "mouse") return;
   finishDrag();
 });
+
+routeEditor.addEventListener("dragstart", event => {
+  const handle = event.target.closest("[data-drag-handle]");
+  const node = handle?.closest(".route-node");
+  if (!node) {
+    event.preventDefault();
+    return;
+  }
+  draggedNodeId = node.dataset.id;
+  dragStartOrder = $$(".route-node", routeEditor).map(item => item.dataset.id).join("|");
+  node.classList.add("is-dragging");
+  event.dataTransfer.effectAllowed = "move";
+  event.dataTransfer.setData("text/plain", draggedNodeId);
+});
+
+routeEditor.addEventListener("dragover", event => {
+  if (!draggedNodeId) return;
+  event.preventDefault();
+  event.dataTransfer.dropEffect = "move";
+  autoScrollDuringDrag(event.clientY);
+  placeDraggedNode(event.target.closest(".route-node"), event.clientY);
+});
+
+routeEditor.addEventListener("drop", event => {
+  if (!draggedNodeId) return;
+  event.preventDefault();
+  finishDrag();
+});
+
+routeEditor.addEventListener("dragend", finishDrag);
 
 routeEditor.addEventListener("click", event => {
   const button = event.target.closest("button[data-action]");
