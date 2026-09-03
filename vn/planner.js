@@ -183,6 +183,51 @@ leg("hue", "phuquoc", { mode: "飞机中转", duration: [4, 7], price: [1500000,
 leg("hcmc", "phuquoc", { mode: "飞机", duration: [1, 1.2], price: [700000, 1700000], note: "SGN 与 PQC 之间飞行最省时；巴士加轮渡通常约 10–12 小时。", warning: "雨季尾段可能影响海上活动，但通常不影响航空主线。", window: "优先上午直飞；下午只安排酒店周边活动。" });
 
 const PHRASES = {
+  高频词: [
+    ["Có", "有 / 是", "果"],
+    ["Không", "不 / 没有", "空"],
+    ["Được", "可以 / 好", "德"],
+    ["Đúng", "对", "拥"],
+    ["Sai", "错", "赛"],
+    ["Đây", "这里", "呆"],
+    ["Kia", "那里", "基啊"],
+    ["Đâu", "哪里", "兜"],
+    ["Này", "这个", "奈"],
+    ["Bao nhiêu", "多少", "包 纽"],
+    ["Một", "一", "木"],
+    ["Hai", "二", "嗨"],
+    ["Hôm nay", "今天", "轰 奈"],
+    ["Ngày mai", "明天", "艾 买"],
+    ["Bây giờ", "现在", "杯 约"],
+    ["Sáng", "上午", "桑"],
+    ["Trưa", "中午", "朱啊"],
+    ["Chiều", "下午", "桥"],
+    ["Tối", "晚上", "多伊"],
+    ["Nóng", "热", "农"],
+    ["Lạnh", "冷", "冷"],
+    ["Nước", "水", "讷"],
+    ["Cơm", "米饭", "根"],
+    ["Phở", "河粉", "佛"],
+    ["Cà phê", "咖啡", "嘎 费"],
+    ["Bia", "啤酒", "比啊"],
+    ["Nhà vệ sinh", "洗手间", "雅 卫 生"],
+    ["Sân bay", "机场", "森 拜"],
+    ["Khách sạn", "酒店", "客 散"],
+    ["Ga tàu", "火车站", "嘎 道"],
+    ["Vé", "票", "耶"],
+    ["Tiền", "钱", "甜"],
+    ["Thẻ", "卡", "特"],
+    ["Tiền mặt", "现金", "甜 末"],
+    ["Trái", "左", "摘"],
+    ["Phải", "右", "法伊"],
+    ["Thẳng", "直走", "探"],
+    ["Gần", "近", "根"],
+    ["Xa", "远", "撒"],
+    ["Chậm", "慢", "枕"],
+    ["Nhanh", "快", "娘"],
+    ["Mở", "开门 / 营业", "么"],
+    ["Đóng", "关门 / 打烊", "冬"]
+  ],
   基础: [
     ["Xin chào", "你好", "新 招"],
     ["Cảm ơn", "谢谢", "嘎门"],
@@ -191,7 +236,11 @@ const PHRASES = {
     ["Vâng / Dạ", "是的（礼貌）", "旺 / 亚"],
     ["Không", "不是 / 不要", "空"],
     ["Tôi không hiểu", "我听不懂", "多伊 空 友"],
-    ["Bạn có nói tiếng Anh không?", "你会说英语吗？", "伴 果 诺 颠 安 空"]
+    ["Bạn có nói tiếng Anh không?", "你会说英语吗？", "伴 果 诺 颠 安 空"],
+    ["Nói chậm một chút", "请说慢一点", "诺 枕 木 朱"],
+    ["Bạn viết ra giúp tôi", "请帮我写下来", "伴 越 扎 族 多伊"],
+    ["Tôi biết một chút", "我会一点", "多伊 别 木 朱"],
+    ["Không sao", "没关系", "空 勺"]
   ],
   出行: [
     ["Cho tôi đến địa chỉ này", "请带我去这个地址", "卓 多伊 登 地啊 只 奈"],
@@ -201,7 +250,12 @@ const PHRASES = {
     ["Bật đồng hồ, làm ơn", "请打表", "北 冬 湖，蓝 恩"],
     ["Tôi bị say xe", "我晕车", "多伊 比 赛 些"],
     ["Ga tàu ở đâu?", "火车站在哪里？", "嘎 道 额 兜"],
-    ["Tôi muốn đặt xe", "我想叫车", "多伊 木温 达 些"]
+    ["Tôi muốn đặt xe", "我想叫车", "多伊 木温 达 些"],
+    ["Đi thẳng", "直走", "滴 探"],
+    ["Rẽ trái / Rẽ phải", "左转 / 右转", "热 摘 / 热 法伊"],
+    ["Gần đây không?", "离这里近吗？", "根 呆 空"],
+    ["Cho tôi xuống ở đây", "我在这里下车", "卓 多伊 松 额 呆"],
+    ["Chuyến cuối mấy giờ?", "末班车几点？", "卷 贵 美 约"]
   ],
   餐饮: [
     ["Cho tôi xem thực đơn", "请给我看菜单", "卓 多伊 森 特 德恩"],
@@ -213,7 +267,13 @@ const PHRASES = {
     ["Một chai nước, làm ơn", "请给我一瓶水", "木 拆 诺，蓝 恩"],
     ["Tôi bị dị ứng với…", "我对……过敏", "多伊 比 夷 翁 维"],
     ["Tính tiền, làm ơn", "请买单", "丁 甜，蓝 恩"],
-    ["Ngon lắm", "很好吃", "农 蓝"]
+    ["Ngon lắm", "很好吃", "农 蓝"],
+    ["Có món chay không?", "有素食吗？", "果 蒙 摘 空"],
+    ["Không đường", "不要糖", "空 东"],
+    ["Ít đường", "少糖", "一 东"],
+    ["Một cà phê sữa đá", "一杯冰奶咖啡", "木 嘎 费 苏啊 达"],
+    ["Mang đi", "打包带走", "芒 滴"],
+    ["Cho tôi đôi đũa", "请给我筷子", "卓 多伊 堆 杜啊"]
   ],
   购物: [
     ["Bao nhiêu tiền?", "多少钱？", "包 纽 甜"],
@@ -221,7 +281,11 @@ const PHRASES = {
     ["Có giảm giá không?", "可以便宜吗？", "果 减 架 空"],
     ["Tôi chỉ xem", "我只是看看", "多伊 只 森"],
     ["Tôi có thể trả bằng thẻ không?", "可以刷卡吗？", "多伊 果 特 茶 棒 特 空"],
-    ["Có cỡ lớn hơn không?", "有更大码吗？", "果 格 乐 恩 空"]
+    ["Có cỡ lớn hơn không?", "有更大码吗？", "果 格 乐 恩 空"],
+    ["Có cỡ nhỏ hơn không?", "有更小码吗？", "果 格 扭 恩 空"],
+    ["Tôi thử được không?", "可以试一下吗？", "多伊 特 德 空"],
+    ["Tôi trả tiền mặt", "我付现金", "多伊 茶 甜 末"],
+    ["Cho tôi túi", "请给我一个袋子", "卓 多伊 杜伊"]
   ],
   酒店: [
     ["Tôi có đặt phòng", "我预订了房间", "多伊 果 达 风"],
@@ -231,7 +295,12 @@ const PHRASES = {
     ["Tôi có thể gửi hành lý không?", "可以寄存行李吗？", "多伊 果 特 归 杭 李 空"],
     ["Cho tôi thêm khăn tắm", "请多给我浴巾", "卓 多伊 添 堪 探"],
     ["Máy lạnh không hoạt động", "空调坏了", "麦 冷 空 活 冬"],
-    ["Mật khẩu Wi-Fi là gì?", "Wi-Fi 密码是什么？", "末 口 歪法 拉 夷"]
+    ["Mật khẩu Wi-Fi là gì?", "Wi-Fi 密码是什么？", "末 口 歪法 拉 夷"],
+    ["Phòng quá ồn", "房间太吵", "风 瓜 翁"],
+    ["Không có nước nóng", "没有热水", "空 果 讷 农"],
+    ["Cho tôi phòng yên tĩnh", "请给我安静的房间", "卓 多伊 风 烟 丁"],
+    ["Bữa sáng ở đâu?", "早餐在哪里？", "布啊 桑 额 兜"],
+    ["Gọi taxi giúp tôi", "请帮我叫出租车", "戈 达西 族 多伊"]
   ],
   求助: [
     ["Tôi cần giúp đỡ", "我需要帮助", "多伊 根 族 德"],
@@ -241,7 +310,11 @@ const PHRASES = {
     ["Gọi xe cấp cứu, làm ơn", "请叫救护车", "戈 些 格 久，蓝 恩"],
     ["Bệnh viện gần nhất ở đâu?", "最近的医院在哪里？", "病 院 根 一 额 兜"],
     ["Tôi không khỏe", "我不舒服", "多伊 空 快"],
-    ["Bạn có thể viết ra không?", "你可以写下来吗？", "伴 果 特 越 扎 空"]
+    ["Bạn có thể viết ra không?", "你可以写下来吗？", "伴 果 特 越 扎 空"],
+    ["Tôi cần bác sĩ", "我需要医生", "多伊 根 巴 西"],
+    ["Tôi bị dị ứng", "我过敏了", "多伊 比 夷 翁"],
+    ["Nhà thuốc ở đâu?", "药店在哪里？", "雅 图 额 兜"],
+    ["Xin gọi cho số này", "请拨打这个号码", "新 戈 卓 苏 奈"]
   ]
 };
 
@@ -453,7 +526,7 @@ function renderHeroRail() {
   rail.innerHTML = route.map((node, index) => {
     const city = CITIES[node.city];
     const period = compactDateRange(dates[index].start, dates[index].end);
-    return `<span class="rail-stop ${node.role}" role="listitem"><button type="button" data-jump-node="${esc(node.id)}" aria-label="查看${city.name} ${period} 日程"><i>${city.airport}</i><b>${city.name}</b><small>${period}</small></button></span>`;
+    return `<span class="rail-stop ${node.role}" role="listitem"><button type="button" data-jump-node="${esc(node.id)}" aria-label="查看${city.name} ${period} 规划"><i aria-hidden="true"></i><b>${city.name}<em>${city.airport}</em></b><small>${period}</small></button></span>`;
   }).join("");
 }
 
@@ -528,9 +601,9 @@ function renderRoute() {
       </li>`;
     }).join("");
 
-    return `<li class="route-node${fixed ? "" : " sortable"}" data-id="${esc(node.id)}">
+    return `<li class="route-node${fixed ? "" : " sortable"}" data-id="${esc(node.id)}"${fixed ? "" : ' draggable="true"'}>
       ${fixed ? "" : `<div class="node-actions" aria-label="${city.name}节点操作">
-        <button type="button" class="drag-handle" data-drag-handle draggable="true" aria-label="拖动${city.name}调整顺序" data-tooltip="拖动排序" title="拖动调整顺序">⠿</button>
+        <span class="drag-handle" data-drag-handle draggable="true" role="button" tabindex="0" aria-label="拖动${city.name}调整顺序" data-tooltip="拖动排序" title="拖动调整顺序">⠿</span>
         <button type="button" class="move-button" data-action="up" aria-label="上移${city.name}" data-tooltip="上移" title="上移"${index === 1 ? " disabled" : ""}>↑</button>
         <button type="button" class="move-button" data-action="down" aria-label="下移${city.name}" data-tooltip="下移" title="下移"${index === route.length - 2 ? " disabled" : ""}>↓</button>
         <button type="button" class="delete-node" data-action="delete" aria-label="删除${city.name}" data-tooltip="删除" title="删除城市">×</button>
@@ -558,7 +631,7 @@ function renderRoute() {
         </div>
       </div>
       <details class="city-detail"${openNodeIds.has(node.id) ? " open" : ""}>
-        <summary><span>半日安排 · ${node.nights} 晚</span><i aria-hidden="true">＋</i></summary>
+        <summary><span>规划 <small>${node.nights} 晚</small></span><i aria-hidden="true">＋</i></summary>
         <div class="city-detail-body${city.image ? " has-image" : ""}">
           <div class="detail-copy">
             <dl class="city-facts">
@@ -573,11 +646,7 @@ function renderRoute() {
     </li>`;
   }).join("");
 
-  $("#route-title").innerHTML = route.map((node, index) => {
-    const cityName = esc(CITIES[node.city].name);
-    const period = compactDateRange(dates[index].start, dates[index].end);
-    return `<span class="title-city">${index ? '<i aria-hidden="true">→</i>' : ""}<button type="button" data-jump-node="${esc(node.id)}" aria-label="打开${cityName} ${period} 日程">${cityName}</button></span>`;
-  }).join("");
+  $("#route-title").textContent = route.map(node => CITIES[node.city].name).join(" → ");
 }
 
 function routeTotals() {
@@ -694,6 +763,7 @@ function updateNode(id, updater) {
 
 let draggedNodeId = null;
 let dragStartOrder = "";
+let dragPointerId = null;
 
 function placeDraggedNode(overNode, clientY) {
   const draggedNode = draggedNodeId && routeEditor.querySelector(`[data-id="${CSS.escape(draggedNodeId)}"]`);
@@ -716,8 +786,11 @@ function finishDrag() {
   const orderedIds = $$(".route-node", routeEditor).map(node => node.dataset.id);
   const changed = orderedIds.join("|") !== dragStartOrder;
   $$(".route-node.is-dragging", routeEditor).forEach(node => node.classList.remove("is-dragging"));
+  $$(".route-node.is-drop-target", routeEditor).forEach(node => node.classList.remove("is-drop-target"));
+  document.body.classList.remove("route-dragging");
   draggedNodeId = null;
   dragStartOrder = "";
+  dragPointerId = null;
   if (!changed) return;
   route = orderedIds.map(id => route.find(node => node.id === id)).filter(Boolean);
   markCustom();
@@ -732,38 +805,73 @@ routeEditor.addEventListener("pointerdown", event => {
   draggedNodeId = node?.dataset.id || null;
   if (!draggedNodeId) return;
   dragStartOrder = $$(".route-node", routeEditor).map(item => item.dataset.id).join("|");
+  dragPointerId = event.pointerId;
   event.preventDefault();
   node.classList.add("is-dragging");
-  handle.setPointerCapture(event.pointerId);
+  document.body.classList.add("route-dragging");
+  try { handle.setPointerCapture(event.pointerId); } catch { /* Pointer capture is optional. */ }
 });
 
-routeEditor.addEventListener("pointermove", event => {
-  if (!draggedNodeId || event.pointerType === "mouse") return;
+routeEditor.addEventListener("mousedown", event => {
+  const node = event.target.closest(".route-node.sortable");
+  if (!node || event.button !== 0) return;
+  if (event.target.closest("button:not(.drag-handle), select, summary, .city-detail")) return;
+  draggedNodeId = node?.dataset.id || null;
+  if (!draggedNodeId) return;
+  dragStartOrder = $$(".route-node", routeEditor).map(item => item.dataset.id).join("|");
+  dragPointerId = "mouse";
+  node.classList.add("is-dragging");
+  document.body.classList.add("route-dragging");
+});
+
+document.addEventListener("pointermove", event => {
+  if (!draggedNodeId) return;
+  if (dragPointerId === "mouse" ? event.pointerType !== "mouse" : event.pointerId !== dragPointerId) return;
   event.preventDefault();
   autoScrollDuringDrag(event.clientY);
   const overNode = document.elementFromPoint(event.clientX, event.clientY)?.closest(".route-node");
+  $$(".route-node.is-drop-target", routeEditor).forEach(node => node.classList.remove("is-drop-target"));
+  if (overNode && overNode.dataset.id !== draggedNodeId && route.find(node => node.id === overNode.dataset.id)?.role === "middle") {
+    overNode.classList.add("is-drop-target");
+  }
   placeDraggedNode(overNode, event.clientY);
-});
+}, { passive: false });
 
-routeEditor.addEventListener("pointerup", event => {
-  if (!draggedNodeId || event.pointerType === "mouse") return;
+document.addEventListener("pointerup", event => {
+  if (!draggedNodeId) return;
+  if (dragPointerId === "mouse" ? event.pointerType !== "mouse" : event.pointerId !== dragPointerId) return;
   finishDrag();
 });
 
-routeEditor.addEventListener("pointercancel", event => {
-  if (!draggedNodeId || event.pointerType === "mouse") return;
+document.addEventListener("pointercancel", event => {
+  if (!draggedNodeId) return;
+  if (dragPointerId === "mouse" ? event.pointerType !== "mouse" : event.pointerId !== dragPointerId) return;
+  finishDrag();
+});
+
+document.addEventListener("mousemove", event => {
+  if (!draggedNodeId || dragPointerId !== "mouse") return;
+  event.preventDefault();
+  autoScrollDuringDrag(event.clientY);
+  const overNode = document.elementFromPoint(event.clientX, event.clientY)?.closest(".route-node");
+  $$(".route-node.is-drop-target", routeEditor).forEach(node => node.classList.remove("is-drop-target"));
+  if (overNode && overNode.dataset.id !== draggedNodeId && route.find(node => node.id === overNode.dataset.id)?.role === "middle") {
+    overNode.classList.add("is-drop-target");
+  }
+  placeDraggedNode(overNode, event.clientY);
+});
+
+document.addEventListener("mouseup", () => {
+  if (!draggedNodeId || dragPointerId !== "mouse") return;
   finishDrag();
 });
 
 routeEditor.addEventListener("dragstart", event => {
-  const handle = event.target.closest("[data-drag-handle]");
-  const node = handle?.closest(".route-node");
-  if (!node) {
+  const node = event.target.closest(".route-node.sortable");
+  if (!node || !draggedNodeId || node.dataset.id !== draggedNodeId) {
     event.preventDefault();
     return;
   }
-  draggedNodeId = node.dataset.id;
-  dragStartOrder = $$(".route-node", routeEditor).map(item => item.dataset.id).join("|");
   node.classList.add("is-dragging");
   event.dataTransfer.effectAllowed = "move";
   event.dataTransfer.setData("text/plain", draggedNodeId);
@@ -774,7 +882,12 @@ routeEditor.addEventListener("dragover", event => {
   event.preventDefault();
   event.dataTransfer.dropEffect = "move";
   autoScrollDuringDrag(event.clientY);
-  placeDraggedNode(event.target.closest(".route-node"), event.clientY);
+  const overNode = event.target.closest(".route-node");
+  $$(".route-node.is-drop-target", routeEditor).forEach(node => node.classList.remove("is-drop-target"));
+  if (overNode && overNode.dataset.id !== draggedNodeId && route.find(node => node.id === overNode.dataset.id)?.role === "middle") {
+    overNode.classList.add("is-drop-target");
+  }
+  placeDraggedNode(overNode, event.clientY);
 });
 
 routeEditor.addEventListener("drop", event => {
@@ -996,6 +1109,7 @@ document.addEventListener("keydown", event => {
 
 function renderPhrases() {
   $("#phrase-tabs").innerHTML = Object.keys(PHRASES).map(category => `<button type="button" role="tab" data-phrase-category="${category}" class="${category === activePhraseCategory ? "active" : ""}" aria-selected="${category === activePhraseCategory}">${category}</button>`).join("");
+  $("#phrase-list").classList.toggle("is-words", activePhraseCategory === "高频词");
   $("#phrase-list").innerHTML = PHRASES[activePhraseCategory].map(([vietnamese, chinese, pronunciation]) => `<button class="phrase-row" type="button" title="点击复制越南语" data-copy-text="${esc(vietnamese)}"><span><strong>${vietnamese}</strong><small>${chinese} · ${pronunciation}</small></span></button>`).join("");
 }
 

@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#0d463e">
   <meta name="description" content="可编辑的 2026 越南路线规划器。">
   <title>越南路线规划器 · 2026</title>
-  <link rel="stylesheet" href="planner.css?v=20260903-14">
+  <link rel="stylesheet" href="planner.css?v=20260903-20">
 </head>
 <body class="night-atlas">
   <header class="appbar">
@@ -26,16 +26,24 @@
       <div class="planner-hero">
         <div class="hero-map" aria-hidden="true"></div>
         <div class="hero-inner shell">
-          <div class="hero-copy">
-            <h1 id="route-title">河内 → 岘港 → 芽庄 → 大叻 → 河内</h1>
-            <div class="trip-window" aria-label="国际航班时间">
-              <span><b>09.25</b><strong>17:45 抵达 HAN T2</strong></span>
-              <i aria-hidden="true"></i>
-              <span><b>10.07</b><strong>18:45 从 HAN T2 起飞</strong></span>
-              <em>12 晚</em>
+          <div class="journey-board">
+            <div class="journey-head">
+              <div class="journey-heading">
+                <span class="section-kicker">越南 · 2026</span>
+                <p class="journey-title">12 晚路线</p>
+                <h1 class="sr-only" id="route-title">河内 → 岘港 → 芽庄 → 大叻 → 河内</h1>
+              </div>
+              <div class="trip-window" aria-label="国际航班时间">
+                <span><b>09.25</b><strong>17:45 抵达 HAN T2</strong></span>
+                <i aria-hidden="true"></i>
+                <span><b>10.07</b><strong>18:45 从 HAN T2 起飞</strong></span>
+                <em>12 晚</em>
+              </div>
+            </div>
+            <div class="route-rail-wrap">
+              <div class="route-rail" id="route-rail" aria-label="当前路线日期"></div>
             </div>
           </div>
-          <div class="route-rail" id="route-rail" aria-label="当前路线日期"></div>
         </div>
       </div>
       <div class="workspace shell" id="route-planner">
@@ -167,6 +175,6 @@
 
   <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">已复制</div>
 
-  <script src="planner.js?v=20260903-14"></script>
+  <script src="planner.js?v=20260903-20"></script>
 </body>
 </html>
