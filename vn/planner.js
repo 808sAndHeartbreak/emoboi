@@ -4,8 +4,8 @@ document.documentElement.classList.add("js");
 
 const MIDDLE_NIGHTS = 8;
 const CNY_TO_VND = 3880;
-const STORAGE_KEY = "emoboi-vn-route-v4";
-const LEGACY_STORAGE_KEYS = ["emoboi-vn-route-v3", "emoboi-vn-route-v2"];
+const STORAGE_KEY = "emoboi-vn-route-v5";
+const LEGACY_STORAGE_KEYS = ["emoboi-vn-route-v4", "emoboi-vn-route-v3", "emoboi-vn-route-v2"];
 const ARRIVAL_DATE = new Date("2026-09-25T17:45:00+07:00");
 const MIDDLE_START_DATE = new Date("2026-09-27T12:00:00+07:00");
 const HOTEL_CHECKIN_DATE = new Date("2026-10-05T15:00:00+07:00");
@@ -392,6 +392,8 @@ function loadRoute() {
     if (!Array.isArray(parsed) || parsed.length < 2) return cloneDefaultRoute();
     const middle = parsed.filter(node => node.role === "middle" && CITIES[node.city] && !["hanoi", "camranh"].includes(node.city));
     const uniqueMiddle = middle.filter((node, index) => middle.findIndex(item => item.city === node.city) === index);
+    const legacySignature = uniqueMiddle.map(node => `${node.city}:${Number(node.nights)}`).join("|");
+    if (legacy && legacySignature === "danang:3|nhatrang:3|dalat:2") return cloneDefaultRoute();
     return [
       { id: "start", city: "hanoi", nights: 2, role: "start", locked: true },
       ...uniqueMiddle.map(node => ({ id: String(node.id || createId()), city: node.city, nights: clampNights(node.nights, node.city), role: "middle" })),
