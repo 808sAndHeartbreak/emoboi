@@ -7,74 +7,68 @@
   <meta name="theme-color" content="#0d463e">
   <meta name="description" content="可编辑的 2026 越南路线规划器。">
   <title>越南路线规划器 · 2026</title>
-  <link rel="stylesheet" href="planner.css?v=20260903-11">
+  <link rel="stylesheet" href="planner.css?v=20260903-12">
 </head>
 <body class="night-atlas">
   <header class="appbar">
     <div class="appbar-inner">
       <div class="tool-actions" aria-label="旅行工具">
-        <button type="button" data-tool="weather" aria-expanded="false">天气</button>
-        <button type="button" data-tool="exchange" aria-expanded="false">汇率</button>
-        <button type="button" data-tool="phrases" aria-expanded="false">常用语</button>
+        <button type="button" data-tool="weather" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4 4 0 1 1 1.6-7.7A5.5 5.5 0 0 1 19 12.5 2.8 2.8 0 0 1 18.2 18H7Z"/></svg><span>天气</span></button>
+        <button type="button" data-tool="exchange" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 3-3m0 0L7 1m3 3H3m14 13-3 3m0 0 3 3m-3-3h7M5 10h11M8 7v10m8-7H8m8 0v7"/></svg><span>汇率</span></button>
+        <button type="button" data-tool="phrases" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Zm4 5h8M8 7.5h5"/></svg><span>常用语</span></button>
+        <button type="button" data-tool="flights" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 15 7.5-3.5V5.8c0-1.2.7-3.3 1.5-3.3s1.5 2.1 1.5 3.3v5.7L21 15v2l-7.5-1.5V20l2.5 1.5V23L12 22l-4 1v-1.5l2.5-1.5v-4.5L3 17v-2Z"/></svg><span>机票</span></button>
       </div>
     </div>
   </header>
 
   <main>
-    <section class="planner-hero">
-      <div class="hero-map" aria-hidden="true"></div>
-      <div class="hero-inner shell">
-        <div class="hero-copy">
-          <h1 id="route-title">河内 → 岘港 → 芽庄 → 大叻 → 河内</h1>
-          <a class="hero-jump" href="#route-editor">查看详细日程 <span aria-hidden="true">↓</span></a>
-        </div>
-        <div class="route-rail" id="route-rail" aria-label="当前路线"></div>
-      </div>
-    </section>
-
-    <section class="workspace shell">
-      <div class="route-workspace">
-        <header class="workspace-head">
-          <div>
-            <span class="section-kicker">01</span>
-            <h2>路线</h2>
+    <section class="route-planner-section">
+      <div class="planner-hero">
+        <div class="hero-map" aria-hidden="true"></div>
+        <div class="hero-inner shell">
+          <div class="hero-copy">
+            <h1 id="route-title">河内 → 岘港 → 芽庄 → 大叻 → 河内</h1>
           </div>
-        </header>
-
-        <div class="preset-bar">
-          <div class="preset-label"><span>快速方案</span><small id="preset-caption">选择后仍可继续修改</small></div>
-          <div class="preset-options" id="preset-options" role="tablist" aria-label="路线预设"></div>
-          <button class="copy-route" id="copy-route" type="button">复制路线</button>
+          <div class="route-rail" id="route-rail" aria-label="当前路线日期"></div>
         </div>
-        <p class="preset-note" id="preset-note"></p>
-
-        <ol class="route-editor" id="route-editor" aria-label="行程节点"></ol>
-
-        <button class="add-node" id="add-node" type="button">
-          <span aria-hidden="true">＋</span>
-          添加中间节点
-        </button>
       </div>
-
-      <aside class="analysis-panel" aria-live="polite">
-        <div class="analysis-sticky">
-          <span class="section-kicker">当前</span>
-          <h2>路线分析</h2>
-          <div class="night-meter">
-            <div class="meter-track"><span id="night-meter-fill"></span></div>
-            <div class="meter-copy"><span id="night-meter-label">已分配 11 晚</span><strong id="night-balance">刚好</strong></div>
+      <div class="workspace shell" id="route-planner">
+        <div class="route-workspace">
+          <div class="preset-bar">
+            <div class="preset-label"><span>快速方案</span><small id="preset-caption">选择后仍可继续修改</small></div>
+            <div class="preset-options" id="preset-options" role="tablist" aria-label="路线预设"></div>
+            <button class="copy-route" id="copy-route" type="button">复制路线</button>
           </div>
-          <dl class="analysis-metrics">
-            <div><dt>城市内预算</dt><dd id="city-budget">¥0–¥0</dd></div>
-            <div><dt>节点间交通</dt><dd id="transport-budget">¥0–¥0</dd></div>
-            <div class="metric-total"><dt>境内合计 / 人</dt><dd id="total-budget">¥0–¥0</dd></div>
-            <div><dt>转场次数</dt><dd id="transfer-count">0 次</dd></div>
-            <div><dt>路上总时间</dt><dd id="transport-hours">约 0h</dd></div>
-          </dl>
-          <p class="budget-note">每人估算；两人同住普通酒店。不含国际机票、购物和高价体验。</p>
-          <ul class="advice-list" id="advice-list"></ul>
+          <p class="preset-note" id="preset-note"></p>
+
+          <ol class="route-editor" id="route-editor" aria-label="行程节点"></ol>
+
+          <button class="add-node" id="add-node" type="button">
+            <span aria-hidden="true">＋</span>
+            添加中间节点
+          </button>
         </div>
-      </aside>
+
+        <aside class="analysis-panel" aria-live="polite">
+          <div class="analysis-sticky">
+            <span class="section-kicker">当前</span>
+            <h2>路线分析</h2>
+            <div class="night-meter">
+              <div class="meter-track"><span id="night-meter-fill"></span></div>
+              <div class="meter-copy"><span id="night-meter-label">已分配 11 晚</span><strong id="night-balance">刚好</strong></div>
+            </div>
+            <dl class="analysis-metrics">
+              <div><dt>城市内预算</dt><dd id="city-budget">¥0–¥0</dd></div>
+              <div><dt>节点间交通</dt><dd id="transport-budget">¥0–¥0</dd></div>
+              <div class="metric-total"><dt>境内合计 / 人</dt><dd id="total-budget">¥0–¥0</dd></div>
+              <div><dt>转场次数</dt><dd id="transfer-count">0 次</dd></div>
+              <div><dt>路上总时间</dt><dd id="transport-hours">约 0h</dd></div>
+            </dl>
+            <p class="budget-note">每人估算；两人同住普通酒店。不含国际机票、购物和高价体验。</p>
+            <ul class="advice-list" id="advice-list"></ul>
+          </div>
+        </aside>
+      </div>
     </section>
 
     <section class="transport-section">
@@ -89,29 +83,6 @@
       </div>
     </section>
 
-    <section class="flight-section shell">
-      <header class="section-head">
-        <div>
-          <span class="section-kicker">03</span>
-          <h2>国际航班</h2>
-        </div>
-        <p>当地时间；越南比上海慢 1 小时。</p>
-      </header>
-      <div class="flight-board">
-        <article class="flight-row">
-          <div class="flight-label"><strong>去程</strong><span>09 月 25 日 · 周五</span></div>
-          <div class="flight-time"><strong>14:45</strong><span>PVG T1</span><i>→</i><strong>17:45</strong><span>HAN T2</span></div>
-          <div class="flight-detail"><strong>东方航空 MU6013</strong><span>上海浦东 T1 → 河内内排 T2</span><small>4h · Airbus A321 · 正餐</small></div>
-          <button class="copy-row" type="button" data-copy-text="09月25日 14:45｜东方航空 MU6013｜上海浦东 T1 → 河内内排 T2｜17:45 抵达">复制</button>
-        </article>
-        <article class="flight-row">
-          <div class="flight-label"><strong>返程</strong><span>10 月 07 日 · 周三</span></div>
-          <div class="flight-time"><strong>02:20</strong><span>HAN T2</span><i>→</i><strong>06:35</strong><span>PVG T1</span></div>
-          <div class="flight-detail"><strong>东方航空 MU5076</strong><span>从河内内排 T2 飞回上海浦东 T1</span><small>3h15 · Boeing 737 · 早餐</small></div>
-          <button class="copy-row" type="button" data-copy-text="10月07日 02:20｜东方航空 MU5076｜河内内排 T2 → 上海浦东 T1｜06:35 抵达">复制</button>
-        </article>
-      </div>
-    </section>
   </main>
 
   <footer class="footer shell">
@@ -135,9 +106,11 @@
     </header>
 
     <section class="tool-panel" data-tool-panel="weather" hidden>
-      <p class="tool-intro">当前天气；临行前再查预报。</p>
+      <div class="tool-panel-head">
+        <p class="tool-intro">当前天气</p>
+        <button class="weather-refresh" id="weather-refresh" type="button" aria-label="刷新天气" title="刷新天气"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button>
+      </div>
       <div class="weather-list" id="weather-list"></div>
-      <button class="primary-tool-button" id="weather-refresh" type="button">读取当前天气</button>
     </section>
 
     <section class="tool-panel" data-tool-panel="exchange" hidden>
@@ -161,14 +134,32 @@
     </section>
 
     <section class="tool-panel" data-tool-panel="phrases" hidden>
-      <p class="tool-intro">点击复制。</p>
+      <p class="tool-intro">点击整行复制越南语。</p>
       <div class="phrase-tabs" id="phrase-tabs" role="tablist" aria-label="常用语分类"></div>
       <div class="phrase-list" id="phrase-list"></div>
+    </section>
+
+    <section class="tool-panel" data-tool-panel="flights" hidden>
+      <p class="tool-intro">当地时间 · 越南比上海慢 1 小时</p>
+      <div class="tool-flights">
+        <article class="tool-flight">
+          <div class="tool-flight-head"><span>去程 · 09 月 25 日 周五</span><strong>MU6013</strong></div>
+          <div class="tool-flight-time"><div><strong>14:45</strong><span>PVG T1 · 上海浦东</span></div><i aria-hidden="true">→</i><div><strong>17:45</strong><span>HAN T2 · 河内内排</span></div></div>
+          <div class="tool-flight-meta"><span>东方航空</span><span>4h</span><span>Airbus A321</span><span>正餐</span></div>
+          <button class="copy-flight" type="button" data-copy-text="09月25日 周五｜东方航空 MU6013｜14:45 上海浦东 T1 → 17:45 河内内排 T2｜4小时｜Airbus A321｜正餐">复制完整航班</button>
+        </article>
+        <article class="tool-flight">
+          <div class="tool-flight-head"><span>返程 · 10 月 07 日 周三</span><strong>MU5076</strong></div>
+          <div class="tool-flight-time"><div><strong>02:20</strong><span>HAN T2 · 河内内排</span></div><i aria-hidden="true">→</i><div><strong>06:35</strong><span>PVG T1 · 上海浦东</span></div></div>
+          <div class="tool-flight-meta"><span>东方航空</span><span>3h15</span><span>Boeing 737</span><span>早餐</span></div>
+          <button class="copy-flight" type="button" data-copy-text="10月07日 周三｜东方航空 MU5076｜02:20 河内内排 T2 → 06:35 上海浦东 T1｜3小时15分｜Boeing 737｜早餐">复制完整航班</button>
+        </article>
+      </div>
     </section>
   </aside>
 
   <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">已复制</div>
 
-  <script src="planner.js?v=20260903-11"></script>
+  <script src="planner.js?v=20260903-12"></script>
 </body>
 </html>

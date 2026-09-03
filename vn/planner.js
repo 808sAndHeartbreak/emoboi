@@ -178,16 +178,64 @@ leg("hcmc", "phuquoc", { mode: "飞机", duration: [1, 1.2], price: [700000, 170
 
 const PHRASES = {
   基础: [
-    ["Xin chào", "你好", "新 招"], ["Cảm ơn", "谢谢", "嘎门"], ["Xin lỗi", "对不起 / 不好意思", "新 洛伊"], ["Tạm biệt", "再见", "答姆 别"]
+    ["Xin chào", "你好", "新 招"],
+    ["Cảm ơn", "谢谢", "嘎门"],
+    ["Xin lỗi", "对不起 / 不好意思", "新 洛伊"],
+    ["Tạm biệt", "再见", "答姆 别"],
+    ["Vâng / Dạ", "是的（礼貌）", "旺 / 亚"],
+    ["Không", "不是 / 不要", "空"],
+    ["Tôi không hiểu", "我听不懂", "多伊 空 友"],
+    ["Bạn có nói tiếng Anh không?", "你会说英语吗？", "伴 果 诺 颠 安 空"]
   ],
   出行: [
-    ["Đi đến đây", "去这里", "滴 登 得"], ["Bao lâu?", "要多久？", "包 楼"], ["Dừng ở đây", "停在这里", "用 额 得"], ["Sân bay", "机场", "森 拜"]
+    ["Cho tôi đến địa chỉ này", "请带我去这个地址", "卓 多伊 登 地啊 只 奈"],
+    ["Dừng ở đây, làm ơn", "请停在这里", "用 额 得，蓝 恩"],
+    ["Đi sân bay mất bao lâu?", "去机场要多久？", "滴 森 拜 麦 包 楼"],
+    ["Bao nhiêu tiền?", "多少钱？", "包 纽 甜"],
+    ["Bật đồng hồ, làm ơn", "请打表", "北 冬 湖，蓝 恩"],
+    ["Tôi bị say xe", "我晕车", "多伊 比 赛 些"],
+    ["Ga tàu ở đâu?", "火车站在哪里？", "嘎 道 额 兜"],
+    ["Tôi muốn đặt xe", "我想叫车", "多伊 木温 达 些"]
   ],
   餐饮: [
-    ["Không cay", "不要辣", "空 该"], ["Ít đá", "少冰", "一 达"], ["Tính tiền", "买单", "丁 甜"], ["Ngon lắm", "很好吃", "农 蓝"]
+    ["Cho tôi xem thực đơn", "请给我看菜单", "卓 多伊 森 特 德恩"],
+    ["Cho tôi món này", "我要这个", "卓 多伊 蒙 奈"],
+    ["Không cay", "不要辣", "空 该"],
+    ["Ít cay", "少辣", "一 该"],
+    ["Không rau mùi", "不要香菜", "空 饶 梅"],
+    ["Không đá", "不要冰", "空 达"],
+    ["Một chai nước, làm ơn", "请给我一瓶水", "木 拆 诺，蓝 恩"],
+    ["Tôi bị dị ứng với…", "我对……过敏", "多伊 比 夷 翁 维"],
+    ["Tính tiền, làm ơn", "请买单", "丁 甜，蓝 恩"],
+    ["Ngon lắm", "很好吃", "农 蓝"]
   ],
   购物: [
-    ["Bao nhiêu tiền?", "多少钱？", "包 纽 甜"], ["Đắt quá", "太贵了", "达 瓜"], ["Có giảm giá không?", "可以便宜吗？", "果 减 架 空"], ["Tôi chỉ xem", "我只是看看", "多伊 只 森"]
+    ["Bao nhiêu tiền?", "多少钱？", "包 纽 甜"],
+    ["Đắt quá", "太贵了", "达 瓜"],
+    ["Có giảm giá không?", "可以便宜吗？", "果 减 架 空"],
+    ["Tôi chỉ xem", "我只是看看", "多伊 只 森"],
+    ["Tôi có thể trả bằng thẻ không?", "可以刷卡吗？", "多伊 果 特 茶 棒 特 空"],
+    ["Có cỡ lớn hơn không?", "有更大码吗？", "果 格 乐 恩 空"]
+  ],
+  酒店: [
+    ["Tôi có đặt phòng", "我预订了房间", "多伊 果 达 风"],
+    ["Tên tôi là…", "我的名字是……", "颠 多伊 拉"],
+    ["Mấy giờ nhận phòng?", "几点可以入住？", "美 约 任 风"],
+    ["Mấy giờ trả phòng?", "几点退房？", "美 约 茶 风"],
+    ["Tôi có thể gửi hành lý không?", "可以寄存行李吗？", "多伊 果 特 归 杭 李 空"],
+    ["Cho tôi thêm khăn tắm", "请多给我浴巾", "卓 多伊 添 堪 探"],
+    ["Máy lạnh không hoạt động", "空调坏了", "麦 冷 空 活 冬"],
+    ["Mật khẩu Wi-Fi là gì?", "Wi-Fi 密码是什么？", "末 口 歪法 拉 夷"]
+  ],
+  求助: [
+    ["Tôi cần giúp đỡ", "我需要帮助", "多伊 根 族 德"],
+    ["Tôi bị lạc", "我迷路了", "多伊 比 腊"],
+    ["Tôi bị mất hộ chiếu", "我的护照丢了", "多伊 比 麦 护 照"],
+    ["Gọi cảnh sát, làm ơn", "请报警", "戈 景 萨，蓝 恩"],
+    ["Gọi xe cấp cứu, làm ơn", "请叫救护车", "戈 些 格 久，蓝 恩"],
+    ["Bệnh viện gần nhất ở đâu?", "最近的医院在哪里？", "病 院 根 一 额 兜"],
+    ["Tôi không khỏe", "我不舒服", "多伊 空 快"],
+    ["Bạn có thể viết ra không?", "你可以写下来吗？", "伴 果 特 越 扎 空"]
   ]
 };
 
@@ -379,7 +427,7 @@ function render() {
   renderAnalysis();
   renderTransport();
   renderCityOptions();
-  if (activeTool === "weather") renderWeatherPlaceholder();
+  if (activeTool === "weather") void loadWeather();
   saveRoute();
   setupReveals();
 }
@@ -391,16 +439,20 @@ function renderHeroRail() {
   rail.setAttribute("role", "list");
   rail.innerHTML = route.map((node, index) => {
     const city = CITIES[node.city];
-    return `<span class="rail-stop ${node.role}" role="listitem"><button type="button" data-jump-node="${esc(node.id)}" aria-label="查看${city.name}详细日程"><i>${city.airport}</i><b>${city.name}</b><small>${compactDateRange(dates[index].start, dates[index].end)}</small></button></span>`;
+    const period = compactDateRange(dates[index].start, dates[index].end);
+    return `<span class="rail-stop ${node.role}" role="listitem"><button type="button" data-jump-node="${esc(node.id)}" aria-label="查看${city.name} ${period} 日程"><i>${city.airport}</i><b>${city.name}</b><small>${period}</small></button></span>`;
   }).join("");
 }
 
-$("#route-rail").addEventListener("click", event => {
+$(".planner-hero").addEventListener("click", event => {
   const button = event.target.closest("button[data-jump-node]");
   if (!button) return;
   const node = routeEditor.querySelector(`[data-id="${CSS.escape(button.dataset.jumpNode)}"]`);
   if (!node) return;
   node.querySelector("details").open = true;
+  $$(".route-node.node-focus", routeEditor).forEach(item => item.classList.remove("node-focus"));
+  node.classList.add("node-focus");
+  window.setTimeout(() => node.classList.remove("node-focus"), 1300);
   node.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
 });
 
@@ -420,7 +472,7 @@ function renderPresets() {
 }
 
 function setupReveals() {
-  const items = $$(".route-node, .transport-row, .flight-row");
+  const items = $$(".route-node, .transport-row");
   document.documentElement.classList.add("motion-ready");
   if (!("IntersectionObserver" in window) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     items.forEach(item => item.classList.add("is-visible"));
@@ -511,7 +563,8 @@ function renderRoute() {
 
   $("#route-title").innerHTML = route.map((node, index) => {
     const cityName = esc(CITIES[node.city].name);
-    return `<span class="title-city">${index ? '<i aria-hidden="true">→</i>' : ""}${cityName}</span>`;
+    const period = compactDateRange(dates[index].start, dates[index].end);
+    return `<span class="title-city">${index ? '<i aria-hidden="true">→</i>' : ""}<button type="button" data-jump-node="${esc(node.id)}" aria-label="打开${cityName} ${period} 日程">${cityName}</button></span>`;
   }).join("");
 }
 
@@ -687,13 +740,13 @@ $("#preset-options").addEventListener("click", event => {
 
 function openTool(name) {
   activeTool = name;
-  const titles = { weather: "路线天气", exchange: "汇率换算", phrases: "越南常用语" };
+  const titles = { weather: "路线天气", exchange: "汇率换算", phrases: "越南常用语", flights: "国际航班" };
   $("#drawer-title").textContent = titles[name];
   $$('[data-tool-panel]').forEach(panel => { panel.hidden = panel.dataset.toolPanel !== name; });
   $$("[data-tool]").forEach(button => button.setAttribute("aria-expanded", String(button.dataset.tool === name)));
   document.body.classList.add("drawer-open");
   $("#tool-drawer").setAttribute("aria-hidden", "false");
-  if (name === "weather") renderWeatherPlaceholder();
+  if (name === "weather") void loadWeather();
   if (name === "exchange") updateExchange();
   if (name === "phrases") renderPhrases();
 }
@@ -717,7 +770,7 @@ function uniqueRouteCities() {
   return [...new Set(route.map(node => node.city))];
 }
 
-function renderWeatherPlaceholder(message = "点击下方按钮读取实时天气") {
+function renderWeatherPlaceholder(message = "正在读取…") {
   $("#weather-list").innerHTML = uniqueRouteCities().map(key => `<div class="weather-row" data-weather-city="${key}"><span>${CITIES[key].name}</span><strong>${message}</strong></div>`).join("");
 }
 
@@ -732,12 +785,17 @@ function weatherDescription(code) {
   return "天气变化";
 }
 
-$("#weather-refresh").addEventListener("click", async () => {
+let weatherRequestId = 0;
+
+async function loadWeather() {
+  const requestId = ++weatherRequestId;
   const button = $("#weather-refresh");
   button.disabled = true;
-  button.textContent = "读取中…";
+  button.classList.add("loading");
+  button.setAttribute("aria-busy", "true");
   renderWeatherPlaceholder("正在读取…");
-  await Promise.all(uniqueRouteCities().map(async key => {
+  const cityKeys = uniqueRouteCities();
+  await Promise.all(cityKeys.map(async key => {
     const [latitude, longitude] = CITIES[key].coordinates;
     const row = $(`[data-weather-city="${key}"]`);
     try {
@@ -745,14 +803,18 @@ $("#weather-refresh").addEventListener("click", async () => {
       const response = await fetch(url);
       if (!response.ok) throw new Error("weather request failed");
       const data = await response.json();
-      row.querySelector("strong").textContent = `${weatherDescription(data.current.weather_code)} · ${Math.round(data.current.temperature_2m)}°C · 体感 ${Math.round(data.current.apparent_temperature)}°C`;
+      if (requestId === weatherRequestId && row) row.querySelector("strong").textContent = `${weatherDescription(data.current.weather_code)} · ${Math.round(data.current.temperature_2m)}°C · 体感 ${Math.round(data.current.apparent_temperature)}°C`;
     } catch {
-      row.querySelector("strong").textContent = "暂时读取失败";
+      if (requestId === weatherRequestId && row) row.querySelector("strong").textContent = "暂时读取失败";
     }
   }));
+  if (requestId !== weatherRequestId) return;
   button.disabled = false;
-  button.textContent = "刷新当前天气";
-});
+  button.classList.remove("loading");
+  button.removeAttribute("aria-busy");
+}
+
+$("#weather-refresh").addEventListener("click", loadWeather);
 
 function setFxCurrency(currency) {
   fxCurrency = currency;
