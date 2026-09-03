@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#0d463e">
   <meta name="description" content="可编辑的 2026 越南路线规划器。">
   <title>越南路线规划器 · 2026</title>
-  <link rel="stylesheet" href="planner.css?v=20260903-12">
+  <link rel="stylesheet" href="planner.css?v=20260903-13">
 </head>
 <body class="night-atlas">
   <header class="appbar">
@@ -37,7 +37,6 @@
           <div class="preset-bar">
             <div class="preset-label"><span>快速方案</span><small id="preset-caption">选择后仍可继续修改</small></div>
             <div class="preset-options" id="preset-options" role="tablist" aria-label="路线预设"></div>
-            <button class="copy-route" id="copy-route" type="button">复制路线</button>
           </div>
           <p class="preset-note" id="preset-note"></p>
 
@@ -51,21 +50,25 @@
 
         <aside class="analysis-panel" aria-live="polite">
           <div class="analysis-sticky">
-            <span class="section-kicker">当前</span>
-            <h2>路线分析</h2>
-            <div class="night-meter">
-              <div class="meter-track"><span id="night-meter-fill"></span></div>
-              <div class="meter-copy"><span id="night-meter-label">已分配 11 晚</span><strong id="night-balance">刚好</strong></div>
+            <div class="analysis-head">
+              <span class="section-kicker">当前</span>
+              <h2>路线分析</h2>
+              <div class="night-meter">
+                <div class="meter-track"><span id="night-meter-fill"></span></div>
+                <div class="meter-copy"><span id="night-meter-label">已分配 11 晚</span><strong id="night-balance">刚好</strong></div>
+              </div>
             </div>
-            <dl class="analysis-metrics">
-              <div><dt>城市内预算</dt><dd id="city-budget">¥0–¥0</dd></div>
-              <div><dt>节点间交通</dt><dd id="transport-budget">¥0–¥0</dd></div>
-              <div class="metric-total"><dt>境内合计 / 人</dt><dd id="total-budget">¥0–¥0</dd></div>
-              <div><dt>转场次数</dt><dd id="transfer-count">0 次</dd></div>
-              <div><dt>路上总时间</dt><dd id="transport-hours">约 0h</dd></div>
-            </dl>
-            <p class="budget-note">每人估算；两人同住普通酒店。不含国际机票、购物和高价体验。</p>
-            <ul class="advice-list" id="advice-list"></ul>
+            <div class="analysis-content">
+              <dl class="analysis-metrics">
+                <div><dt>城市内预算</dt><dd id="city-budget">¥0–¥0</dd></div>
+                <div><dt>节点间交通</dt><dd id="transport-budget">¥0–¥0</dd></div>
+                <div class="metric-total"><dt>境内合计 / 人</dt><dd id="total-budget">¥0–¥0</dd></div>
+                <div><dt>转场次数</dt><dd id="transfer-count">0 次</dd></div>
+                <div><dt>路上总时间</dt><dd id="transport-hours">约 0h</dd></div>
+              </dl>
+              <p class="budget-note">每人估算；两人同住普通酒店。不含国际机票、购物和高价体验。</p>
+              <ul class="advice-list" id="advice-list"></ul>
+            </div>
           </div>
         </aside>
       </div>
@@ -142,17 +145,15 @@
     <section class="tool-panel" data-tool-panel="flights" hidden>
       <p class="tool-intro">当地时间 · 越南比上海慢 1 小时</p>
       <div class="tool-flights">
-        <article class="tool-flight">
+        <article class="tool-flight" role="button" tabindex="0" title="点击复制航班信息" aria-label="复制去程航班信息" data-copy-text="09月25日 周五｜东方航空 MU6013｜14:45 上海浦东 T1 → 17:45 河内内排 T2｜4小时｜Airbus A321｜正餐">
           <div class="tool-flight-head"><span>去程 · 09 月 25 日 周五</span><strong>MU6013</strong></div>
           <div class="tool-flight-time"><div><strong>14:45</strong><span>PVG T1 · 上海浦东</span></div><i aria-hidden="true">→</i><div><strong>17:45</strong><span>HAN T2 · 河内内排</span></div></div>
           <div class="tool-flight-meta"><span>东方航空</span><span>4h</span><span>Airbus A321</span><span>正餐</span></div>
-          <button class="copy-flight" type="button" data-copy-text="09月25日 周五｜东方航空 MU6013｜14:45 上海浦东 T1 → 17:45 河内内排 T2｜4小时｜Airbus A321｜正餐">复制完整航班</button>
         </article>
-        <article class="tool-flight">
+        <article class="tool-flight" role="button" tabindex="0" title="点击复制航班信息" aria-label="复制返程航班信息" data-copy-text="10月07日 周三｜东方航空 MU5076｜02:20 河内内排 T2 → 06:35 上海浦东 T1｜3小时15分｜Boeing 737｜早餐">
           <div class="tool-flight-head"><span>返程 · 10 月 07 日 周三</span><strong>MU5076</strong></div>
           <div class="tool-flight-time"><div><strong>02:20</strong><span>HAN T2 · 河内内排</span></div><i aria-hidden="true">→</i><div><strong>06:35</strong><span>PVG T1 · 上海浦东</span></div></div>
           <div class="tool-flight-meta"><span>东方航空</span><span>3h15</span><span>Boeing 737</span><span>早餐</span></div>
-          <button class="copy-flight" type="button" data-copy-text="10月07日 周三｜东方航空 MU5076｜02:20 河内内排 T2 → 06:35 上海浦东 T1｜3小时15分｜Boeing 737｜早餐">复制完整航班</button>
         </article>
       </div>
     </section>
@@ -160,6 +161,6 @@
 
   <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">已复制</div>
 
-  <script src="planner.js?v=20260903-12"></script>
+  <script src="planner.js?v=20260903-13"></script>
 </body>
 </html>

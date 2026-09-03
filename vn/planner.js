@@ -464,11 +464,10 @@ function renderPresets() {
   }).join("");
 
   const preset = PRESETS.find(item => item.id === activePresetId);
-  const totals = routeTotals();
   $("#preset-caption").textContent = preset ? "套用后仍可继续修改" : "正在编辑自己的路线";
   $("#preset-note").textContent = preset
     ? preset.note
-    : `${route.length - 1} 次转场 · 已分配 ${totals.nights} / ${TRIP_NIGHTS} 晚。系统仍会检查停留上限、折返、交通与雨季风险。`;
+    : "拖动中间节点调整顺序；日期、交通和路线分析会同步更新。";
 }
 
 function setupReveals() {
@@ -510,14 +509,19 @@ function renderRoute() {
     const roleLabel = node.role === "start" ? "固定起点" : node.role === "end" ? "固定终点" : "中间节点";
     const dayPlanHtml = plansForNode(node, index, dates).map(plan => {
       const copyText = `${plan.date} ${city.name}｜${plan.tag}\n上午：${plan.am}\n下午/晚上：${plan.pm}`;
-      return `<li class="${plan.restful ? "restful" : ""}">
+      return `<li class="copyable-plan ${plan.restful ? "restful" : ""}" role="button" tabindex="0" title="点击复制这一天" aria-label="复制 ${plan.date} ${city.name} ${plan.tag}" data-copy-text="${esc(copyText)}">
         <div class="day-marker"><span>${plan.date}</span><strong>${plan.tag}</strong></div>
         <div class="halfday-copy"><p><b>上午</b>${esc(plan.am)}</p><p><b>下午 / 晚上</b>${esc(plan.pm)}</p></div>
-        <button class="copy-mini" type="button" data-copy-text="${esc(copyText)}">复制</button>
       </li>`;
     }).join("");
 
-    return `<li class="route-node" data-id="${esc(node.id)}">
+    return `<li class="route-node${fixed ? "" : " sortable"}" data-id="${esc(node.id)}">
+      ${fixed ? "" : `<div class="node-actions" aria-label="${city.name}节点操作">
+        <button type="button" class="drag-handle" data-drag-handle aria-label="拖动${city.name}调整顺序" data-tooltip="拖动排序" title="拖动调整顺序">⠿</button>
+        <button type="button" class="move-button" data-action="up" aria-label="上移${city.name}" data-tooltip="上移" title="上移"${index === 1 ? " disabled" : ""}>↑</button>
+        <button type="button" class="move-button" data-action="down" aria-label="下移${city.name}" data-tooltip="下移" title="下移"${index === route.length - 2 ? " disabled" : ""}>↓</button>
+        <button type="button" class="delete-node" data-action="delete" aria-label="删除${city.name}" data-tooltip="删除" title="删除城市">×</button>
+      </div>`}
       <div class="node-main">
         <span class="node-number">${String(index + 1).padStart(2, "0")}</span>
         <div class="node-city">
@@ -530,19 +534,6 @@ function renderRoute() {
           <p class="node-summary">${city.summary}</p>
           <div class="node-plays">${city.plays.map(play => `<span>${play}</span>`).join("")}</div>
           <p class="node-caution">${city.caution}</p>
-          <details class="city-detail"${openNodeIds.has(node.id) ? " open" : ""}>
-            <summary><span>查看半日安排 · ${node.nights} 晚</span><i aria-hidden="true">＋</i></summary>
-            <div class="city-detail-body">
-              <div class="detail-copy">
-                <dl class="city-facts">
-                  <div><dt>住</dt><dd>${city.stay}</dd></div>
-                  <div><dt>走</dt><dd>${city.move}</dd></div>
-                </dl>
-                <ol class="day-plan">${dayPlanHtml}</ol>
-              </div>
-              ${city.image ? `<figure class="city-figure"><a href="${city.image.src}" target="_blank" rel="noopener"><img src="${city.image.src}" alt="${city.image.alt}" loading="lazy"></a><figcaption>${city.image.caption} · 点击看原图</figcaption></figure>` : ""}
-            </div>
-          </details>
         </div>
         <div class="node-side">
           <div class="night-stepper">
@@ -551,13 +542,21 @@ function renderRoute() {
             <button type="button" data-action="increase" aria-label="增加${city.name}住宿晚数"${node.nights >= city.maxNights ? " disabled" : ""}>＋</button>
           </div>
           <span class="node-budget"><strong>${formatCny(budgetMin)}–${formatCny(budgetMax)}</strong>本地停留 / 人<small>建议 ${city.recommendedNights} 晚 · 最多 ${city.maxNights} 晚</small></span>
-          ${fixed ? "" : `<div class="node-actions">
-            <button type="button" data-action="up" aria-label="上移${city.name}"${index === 1 ? " disabled" : ""}>↑</button>
-            <button type="button" data-action="down" aria-label="下移${city.name}"${index === route.length - 2 ? " disabled" : ""}>↓</button>
-            <button type="button" class="delete-node" data-action="delete" aria-label="删除${city.name}">×</button>
-          </div>`}
         </div>
       </div>
+      <details class="city-detail"${openNodeIds.has(node.id) ? " open" : ""}>
+        <summary><span>半日安排 · ${node.nights} 晚</span><i aria-hidden="true">＋</i></summary>
+        <div class="city-detail-body${city.image ? " has-image" : ""}">
+          <div class="detail-copy">
+            <dl class="city-facts">
+              <div><dt>住</dt><dd>${city.stay}</dd></div>
+              <div><dt>走</dt><dd>${city.move}</dd></div>
+            </dl>
+            <ol class="day-plan">${dayPlanHtml}</ol>
+          </div>
+          ${city.image ? `<figure class="city-figure"><a href="${city.image.src}" target="_blank" rel="noopener"><img src="${city.image.src}" alt="${city.image.alt}" loading="lazy"></a><figcaption>${city.image.caption} · 点击看原图</figcaption></figure>` : ""}
+        </div>
+      </details>
     </li>`;
   }).join("");
 
@@ -617,6 +616,11 @@ function renderAnalysis() {
   });
 
   const middle = route.filter(node => node.role === "middle");
+  const nhaTrangIndex = middle.findIndex(node => node.city === "nhatrang");
+  const dalatIndex = middle.findIndex(node => node.city === "dalat");
+  if (nhaTrangIndex >= 0 && dalatIndex >= 0 && Math.abs(nhaTrangIndex - dalatIndex) !== 1) {
+    advice.push("芽庄与大叻建议相邻：两地可直接走 3–4.5 小时山路，拆开会增加折返。");
+  }
   for (let index = 1; index < middle.length; index += 1) {
     if (CITIES[middle[index].city].order > CITIES[middle[index - 1].city].order + 0.8) {
       advice.push(`${CITIES[middle[index - 1].city].name} → ${CITIES[middle[index].city].name} 出现向北折返，建议调整顺序。`);
@@ -648,12 +652,11 @@ function renderTransport() {
     const transferDate = dateLabel(dates[index].end);
     const windowText = data.window || genericTransferWindow(data);
     const copyText = `${transferDate}｜${routeName}\n${data.mode}｜约 ${time}｜₫${formatVnd(data.price[0])}–${formatVnd(data.price[1])}\n${windowText}\n${data.note}`;
-    return `<article class="transport-row">
+    return `<article class="transport-row" role="button" tabindex="0" title="点击复制这段交通" aria-label="复制 ${routeName} 交通信息" data-copy-text="${esc(copyText)}">
       <span class="transport-index">${String(index + 1).padStart(2, "0")}</span>
       <div class="transport-route"><strong>${routeName}</strong><span>${transferDate} · ${CITIES[node.city].airport} / ${CITIES[next.city].airport}</span></div>
       <div class="transport-mode"><strong>${data.mode}</strong><span>约 ${time} · ₫${formatVnd(data.price[0])}–${formatVnd(data.price[1])}</span></div>
       <p class="transport-note"><b>${windowText}</b>${data.note}${data.warning ? `<em>${data.warning}</em>` : ""}</p>
-      <button class="copy-row" type="button" data-copy-text="${esc(copyText)}">复制</button>
     </article>`;
   }).join("");
 }
@@ -680,6 +683,61 @@ function updateNode(id, updater) {
     render();
   });
 }
+
+let draggedNodeId = null;
+let dragStartOrder = "";
+
+function placeDraggedNode(overNode, clientY) {
+  const draggedNode = draggedNodeId && routeEditor.querySelector(`[data-id="${CSS.escape(draggedNodeId)}"]`);
+  if (!draggedNode || !overNode || overNode === draggedNode) return;
+  const overRouteNode = route.find(node => node.id === overNode.dataset.id);
+  if (!overRouteNode || overRouteNode.role !== "middle") return;
+  const rect = overNode.getBoundingClientRect();
+  if (clientY < rect.top + rect.height / 2) routeEditor.insertBefore(draggedNode, overNode);
+  else routeEditor.insertBefore(draggedNode, overNode.nextSibling);
+}
+
+function finishDrag() {
+  if (!draggedNodeId) return;
+  const orderedIds = $$(".route-node", routeEditor).map(node => node.dataset.id);
+  const changed = orderedIds.join("|") !== dragStartOrder;
+  $$(".route-node.is-dragging", routeEditor).forEach(node => node.classList.remove("is-dragging"));
+  draggedNodeId = null;
+  dragStartOrder = "";
+  if (!changed) return;
+  route = orderedIds.map(id => route.find(node => node.id === id)).filter(Boolean);
+  markCustom();
+  render();
+}
+
+routeEditor.addEventListener("pointerdown", event => {
+  const handle = event.target.closest("[data-drag-handle]");
+  if (!handle) return;
+  const node = handle.closest(".route-node");
+  draggedNodeId = node?.dataset.id || null;
+  if (!draggedNodeId) return;
+  dragStartOrder = $$(".route-node", routeEditor).map(item => item.dataset.id).join("|");
+  event.preventDefault();
+  node.classList.add("is-dragging");
+  handle.setPointerCapture(event.pointerId);
+});
+
+routeEditor.addEventListener("pointermove", event => {
+  if (!draggedNodeId) return;
+  event.preventDefault();
+  const overNode = document.elementFromPoint(event.clientX, event.clientY)?.closest(".route-node");
+  placeDraggedNode(overNode, event.clientY);
+});
+
+routeEditor.addEventListener("pointerup", () => {
+  if (!draggedNodeId) return;
+  finishDrag();
+});
+
+routeEditor.addEventListener("pointercancel", () => {
+  if (!draggedNodeId) return;
+  finishDrag();
+});
 
 routeEditor.addEventListener("click", event => {
   const button = event.target.closest("button[data-action]");
@@ -865,42 +923,34 @@ async function writeClipboard(text) {
 }
 
 let toastTimer = null;
-async function copyText(text, button) {
-  const original = button?.textContent || "复制";
+async function copyText(text) {
+  const toast = $("#copy-toast");
   try {
     await writeClipboard(text);
-    if (button) button.textContent = "已复制";
-    const toast = $("#copy-toast");
     toast.textContent = "已复制到剪贴板";
-    toast.classList.add("show");
-    window.clearTimeout(toastTimer);
-    toastTimer = window.setTimeout(() => toast.classList.remove("show"), 1500);
-    if (button) window.setTimeout(() => { button.textContent = original; }, 1200);
   } catch {
-    if (button) button.textContent = "长按复制";
+    toast.textContent = "复制失败";
   }
+  toast.classList.add("show");
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => toast.classList.remove("show"), 1500);
 }
 
-function routeCopyText() {
-  const dates = nodeDates();
-  const stops = route.map((node, index) => `${String(index + 1).padStart(2, "0")} ${CITIES[node.city].name}｜${dateLabel(dates[index].start)}–${dateLabel(dates[index].end)}｜${node.nights} 晚`);
-  const transfers = route.slice(0, -1).map((node, index) => {
-    const next = route[index + 1];
-    const data = getLeg(node.city, next.city);
-    return `${dateLabel(dates[index].end)} ${CITIES[node.city].name} → ${CITIES[next.city].name}｜${data.mode}｜${data.window || genericTransferWindow(data)}`;
-  });
-  return `越南路线｜09.25–10.07｜11 晚\n${route.map(node => CITIES[node.city].name).join(" → ")}\n\n住宿\n${stops.join("\n")}\n\n转场\n${transfers.join("\n")}\n\n10.06 约 22:30 前往 HAN T2；10.07 02:20 MU5076 飞回上海。`;
-}
-
-$("#copy-route").addEventListener("click", event => copyText(routeCopyText(), event.currentTarget));
 document.addEventListener("click", event => {
-  const button = event.target.closest("button[data-copy-text]");
-  if (button) copyText(button.dataset.copyText, button);
+  const copyable = event.target.closest("[data-copy-text]");
+  if (copyable) copyText(copyable.dataset.copyText);
+});
+
+document.addEventListener("keydown", event => {
+  const copyable = event.target.closest('[data-copy-text][role="button"]');
+  if (!copyable || !["Enter", " "].includes(event.key)) return;
+  event.preventDefault();
+  copyText(copyable.dataset.copyText);
 });
 
 function renderPhrases() {
   $("#phrase-tabs").innerHTML = Object.keys(PHRASES).map(category => `<button type="button" role="tab" data-phrase-category="${category}" class="${category === activePhraseCategory ? "active" : ""}" aria-selected="${category === activePhraseCategory}">${category}</button>`).join("");
-  $("#phrase-list").innerHTML = PHRASES[activePhraseCategory].map(([vietnamese, chinese, pronunciation]) => `<button class="phrase-row" type="button" data-copy="${esc(vietnamese)}"><span><strong>${vietnamese}</strong><small>${chinese} · ${pronunciation}</small></span><span>复制</span></button>`).join("");
+  $("#phrase-list").innerHTML = PHRASES[activePhraseCategory].map(([vietnamese, chinese, pronunciation]) => `<button class="phrase-row" type="button" title="点击复制越南语" data-copy-text="${esc(vietnamese)}"><span><strong>${vietnamese}</strong><small>${chinese} · ${pronunciation}</small></span></button>`).join("");
 }
 
 $("#phrase-tabs").addEventListener("click", event => {
@@ -909,10 +959,4 @@ $("#phrase-tabs").addEventListener("click", event => {
   activePhraseCategory = button.dataset.phraseCategory;
   renderPhrases();
 });
-$("#phrase-list").addEventListener("click", async event => {
-  const button = event.target.closest("[data-copy]");
-  if (!button) return;
-  await copyText(button.dataset.copy, button.lastElementChild);
-});
-
 render();
