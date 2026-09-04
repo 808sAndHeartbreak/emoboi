@@ -49,14 +49,13 @@ const CITIES = {
   },
   danang: {
     name: "岘港", local: "Đà Nẵng", airport: "DAD", region: "中部",
-    minNights: 3, recommendedNights: 3, maxNights: 5, defaultNights: 3, budget: [900000, 1800000], order: 16.0544,
+    minNights: 3, recommendedNights: 3, maxNights: 4, defaultNights: 3, budget: [900000, 1800000], order: 16.0544,
     coordinates: [16.0544, 108.2022],
     themes: ["海边", "会安", "占婆文化", "慢生活"],
     durationGuide: {
       2: "只有 1 个完整日：岘港与会安必须二选一，不建议这样排。",
       3: "2 个完整日：城市线 + 巴拿山（必要早起）；会安建议增加到 4 晚再安排。",
       4: "3 个完整日：城市线、巴拿山与会安各占一条主线，节奏仍可控。",
-      5: "4 个完整日：适合岘港与会安各住一段；新增时间只给海边和慢生活。"
     },
     summary: "海滩、山茶半岛、巴拿山与会安；以岘港为住宿节点。",
     plays: ["美溪海滩 Mỹ Khê", "岘港大教堂 Da Nang Cathedral", "韩市场 Hàn Market", "占婆雕刻博物馆", "山茶半岛 Sơn Trà", "五行山 Ngũ Hành Sơn", "巴拿山 Ba Na Hills", "会安古城 Hội An", "Tra Que 菜园 / An Bàng 海滩"],
@@ -98,14 +97,13 @@ const CITIES = {
   },
   nhatrang: {
     name: "芽庄", local: "Nha Trang", airport: "CXR", region: "中南部",
-    minNights: 2, recommendedNights: 3, maxNights: 5, defaultNights: 3, budget: [1000000, 2100000], order: 12.2388,
+    minNights: 2, recommendedNights: 3, maxNights: 4, defaultNights: 2, budget: [1000000, 2100000], order: 12.2388,
     coordinates: [12.2388, 109.1967],
     themes: ["占婆文化", "泥浆浴", "海岛", "度假"],
     durationGuide: {
       2: "1 个完整日：婆那加塔与泥浆浴最稳妥，出海和珍珠岛先不塞。",
       3: "2 个完整日：文化泥浴一天，跳岛或珍珠岛二选一。",
       4: "3 个完整日：增加海洋博物馆、海边与半天休息，给风浪留替代方案。",
-      5: "4 个完整日：适合再留一整天给酒店、SPA 和海边，不连续两天出海。"
     },
     summary: "泥浆浴、海岛活动、珍珠岛与纯度假。",
     plays: ["婆那加塔 Po Nagar", "龙山寺 Long Sơn Pagoda", "芽庄大教堂 Nha Trang Cathedral", "I-Resort 泥浆浴", "跳岛团 / 黑珍珠号候选", "珍珠岛 VinWonders", "国家海洋博物馆", "陈富海滩 Trần Phú"],
@@ -182,7 +180,7 @@ const CITIES = {
     coordinates: [11.9404, 108.4583],
     themes: ["咖啡", "高原建筑", "瀑布", "慢生活"],
     durationGuide: {
-      2: "1 个完整日：市区建筑与达坦拉二选一条主线，时间会偏紧。",
+      2: "1 个完整日：默认安排市区建筑与咖啡；更想看自然时可替换为达坦拉南线，时间会偏紧。",
       3: "2 个完整日：建筑咖啡一天、瀑布泉林湖一天，节奏最合适。",
       4: "3 个完整日：增加咖啡农场或工作坊，并留半天给降雨和发呆。"
     },
