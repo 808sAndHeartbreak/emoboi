@@ -1089,44 +1089,21 @@ function flightTransferBlocks(origin, destination, date) {
   const flight = selectedFlightFor(origin, destination, date);
   if (!flight) return [
     { time: "12:00–13:00", text: "起床、午饭；按当天可买到的航班调整。" },
-    { time: "下午", text: `${CITIES[origin].name} → ${CITIES[destination].name} 的航班信息待补；国内航班按起飞前 1.5 小时到机场，确认离开日期后再锁定机场接驳。` },
-    { time: "晚上", text: ARRIVAL_PLANS[destination] || "抵达后入住、吃饭，晚上不再安排远点。" }
+    { time: "下午", text: `${CITIES[origin].name} → ${CITIES[destination].name} 的航班信息待补；国内航班按起飞前 1.5 小时到机场，确认离开日期后再锁定机场接驳。前段在出发机场结束。` }
   ];
 
   const early = clockMinutes(flight.depart) < 12 * 60;
   const airportArrival = shiftClock(flight.depart, -90);
   const cityToAirport = origin === "hanoi" ? 60 : 25;
   const leaveCity = shiftClock(airportArrival, -cityToAirport);
-  const settleEnd = shiftClock(flight.arrive, 60);
-  const mealEnd = shiftClock(settleEnd, 60);
-  const destinationArea = destination === "danang" ? "美溪海滩住宿区" : destination === "dalat" ? "春香湖 / 大叻市场住宿区" : `${CITIES[destination].name}住宿区`;
   const airportNote = origin === "hanoi"
     ? "从还剑湖 / 老城到 HAN T1 通常 45–75 分钟"
     : "从美溪 / 海州到 DAD T1 通常 15–25 分钟";
-  const arrivalNote = destination === "danang"
-    ? "机场到美溪约 15–25 分钟"
-    : destination === "dalat"
-      ? "DLI 到市区约 40–60 分钟"
-      : `${CITIES[destination].airport} 到住宿区按当天接送估算`;
-  const postArrival = clockMinutes(mealEnd) < 15 * 60
-    ? [
-      { time: clockRange(mealEnd, shiftClock(mealEnd, 180)), text: destination === "danang" ? "到美溪海滩看海，或回酒店补觉。" : "在大叻市场周边喝咖啡、熟悉住宿区。" },
-      { time: clockRange(shiftClock(mealEnd, 195), shiftClock(mealEnd, 315)), text: "回酒店休息、洗澡；把转场日的体力留给第二天。" },
-      { time: "19:00–20:00", text: "晚饭，一小时。" },
-      { time: "20:30 后", text: "直接回酒店休息，不再安排跨区夜游。" }
-    ]
-    : [
-      { time: clockRange(mealEnd, shiftClock(mealEnd, 180)), text: destination === "danang" ? "到美溪海滩看海或回酒店休息；晚班则把这段改为入住和晚饭。" : "在大叻市场周边喝咖啡、熟悉住宿区；晚班则直接入住休息。" },
-      { time: "20:30 后", text: "回酒店休息；转场日不再安排跨区夜游。" }
-    ];
 
   return [
     { time: clockRange(early ? shiftClock(flight.depart, -195) : shiftClock(leaveCity, -80), leaveCity), text: `${early ? "必要早起、简单吃点东西" : "起床、早午餐"}；退房并把行李交给前台寄存。${early ? "这班需要早起。" : "不安排远郊。"}` },
     { time: clockRange(leaveCity, airportArrival), text: `${CITIES[origin].name} → ${CITIES[origin].airport} T1，${airportNote}；${airportArrival} 前抵达（国内航班提前 1.5 小时），到机场后完成托运、安检。` },
-    { time: clockRange(flight.depart, flight.arrive), text: `越捷航空 ${flight.depart} → ${flight.arrive}，${CITIES[origin].airport} T1 → ${CITIES[destination].airport} T1，${flight.duration}。` },
-    { time: clockRange(flight.arrive, settleEnd), text: `${CITIES[destination].airport} → ${destinationArea}；${arrivalNote}，办理入住。` },
-    { time: clockRange(settleEnd, mealEnd), text: `${early ? "抵达后" : "入住后"}吃饭，一小时；不把机场日排成连续打卡。` },
-    ...postArrival
+    { time: clockRange(flight.depart, flight.arrive), text: `越捷航空 ${flight.depart} → ${flight.arrive}，${CITIES[origin].airport} T1 → ${CITIES[destination].airport} T1，${flight.duration}；前段到此结束。` }
   ];
 }
 
@@ -1182,10 +1159,46 @@ function arrivalBlocksForNode(previous, node, date) {
   const flight = selectedFlightFor(previous.city, node.city, date);
   if (flight) {
     const settleEnd = shiftClock(flight.arrive, 60);
+    const mealEnd = shiftClock(settleEnd, 60);
+    const mealEndMinutes = clockMinutes(mealEnd);
     const destinationArea = node.city === "danang" ? "美溪海滩住宿区" : node.city === "dalat" ? "春香湖 / 大叻市场住宿区" : `${CITIES[node.city].name}住宿区`;
+    const eveningPlan = node.city === "danang"
+      ? "晚饭后沿美溪海滩散步，体力不足直接回酒店。"
+      : node.city === "dalat"
+        ? "晚饭后在大叻市场附近慢走，早点回酒店适应高原。"
+        : node.city === "nhatrang"
+          ? "晚饭后沿陈富海滩散步，体力不足直接回酒店。"
+          : ARRIVAL_PLANS[node.city] || "晚饭后回酒店休息，不再安排跨区夜游。";
+    const arrivalPlan = clockMinutes(flight.arrive) < 12 * 60
+      ? [
+        { time: clockRange(mealEnd, shiftClock(mealEnd, 180)), text: "在住宿区附近喝咖啡、熟悉街区；不为第一天再跑远郊。" },
+        { time: clockRange(shiftClock(mealEnd, 195), "18:30"), text: "回酒店休息、洗澡，把转场日的体力留给第二天。" },
+        { time: "19:00–20:00", text: "晚饭，一小时。" },
+        { time: "20:30 后", text: eveningPlan }
+      ]
+      : mealEndMinutes < 18 * 60
+        ? [
+          { time: clockRange(mealEnd, "18:30"), text: node.city === "danang" ? "到美溪海滩看海或回酒店休息；不再安排远郊景点。" : "在住宿区附近喝咖啡、熟悉街区；不再追加远点。" },
+          { time: "19:00–20:00", text: "晚饭，一小时。" },
+          { time: "20:30 后", text: eveningPlan }
+        ]
+        : [
+          { time: `${mealEnd} 后`, text: "正餐后洗漱和休息；晚班抵达日不再安排夜间景点。" }
+        ];
     return [
-      { time: `${flight.arrive}–${settleEnd}`, text: `上一日转场已完成；从 ${CITIES[node.city].airport} T1 前往${destinationArea}并办理入住。` },
-      { time: "20:30 后", text: ARRIVAL_PLANS[node.city] || "入住后休息，晚上不再安排远点。" }
+      { time: clockRange(flight.depart, flight.arrive), text: `越捷航空 ${flight.depart} → ${flight.arrive}，${CITIES[previous.city].airport} T1 → ${CITIES[node.city].airport} T1，${flight.duration}；与上一段重合的仅此航班，后一段从这里接上。` },
+      { time: clockRange(flight.arrive, settleEnd), text: `从 ${CITIES[node.city].airport} T1 前往${destinationArea}；${node.city === "danang" ? "机场到美溪约 15–25 分钟" : node.city === "dalat" ? "DLI 到市区约 40–60 分钟" : `${CITIES[node.city].airport} 到住宿区按当天接送估算`}，办理入住。` },
+      { time: clockRange(settleEnd, mealEnd), text: "入住后在住宿区附近吃饭、补水，一小时；不跨区觅食。" },
+      ...arrivalPlan
+    ];
+  }
+
+  if (FLIGHTS[legKey(previous.city, node.city)]) {
+    return [
+      { time: "当天航班时间待定", text: `从 ${CITIES[previous.city].airport} T1 飞往 ${CITIES[node.city].airport} T1；航班补充后，从实际起飞时间接上前段，落地后再按机场到${CITIES[node.city].name}住宿区的车程调整。` },
+      { time: "抵达后约 1 小时", text: `从 ${CITIES[node.city].airport} 前往${node.city === "danang" ? "美溪海滩住宿区" : node.city === "dalat" ? "春香湖 / 大叻市场住宿区" : `${CITIES[node.city].name}住宿区`}，办理入住。` },
+      { time: "入住后 1 小时", text: "在住宿区附近吃饭、补水；不跨区觅食。" },
+      { time: "晚上", text: ARRIVAL_PLANS[node.city] || "入住后休息，晚上不再安排远点。" }
     ];
   }
 
@@ -1203,11 +1216,18 @@ function arrivalBlocksForNode(previous, node, date) {
 }
 
 function transferFoodForNode(previous, node) {
-  if (node.city === "danang") return "抵达美溪 / 海州后就近吃饭；晚班只补充简单正餐和水，不把第一晚安排成跨区觅食。";
-  if (node.city === "dalat") return "落地大叻后先在市场或酒店附近吃热食；山路转场日不专程去远处找店。";
+  if (FLIGHTS[legKey(previous.city, node.city)]) return "";
   if (node.city === "nhatrang") return "大叻 → 芽庄车上备水和简单零食；入住后在陈富海滩附近吃海鲜或鱼饼米粉。";
   if (node.city === "camranh" && previous.city === "nhatrang") return "午饭在芽庄市区解决，入住 Fusion 后晚餐留在度假村，不为一顿饭往返市区。";
   return "转场日按附近可见的干净店铺解决一小时正餐，抵达后不跨区寻找餐厅。";
+}
+
+function arrivalFoodForNode(previous, node) {
+  if (!FLIGHTS[legKey(previous.city, node.city)]) return "";
+  if (node.city === "danang") return "抵达美溪 / 海州后就近吃饭；晚班只补充简单正餐和水，不把第一晚安排成跨区觅食。";
+  if (node.city === "dalat") return "落地大叻后先在市场或酒店附近吃热食；抵达日不专程去远处找店。";
+  if (node.city === "nhatrang") return "抵达芽庄后在陈富海滩附近吃海鲜或鱼饼米粉；不把抵达日安排成泥浴或出海。";
+  return "抵达后在住宿区附近解决一小时正餐，先补水和休息。";
 }
 
 function returnDayBlocks() {
@@ -1315,7 +1335,7 @@ function plansForNode(node, index, dates) {
     ], false, "轻量", "PVG T1 先解决正餐；抵达河内后在还剑湖 / 老城附近就近吃河粉或 Bánh mì，不为晚餐跨区。店铺以当日营业和卫生状况为准。");
   } else {
     const previous = route[index - 1];
-    addPlan(dates[index].start, "抵达日", arrivalBlocksForNode(previous, node, dates[index].start), false, "抵达");
+    addPlan(dates[index].start, "抵达日", arrivalBlocksForNode(previous, node, dates[index].start), false, "抵达", arrivalFoodForNode(previous, node));
   }
 
   for (let offset = 1; offset < node.nights; offset += 1) {
