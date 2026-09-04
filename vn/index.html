@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#0d463e">
+  <meta name="theme-color" content="#062a24">
   <meta name="description" content="可编辑的 2026 越南路线规划器。">
   <title>越南路线规划器 · 2026</title>
-  <link rel="stylesheet" href="planner.css?v=20260903-25">
+  <link rel="preload" as="image" href="vietnam-road-hero.webp" fetchpriority="high">
+  <link rel="stylesheet" href="planner.css?v=20260903-27">
 </head>
 <body class="night-atlas">
   <header class="appbar">
@@ -29,8 +30,9 @@
           <div class="journey-board">
             <div class="journey-head">
               <div class="journey-heading">
-                <span class="section-kicker">越南 · 2026</span>
-                <h1 class="sr-only" id="route-title">河内 → 岘港 → 大叻 → 芽庄 → 芽庄 · 金兰湾</h1>
+                <span class="section-kicker">25 SEP — 07 OCT · 2026</span>
+                <h1 class="hero-wordmark"><span>VIỆT</span><span>NAM</span></h1>
+                <p class="sr-only" id="route-title">河内 → 岘港 → 大叻 → 芽庄 → 芽庄 · 金兰湾</p>
               </div>
               <div class="trip-window" aria-label="已确认的行程边界">
                 <span><b>09.25—27</b><strong>河内 2 晚 · 17:45 抵达</strong></span>
@@ -66,8 +68,8 @@
         <aside class="analysis-panel" aria-live="polite">
           <div class="analysis-sticky">
             <div class="analysis-head">
-              <span class="section-kicker">中段</span>
-              <h2>规划检查</h2>
+              <span class="section-kicker">ROUTE / 01</span>
+              <h2>路线检查</h2>
               <div class="night-meter">
                 <div class="meter-track"><span id="night-meter-fill"></span></div>
                 <div class="meter-copy"><span id="night-meter-label">中段 8 / 8 晚</span><strong id="night-balance">日期吻合</strong></div>
@@ -81,7 +83,7 @@
                 <div><dt>转场次数</dt><dd id="transfer-count">0 次</dd></div>
                 <div><dt>路上总时间</dt><dd id="transport-hours">约 0h</dd></div>
               </dl>
-              <p class="budget-note">每人估算；不含已购买机票、已预订的 Fusion Resort、购物和高价体验。</p>
+              <p class="budget-note">不含已购机票与 Fusion Resort。</p>
               <ul class="advice-list" id="advice-list"></ul>
             </div>
           </div>
@@ -93,7 +95,7 @@
       <div class="shell">
         <header class="section-head">
           <div>
-            <span class="section-kicker">02</span>
+            <span class="section-kicker">TRANSFERS / 02</span>
             <h2>节点之间怎么走</h2>
           </div>
         </header>
@@ -188,6 +190,6 @@
 
   <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">已复制</div>
 
-  <script src="planner.js?v=20260903-25"></script>
+  <script src="planner.js?v=20260903-27"></script>
 </body>
 </html>

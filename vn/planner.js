@@ -24,7 +24,7 @@ const CITIES = {
       4: "3 个完整日：再加陶艺、街区慢走或酒店休息，避免连续安排历史景点。"
     },
     summary: "老城区、大教堂、咖啡与历史建筑。",
-    plays: ["还剑湖与老城区", "河内大教堂", "咖啡工作坊", "寺庙或博物馆选一"],
+    plays: ["还剑湖 Hoàn Kiếm", "河内大教堂 St. Joseph’s Cathedral", "升龙皇城 Imperial Citadel", "文庙 Temple of Literature", "咖啡工作坊 Coffee Workshop", "西湖与镇国寺"],
     caution: "9–10 月通常舒适；HAN 距市中心约 45 公里，单程按 60–90 分钟留量。",
     stay: "还剑湖西北侧或老城区边缘：步行方便，夜间比老城腹地安静。",
     move: "老城以步行为主，跨区用 Grab。9 月 27 日退房后可寄存行李；按下一站航班选择中午、下午或晚上前往 HAN。",
@@ -46,7 +46,7 @@ const CITIES = {
       5: "4 个完整日：适合岘港与会安各住一段；新增时间只给海边和慢生活。"
     },
     summary: "海滩、山茶半岛；以岘港为交通节点去会安。",
-    plays: ["美溪海滩", "山茶半岛", "五行山", "会安"],
+    plays: ["美溪海滩 Mỹ Khê", "占婆雕刻博物馆", "山茶半岛 Sơn Trà", "五行山 Ngũ Hành Sơn", "会安古城 Hội An", "Tra Que 菜园 / An Bàng 海滩"],
     caution: "9 月底通常仍温暖；会安 10 月起雨势和风暴风险上升，临行前按天气交换海滩与室内安排。",
     stay: "美溪海滩适合休闲；海州区适合餐饮和夜生活。两区车程约 10–20 分钟。",
     move: "DAD 到市区约 15 分钟；会安约 45–60 分钟；山茶半岛建议包车或摩托。",
@@ -69,7 +69,7 @@ const CITIES = {
       5: "4 个完整日：适合再留一整天给酒店、SPA 和海边，不连续两天出海。"
     },
     summary: "泥浆浴、海岛活动、珍珠岛与纯度假。",
-    plays: ["I-Resort 泥浆浴", "跳岛团 / 黑珍珠号候选", "珍珠岛与跨海缆车", "度假酒店躺平"],
+    plays: ["婆那加塔 Po Nagar", "I-Resort 泥浆浴", "跳岛团 / 黑珍珠号候选", "珍珠岛 VinWonders", "国家海洋博物馆", "陈富海滩 Trần Phú"],
     caution: "9–12 月是雨季；出海必须看风浪。CXR 到市区约 45–60 分钟。",
     stay: "陈富海滩中段最省事；北部安静但餐饮较少；离岛玩法从南部码头出发。",
     move: "市区用 Grab；婆那加塔与 I-Resort 可连排。跳岛团或珍珠岛都要单独占一天，不建议同一天安排。",
@@ -79,7 +79,6 @@ const CITIES = {
       { theme: "海洋与慢游", am: "越南国家海洋博物馆或市区海滩；风浪差时用作出海替代", pm: "晚起、长早餐、夜市或沿海散步；只选一个轻量点位" }
     ],
     restDay: { am: "度假酒店、泳池或海边躺着", pm: "继续待在酒店，或按摩、咖啡、找好吃的；不塞景点" },
-    image: { src: "nha-trang-zones.jpg", alt: "芽庄市区、北部与南部离岛分区参考图", caption: "分区参考：北部看占婆塔并泡泥浴；市区最方便；南部码头连接离岛。" }
   },
   camranh: {
     name: "芽庄 · 金兰湾", shortName: "金兰湾", local: "Cam Ranh", airport: "CXR", region: "已确认度假村",
@@ -88,7 +87,7 @@ const CITIES = {
     themes: ["度假村", "SPA", "海滩", "休息"],
     durationGuide: { 2: "两晚已确认：入住日下午留白，完整日只安排 SPA、泳池与海滩。" },
     summary: "Fusion Resort Cam Ranh，两晚只安排度假、SPA 与返程。",
-    plays: ["Fusion Resort Cam Ranh", "All Spa Inclusive", "泳池与海滩", "10.07 直接去 CXR"],
+    plays: ["Fusion Resort Cam Ranh", "All Spa Inclusive", "泳池与海滩", "12:00 退房去 CXR T1"],
     caution: "10 月 5 日 15:00 入住，10 月 7 日 12:00 退房；酒店距 CXR 约 5–6 公里。",
     stay: "Fusion Resort Cam Ranh，Lot D10b, Cam Hai Dong, Cam Lam, Khanh Hoa。",
     move: "提前向酒店预约送机。10 月 7 日建议 11:30–11:45 办完退房，12:00 前后出发去 CXR T1。",
@@ -108,7 +107,7 @@ const CITIES = {
       4: "3 个完整日：增加咖啡农场或工作坊，并留半天给降雨和发呆。"
     },
     summary: "高原气候、咖啡、建筑与瀑布。",
-    plays: ["达坦拉瀑布", "春香湖与旧火车站", "咖啡店", "咖啡工作坊候选"],
+    plays: ["达坦拉瀑布 Datanla", "大叻旧火车站", "灵福寺 Chùa Linh Phước", "泉林湖 Hồ Tuyền Lâm", "Cầu Đất 咖啡产区", "K’Ho Coffee"],
     caution: "4–11 月多雨，早晚偏凉；山路与户外项目不要排满。DLI 到市区约 40 分钟。",
     stay: "春香湖西南与大叻市场周边适合步行；泉林湖更安静，但每天需要用车。",
     move: "景点分散。城区步行；北线、南线各用半天至一天，建议包车或摩托。",
@@ -130,7 +129,7 @@ const CITIES = {
       4: "3 个完整日：增加香河慢游与雨天机动，不再堆更多陵墓。"
     },
     summary: "皇城、皇陵、寺庙与中部饮食。",
-    plays: ["顺化皇城", "阮朝皇陵", "天姥寺", "顺化小吃"],
+    plays: ["顺化皇城 Imperial City", "启定陵 Khải Định", "明命陵 Minh Mạng", "天姥寺 Thiên Mụ", "东巴市场 Đông Ba", "顺化宫廷菜与街头小吃"],
     caution: "9 月后降雨增加；10 月需防积水。",
     stay: "香河南岸餐饮多；皇城南门一带更靠近古迹。",
     move: "皇城可步行；皇陵分散，适合包车或摩托串联。顺化到岘港约 2.5–3.5 小时。",
@@ -152,7 +151,7 @@ const CITIES = {
       5: "4 个完整日：增加咖啡、当代艺术、SPA 或完整酒店休息日。"
     },
     summary: "城市建筑、市场、华人区与夜生活。",
-    plays: ["第一郡建筑", "堤岸", "街头饮食", "一日游"],
+    plays: ["中央邮局 Central Post Office", "统一宫 Independence Palace", "第三郡街区", "堤岸 Chợ Lớn", "天后宫 Chùa Bà Thiên Hậu", "咖啡与街头饮食"],
     caution: "5–11 月雨季；加入后路线明显南延。",
     stay: "第一郡最方便；第三郡更安静、餐饮密集。",
     move: "核心区可步行加 Grab；堤岸需用车；古芝或湄公河各占一整天。",
@@ -174,7 +173,7 @@ const CITIES = {
       5: "4 个完整日：最能吸收雨季天气变化；新增时间不再安排打卡。"
     },
     summary: "海滩、日落、跳岛与自然。",
-    plays: ["海滩与日落", "跳岛", "国家公园", "夜市"],
+    plays: ["长滩 Long Beach", "南岛跳岛", "跨海缆车 Hòn Thơm", "富国国家公园", "渔村", "Dương Đông 夜市"],
     caution: "7–10 月风浪和强降雨风险较高；至少 3 晚。",
     stay: "长滩交通方便；翁朗更安静；南岛适合度假村但离市区远。",
     move: "岛内距离长，包车或摩托更实际；跳岛与南岛景点合并安排。",
@@ -196,7 +195,7 @@ const CITIES = {
       4: "3 个完整日：再留一整天给安静海滩、温泉或酒店休息。"
     },
     summary: "安静海岸、占婆遗迹与渔村，比热门海滨城市更松弛。",
-    plays: ["Tháp Đôi 双塔", "Tháp Bánh Ít", "海滨步道", "渔村与海滩"],
+    plays: ["Tháp Đôi 双塔", "Tháp Bánh Ít 占婆塔", "归仁海滨步道", "Eo Gió 海岬", "Kỳ Co 海滩", "渔村与海鲜"],
     caution: "9–12 月降雨和风浪增加；远海活动临近确认。UIH 到市区约 40–50 分钟。",
     stay: "市区海滨步道附近吃饭方便；想安静可住半岛度假村，但进城距离更远。",
     move: "市区用 Grab；占婆塔、Eo Gió 和渔村分散，半天包车比频繁叫车省事。",
@@ -218,7 +217,7 @@ const CITIES = {
       4: "3 个完整日：增加 Lak 湖或 Yok Đôn 方向，但必须接受较长陆路。"
     },
     summary: "越南咖啡之都，能把咖啡、埃地族文化和高原自然放在一起。",
-    plays: ["咖啡世界博物馆", "咖啡庄园", "埃地族长屋", "Dray Nur 瀑布"],
+    plays: ["咖啡世界博物馆", "Trung Nguyên Coffee Village", "Ako Dhong 村", "埃地族长屋", "Dray Nur 瀑布", "Lak 湖 / Yok Đôn"],
     caution: "5–10 月雨季；瀑布水量大但路面湿滑。BMV 到市区约 20 分钟。",
     stay: "市中心咖啡和餐饮最方便；不建议为了景观住得过远。",
     move: "市区用 Grab；瀑布、村落与 Lak 湖适合包车。去大叻约 5–6 小时山路。",
@@ -589,7 +588,12 @@ function nodeDates() {
 }
 
 function transitionUpdate(callback) {
-  callback();
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!document.startViewTransition || reduceMotion) {
+    callback();
+    return;
+  }
+  document.startViewTransition(callback);
 }
 
 const ARRIVAL_PLANS = {
@@ -697,9 +701,11 @@ $(".planner-hero").addEventListener("click", event => {
   const button = event.target.closest("button[data-jump-node]");
   if (!button) return;
   if (!route.some(node => node.id === button.dataset.jumpNode)) return;
-  activeNodeId = button.dataset.jumpNode;
-  renderRoute();
-  renderHeroRail();
+  transitionUpdate(() => {
+    activeNodeId = button.dataset.jumpNode;
+    renderRoute();
+    renderHeroRail();
+  });
 });
 
 function renderPresets() {
@@ -759,17 +765,17 @@ function renderRoute() {
     const roleLabel = node.role === "start" ? "已确认 · 起点" : node.role === "end" ? "已确认 · 度假村" : "待规划 · 中段";
     const dayPlanHtml = plansForNode(node, index, dates).map(plan => {
       const copyText = `${plan.date} ${city.name}｜${plan.tag}\n上午：${plan.am}\n下午/晚上：${plan.pm}`;
-      return `<li class="copyable-plan ${plan.restful ? "restful" : ""}" role="button" tabindex="0" title="点击复制这一天" aria-label="复制 ${plan.date} ${city.name} ${plan.tag}" data-copy-text="${esc(copyText)}">
+      return `<li class="copyable-plan ${plan.restful ? "restful" : ""}" title="点击空白处复制整天" data-copy-text="${esc(copyText)}">
         <div class="day-marker"><span>${plan.date}</span><strong>${plan.tag}${plan.theme ? ` · ${esc(plan.theme)}` : ""}</strong></div>
-        <div class="halfday-copy"><p><b>上午</b>${esc(plan.am)}</p><p><b>下午 / 晚上</b>${esc(plan.pm)}</p></div>
+        <div class="halfday-copy"><p role="button" tabindex="0" title="点击复制上午安排" data-copy-text="${esc(`${plan.date} ${city.name}｜上午\n${plan.am}`)}"><b>上午</b>${esc(plan.am)}</p><p role="button" tabindex="0" title="点击复制下午与晚上安排" data-copy-text="${esc(`${plan.date} ${city.name}｜下午 / 晚上\n${plan.pm}`)}"><b>下午 / 晚上</b>${esc(plan.pm)}</p></div>
       </li>`;
     }).join("");
 
     const active = node.id === activeNodeId;
     const compactPeriod = compactDateRange(dates[index].start, dates[index].end);
-    return `<li class="route-node ${active ? "is-active" : "is-compact"}${fixed ? " is-locked" : " sortable"}" data-id="${esc(node.id)}" data-select-node tabindex="${active ? "-1" : "0"}" aria-label="${active ? "当前节点" : "展开"}${city.name}，${compactPeriod}">
+    return `<li class="route-node ${active ? "is-active" : "is-compact"}${fixed ? " is-locked" : " sortable"}" style="view-transition-name: route-${esc(node.id)}" data-id="${esc(node.id)}" data-select-node tabindex="${active ? "-1" : "0"}" aria-label="${active ? "当前节点" : "展开"}${city.name}，${compactPeriod}">
       ${fixed ? "" : `<div class="node-actions" aria-label="${city.name}节点操作">
-        <span class="drag-handle" data-drag-handle role="button" tabindex="0" aria-label="拖动${city.name}调整顺序" data-tooltip="拖动排序" title="拖动调整顺序">⠿</span>
+        <span class="drag-handle" data-drag-handle draggable="true" role="button" tabindex="0" aria-label="拖动${city.name}调整顺序；键盘可用上下方向键" data-tooltip="拖动排序" title="拖动调整顺序；键盘可用上下方向键">⠿</span>
         <button type="button" class="move-button" data-action="up" aria-label="上移${city.name}" data-tooltip="上移" title="上移"${index === 1 ? " disabled" : ""}>↑</button>
         <button type="button" class="move-button" data-action="down" aria-label="下移${city.name}" data-tooltip="下移" title="下移"${index === route.length - 2 ? " disabled" : ""}>↓</button>
         <button type="button" class="delete-node" data-action="delete" aria-label="删除${city.name}" data-tooltip="删除" title="删除城市">×</button>
@@ -786,8 +792,8 @@ function renderRoute() {
         <div class="node-info">
           <span class="node-period">${periodLabel}</span>
           <p class="node-summary">${city.summary}</p>
-          <div class="node-plays">${city.plays.map(play => `<span>${play}</span>`).join("")}</div>
-          <p class="node-caution">${city.caution}</p>
+          <div class="node-plays" aria-label="地点与体验">${city.plays.map(play => `<button type="button" title="点击复制地点" data-copy-text="${esc(play)}">${esc(play)}</button>`).join("")}</div>
+          <p class="node-caution" role="button" tabindex="0" title="点击复制关键提醒" data-copy-text="${esc(`${city.name}提醒：${city.caution}`)}">${city.caution}</p>
         </div>
         <div class="node-side">
           <span class="compact-night-count"><strong>${node.nights}</strong> 晚${fixed ? " · 已确认" : ""}</span>
@@ -809,8 +815,8 @@ function renderRoute() {
               <div class="theme-list">${city.themes.map(theme => `<span>${esc(theme)}</span>`).join("")}</div>
             </div>
             <dl class="city-facts">
-              <div><dt>住</dt><dd>${city.stay}</dd></div>
-              <div><dt>走</dt><dd>${city.move}</dd></div>
+              <div><dt>住</dt><dd role="button" tabindex="0" title="点击复制住宿建议" data-copy-text="${esc(`${city.name}住宿：${city.stay}`)}">${city.stay}</dd></div>
+              <div><dt>走</dt><dd role="button" tabindex="0" title="点击复制交通建议" data-copy-text="${esc(`${city.name}市内交通：${city.move}`)}">${city.move}</dd></div>
             </dl>
             <ol class="day-plan">${dayPlanHtml}</ol>
           </div>
@@ -861,10 +867,7 @@ function renderAnalysis() {
   $("#transfer-count").textContent = `${route.length - 1} 次 + 返程`;
   $("#transport-hours").textContent = `约 ${Math.round(totals.hours[0] * 10) / 10}–${Math.round(totals.hours[1] * 10) / 10}h`;
 
-  const advice = [
-    "10 月 5 日 15:00 起入住 Fusion Resort Cam Ranh；中段最后一站必须在当天午后前抵达金兰湾。",
-    "10 月 7 日 VJ772 15:55 到 HAN T1，MU6014 18:45 从 T2 起飞，仅 2 小时 50 分。若非联程且有托运行李，延误、提取行李、换楼和重新值机都会压缩余量。"
-  ];
+  const advice = [];
   if (balance > 0) advice.push(`9 月 27 日至 10 月 5 日还有 ${balance} 晚未分配，可增加现有城市或添加节点。`);
   if (balance < 0) advice.push(`中段超出 ${Math.abs(balance)} 晚，会侵占 10 月 5 日已确认的度假村入住，请先减少晚数。`);
 
@@ -905,11 +908,7 @@ function renderAnalysis() {
   });
   if (uncertain) advice.push("路线含班次有限或需要中转的航段，最终锁定顺序前应按 2026 年出发日复核。 ");
 
-  const cityKeys = new Set(route.map(node => node.city));
-  if (cityKeys.has("danang") || cityKeys.has("hue")) advice.push("9 月底至 10 月初处在中部沿海天气转换期；会安 10 月起雨势和风暴风险上升，海滩、山路与室内项目要能互换。");
-  if (cityKeys.has("nhatrang")) advice.push("芽庄 9–12 月为雨季；跳岛不是必做项，只在出发前 24 小时确认风浪后保留。");
-  if (cityKeys.has("dalat")) advice.push("大叻 4–11 月多雨；瀑布和山路不连排，至少保留半天咖啡或酒店机动。");
-  $("#advice-list").innerHTML = [...new Set(advice)].slice(0, 7).map(item => `<li>${esc(item.trim())}</li>`).join("");
+  $("#advice-list").innerHTML = [...new Set(advice)].slice(0, 4).map(item => `<li>${esc(item.trim())}</li>`).join("");
 }
 
 function renderTransport() {
@@ -997,13 +996,13 @@ function finishDrag() {
   if (!changed) return;
   route = orderedIds.map(id => route.find(node => node.id === id)).filter(Boolean);
   markCustom();
-  render();
+  transitionUpdate(render);
 }
 
 routeEditor.addEventListener("pointerdown", event => {
   const handle = event.target.closest("[data-drag-handle]");
   if (!handle) return;
-  if (event.pointerType === "mouse" && event.button !== 0) return;
+  if (event.pointerType === "mouse") return;
   const node = handle.closest(".route-node.sortable");
   draggedNodeId = node?.dataset.id || null;
   if (!draggedNodeId) return;
@@ -1014,6 +1013,40 @@ routeEditor.addEventListener("pointerdown", event => {
   document.body.classList.add("route-dragging");
   try { handle.setPointerCapture(event.pointerId); } catch { /* Pointer capture is optional. */ }
 });
+
+routeEditor.addEventListener("dragstart", event => {
+  const handle = event.target.closest("[data-drag-handle]");
+  const node = handle?.closest(".route-node.sortable");
+  if (!node) {
+    event.preventDefault();
+    return;
+  }
+  draggedNodeId = node.dataset.id;
+  dragStartOrder = $$(".route-node", routeEditor).map(item => item.dataset.id).join("|");
+  document.body.classList.add("route-dragging");
+  node.classList.add("is-dragging");
+  event.dataTransfer.effectAllowed = "move";
+  event.dataTransfer.setData("text/plain", draggedNodeId);
+});
+
+routeEditor.addEventListener("dragover", event => {
+  if (!draggedNodeId) return;
+  const overNode = event.target.closest(".route-node");
+  if (!overNode || overNode.dataset.id === draggedNodeId || route.find(node => node.id === overNode.dataset.id)?.role !== "middle") return;
+  event.preventDefault();
+  event.dataTransfer.dropEffect = "move";
+  $$(".route-node.is-drop-target", routeEditor).forEach(node => node.classList.remove("is-drop-target"));
+  overNode.classList.add("is-drop-target");
+  placeDraggedNode(overNode, event.clientY);
+});
+
+routeEditor.addEventListener("drop", event => {
+  if (!draggedNodeId) return;
+  event.preventDefault();
+  finishDrag();
+});
+
+routeEditor.addEventListener("dragend", finishDrag);
 
 document.addEventListener("pointermove", event => {
   if (!draggedNodeId) return;
@@ -1045,9 +1078,11 @@ routeEditor.addEventListener("click", event => {
   if (!button) {
     const compactNode = event.target.closest(".route-node.is-compact[data-select-node]");
     if (!compactNode || event.target.closest("[data-drag-handle], select")) return;
-    activeNodeId = compactNode.dataset.id;
-    renderRoute();
-    renderHeroRail();
+    transitionUpdate(() => {
+      activeNodeId = compactNode.dataset.id;
+      renderRoute();
+      renderHeroRail();
+    });
     return;
   }
   const nodeElement = button.closest(".route-node");
@@ -1066,13 +1101,25 @@ routeEditor.addEventListener("click", event => {
 });
 
 routeEditor.addEventListener("keydown", event => {
+  const dragHandle = event.target.closest("[data-drag-handle]");
+  if (dragHandle && ["ArrowUp", "ArrowDown"].includes(event.key)) {
+    event.preventDefault();
+    const id = dragHandle.closest(".route-node")?.dataset.id;
+    updateNode(id, index => {
+      if (event.key === "ArrowUp" && index > 1) [route[index - 1], route[index]] = [route[index], route[index - 1]];
+      if (event.key === "ArrowDown" && index < route.length - 2) [route[index + 1], route[index]] = [route[index], route[index + 1]];
+    });
+    return;
+  }
   if (!['Enter', ' '].includes(event.key) || event.target.closest("button, select, summary, [data-drag-handle]")) return;
   const compactNode = event.target.closest(".route-node.is-compact[data-select-node]");
   if (!compactNode) return;
   event.preventDefault();
-  activeNodeId = compactNode.dataset.id;
-  renderRoute();
-  renderHeroRail();
+  transitionUpdate(() => {
+    activeNodeId = compactNode.dataset.id;
+    renderRoute();
+    renderHeroRail();
+  });
 });
 
 routeEditor.addEventListener("change", event => {
@@ -1119,7 +1166,7 @@ $("#preset-options").addEventListener("click", event => {
     activePresetId = preset.id;
   }
   activeNodeId = route[0]?.id || null;
-  render();
+  transitionUpdate(render);
 });
 
 function openTool(name) {
@@ -1249,11 +1296,16 @@ async function writeClipboard(text) {
 }
 
 let toastTimer = null;
-async function copyText(text) {
+async function copyText(text, source) {
   const toast = $("#copy-toast");
   try {
     await writeClipboard(text);
-    toast.textContent = "已复制到剪贴板";
+    const label = text.split("\n")[0].replace(/｜/g, " · ");
+    toast.textContent = `已复制 · ${label.slice(0, 26)}`;
+    if (source) {
+      source.classList.add("is-copied");
+      window.setTimeout(() => source.classList.remove("is-copied"), 700);
+    }
   } catch {
     toast.textContent = "复制失败";
   }
@@ -1264,14 +1316,14 @@ async function copyText(text) {
 
 document.addEventListener("click", event => {
   const copyable = event.target.closest("[data-copy-text]");
-  if (copyable) copyText(copyable.dataset.copyText);
+  if (copyable) copyText(copyable.dataset.copyText, copyable);
 });
 
 document.addEventListener("keydown", event => {
   const copyable = event.target.closest('[data-copy-text][role="button"]');
   if (!copyable || !["Enter", " "].includes(event.key)) return;
   event.preventDefault();
-  copyText(copyable.dataset.copyText);
+  copyText(copyable.dataset.copyText, copyable);
 });
 
 function renderPhrases() {
