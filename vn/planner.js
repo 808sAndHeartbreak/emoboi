@@ -29,8 +29,8 @@ const CITIES = {
     stay: "还剑湖西北侧或老城区边缘：步行方便，夜间比老城腹地安静。",
     move: "老城以步行为主，跨区用 Grab。9 月 27 日退房后可寄存行李；按下一站航班选择中午、下午或晚上前往 HAN。",
     days: [
-      { theme: "老城与咖啡", am: "还剑湖、老城区、河内大教堂；中午在老城吃粉或烤肉米线", pm: "预约咖啡工作坊；若留到大叻再做，就换成文庙或越南美术馆" },
-      { theme: "历史与寺庙", am: "升龙皇城或文庙；对历史兴趣不大就改去西湖慢走", pm: "镇国寺、咖啡馆与自由觅食；不再增加远郊" }
+      { theme: "老城与咖啡", am: "09:00 还剑湖 → 36 行街 → 河内大教堂；老城午餐选河粉或烤肉米线", pm: "14:00 后预约咖啡工作坊；不做工作坊就去文庙或越南美术馆，傍晚回老城吃饭" },
+      { theme: "历史与寺庙", am: "升龙皇城与文庙二选一，预留约 2 小时；随后沿法式建筑街区慢走", pm: "西湖 → 镇国寺看日落；晚餐回老城，不再安排远郊" }
     ],
     restDay: { am: "睡到自然醒、酒店早餐或西湖散步", pm: "咖啡、SPA、自由觅食；不再增加远郊景点" }
   },
@@ -51,9 +51,9 @@ const CITIES = {
     stay: "美溪海滩适合休闲；海州区适合餐饮和夜生活。两区车程约 10–20 分钟。",
     move: "DAD 到市区约 15 分钟；会安约 45–60 分钟；山茶半岛建议包车或摩托。",
     days: [
-      { theme: "海边与占婆", am: "美溪海滩早晨；占婆雕刻博物馆", pm: "海州区吃喝、韩江散步；龙桥只在合适日期顺路看" },
-      { theme: "会安人文", am: "五行山后前往会安；或直接去 Tra Que 菜园、Cam Chau 稻田", pm: "会安古城、晚餐与灯笼夜景；约 21:00 返回或住会安" },
-      { theme: "半岛与休息", am: "山茶半岛，雨雾或路况不好就取消", pm: "安邦或美溪海边、酒店休息，不连排远景点" }
+      { theme: "海边与占婆", am: "08:00 美溪海滩散步，早餐后去占婆雕刻博物馆；馆内按 1.5–2 小时安排", pm: "海州区午餐与咖啡，傍晚沿韩江散步；龙桥只在喷火开放日顺路停留" },
+      { theme: "会安人文", am: "09:00 五行山，随后前往 Tra Que 菜园或 Cam Chau 稻田；午后进入会安", pm: "会安古城、河边晚餐和灯笼夜景；约 21:00 返回岘港，或直接住会安" },
+      { theme: "半岛与休息", am: "上午走山茶半岛：灵应寺与观景点，包车按约 3 小时；雨雾大就改室内", pm: "安邦海滩或美溪海滩躺半天；按摩、海鲜与酒店休息" }
     ],
     restDay: { am: "酒店早餐、泳池或海边躺着", pm: "咖啡、按摩、海鲜；不安排巴拿山式长途打卡" }
   },
@@ -74,9 +74,9 @@ const CITIES = {
     stay: "陈富海滩中段最省事；北部安静但餐饮较少；离岛玩法从南部码头出发。",
     move: "市区用 Grab；婆那加塔与 I-Resort 可连排。跳岛团或珍珠岛都要单独占一天，不建议同一天安排。",
     days: [
-      { theme: "占婆与泥浴", am: "婆那加塔、钟屿石岬，避开正午", pm: "I-Resort 泥浆浴；回市区吃海鲜" },
-      { theme: "海岛全天", am: "跳岛团与珍珠岛二选一：跳岛可比较飞猪‘黑珍珠号’的航线、船型和取消规则", pm: "跳岛继续出海；或乘跨海缆车去珍珠岛游乐园，晚上不要再排项目" },
-      { theme: "海洋与慢游", am: "越南国家海洋博物馆或市区海滩；风浪差时用作出海替代", pm: "晚起、长早餐、夜市或沿海散步；只选一个轻量点位" }
+      { theme: "占婆与泥浴", am: "08:30 婆那加塔，接着去钟屿石岬；两处都在市区北侧，连排约 3 小时", pm: "午后去 I-Resort 泥浆浴，预留 3–4 小时；回陈富海滩附近吃海鲜" },
+      { theme: "海岛全天", am: "跳岛团与珍珠岛二选一：黑珍珠号重点比较停靠岛、船型、浮潜时间和退改规则", pm: "跳岛继续出海；或乘跨海缆车到 VinWonders，完整留到晚间再返程" },
+      { theme: "海洋与慢游", am: "越南国家海洋博物馆约 2 小时，随后去陈富海滩；风浪差时替代出海", pm: "长午餐、咖啡与芽庄夜市；沿海散步后早回酒店" }
     ],
     restDay: { am: "度假酒店、泳池或海边躺着", pm: "继续待在酒店，或按摩、咖啡、找好吃的；不塞景点" },
   },
@@ -92,7 +92,7 @@ const CITIES = {
     stay: "Fusion Resort Cam Ranh，Lot D10b, Cam Hai Dong, Cam Lam, Khanh Hoa。",
     move: "提前向酒店预约送机。10 月 7 日建议 11:30–11:45 办完退房，12:00 前后出发去 CXR T1。",
     days: [
-      { theme: "纯度假", am: "睡到自然醒、早餐和海边散步", pm: "提前预约 SPA；其余时间留给泳池、午睡和度假村晚餐" }
+      { theme: "纯度假", am: "睡到自然醒，早餐后在 Fusion Resort 海滩与泳池休息", pm: "提前预约 SPA 时段；午睡、日落和度假村晚餐，不往返芽庄市区" }
     ],
     restDay: { am: "酒店早餐、泳池与海滩", pm: "SPA、休息和晚餐；不再往返芽庄市区" }
   },
@@ -112,9 +112,9 @@ const CITIES = {
     stay: "春香湖西南与大叻市场周边适合步行；泉林湖更安静，但每天需要用车。",
     move: "景点分散。城区步行；北线、南线各用半天至一天，建议包车或摩托。",
     days: [
-      { theme: "建筑与咖啡", am: "春香湖、旧火车站；班次合适再坐小火车去灵福寺", pm: "挑两家咖啡店慢慢坐；咖啡工作坊可改在大叻预约" },
-      { theme: "瀑布与山湖", am: "达坦拉瀑布，雨大或路滑就取消", pm: "竹林禅院、泉林湖或回酒店休息，不把南线塞满" },
-      { theme: "产地咖啡", am: "Cầu Đất 茶咖啡产区或 K'Ho 咖啡农场，提前确认体验是否开放", pm: "回城继续喝咖啡、逛市场，不再跨线赶景点" }
+      { theme: "建筑与咖啡", am: "09:00 春香湖 → 大叻旧火车站；班次合适再坐小火车去灵福寺", pm: "回城选两家风格不同的咖啡店；傍晚逛大叻市场，咖啡工作坊可提前预约" },
+      { theme: "瀑布与山湖", am: "08:30 达坦拉瀑布，过山车与步道预留 2–3 小时；雨大或路滑就取消", pm: "竹林禅院 → 泉林湖，包车走南线；最晚傍晚回城休息" },
+      { theme: "产地咖啡", am: "Cầu Đất 茶咖啡产区或 K'Ho Coffee 二选一，提前确认参观与杯测时段", pm: "回城午睡、喝咖啡与逛大叻市场；不再横跨另一条郊区线路" }
     ],
     restDay: { am: "晚起、咖啡和酒店发呆", pm: "SPA、市场晚餐；留给降雨或体力恢复" }
   },
@@ -156,9 +156,9 @@ const CITIES = {
     stay: "第一郡最方便；第三郡更安静、餐饮密集。",
     move: "核心区可步行加 Grab；堤岸需用车；古芝或湄公河各占一整天。",
     days: [
-      { theme: "建筑与城市", am: "第一郡建筑与咖啡，避开正午暴晒", pm: "市场、步行街或河岸夜景" },
-      { theme: "街区与华人文化", am: "第三郡街区", pm: "堤岸、天后宫与华人区；晚餐后直接回酒店" },
-      { theme: "近郊或休息", am: "古芝或湄公河一日游二选一；不想赶路就留在城市", pm: "一日游返程，或改成按摩、咖啡和慢晚餐" }
+      { theme: "建筑与城市", am: "08:30 统一宫 → 中央邮局，步行看第一郡法式建筑；正午前转入室内", pm: "胡志明市博物馆或战争遗迹博物馆二选一；傍晚沿阮惠步行街去西贡河边" },
+      { theme: "街区与华人文化", am: "第三郡咖啡与街区建筑；午餐后叫车前往第五郡", pm: "平西市场 → 堤岸 → 天后宫；华人区晚餐后直接回酒店" },
+      { theme: "近郊或休息", am: "古芝与湄公河只选一条整日团，约 07:30 出发；不想赶路就留在城市", pm: "一日游返程；城市方案改成午睡、按摩、咖啡与慢晚餐" }
     ],
     restDay: { am: "晚起、酒店早餐和咖啡", pm: "按摩、商场避雨或自由觅食" }
   },
@@ -178,9 +178,9 @@ const CITIES = {
     stay: "长滩交通方便；翁朗更安静；南岛适合度假村但离市区远。",
     move: "岛内距离长，包车或摩托更实际；跳岛与南岛景点合并安排。",
     days: [
-      { theme: "海滩与日落", am: "酒店和海滩，不急着出门", pm: "日落、夜市或度假村晚餐" },
-      { theme: "南岛海上活动", am: "天气允许再做南岛跳岛或缆车", pm: "返程休息；风浪大就留在酒店" },
-      { theme: "雨林与渔村", am: "北岛国家公园或渔村", pm: "回酒店游泳、看日落" }
+      { theme: "海滩与日落", am: "长滩慢早餐与海边，不急着跨岛；中午回酒店避晒", pm: "日落后去 Dương Đông 夜市，或留在度假村晚餐" },
+      { theme: "南岛海上活动", am: "天气允许再从 An Thới 出发跳岛；不跳岛就乘 Hòn Thơm 跨海缆车", pm: "海上活动继续，返程后只安排吃饭；风浪大就整天留在酒店" },
+      { theme: "雨林与渔村", am: "包车走富国国家公园与北岛；只选一个短步道，不在雨季深入徒步", pm: "Rạch Vẹm 渔村或翁朗海滩二选一，日落前回酒店" }
     ],
     restDay: { am: "度假村、泳池和海滩", pm: "SPA、日落和晚餐；这一天本来就不需要景点" }
   },
@@ -200,8 +200,8 @@ const CITIES = {
     stay: "市区海滨步道附近吃饭方便；想安静可住半岛度假村，但进城距离更远。",
     move: "市区用 Grab；占婆塔、Eo Gió 和渔村分散，半天包车比频繁叫车省事。",
     days: [
-      { theme: "占婆与城市", am: "Tháp Đôi 双塔、市场或地方博物馆", pm: "海滨步道、海鲜和日落；不赶远郊" },
-      { theme: "半岛与渔村", am: "Eo Gió 或 Kỳ Co 按风浪二选一", pm: "渔村午餐后回酒店休息；天气差就改 Bánh Ít 占婆塔" },
+      { theme: "占婆与城市", am: "08:30 Tháp Đôi 双塔，随后去市场或 Bình Định 博物馆", pm: "归仁海滨步道、海鲜和日落；不再赶远郊" },
+      { theme: "半岛与渔村", am: "07:30 出发，Eo Gió 与 Kỳ Co 按风浪选一处，不勉强坐快艇", pm: "Nhơn Lý 渔村午餐后回酒店；天气差就改去 Bánh Ít 占婆塔" },
       { theme: "海滩休息", am: "睡到自然醒、安静海滩或温泉", pm: "酒店、咖啡和海鲜；不再增加景点" }
     ],
     restDay: { am: "海边、酒店早餐和泳池", pm: "按摩、咖啡或海鲜；给天气留白" }
@@ -222,9 +222,9 @@ const CITIES = {
     stay: "市中心咖啡和餐饮最方便；不建议为了景观住得过远。",
     move: "市区用 Grab；瀑布、村落与 Lak 湖适合包车。去大叻约 5–6 小时山路。",
     days: [
-      { theme: "咖啡文化", am: "咖啡世界博物馆，理解产区、器具与贸易", pm: "本地烘焙店或咖啡庄园；不要只做网红店巡游" },
-      { theme: "族群与自然", am: "埃地族长屋或 Ako Dhong 村，尊重当地拍摄规则", pm: "Dray Nur 瀑布；雨大路滑就换成城市咖啡与市场" },
-      { theme: "高原慢游", am: "Lak 湖或 Yok Đôn 方向二选一，提前确认车程", pm: "返城休息、按摩和早晚餐" }
+      { theme: "咖啡文化", am: "09:00 咖啡世界博物馆，重点看产区、器具与贸易；馆内留约 2 小时", pm: "Trung Nguyên Coffee Village 或本地烘焙店，安排杯测或慢喝，不连续打卡咖啡店" },
+      { theme: "族群与自然", am: "Ako Dhong 村与埃地族长屋，跟随现场拍摄规则；中午回城吃饭", pm: "包车去 Dray Nur 瀑布；雨大路滑就换成城市咖啡与市场" },
+      { theme: "高原慢游", am: "Lak 湖与 Yok Đôn 二选一，按单程车程和当日开放项目决定", pm: "返城后只安排按摩、早晚餐和休息" }
     ],
     restDay: { am: "晚起、咖啡和市场", pm: "酒店休息或 SPA；不再增加长途自然点" }
   }
@@ -234,37 +234,37 @@ const PRESETS = [
   {
     id: "classic", name: "海岸高原",
     stops: [["hanoi", 2], ["danang", 3], ["dalat", 3], ["nhatrang", 2], ["camranh", 2]],
-    note: "岘港 3 晚、大叻 3 晚、芽庄市区 2 晚，一路向南进入金兰湾。DAD → DLI 已恢复直飞，仍需确认 09.30 的具体班次。"
+    note: "海岸、咖啡高原与芽庄串联最完整；DAD → DLI 已恢复直飞，需确认 09.30 的班次。"
   },
   {
     id: "highland", name: "大叻慢住",
     stops: [["hanoi", 2], ["dalat", 4], ["nhatrang", 4], ["camranh", 2]],
-    note: "中段：大叻 4 晚、芽庄市区 4 晚。转场最少，咖啡、泥浆浴、出海和休息都有机动。"
+    note: "转场最少；咖啡、泥浆浴、出海和完整休息日都有机动。"
   },
   {
     id: "coast", name: "海边慢行",
     stops: [["hanoi", 2], ["danang", 4], ["nhatrang", 4], ["camranh", 2]],
-    note: "中段：岘港 4 晚、芽庄市区 4 晚。节奏最轻松；10.01 前后 DAD → CXR 航班是关键。"
+    note: "以海滩、会安和酒店休息为主；DAD → CXR 的直飞时段决定转场日。"
   },
   {
     id: "central", name: "中部慢游",
     stops: [["hanoi", 2], ["hue", 2], ["danang", 3], ["nhatrang", 3], ["camranh", 2]],
-    note: "中段：顺化 2 晚、岘港 3 晚、芽庄市区 3 晚。古迹与海边兼顾，但需要多一次转场。"
+    note: "阮朝古迹、会安与海边兼顾；比其他方案多一次中段转场。"
   },
   {
     id: "south", name: "南部串联",
     stops: [["hanoi", 2], ["hcmc", 3], ["dalat", 3], ["nhatrang", 2], ["camranh", 2]],
-    note: "中段：胡志明市 3 晚、大叻 3 晚、芽庄市区 2 晚。内容丰富，但南北飞行和陆路转场最多。"
+    note: "城市建筑、高原和海岸都覆盖；飞行与陆路转场最多。"
   },
   {
     id: "coffee", name: "咖啡高原",
     stops: [["hanoi", 2], ["buonmathuot", 3], ["dalat", 3], ["nhatrang", 2], ["camranh", 2]],
-    note: "中段：邦美蜀 3 晚、大叻 3 晚、芽庄市区 2 晚。咖啡与高原内容最完整；两段山路都安排在白天。"
+    note: "咖啡产地内容最完整；邦美蜀 → 大叻 → 芽庄的两段山路都安排在白天。"
   },
   {
     id: "cham", name: "占婆海岸",
     stops: [["hanoi", 2], ["danang", 3], ["quynhon", 3], ["nhatrang", 2], ["camranh", 2]],
-    note: "中段：岘港 3 晚、归仁 3 晚、芽庄市区 2 晚。海岸与占婆文化清楚，但两次中段转场会各占半天。"
+    note: "海岸与占婆文化主线清楚；两次中段转场各占约半天。"
   }
 ];
 
@@ -451,6 +451,95 @@ const PHRASES = {
   ]
 };
 
+const PLACE_ALIASES = {
+  "还剑湖": "还剑湖 Hoàn Kiếm",
+  "36 行街": "河内老城区 36 行街 Hanoi Old Quarter",
+  "河内大教堂": "河内大教堂 St. Joseph’s Cathedral",
+  "咖啡工作坊": "Coffee Workshop 咖啡工作坊",
+  "越南美术馆": "越南美术馆 Vietnam National Fine Arts Museum",
+  "升龙皇城": "升龙皇城 Imperial Citadel of Thăng Long",
+  "文庙": "文庙 Temple of Literature",
+  "西湖": "河内西湖 Hồ Tây",
+  "镇国寺": "镇国寺 Chùa Trấn Quốc",
+  "美溪海滩": "美溪海滩 Mỹ Khê Beach",
+  "占婆雕刻博物馆": "占婆雕刻博物馆 Museum of Cham Sculpture",
+  "海州区": "海州区 Hải Châu",
+  "韩江": "岘港韩江 Sông Hàn",
+  "龙桥": "岘港龙桥 Cầu Rồng",
+  "五行山": "五行山 Ngũ Hành Sơn",
+  "Tra Que 菜园": "Tra Que Vegetable Village",
+  "Cam Chau 稻田": "Cam Châu Rice Fields",
+  "会安古城": "会安古城 Hội An Ancient Town",
+  "会安": "会安 Hội An",
+  "山茶半岛": "山茶半岛 Sơn Trà Peninsula",
+  "灵应寺": "灵应寺 Chùa Linh Ứng",
+  "安邦海滩": "安邦海滩 An Bàng Beach",
+  "婆那加塔": "婆那加塔 Po Nagar Cham Towers",
+  "钟屿石岬": "钟屿石岬 Hòn Chồng",
+  "I-Resort 泥浆浴": "I-Resort Nha Trang 泥浆浴",
+  "黑珍珠号": "黑珍珠号芽庄跳岛团",
+  "VinWonders": "VinWonders Nha Trang 珍珠岛",
+  "越南国家海洋博物馆": "越南国家海洋博物馆 National Oceanographic Museum",
+  "陈富海滩": "陈富海滩 Trần Phú Beach",
+  "芽庄夜市": "芽庄夜市 Nha Trang Night Market",
+  "Fusion Resort": "Fusion Resort Cam Ranh",
+  "春香湖": "春香湖 Hồ Xuân Hương",
+  "大叻旧火车站": "大叻旧火车站 Dalat Railway Station",
+  "大叻市场": "大叻市场 Chợ Đà Lạt",
+  "达坦拉瀑布": "达坦拉瀑布 Datanla Waterfall",
+  "竹林禅院": "竹林禅院 Thiền Viện Trúc Lâm",
+  "泉林湖": "泉林湖 Hồ Tuyền Lâm",
+  "Cầu Đất": "Cầu Đất Tea Hill",
+  "K'Ho Coffee": "K’Ho Coffee",
+  "顺化皇城": "顺化皇城 Imperial City of Huế",
+  "启定陵": "启定陵 Lăng Khải Định",
+  "明命陵": "明命陵 Lăng Minh Mạng",
+  "天姥寺": "天姥寺 Chùa Thiên Mụ",
+  "东巴市场": "东巴市场 Chợ Đông Ba",
+  "香河": "香河 Sông Hương",
+  "第一郡": "胡志明市第一郡 District 1",
+  "第三郡": "胡志明市第三郡 District 3",
+  "中央邮局": "西贡中央邮局 Saigon Central Post Office",
+  "统一宫": "统一宫 Independence Palace",
+  "胡志明市博物馆": "胡志明市博物馆 Ho Chi Minh City Museum",
+  "战争遗迹博物馆": "战争遗迹博物馆 War Remnants Museum",
+  "阮惠步行街": "阮惠步行街 Nguyễn Huệ Walking Street",
+  "平西市场": "平西市场 Chợ Bình Tây",
+  "堤岸": "堤岸 Chợ Lớn",
+  "天后宫": "天后宫 Chùa Bà Thiên Hậu",
+  "古芝": "古芝地道 Củ Chi Tunnels",
+  "湄公河": "湄公河三角洲 Mekong Delta",
+  "长滩": "富国岛长滩 Long Beach",
+  "南岛跳岛": "富国岛南岛跳岛",
+  "跨海缆车": "Hòn Thơm 跨海缆车",
+  "富国国家公园": "富国国家公园 Phú Quốc National Park",
+  "Dương Đông 夜市": "Dương Đông Night Market",
+  "An Thới": "An Thới 港",
+  "Rạch Vẹm": "Rạch Vẹm 渔村",
+  "翁朗海滩": "翁朗海滩 Ông Lang Beach",
+  "Tháp Đôi 双塔": "Tháp Đôi Twin Towers",
+  "Bánh Ít 占婆塔": "Tháp Bánh Ít",
+  "海滨步道": "Quy Nhơn 海滨步道",
+  "Eo Gió": "Eo Gió 海岬",
+  "Kỳ Co": "Kỳ Co Beach",
+  "Nhơn Lý": "Nhơn Lý 渔村",
+  "Bình Định 博物馆": "Bình Định Museum",
+  "咖啡世界博物馆": "咖啡世界博物馆 World Coffee Museum",
+  "Trung Nguyên Coffee Village": "Trung Nguyên Coffee Village",
+  "Ako Dhong 村": "Ako Dhong Village",
+  "Dray Nur 瀑布": "Dray Nur Waterfall",
+  "Lak 湖": "Lak Lake",
+  "Yok Đôn": "Yok Đôn National Park"
+};
+
+const PLACE_PATTERN = new RegExp(
+  Object.keys(PLACE_ALIASES)
+    .sort((first, second) => second.length - first.length)
+    .map(value => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    .join("|"),
+  "g"
+);
+
 let route = loadRoute();
 let activeTool = null;
 let fxCurrency = "CNY";
@@ -459,6 +548,7 @@ let revealObserver = null;
 let activePresetId = matchingPreset(route)?.id || "custom";
 let customRoute = activePresetId === "custom" ? cloneRoute(route) : null;
 let activeNodeId = route[0]?.id || null;
+const expandedNodeIds = new Set();
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -537,6 +627,26 @@ function ensureActiveNode() {
 
 function esc(value) {
   return String(value).replace(/[&<>"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[char]));
+}
+
+function renderPlanText(value) {
+  const text = String(value);
+  const matches = text.matchAll(new RegExp(PLACE_PATTERN.source, "g"));
+  let cursor = 0;
+  let html = "";
+  for (const match of matches) {
+    html += esc(text.slice(cursor, match.index));
+    html += `<button class="inline-place" type="button" title="复制地点" data-copy-text="${esc(PLACE_ALIASES[match[0]])}">${esc(match[0])}</button>`;
+    cursor = match.index + match[0].length;
+  }
+  return html + esc(text.slice(cursor));
+}
+
+function vietnameseRomanization(value) {
+  return String(value)
+    .normalize("NFD")
+    .replace(/[\u0300\u0301\u0303\u0309\u0323]/g, "")
+    .normalize("NFC");
 }
 
 function dateLabel(date) {
@@ -745,6 +855,7 @@ function setupReveals() {
 
 function renderRoute() {
   const openNodeIds = new Set($$(".route-node details[open]", routeEditor).map(details => details.closest(".route-node")?.dataset.id));
+  openNodeIds.forEach(id => expandedNodeIds.add(id));
   const dates = nodeDates();
   const usedMiddle = new Set(route.filter(node => node.role === "middle").map(node => node.city));
 
@@ -764,10 +875,9 @@ function renderRoute() {
     const budgetMax = city.budget[1] * node.nights;
     const roleLabel = node.role === "start" ? "已确认 · 起点" : node.role === "end" ? "已确认 · 度假村" : "待规划 · 中段";
     const dayPlanHtml = plansForNode(node, index, dates).map(plan => {
-      const copyText = `${plan.date} ${city.name}｜${plan.tag}\n上午：${plan.am}\n下午/晚上：${plan.pm}`;
-      return `<li class="copyable-plan ${plan.restful ? "restful" : ""}" title="点击空白处复制整天" data-copy-text="${esc(copyText)}">
+      return `<li class="${plan.restful ? "restful" : ""}">
         <div class="day-marker"><span>${plan.date}</span><strong>${plan.tag}${plan.theme ? ` · ${esc(plan.theme)}` : ""}</strong></div>
-        <div class="halfday-copy"><p role="button" tabindex="0" title="点击复制上午安排" data-copy-text="${esc(`${plan.date} ${city.name}｜上午\n${plan.am}`)}"><b>上午</b>${esc(plan.am)}</p><p role="button" tabindex="0" title="点击复制下午与晚上安排" data-copy-text="${esc(`${plan.date} ${city.name}｜下午 / 晚上\n${plan.pm}`)}"><b>下午 / 晚上</b>${esc(plan.pm)}</p></div>
+        <div class="halfday-copy"><p><b>上午</b>${renderPlanText(plan.am)}</p><p><b>下午 / 晚上</b>${renderPlanText(plan.pm)}</p></div>
       </li>`;
     }).join("");
 
@@ -775,7 +885,7 @@ function renderRoute() {
     const compactPeriod = compactDateRange(dates[index].start, dates[index].end);
     return `<li class="route-node ${active ? "is-active" : "is-compact"}${fixed ? " is-locked" : " sortable"}" style="view-transition-name: route-${esc(node.id)}" data-id="${esc(node.id)}" data-select-node tabindex="${active ? "-1" : "0"}" aria-label="${active ? "当前节点" : "展开"}${city.name}，${compactPeriod}">
       ${fixed ? "" : `<div class="node-actions" aria-label="${city.name}节点操作">
-        <span class="drag-handle" data-drag-handle draggable="true" role="button" tabindex="0" aria-label="拖动${city.name}调整顺序；键盘可用上下方向键" data-tooltip="拖动排序" title="拖动调整顺序；键盘可用上下方向键">⠿</span>
+        <span class="drag-handle" data-drag-handle role="button" tabindex="0" aria-label="拖动${city.name}调整顺序；键盘可用上下方向键" data-tooltip="拖动排序" title="拖动调整顺序；键盘可用上下方向键">⠿</span>
         <button type="button" class="move-button" data-action="up" aria-label="上移${city.name}" data-tooltip="上移" title="上移"${index === 1 ? " disabled" : ""}>↑</button>
         <button type="button" class="move-button" data-action="down" aria-label="下移${city.name}" data-tooltip="下移" title="下移"${index === route.length - 2 ? " disabled" : ""}>↓</button>
         <button type="button" class="delete-node" data-action="delete" aria-label="删除${city.name}" data-tooltip="删除" title="删除城市">×</button>
@@ -790,33 +900,34 @@ function renderRoute() {
           <span class="city-meta">${city.local} · ${city.airport} · ${city.region}</span>
         </div>
         <div class="node-info">
-          <span class="node-period">${periodLabel}</span>
+          <div class="node-schedule-row">
+            <span class="node-period">${periodLabel}</span>
+            ${fixed ? "" : `<div class="night-stepper">
+              <button type="button" data-action="decrease" aria-label="减少${city.name}住宿晚数"${node.nights <= 1 ? " disabled" : ""}>−</button>
+              <span class="night-count"><strong>${node.nights}</strong><span>晚</span></span>
+              <button type="button" data-action="increase" aria-label="增加${city.name}住宿晚数"${node.nights >= city.maxNights ? " disabled" : ""}>＋</button>
+            </div>`}
+          </div>
           <p class="node-summary">${city.summary}</p>
           <div class="node-plays" aria-label="地点与体验">${city.plays.map(play => `<button type="button" title="点击复制地点" data-copy-text="${esc(play)}">${esc(play)}</button>`).join("")}</div>
-          <p class="node-caution" role="button" tabindex="0" title="点击复制关键提醒" data-copy-text="${esc(`${city.name}提醒：${city.caution}`)}">${city.caution}</p>
+          <p class="node-caution">${city.caution}</p>
         </div>
         <div class="node-side">
           <span class="compact-night-count"><strong>${node.nights}</strong> 晚${fixed ? " · 已确认" : ""}</span>
-          ${fixed ? `<div class="locked-stay"><strong>${node.nights}</strong><span>晚 · 已确认</span></div>` : `<div class="night-stepper">
-            <button type="button" data-action="decrease" aria-label="减少${city.name}住宿晚数"${node.nights <= 1 ? " disabled" : ""}>−</button>
-            <span class="night-count"><strong>${node.nights}</strong><span>晚</span></span>
-            <button type="button" data-action="increase" aria-label="增加${city.name}住宿晚数"${node.nights >= city.maxNights ? " disabled" : ""}>＋</button>
-          </div>`}
           <span class="node-budget"><strong>${formatCny(budgetMin)}–${formatCny(budgetMax)}</strong>${node.role === "end" ? "度假期间额外消费 / 人" : "本地停留 / 人"}<small>${fixed ? "住宿日期已锁定" : `建议 ${city.recommendedNights} 晚 · 最多 ${city.maxNights} 晚`}</small></span>
         </div>
       </div>
-      <details class="city-detail"${active && openNodeIds.has(node.id) ? " open" : ""}>
-        <summary><span>规划 <small>${node.nights} 晚</small></span><i aria-hidden="true">＋</i></summary>
+      <details class="city-detail"${active && expandedNodeIds.has(node.id) ? " open" : ""}>
+        <summary><span>规划</span><i aria-hidden="true">＋</i></summary>
         <div class="city-detail-body${city.image ? " has-image" : ""}">
           <div class="detail-copy">
             <div class="stay-guide">
-              <span><strong>${node.nights} 晚</strong>${Math.max(0, node.nights - 1)} 个完整日</span>
               <p>${esc(durationGuide(city, node.nights))}</p>
               <div class="theme-list">${city.themes.map(theme => `<span>${esc(theme)}</span>`).join("")}</div>
             </div>
             <dl class="city-facts">
-              <div><dt>住</dt><dd role="button" tabindex="0" title="点击复制住宿建议" data-copy-text="${esc(`${city.name}住宿：${city.stay}`)}">${city.stay}</dd></div>
-              <div><dt>走</dt><dd role="button" tabindex="0" title="点击复制交通建议" data-copy-text="${esc(`${city.name}市内交通：${city.move}`)}">${city.move}</dd></div>
+              <div><dt>住</dt><dd>${renderPlanText(city.stay)}</dd></div>
+              <div><dt>走</dt><dd>${renderPlanText(city.move)}</dd></div>
             </dl>
             <ol class="day-plan">${dayPlanHtml}</ol>
           </div>
@@ -902,12 +1013,6 @@ function renderAnalysis() {
   if (middle.some(node => node.city === "buonmathuot") && middle.some(node => node.city === "dalat")) advice.push("邦美蜀与大叻都是高原咖啡节点，但风格不同；两地之间约 5–6.5 小时山路，建议各至少 3 晚才值得同时保留。");
   if (middle.some(node => node.city === "quynhon") && !middle.some(node => node.city === "nhatrang")) advice.push("归仁之后仍要在 10 月 5 日到金兰湾；最好把芽庄作为顺路缓冲，或当天很早包车南下。");
 
-  const uncertain = route.slice(0, -1).some((node, index) => {
-    const legData = getLeg(node.city, route[index + 1].city);
-    return /中转|有限|并非每天|刚恢复|恢复/.test(`${legData.note} ${legData.warning || ""}`);
-  });
-  if (uncertain) advice.push("路线含班次有限或需要中转的航段，最终锁定顺序前应按 2026 年出发日复核。 ");
-
   $("#advice-list").innerHTML = [...new Set(advice)].slice(0, 4).map(item => `<li>${esc(item.trim())}</li>`).join("");
 }
 
@@ -925,15 +1030,15 @@ function renderTransport() {
       <span class="transport-index">${String(index + 1).padStart(2, "0")}</span>
       <div class="transport-route"><strong>${routeName}</strong><span>${transferDate} · ${CITIES[node.city].airport} / ${CITIES[next.city].airport}</span></div>
       <div class="transport-mode"><strong>${data.mode}</strong><span>约 ${time} · ₫${formatVnd(data.price[0])}–${formatVnd(data.price[1])}</span></div>
-      <p class="transport-note"><b>${windowText}</b>${data.note}${data.warning ? `<em>${data.warning}</em>` : ""}</p>
+      <p class="transport-note"><b>${windowText}</b>${data.note}</p>
     </article>`;
   }).join("");
-  const returnCopy = "10.07｜金兰湾 → 河内 → 上海\n14:05 VJ772：CXR T1 → 15:55 HAN T1\n18:45 MU6014：HAN T2 → 22:50 PVG T1\n间隔 2小时50分；若非联程且有托运行李，需取行李、乘免费接驳到 T2 并重新值机。";
+  const returnCopy = "10.07｜金兰湾 → 河内 → 上海\n14:05 VJ772：CXR T1 → 15:55 HAN T1\n18:45 MU6014：HAN T2 → 22:50 PVG T1\nHAN T1 取行李后乘免费接驳前往 T2。";
   const returnRow = `<article class="transport-row fixed-transfer" role="button" tabindex="0" title="点击复制返程衔接" aria-label="复制 10 月 7 日返程衔接" data-copy-text="${esc(returnCopy)}">
     <span class="transport-index">返</span>
     <div class="transport-route"><strong>金兰湾 → 河内 → 上海</strong><span>10.07 · CXR T1 / HAN T1 → T2 / PVG T1</span></div>
     <div class="transport-mode"><strong>VJ772 + MU6014</strong><span>14:05 → 15:55 · 18:45 → 22:50</span></div>
-    <p class="transport-note"><b>HAN 仅有 2 小时 50 分衔接。</b>T1 取行李后乘免费接驳到 T2，再办理国际值机、出境和安检。<em>若两张票不是联程，先向航司确认行李能否直挂；否则把延误风险纳入决定。</em></p>
+    <p class="transport-note"><b>HAN 衔接 2 小时 50 分。</b>T1 取行李后乘免费接驳到 T2，再办理国际值机、出境和安检。</p>
   </article>`;
   $("#transport-list").innerHTML = routeRows + returnRow;
 }
@@ -1002,7 +1107,6 @@ function finishDrag() {
 routeEditor.addEventListener("pointerdown", event => {
   const handle = event.target.closest("[data-drag-handle]");
   if (!handle) return;
-  if (event.pointerType === "mouse") return;
   const node = handle.closest(".route-node.sortable");
   draggedNodeId = node?.dataset.id || null;
   if (!draggedNodeId) return;
@@ -1099,6 +1203,15 @@ routeEditor.addEventListener("click", event => {
     }
   });
 });
+
+routeEditor.addEventListener("toggle", event => {
+  const details = event.target;
+  if (!(details instanceof HTMLDetailsElement) || !details.classList.contains("city-detail")) return;
+  const id = details.closest(".route-node")?.dataset.id;
+  if (!id) return;
+  if (details.open) expandedNodeIds.add(id);
+  else expandedNodeIds.delete(id);
+}, true);
 
 routeEditor.addEventListener("keydown", event => {
   const dragHandle = event.target.closest("[data-drag-handle]");
@@ -1329,7 +1442,7 @@ document.addEventListener("keydown", event => {
 function renderPhrases() {
   $("#phrase-tabs").innerHTML = Object.keys(PHRASES).map(category => `<button type="button" role="tab" data-phrase-category="${category}" class="${category === activePhraseCategory ? "active" : ""}" aria-selected="${category === activePhraseCategory}">${category}</button>`).join("");
   $("#phrase-list").classList.toggle("is-words", activePhraseCategory === "高频词");
-  $("#phrase-list").innerHTML = PHRASES[activePhraseCategory].map(([vietnamese, chinese, pronunciation]) => `<button class="phrase-row" type="button" title="点击复制越南语" data-copy-text="${esc(vietnamese)}"><span><strong>${vietnamese}</strong><small>${chinese} · ${pronunciation}</small></span></button>`).join("");
+  $("#phrase-list").innerHTML = PHRASES[activePhraseCategory].map(([vietnamese, chinese, pronunciation]) => `<button class="phrase-row" type="button" title="复制越南语" data-copy-text="${esc(vietnamese)}"><span class="phrase-main"><b>${esc(chinese)}</b><i>·</i><strong lang="vi">${esc(vietnamese)}</strong></span><small><span>罗马音 ${esc(vietnameseRomanization(vietnamese))}</span><em>近音 ${esc(pronunciation)}</em></small></button>`).join("");
 }
 
 $("#phrase-tabs").addEventListener("click", event => {
