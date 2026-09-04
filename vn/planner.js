@@ -807,15 +807,30 @@ function renderHeroRail() {
   }).join("");
 }
 
-$(".planner-hero").addEventListener("click", event => {
-  const button = event.target.closest("button[data-jump-node]");
-  if (!button) return;
-  if (!route.some(node => node.id === button.dataset.jumpNode)) return;
+function activateNode(id) {
+  if (!route.some(node => node.id === id)) return;
   transitionUpdate(() => {
-    activeNodeId = button.dataset.jumpNode;
+    activeNodeId = id;
     renderRoute();
     renderHeroRail();
   });
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const activeNode = routeEditor.querySelector(".route-node.is-active");
+    if (!activeNode) return;
+    const rect = activeNode.getBoundingClientRect();
+    if (rect.top >= 12 && rect.top <= window.innerHeight * .5) return;
+    activeNode.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      block: "start"
+    });
+  }));
+}
+
+$(".planner-hero").addEventListener("click", event => {
+  const button = event.target.closest("button[data-jump-node]");
+  if (!button) return;
+  activateNode(button.dataset.jumpNode);
 });
 
 function renderPresets() {
@@ -863,17 +878,17 @@ function renderRoute() {
     const city = CITIES[node.city];
     const fixed = node.role !== "middle";
     const periodLabel = node.role === "start"
-      ? "09.25 17:45 抵达 — 09.27 离开时间待定"
+      ? "09.25 17:45 抵达 · 09.27 中午后可飞"
       : node.role === "end"
-        ? "10.05 15:00 入住 — 10.07 12:00 退房"
-        : `${dateLabel(dates[index].start)} 入住 — ${dateLabel(dates[index].end)} 离开`;
+        ? "10.05 15:00 入住 · 10.07 12:00 退房"
+        : `${dateLabel(dates[index].start)} 入住 · ${dateLabel(dates[index].end)} 离开`;
     const options = Object.entries(CITIES)
       .filter(([key]) => !["hanoi", "camranh"].includes(key) && (!usedMiddle.has(key) || key === node.city))
       .map(([key, item]) => `<option value="${key}"${key === node.city ? " selected" : ""}>${esc(item.name)} · ${item.airport}</option>`)
       .join("");
     const budgetMin = city.budget[0] * node.nights;
     const budgetMax = city.budget[1] * node.nights;
-    const roleLabel = node.role === "start" ? "已确认 · 起点" : node.role === "end" ? "已确认 · 度假村" : "待规划 · 中段";
+    const roleLabel = node.role === "start" ? "已确认" : node.role === "end" ? "已确认 · 度假村" : "中段";
     const dayPlanHtml = plansForNode(node, index, dates).map(plan => {
       return `<li class="${plan.restful ? "restful" : ""}">
         <div class="day-marker"><span>${plan.date}</span><strong>${plan.tag}${plan.theme ? ` · ${esc(plan.theme)}` : ""}</strong></div>
@@ -1071,15 +1086,23 @@ function updateNode(id, updater) {
 let draggedNodeId = null;
 let dragStartOrder = "";
 let dragPointerId = null;
+let dragTargetId = null;
+let dragInsertAfter = false;
 
-function placeDraggedNode(overNode, clientY) {
-  const draggedNode = draggedNodeId && routeEditor.querySelector(`[data-id="${CSS.escape(draggedNodeId)}"]`);
-  if (!draggedNode || !overNode || overNode === draggedNode) return;
+function markDragTarget(overNode, clientY) {
+  $$(".route-node.is-drop-target", routeEditor).forEach(node => {
+    node.classList.remove("is-drop-target");
+    node.removeAttribute("data-drop-position");
+  });
+  dragTargetId = null;
+  if (!draggedNodeId || !overNode || overNode.dataset.id === draggedNodeId) return;
   const overRouteNode = route.find(node => node.id === overNode.dataset.id);
   if (!overRouteNode || overRouteNode.role !== "middle") return;
   const rect = overNode.getBoundingClientRect();
-  if (clientY < rect.top + rect.height / 2) routeEditor.insertBefore(draggedNode, overNode);
-  else routeEditor.insertBefore(draggedNode, overNode.nextSibling);
+  dragTargetId = overNode.dataset.id;
+  dragInsertAfter = clientY >= rect.top + rect.height / 2;
+  overNode.classList.add("is-drop-target");
+  overNode.dataset.dropPosition = dragInsertAfter ? "after" : "before";
 }
 
 function autoScrollDuringDrag(clientY) {
@@ -1090,16 +1113,32 @@ function autoScrollDuringDrag(clientY) {
 
 function finishDrag() {
   if (!draggedNodeId) return;
-  const orderedIds = $$(".route-node", routeEditor).map(node => node.dataset.id);
-  const changed = orderedIds.join("|") !== dragStartOrder;
+  const movingId = draggedNodeId;
+  const targetId = dragTargetId;
+  const insertAfter = dragInsertAfter;
   $$(".route-node.is-dragging", routeEditor).forEach(node => node.classList.remove("is-dragging"));
-  $$(".route-node.is-drop-target", routeEditor).forEach(node => node.classList.remove("is-drop-target"));
+  $$(".route-node.is-drop-target", routeEditor).forEach(node => {
+    node.classList.remove("is-drop-target");
+    node.removeAttribute("data-drop-position");
+  });
   document.body.classList.remove("route-dragging");
   draggedNodeId = null;
+  dragTargetId = null;
+  dragInsertAfter = false;
   dragStartOrder = "";
   dragPointerId = null;
-  if (!changed) return;
-  route = orderedIds.map(id => route.find(node => node.id === id)).filter(Boolean);
+  if (!targetId || targetId === movingId) return;
+
+  const fromIndex = route.findIndex(node => node.id === movingId);
+  if (fromIndex < 0 || route[fromIndex].role !== "middle") return;
+  const [movingNode] = route.splice(fromIndex, 1);
+  const targetIndex = route.findIndex(node => node.id === targetId);
+  if (targetIndex < 0) {
+    route.splice(fromIndex, 0, movingNode);
+    return;
+  }
+  route.splice(targetIndex + (insertAfter ? 1 : 0), 0, movingNode);
+  if (route.map(node => node.id).join("|") === dragStartOrder) return;
   markCustom();
   transitionUpdate(render);
 }
@@ -1139,9 +1178,7 @@ routeEditor.addEventListener("dragover", event => {
   if (!overNode || overNode.dataset.id === draggedNodeId || route.find(node => node.id === overNode.dataset.id)?.role !== "middle") return;
   event.preventDefault();
   event.dataTransfer.dropEffect = "move";
-  $$(".route-node.is-drop-target", routeEditor).forEach(node => node.classList.remove("is-drop-target"));
-  overNode.classList.add("is-drop-target");
-  placeDraggedNode(overNode, event.clientY);
+  markDragTarget(overNode, event.clientY);
 });
 
 routeEditor.addEventListener("drop", event => {
@@ -1158,11 +1195,7 @@ document.addEventListener("pointermove", event => {
   event.preventDefault();
   autoScrollDuringDrag(event.clientY);
   const overNode = document.elementFromPoint(event.clientX, event.clientY)?.closest(".route-node");
-  $$(".route-node.is-drop-target", routeEditor).forEach(node => node.classList.remove("is-drop-target"));
-  if (overNode && overNode.dataset.id !== draggedNodeId && route.find(node => node.id === overNode.dataset.id)?.role === "middle") {
-    overNode.classList.add("is-drop-target");
-  }
-  placeDraggedNode(overNode, event.clientY);
+  markDragTarget(overNode, event.clientY);
 }, { passive: false });
 
 document.addEventListener("pointerup", event => {
@@ -1182,11 +1215,7 @@ routeEditor.addEventListener("click", event => {
   if (!button) {
     const compactNode = event.target.closest(".route-node.is-compact[data-select-node]");
     if (!compactNode || event.target.closest("[data-drag-handle], select")) return;
-    transitionUpdate(() => {
-      activeNodeId = compactNode.dataset.id;
-      renderRoute();
-      renderHeroRail();
-    });
+    activateNode(compactNode.dataset.id);
     return;
   }
   const nodeElement = button.closest(".route-node");
@@ -1228,11 +1257,7 @@ routeEditor.addEventListener("keydown", event => {
   const compactNode = event.target.closest(".route-node.is-compact[data-select-node]");
   if (!compactNode) return;
   event.preventDefault();
-  transitionUpdate(() => {
-    activeNodeId = compactNode.dataset.id;
-    renderRoute();
-    renderHeroRail();
-  });
+  activateNode(compactNode.dataset.id);
 });
 
 routeEditor.addEventListener("change", event => {
