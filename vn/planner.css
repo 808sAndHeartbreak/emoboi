@@ -3665,6 +3665,118 @@ body {
   }
 }
 
+/* Hour-block itinerary — keep times and copyable place names in separate tracks. */
+.route-node.is-active { order: 0; }
+
+.time-blocks {
+  min-width: 0;
+  border-top: 1px solid var(--line);
+}
+
+.time-block {
+  display: grid;
+  min-width: 0;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+  grid-template-columns: minmax(88px, .22fr) minmax(0, 1fr);
+  gap: 17px;
+  align-items: start;
+}
+
+.time-block time {
+  color: var(--accent);
+  font: 700 10px/1.5 var(--mono);
+  white-space: nowrap;
+}
+
+.time-block p {
+  min-width: 0;
+  margin: 0;
+  color: #405b52;
+  font-size: 12px;
+  line-height: 1.72;
+  overflow-wrap: anywhere;
+}
+
+.transport-details { min-width: 0; grid-column: 4; }
+
+.flight-choices {
+  min-width: 0;
+  margin-top: 13px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 250, 240, .16);
+}
+
+.flight-choices-head {
+  display: flex;
+  min-width: 0;
+  margin-bottom: 8px;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.flight-choices-head span,
+.flight-choices-head small,
+.flight-choices.is-unavailable span,
+.flight-choices.is-unavailable small { display: block; }
+
+.flight-choices-head span { color: #e8cb84; font: 700 9px/1.4 var(--sans); }
+.flight-choices-head small { color: var(--muted-dark); font-size: 8px; }
+
+.flight-choice-list {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(auto-fit, minmax(116px, 1fr));
+  gap: 6px;
+}
+
+.flight-choice {
+  display: grid;
+  min-width: 0;
+  padding: 8px 9px;
+  border: 1px solid rgba(255, 250, 240, .17);
+  border-radius: 10px;
+  background: rgba(255, 250, 240, .035);
+  cursor: pointer;
+  color: var(--text);
+  gap: 3px;
+  text-align: left;
+  transition: border-color .18s ease, background .18s ease, transform .18s var(--ease);
+}
+
+.flight-choice strong { color: #ffd3c5; font: 700 10px/1.3 var(--mono); white-space: nowrap; }
+.flight-choice span { overflow: hidden; color: var(--muted-dark); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.flight-choice.is-selected { border-color: #ed8a6e; background: rgba(232, 111, 82, .17); }
+
+.flight-choices.is-unavailable {
+  margin-top: 13px;
+  padding: 10px 11px;
+  border-left: 2px solid #ed8a6e;
+  background: rgba(232, 111, 82, .08);
+}
+
+.flight-choices.is-unavailable span { color: #ffd3c5; font-size: 9px; font-weight: 700; }
+.flight-choices.is-unavailable small { margin-top: 4px; color: var(--muted-dark); font-size: 8px; line-height: 1.5; }
+
+@media (hover: hover) {
+  .flight-choice:hover { border-color: #ed8a6e; background: rgba(232, 111, 82, .11); transform: translateY(-1px); }
+}
+
+@media (max-width: 1060px) {
+  .transport-details { grid-column: 2 / -1; }
+}
+
+@media (max-width: 680px) {
+  .transport-details { grid-column: 2; }
+  .tool-drawer { right: 0; width: 100vw; padding-right: 20px; }
+  .time-block { grid-template-columns: minmax(67px, 76px) minmax(0, 1fr); gap: 9px; }
+  .time-block time { font-size: 9px; }
+  .time-block p { font-size: 11px; line-height: 1.7; }
+  .flight-choice-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .flight-choice { padding: 8px 7px; }
+}
+
 /* Clarity pass — keep copy affordances local and text inside its layout tracks. */
 .planner-hero { overflow: clip; }
 
