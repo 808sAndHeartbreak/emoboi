@@ -3,7 +3,6 @@
 document.documentElement.classList.add("js");
 
 const TOTAL_NIGHTS = 12;
-const TOTAL_MIDDLE_WINDOW_NIGHTS = 10;
 const TOTAL_DAYS = 13;
 const CNY_TO_VND = 3880;
 const STORAGE_KEY = "emoboi-vn-route-v5";
@@ -17,19 +16,18 @@ const HOTEL_CHECKOUT_DATE = new Date("2026-10-07T12:00:00+07:00");
 const CITIES = {
   hanoi: {
     name: "河内", local: "Hà Nội", airport: "HAN", region: "北部",
-    minNights: 2, recommendedNights: 2, maxNights: 4, defaultNights: 2, budget: [850000, 1600000], order: 21.03,
+    minNights: 2, recommendedNights: 2, maxNights: 3, defaultNights: 2, budget: [850000, 1600000], order: 21.03,
     coordinates: [21.0285, 105.8542],
     themes: ["建筑", "老城", "咖啡", "寺庙"],
     durationGuide: {
-      2: "1 个完整日：老城、建筑与咖啡足够；27 日按航班保留半天机动。",
+      2: "1 个完整日：老城、建筑与咖啡足够；离开日按航班保留半天机动。",
       3: "2 个完整日：增加升龙皇城、西湖或一场博物馆，不必跑远郊。",
-      4: "3 个完整日：再加陶艺、街区慢走或酒店休息，避免连续安排历史景点。"
     },
     summary: "老城区、大教堂、咖啡与历史建筑。",
     plays: ["还剑湖 Hoàn Kiếm", "河内大教堂 St. Joseph’s Cathedral", "升龙皇城 Imperial Citadel", "文庙 Temple of Literature", "咖啡工作坊 Coffee Workshop", "西湖与镇国寺", "老城周末步行街 / 夜市"],
     caution: "9–10 月通常舒适；HAN 在城北，去市区的车程容易受晚高峰影响。9 月 26 日周六晚可优先安排老城周末步行街与夜市。",
     stay: "住还剑湖西北侧或老城区边缘：大教堂、咖啡和老城步行可达，夜间比老城腹地安静。",
-    move: "老城以步行为主；升龙皇城、文庙、西湖之间用 Grab，单段约 10–25 分钟。机场快线 86 路可作为轻装备备选，带行李或晚高峰优先 Grab。9 月 27 日退房后把行李寄存在前台。",
+    move: "老城以步行为主；升龙皇城、文庙、西湖之间用 Grab，单段约 10–25 分钟。机场快线 86 路可作为轻装备备选，带行李或晚高峰优先 Grab。离开日退房后把行李寄存在前台。",
     airportInfo: "内排 HAN → 还剑湖 / 老城区：约 27–30 km，Grab 通常 45–75 分钟；晚高峰按 90 分钟留量。86 路机场快线耗时受站点与路况影响，适合不赶时间时使用。",
     days: [
       { theme: "老城与咖啡", blocks: [
@@ -444,49 +442,177 @@ const FLIGHTS = {
 
 const PHRASES = {
   高频词: [
+    ["Tôi", "我", "多伊"],
+    ["Bạn", "你 / 朋友", "伴"],
+    ["Anh / Chị", "您 / 先生 / 女士", "英 / 姐"],
+    ["Em", "我（较年轻） / 你（对年长者）", "诶姆"],
+    ["Chúng ta", "我们（包括对方）", "仲 达"],
+    ["Người", "人", "努伊"],
+    ["Cái", "个 / 件（物品量词）", "该"],
     ["Có", "有 / 是", "果"],
     ["Không", "不 / 没有", "空"],
     ["Được", "可以 / 好", "德"],
-    ["Đúng", "对", "拥"],
+    ["Đúng", "对 / 正确", "拥"],
     ["Sai", "错", "赛"],
-    ["Đây", "这里", "呆"],
-    ["Kia", "那里", "基啊"],
-    ["Đâu", "哪里", "兜"],
-    ["Này", "这个", "奈"],
-    ["Bao nhiêu", "多少", "包 纽"],
+    ["Rồi", "了 / 已经", "若伊"],
+    ["Chưa", "还没 / ……了吗", "朱啊"],
+    ["Cũng", "也", "贡"],
+    ["Rất", "很 / 非常", "热"],
+    ["Quá", "太 / 过于", "瓜"],
+    ["Chỉ", "只 / 仅仅", "只"],
+    ["Một chút", "一点", "木 朱"],
+    ["Nhiều", "多", "纽"],
+    ["Ít", "少", "一"],
+    ["Tất cả", "全部 / 都", "特 嘎"],
     ["Một", "一", "木"],
     ["Hai", "二", "嗨"],
+    ["Ba", "三", "巴"],
+    ["Bốn", "四", "奔"],
+    ["Năm", "五", "南"],
+    ["Sáu", "六", "扫"],
+    ["Bảy", "七", "拜"],
+    ["Tám", "八", "探"],
+    ["Chín", "九", "紧"],
+    ["Mười", "十", "梅伊"],
+    ["Trăm", "百", "占"],
+    ["Nghìn", "千", "宁"],
+    ["Đồng", "越南盾", "冬"],
+    ["Đây", "这里 / 这是", "呆"],
+    ["Đó", "那里 / 那是", "多"],
+    ["Kia", "那边", "基啊"],
+    ["Này", "这个 / 喂", "奈"],
+    ["Đâu", "哪里", "兜"],
+    ["Gì", "什么", "伊"],
+    ["Ai", "谁", "哎"],
+    ["Nào", "哪个 / 哪一个", "瑙"],
+    ["Bao nhiêu", "多少 / 多少钱", "包 纽"],
+    ["Bao lâu", "多久", "包 楼"],
+    ["Khi nào", "什么时候", "基 瑙"],
+    ["Tại sao", "为什么", "代 桑"],
+    ["Ở đâu", "在哪里", "额 兜"],
     ["Hôm nay", "今天", "轰 奈"],
     ["Ngày mai", "明天", "艾 买"],
+    ["Hôm qua", "昨天", "轰 瓜"],
     ["Bây giờ", "现在", "杯 约"],
-    ["Sáng", "上午", "桑"],
+    ["Sau", "以后 / 后面", "扫"],
+    ["Trước", "以前 / 前面", "朱额"],
+    ["Sáng", "早上 / 上午", "桑"],
     ["Trưa", "中午", "朱啊"],
     ["Chiều", "下午", "桥"],
     ["Tối", "晚上", "多伊"],
-    ["Nóng", "热", "农"],
-    ["Lạnh", "冷", "冷"],
-    ["Nước", "水", "讷"],
-    ["Cơm", "米饭", "根"],
-    ["Phở", "河粉", "佛"],
-    ["Cà phê", "咖啡", "嘎 费"],
-    ["Bia", "啤酒", "比啊"],
-    ["Nhà vệ sinh", "洗手间", "雅 卫 生"],
-    ["Sân bay", "机场", "森 拜"],
-    ["Khách sạn", "酒店", "客 散"],
-    ["Ga tàu", "火车站", "嘎 道"],
-    ["Vé", "票", "耶"],
-    ["Tiền", "钱", "甜"],
-    ["Thẻ", "卡", "特"],
-    ["Tiền mặt", "现金", "甜 末"],
+    ["Đêm", "夜里", "登姆"],
+    ["Ngày", "天 / 日", "艾"],
+    ["Giờ", "小时 / 点钟", "约"],
+    ["Phút", "分钟", "富特"],
+    ["Sớm", "早", "森"],
+    ["Muộn", "晚 / 迟", "木温"],
+    ["Đi", "去 / 走", "滴"],
+    ["Đến", "到", "登"],
+    ["Về", "回去", "耶"],
+    ["Ăn", "吃", "安"],
+    ["Uống", "喝", "翁"],
+    ["Mua", "买", "木啊"],
+    ["Bán", "卖", "班"],
+    ["Xem", "看", "森姆"],
+    ["Tìm", "找", "丁姆"],
+    ["Chờ", "等", "卓"],
+    ["Giúp", "帮助", "族"],
+    ["Gọi", "叫 / 打电话", "戈伊"],
+    ["Đặt", "预订 / 放置", "达"],
+    ["Nhận", "收到 / 领取", "任"],
+    ["Trả", "还 / 付", "茶"],
+    ["Đổi", "换", "多伊"],
+    ["Chọn", "选择", "仲"],
+    ["Chờ một chút", "等一下", "卓 木 朱"],
+    ["Nói", "说", "诺伊"],
+    ["Viết", "写", "越特"],
+    ["Hiểu", "懂", "休伊"],
+    ["Biết", "知道 / 会", "别特"],
+    ["Nhớ", "记得", "涅"],
+    ["Quên", "忘记", "昆"],
+    ["Thích", "喜欢", "特伊克"],
+    ["Cần", "需要", "根"],
+    ["Muốn", "想要", "木温"],
+    ["Mở", "开 / 营业", "么"],
+    ["Đóng", "关 / 打烊", "冬"],
+    ["Dừng", "停", "用"],
+    ["Lên", "上 / 上去", "连"],
+    ["Xuống", "下 / 下去", "松"],
+    ["Vào", "进 / 进入", "瓦奥"],
+    ["Ra", "出 / 出去", "咋"],
     ["Trái", "左", "摘"],
     ["Phải", "右", "法伊"],
     ["Thẳng", "直走", "探"],
     ["Gần", "近", "根"],
     ["Xa", "远", "撒"],
+    ["Trên", "上面", "真"],
+    ["Dưới", "下面", "祖伊"],
+    ["Trong", "里面", "仲"],
+    ["Ngoài", "外面", "外伊"],
+    ["Bên cạnh", "旁边", "边 景"],
+    ["Ở giữa", "中间", "额 朱啊"],
+    ["Lối vào", "入口", "洛伊 瓦奥"],
+    ["Lối ra", "出口", "洛伊 咋"],
+    ["Cửa", "门", "古啊"],
+    ["Đầu", "头 / 开头", "兜"],
+    ["Cuối", "末尾 / 最后", "归伊"],
     ["Chậm", "慢", "枕"],
     ["Nhanh", "快", "娘"],
-    ["Mở", "开门 / 营业", "么"],
-    ["Đóng", "关门 / 打烊", "冬"]
+    ["Tốt", "好", "多特"],
+    ["Đẹp", "漂亮", "蝶普"],
+    ["Xấu", "不好看 / 坏", "扫"],
+    ["Ngon", "好吃", "农"],
+    ["Rẻ", "便宜", "热"],
+    ["Đắt", "贵", "达特"],
+    ["Nóng", "热", "农"],
+    ["Lạnh", "冷", "冷"],
+    ["Mới", "新", "梅伊"],
+    ["Cũ", "旧", "古"],
+    ["Đầy", "满", "代伊"],
+    ["Trống", "空 / 空闲", "仲"],
+    ["Bận", "忙", "班"],
+    ["Nước", "水", "讷"],
+    ["Đồ ăn", "食物", "多 安"],
+    ["Cơm", "米饭", "根"],
+    ["Phở", "河粉", "佛"],
+    ["Bún", "米粉", "本"],
+    ["Cà phê", "咖啡", "嘎 费"],
+    ["Bia", "啤酒", "比啊"],
+    ["Trà", "茶", "茶"],
+    ["Sữa", "牛奶", "苏啊"],
+    ["Đá", "冰块", "达"],
+    ["Đường", "糖", "东"],
+    ["Muối", "盐", "木伊"],
+    ["Thịt", "肉", "特"],
+    ["Gà", "鸡", "嘎"],
+    ["Bò", "牛肉", "波"],
+    ["Heo", "猪肉", "黑奥"],
+    ["Cá", "鱼", "嘎"],
+    ["Rau", "蔬菜", "饶"],
+    ["Hải sản", "海鲜", "海 桑"],
+    ["Nhà vệ sinh", "洗手间", "雅 卫 生"],
+    ["Sân bay", "机场", "森 拜"],
+    ["Khách sạn", "酒店", "客 散"],
+    ["Ga tàu", "火车站", "嘎 道"],
+    ["Bến xe", "汽车站 / 巴士站", "本 些"],
+    ["Xe", "车", "些"],
+    ["Taxi", "出租车", "塔西"],
+    ["Vé", "票", "耶"],
+    ["Tiền", "钱", "甜"],
+    ["Giá", "价格", "架"],
+    ["Thẻ", "卡", "特"],
+    ["Tiền mặt", "现金", "甜 末"],
+    ["Hộ chiếu", "护照", "护 照"],
+    ["Hành lý", "行李", "杭 李"],
+    ["Điện thoại", "手机", "电 话"],
+    ["Pin", "电量 / 电池", "宾"],
+    ["Wi-Fi", "无线网", "歪法伊"],
+    ["Thuốc", "药", "图奥克"],
+    ["Bệnh viện", "医院", "病 院"],
+    ["Cửa hàng", "商店", "古啊 杭"],
+    ["Chợ", "市场", "卓"],
+    ["Mở cửa", "开门 / 营业", "么 古啊"],
+    ["Đóng cửa", "关门 / 不营业", "冬 古啊"]
   ],
   基础: [
     ["Xin chào", "你好", "新 招"],
@@ -575,6 +701,54 @@ const PHRASES = {
     ["Tôi bị dị ứng", "我过敏了", "多伊 比 夷 翁"],
     ["Nhà thuốc ở đâu?", "药店在哪里？", "雅 图 额 兜"],
     ["Xin gọi cho số này", "请拨打这个号码", "新 戈 卓 苏 奈"]
+  ],
+  语法: [
+    ["Tôi muốn …", "我想要……", "多伊 木温"],
+    ["Tôi cần …", "我需要……", "多伊 根"],
+    ["Cho tôi …", "请给我……", "卓 多伊"],
+    ["Tôi có thể … không?", "我可以……吗？", "多伊 果 特 …… 空"],
+    ["Có … không?", "有……吗？", "果 …… 空"],
+    ["… ở đâu?", "……在哪里？", "……额 兜"],
+    ["… là gì?", "……是什么？", "……拉 伊"],
+    ["Bao nhiêu tiền?", "多少钱？", "包 纽 甜"],
+    ["Bao lâu?", "多久？", "包 楼"],
+    ["Mấy giờ?", "几点？", "美 约"],
+    ["Khi nào?", "什么时候？", "基 瑙"],
+    ["Tại sao?", "为什么？", "代 桑"],
+    ["Ai …?", "谁……？", "哎"],
+    ["Cái gì?", "什么？", "该 伊"],
+    ["Cái nào?", "哪一个？", "该 瑙"],
+    ["Đi từ … đến …", "从……到……", "滴 特 …… 登 ……"],
+    ["Từ … đến … bao lâu?", "从……到……多久？", "特 …… 登 …… 包 楼"],
+    ["Đi …", "去……", "滴"],
+    ["Tôi muốn đi …", "我想去……", "多伊 木温 滴"],
+    ["Tôi đã đặt …", "我已经预订了……", "多伊 达 达 ……"],
+    ["Tôi đang …", "我正在……", "多伊 当"],
+    ["Tôi không muốn …", "我不想要……", "多伊 空 木温"],
+    ["Không …", "不要 / 不……", "空"],
+    ["Đừng …", "请不要……", "登"],
+    ["Xin …", "请……", "新"],
+    ["Làm ơn …", "麻烦请……", "蓝 恩"],
+    ["Nói chậm một chút", "请说慢一点", "诺伊 枕 木 朱"],
+    ["Bạn nói lại được không?", "你可以再说一遍吗？", "伴 诺伊 莱 德 空"],
+    ["Tôi hiểu / Tôi không hiểu", "我懂 / 我不懂", "多伊 休伊 / 多伊 空 休伊"],
+    ["Tôi nói tiếng Việt không tốt", "我越南语说得不好", "多伊 诺伊 颠 越 空 多特"],
+    ["Nói bằng tiếng Anh được không?", "可以用英语说吗？", "诺伊 棒 颠 安 德 空"],
+    ["Cái này / cái đó", "这个 / 那个", "该 奈 / 该 多"],
+    ["Đây là …", "这是……", "呆 拉"],
+    ["Tôi có … / Tôi không có …", "我有…… / 我没有……", "多伊 果 / 多伊 空 果"],
+    ["Có thể đổi … không?", "可以换……吗？", "果 特 多伊 空"],
+    ["Một …, làm ơn", "请给我一个……", "木 …… 蓝 恩"],
+    ["Thêm … / Ít …", "多一点…… / 少一点……", "添 …… / 一 ……"],
+    ["Không cay / Ít cay", "不要辣 / 少辣", "空 该 / 一 该"],
+    ["Không có …", "没有……", "空 果 ……"],
+    ["Đã … chưa?", "已经……了吗？", "达 …… 朱啊"],
+    ["Rất … / Quá …", "很…… / 太……了", "热 …… / 瓜 ……"],
+    ["Ở đây / ở đó", "在这里 / 在那里", "额 呆 / 额 多"],
+    ["Bên trái / bên phải", "左边 / 右边", "本 摘 / 本 法伊"],
+    ["Ở trên / ở dưới", "在上面 / 在下面", "额 真 / 额 祖伊"],
+    ["Tôi xuống ở đây", "我在这里下车", "多伊 松 额 呆"],
+    ["Tính tiền, làm ơn", "请买单", "丁 甜 蓝 恩"]
   ]
 };
 
@@ -729,12 +903,21 @@ function endNights() {
   return route.find(node => node.role === "end")?.nights || 2;
 }
 
+function startNights() {
+  return route.find(node => node.role === "start")?.nights || CITIES.hanoi.defaultNights;
+}
+
+function middleStartDate() {
+  return addDays(MIDDLE_START_DATE, startNights() - 2);
+}
+
 function middleNightsTarget() {
-  return TOTAL_MIDDLE_WINDOW_NIGHTS - endNights();
+  const nightsUntilCheckout = Math.round((HOTEL_CHECKOUT_DATE - middleStartDate()) / (24 * 60 * 60 * 1000));
+  return Math.max(0, nightsUntilCheckout - endNights());
 }
 
 function canAdjustNights(node) {
-  return node.role === "middle" || node.city === "camranh";
+  return node.role === "start" || node.role === "middle" || node.city === "camranh";
 }
 
 function loadRoute() {
@@ -750,7 +933,7 @@ function loadRoute() {
     );
     return cloneDefaultRoute().map(node => {
       const nights = storedNights.get(node.city);
-      return nights === undefined || node.city === "hanoi"
+      return nights === undefined
         ? node
         : { ...node, nights };
     });
@@ -769,8 +952,9 @@ function loadFlightChoices() {
 }
 
 function clampNights(value, cityKey) {
+  const minimum = CITIES[cityKey]?.minNights || 1;
   const maximum = CITIES[cityKey]?.maxNights || 5;
-  return Math.max(1, Math.min(maximum, Number.parseInt(value, 10) || 1));
+  return Math.max(minimum, Math.min(maximum, Number.parseInt(value, 10) || minimum));
 }
 
 function saveRoute() {
@@ -905,19 +1089,25 @@ function flightTransferBlocks(origin, destination, date) {
   const flight = selectedFlightFor(origin, destination, date);
   if (!flight) return [
     { time: "12:00–13:00", text: "起床、午饭；按当天可买到的航班调整。" },
-    { time: "下午", text: `${CITIES[origin].name} → ${CITIES[destination].name} 的航班信息待补，确认离开日期后再锁定机场接驳。` },
+    { time: "下午", text: `${CITIES[origin].name} → ${CITIES[destination].name} 的航班信息待补；国内航班按起飞前 1.5 小时到机场，确认离开日期后再锁定机场接驳。` },
     { time: "晚上", text: ARRIVAL_PLANS[destination] || "抵达后入住、吃饭，晚上不再安排远点。" }
   ];
 
   const early = clockMinutes(flight.depart) < 12 * 60;
-  const leaveAirport = shiftClock(flight.depart, origin === "hanoi" ? -165 : -135);
-  const airportArrival = shiftClock(flight.depart, origin === "hanoi" ? -120 : -90);
+  const airportArrival = shiftClock(flight.depart, -90);
+  const cityToAirport = origin === "hanoi" ? 60 : 25;
+  const leaveCity = shiftClock(airportArrival, -cityToAirport);
   const settleEnd = shiftClock(flight.arrive, 60);
   const mealEnd = shiftClock(settleEnd, 60);
-  const destinationArea = destination === "danang" ? "美溪海滩住宿区" : "春香湖 / 大叻市场住宿区";
+  const destinationArea = destination === "danang" ? "美溪海滩住宿区" : destination === "dalat" ? "春香湖 / 大叻市场住宿区" : `${CITIES[destination].name}住宿区`;
   const airportNote = origin === "hanoi"
     ? "从还剑湖 / 老城到 HAN T1 通常 45–75 分钟"
     : "从美溪 / 海州到 DAD T1 通常 15–25 分钟";
+  const arrivalNote = destination === "danang"
+    ? "机场到美溪约 15–25 分钟"
+    : destination === "dalat"
+      ? "DLI 到市区约 40–60 分钟"
+      : `${CITIES[destination].airport} 到住宿区按当天接送估算`;
   const postArrival = clockMinutes(mealEnd) < 15 * 60
     ? [
       { time: clockRange(mealEnd, shiftClock(mealEnd, 180)), text: destination === "danang" ? "到美溪海滩看海，或回酒店补觉。" : "在大叻市场周边喝咖啡、熟悉住宿区。" },
@@ -931,10 +1121,10 @@ function flightTransferBlocks(origin, destination, date) {
     ];
 
   return [
-    { time: clockRange(early ? shiftClock(flight.depart, -195) : shiftClock(leaveAirport, -80), leaveAirport), text: `${early ? "必要早起、简单吃点东西" : "起床、早午餐"}；退房并把行李交给前台寄存。${early ? "这班需要早起。" : "不安排远郊。"}` },
-    { time: clockRange(leaveAirport, airportArrival), text: `${CITIES[origin].name} → ${CITIES[origin].airport} T1，${airportNote}；到机场后完成托运、安检。` },
+    { time: clockRange(early ? shiftClock(flight.depart, -195) : shiftClock(leaveCity, -80), leaveCity), text: `${early ? "必要早起、简单吃点东西" : "起床、早午餐"}；退房并把行李交给前台寄存。${early ? "这班需要早起。" : "不安排远郊。"}` },
+    { time: clockRange(leaveCity, airportArrival), text: `${CITIES[origin].name} → ${CITIES[origin].airport} T1，${airportNote}；${airportArrival} 前抵达（国内航班提前 1.5 小时），到机场后完成托运、安检。` },
     { time: clockRange(flight.depart, flight.arrive), text: `越捷航空 ${flight.depart} → ${flight.arrive}，${CITIES[origin].airport} T1 → ${CITIES[destination].airport} T1，${flight.duration}。` },
-    { time: clockRange(flight.arrive, settleEnd), text: `${CITIES[destination].airport} → ${destinationArea}；${destination === "danang" ? "机场到美溪约 15–25 分钟" : "DLI 到市区约 40–60 分钟"}，办理入住。` },
+    { time: clockRange(flight.arrive, settleEnd), text: `${CITIES[destination].airport} → ${destinationArea}；${arrivalNote}，办理入住。` },
     { time: clockRange(settleEnd, mealEnd), text: `${early ? "抵达后" : "入住后"}吃饭，一小时；不把机场日排成连续打卡。` },
     ...postArrival
   ];
@@ -981,6 +1171,37 @@ function transferBlocksForNode(previous, node, date, transfer) {
   ];
 }
 
+function arrivalBlocksForNode(previous, node, date) {
+  if (node.city === "camranh") {
+    return [
+      { time: "15:00–15:30", text: "抵达 Fusion Resort Cam Ranh，办理入住；后续留在金兰湾度假村内。" },
+      { time: "20:30 后", text: "泳池、海滩或直接休息，不再往返芽庄市区。" }
+    ];
+  }
+
+  const flight = selectedFlightFor(previous.city, node.city, date);
+  if (flight) {
+    const settleEnd = shiftClock(flight.arrive, 60);
+    const destinationArea = node.city === "danang" ? "美溪海滩住宿区" : node.city === "dalat" ? "春香湖 / 大叻市场住宿区" : `${CITIES[node.city].name}住宿区`;
+    return [
+      { time: `${flight.arrive}–${settleEnd}`, text: `上一日转场已完成；从 ${CITIES[node.city].airport} T1 前往${destinationArea}并办理入住。` },
+      { time: "20:30 后", text: ARRIVAL_PLANS[node.city] || "入住后休息，晚上不再安排远点。" }
+    ];
+  }
+
+  if (previous.city === "dalat" && node.city === "nhatrang") {
+    return [
+      { time: "14:00–15:00", text: "上一日已完成大叻 → 芽庄转场；抵达住宿区后办理入住、放下行李。" },
+      { time: "20:30 后", text: "芽庄海边散步或直接回酒店。" }
+    ];
+  }
+
+  return [
+    { time: "抵达后 1 小时", text: `上一日已完成${CITIES[previous.city].name} → ${CITIES[node.city].name}转场；办理入住、放下行李。` },
+    { time: "晚上", text: ARRIVAL_PLANS[node.city] || "入住后休息，晚上不再安排远点。" }
+  ];
+}
+
 function transferFoodForNode(previous, node) {
   if (node.city === "danang") return "抵达美溪 / 海州后就近吃饭；晚班只补充简单正餐和水，不把第一晚安排成跨区觅食。";
   if (node.city === "dalat") return "落地大叻后先在市场或酒店附近吃热食；山路转场日不专程去远处找店。";
@@ -994,9 +1215,10 @@ function returnDayBlocks() {
     { time: "09:30–10:30", text: "起床、早餐，最后在度假村海滩或泳池停留。" },
     { time: "10:30–11:30", text: "回房间收拾行李；提前确认酒店送机。" },
     { time: "11:30–12:00", text: "办理退房，行李交给接送车。" },
-    { time: "12:00–13:00", text: "Fusion Resort → 金兰 CXR T1，约 5–6 km，通常 10–15 分钟；预留机场值机和安检。" },
+    { time: "12:00–12:20", text: "Fusion Resort → 金兰 CXR T1，约 5–6 km，通常 10–15 分钟；14:05 国内航班按提前 1.5 小时到机场。" },
     { time: "14:05–15:55", text: "VJ772：CXR T1 → HAN T1；抵达后先取行李。" },
-    { time: "15:55–18:00", text: "HAN T1 → T2：乘免费接驳，重新值机、出境和安检；衔接窗口约 2 小时 50 分。" },
+    { time: "15:55–16:45", text: "HAN T1 → T2：取行李后乘免费接驳，目标 16:45 前到 T2；18:45 国际航班按提前 2 小时办理值机、出境和安检。" },
+    { time: "16:45–18:45", text: "HAN T2 办理国际值机、出境和安检，留在候机区等待登机。" },
     { time: "18:45–22:50", text: "MU6014：HAN T2 → 上海浦东 PVG T1。" }
   ];
 }
@@ -1010,9 +1232,9 @@ function legacyPlanBlocks(plan) {
 }
 
 function nodeDates() {
-  let cursor = new Date(MIDDLE_START_DATE);
+  let cursor = middleStartDate();
   return route.map(node => {
-    if (node.role === "start") return { start: new Date(ARRIVAL_DATE), end: new Date(MIDDLE_START_DATE) };
+    if (node.role === "start") return { start: new Date(ARRIVAL_DATE), end: middleStartDate() };
     if (node.role === "end") return { start: addDays(HOTEL_CHECKIN_DATE, 2 - node.nights), end: new Date(HOTEL_CHECKOUT_DATE) };
     const start = new Date(cursor);
     cursor = addDays(cursor, node.nights);
@@ -1050,7 +1272,10 @@ function genericTransferWindow(data) {
 
 function transferWindow(data, previous, transferDate) {
   if (previous?.role === "start") {
-    return data.startWindow || "9 月 27 日中午、下午或晚上起飞均可；按直飞班次选择，退房后可寄存行李，国内航班提前约 2 小时到 HAN T1。";
+    const dateText = `${transferDate.getMonth() + 1} 月 ${transferDate.getDate()} 日`;
+    return (data.startWindow || `${dateText} 中午、下午或晚上起飞均可；按直飞班次选择，退房后可寄存行李，国内航班提前约 1.5 小时到 HAN T1。`)
+      .replace(/9 月 27 日/g, dateText)
+      .replace(/国内航班提前约 2 小时/g, "国内航班提前约 1.5 小时");
   }
   if (previous?.city === "nhatrang" && transferDate) {
     return `${dateLabel(transferDate)} 约 13:30 从芽庄市区出发，15:00 前后办理入住。`;
@@ -1078,11 +1303,11 @@ function durationGuide(city, nights) {
 function plansForNode(node, index, dates) {
   const city = CITIES[node.city];
   const plans = [];
-  const addPlan = (date, tag, blocks, restful = false, theme = "", food = "") => plans.push({ date: dateLabel(date), tag, blocks, restful, theme, food });
+  const addPlan = (date, tag, blocks, restful = false, theme = "", food = "", kind = "day") => plans.push({ date: dateLabel(date), tag, blocks, restful, theme, food, kind });
 
   if (node.role === "start") {
     addPlan(dates[index].start, "抵达日", [
-      { time: "11:45–13:00", text: "抵达上海浦东 PVG T1，托运行李、安检后吃午饭。" },
+      { time: "12:45–14:15", text: "提前 2 小时到上海浦东 PVG T1，办理国际值机、托运、出境和安检。" },
       { time: "14:45–17:45", text: "MU6013：上海浦东 PVG T1 → 河内 HAN T2。" },
       { time: "17:45–19:30", text: "HAN T2 → 还剑湖 / 老城区，约 27–30 km，Grab 通常 45–75 分钟；晚高峰按 90 分钟留量。" },
       { time: "19:30–20:30", text: "办理入住、老城附近晚饭。" },
@@ -1090,8 +1315,7 @@ function plansForNode(node, index, dates) {
     ], false, "轻量", "PVG T1 先解决正餐；抵达河内后在还剑湖 / 老城附近就近吃河粉或 Bánh mì，不为晚餐跨区。店铺以当日营业和卫生状况为准。");
   } else {
     const previous = route[index - 1];
-    const transfer = getLeg(previous.city, node.city);
-    addPlan(dates[index].start, "转场日", transferBlocksForNode(previous, node, dates[index].start, transfer), false, "移动", transferFoodForNode(previous, node));
+    addPlan(dates[index].start, "抵达日", arrivalBlocksForNode(previous, node, dates[index].start), false, "抵达");
   }
 
   for (let offset = 1; offset < node.nights; offset += 1) {
@@ -1101,13 +1325,21 @@ function plansForNode(node, index, dates) {
     addPlan(addDays(dates[index].start, offset), restful ? "休息日" : "完整日", legacyPlanBlocks(plan), restful, plan.theme || (restful ? "放松" : "探索"), plan.food);
   }
 
+  if (node.role !== "end") {
+    const next = route[index + 1];
+    const transfer = getLeg(node.city, next.city);
+    addPlan(dates[index].end, "转场日", transferBlocksForNode(node, next, dates[index].end, transfer), false, "移动", transferFoodForNode(node, next), "transfer");
+  }
+
   if (node.role === "end") {
     addPlan(
       HOTEL_CHECKOUT_DATE,
       "返程日",
       returnDayBlocks(),
       true,
-      "返程"
+      "返程",
+      "",
+      "return"
     );
   }
 
@@ -1130,7 +1362,7 @@ function renderHeroRail() {
   const dates = nodeDates();
   const endIndex = route.findIndex(node => node.role === "end");
   const endDates = dates[endIndex];
-  $("#middle-window").textContent = `${dateLabel(MIDDLE_START_DATE)}—${dateLabel(endDates.start)}`;
+  $("#middle-window").textContent = `${dateLabel(middleStartDate())}—${dateLabel(endDates.start)}`;
   $("#middle-window-label").textContent = `${middleNightsTarget()} 晚待规划`;
   $("#end-window").textContent = `${dateLabel(endDates.start)}—${dateLabel(endDates.end)}`;
   $("#end-window-label").textContent = `Fusion · ${endNights()} 晚 · 14:05 飞`;
@@ -1201,7 +1433,7 @@ function renderRoute() {
     const city = CITIES[node.city];
     const adjustable = canAdjustNights(node);
     const periodLabel = node.role === "start"
-      ? "09.25 17:45 抵达 · 09.27 中午后可飞"
+      ? `${dateLabel(ARRIVAL_DATE)} 17:45 抵达 · ${dateLabel(middleStartDate())} 中午后可飞`
       : node.role === "end"
         ? `${dateLabel(dates[index].start)} 15:00 入住 · 10.07 12:00 退房`
         : `${dateLabel(dates[index].start)} 入住 · ${dateLabel(dates[index].end)} 离开`;
@@ -1212,10 +1444,11 @@ function renderRoute() {
       ? `当前计划 ${dateLabel(dates[index].start)} 15:00 入住、10 月 7 日 12:00 退房；已确认订单仍是 10.05–10.07 2 晚，改为 ${node.nights} 晚需另行确认酒店。`
       : city.caution;
     const plans = plansForNode(node, index, dates);
+    const lastDayPlanIndex = plans.reduce((lastIndex, plan, planIndex) => plan.kind === "day" ? planIndex : lastIndex, -1);
     const dayPlanHtml = plans.map((plan, planIndex) => {
       return `<li class="${plan.restful ? "restful" : ""}">
         <div class="day-marker"><span>${plan.date}</span><strong>${plan.tag}${plan.theme ? ` · ${esc(plan.theme)}` : ""}</strong></div>
-        <div class="halfday-copy">${renderTimeBlocks(plan.blocks)}${renderDayFood(plan.food)}${planIndex === plans.length - 1 ? renderAlternatives(city, node) : ""}</div>
+        <div class="halfday-copy">${renderTimeBlocks(plan.blocks)}${renderDayFood(plan.food)}${planIndex === lastDayPlanIndex ? renderAlternatives(city, node) : ""}</div>
       </li>`;
     }).join("");
 
@@ -1235,7 +1468,7 @@ function renderRoute() {
           <div class="node-schedule-row">
             <span class="node-period">${periodLabel}</span>
             ${adjustable ? `<div class="night-stepper">
-              <button type="button" data-action="decrease" aria-label="减少${city.name}住宿晚数"${node.nights <= 1 ? " disabled" : ""}>−</button>
+              <button type="button" data-action="decrease" aria-label="减少${city.name}住宿晚数"${node.nights <= city.minNights ? " disabled" : ""}>−</button>
               <span class="night-count"><strong>${node.nights}</strong><span>晚</span></span>
               <button type="button" data-action="increase" aria-label="增加${city.name}住宿晚数"${node.nights >= city.maxNights ? " disabled" : ""}>＋</button>
             </div>` : ""}
@@ -1246,7 +1479,7 @@ function renderRoute() {
         </div>
         <div class="node-side">
           <span class="compact-night-count"><strong>${node.nights}</strong> 晚${node.locked ? " · 已确认" : ""}</span>
-          <span class="node-budget"><strong>${formatCny(budgetMin)}–${formatCny(budgetMax)}</strong>${node.role === "end" ? "度假期间额外消费 / 人" : "本地停留 / 人"}${node.role === "start" ? "<small>住宿日期已锁定</small>" : node.role === "end" ? "<small>默认 2 晚 · 可调 1–3 晚</small>" : ""}</span>
+          <span class="node-budget"><strong>${formatCny(budgetMin)}–${formatCny(budgetMax)}</strong>${node.role === "end" ? "度假期间额外消费 / 人" : "本地停留 / 人"}${node.role === "start" ? "<small>默认 2 晚 · 可调 2–3 晚</small>" : node.role === "end" ? "<small>默认 2 晚 · 可调 1–3 晚</small>" : ""}</span>
         </div>
       </div>
       <details class="city-detail"${expandedNodeIds.has(node.id) ? " open" : ""}>
@@ -1314,8 +1547,8 @@ function renderAnalysis() {
   $("#transport-hours").textContent = `约 ${Math.round(totals.hours[0] * 10) / 10}–${Math.round(totals.hours[1] * 10) / 10}h`;
 
   const advice = [];
-  if (dayBalance > 0) advice.push(`天数还差 ${dayBalance} 天，请增加岘港、大叻或芽庄的住宿晚数。`);
-  if (dayBalance < 0) advice.push(`天数超出 ${Math.abs(dayBalance)} 天，请减少岘港、大叻或芽庄的住宿晚数。`);
+  if (dayBalance > 0) advice.push(`天数还差 ${dayBalance} 天，请增加一段可调整住宿的晚数。`);
+  if (dayBalance < 0) advice.push(`天数超出 ${Math.abs(dayBalance)} 天，请减少一段可调整住宿的晚数。`);
   route.filter(node => node.role === "middle").forEach(node => {
     const city = CITIES[node.city];
     if (node.nights < city.minNights) advice.push(`${city.name}少于 ${city.minNights} 晚，天数需要调整。`);
@@ -1332,15 +1565,17 @@ function renderTransport() {
     const routeName = node.city === "nhatrang" && next.city === "camranh"
       ? "芽庄市区 → 金兰湾"
       : `${CITIES[node.city].name} → ${CITIES[next.city].name}`;
-    const transferDate = dateLabel(dates[index + 1].start);
-    const windowText = transferWindow(data, node, dates[index + 1].start);
-    const selected = selectedFlightFor(node.city, next.city, dates[index + 1].start);
+    const transferDateValue = dates[index].end;
+    const transferDate = dateLabel(transferDateValue);
+    const windowText = transferWindow(data, node, transferDateValue);
+    const selected = selectedFlightFor(node.city, next.city, transferDateValue);
+    const flightLeadText = /飞机/.test(data.mode) ? "国内航班按起飞前 1.5 小时到机场。" : "";
     const selectedWindowText = selected
-      ? `${transferDate} 默认 ${selected.depart}–${selected.arrive}；点击下方时间可切换。`
-      : windowText;
+      ? `${transferDate} 默认 ${selected.depart}–${selected.arrive}；建议 ${shiftClock(selected.depart, -90)} 前到 ${CITIES[node.city].airport} T1（国内航班提前 1.5 小时）。点击下方时间可切换。`
+      : `${windowText}${flightLeadText ? ` ${flightLeadText}` : ""}`;
     const selectedText = selected ? `\n已选越捷 ${selected.depart} → ${selected.arrive}｜${selected.price}｜${selected.aircraft}` : "";
     const copyText = `${transferDate}｜${routeName}\n${data.mode}｜约 ${time}｜₫${formatVnd(data.price[0])}–${formatVnd(data.price[1])}${selectedText}\n${selectedWindowText}\n${data.note}`;
-    const flightOptions = renderFlightOptions(node.city, next.city, dates[index + 1].start);
+    const flightOptions = renderFlightOptions(node.city, next.city, transferDateValue);
     return `<article class="transport-row" role="button" tabindex="0" title="点击复制这段交通" aria-label="复制 ${routeName} 交通信息" data-copy-text="${esc(copyText)}">
       <span class="transport-index">${String(index + 1).padStart(2, "0")}</span>
       <div class="transport-route"><strong>${routeName}</strong><span>${transferDate} · ${CITIES[node.city].airport} / ${CITIES[next.city].airport}</span></div>
@@ -1348,12 +1583,12 @@ function renderTransport() {
       <div class="transport-details"><p class="transport-note"><b>${selectedWindowText}</b>${data.note}</p>${flightOptions}</div>
     </article>`;
   }).join("");
-  const returnCopy = "10.07｜金兰湾 → 河内 → 上海\n14:05 VJ772：CXR T1 → 15:55 HAN T1\n18:45 MU6014：HAN T2 → 22:50 PVG T1\nHAN T1 取行李后乘免费接驳前往 T2。";
+  const returnCopy = "10.07｜金兰湾 → 河内 → 上海\n14:05 VJ772：CXR T1 → 15:55 HAN T1（国内航班，提前 1.5 小时到 CXR）\n18:45 MU6014：HAN T2 → 22:50 PVG T1（国际航班，提前 2 小时到 T2）\nHAN T1 取行李后乘免费接驳前往 T2，目标 16:45 前到达。";
   const returnRow = `<article class="transport-row fixed-transfer" role="button" tabindex="0" title="点击复制返程衔接" aria-label="复制 10 月 7 日返程衔接" data-copy-text="${esc(returnCopy)}">
     <span class="transport-index">返</span>
     <div class="transport-route"><strong>金兰湾 → 河内 → 上海</strong><span>10.07 · CXR T1 / HAN T1 → T2 / PVG T1</span></div>
     <div class="transport-mode"><strong>VJ772 + MU6014</strong><span>14:05 → 15:55 · 18:45 → 22:50</span></div>
-    <p class="transport-note"><b>HAN 衔接 2 小时 50 分。</b>T1 取行李后乘免费接驳到 T2，再办理国际值机、出境和安检。</p>
+    <p class="transport-note"><b>国际航班目标 16:45 前到 HAN T2。</b>CXR 国内段按提前 1.5 小时到机场；抵达 HAN T1 后取行李、乘免费接驳到 T2，再办理国际值机、出境和安检。</p>
   </article>`;
   $("#transport-list").innerHTML = routeRows + returnRow;
 }
@@ -1573,7 +1808,7 @@ document.addEventListener("keydown", event => {
 function renderPhrases() {
   $("#phrase-tabs").innerHTML = Object.keys(PHRASES).map(category => `<button type="button" role="tab" data-phrase-category="${category}" class="${category === activePhraseCategory ? "active" : ""}" aria-selected="${category === activePhraseCategory}">${category}</button>`).join("");
   $("#phrase-list").classList.toggle("is-words", activePhraseCategory === "高频词");
-  $("#phrase-list").innerHTML = PHRASES[activePhraseCategory].map(([vietnamese, chinese, pronunciation]) => `<button class="phrase-row" type="button" title="复制越南语" data-copy-text="${esc(vietnamese)}"><span class="phrase-main"><b>${esc(chinese)}</b><i>·</i><strong lang="vi">${esc(vietnamese)}</strong></span><small><span>罗马音 ${esc(vietnameseRomanization(vietnamese))}</span><em>近音 ${esc(pronunciation)}</em></small></button>`).join("");
+  $("#phrase-list").innerHTML = PHRASES[activePhraseCategory].map(([vietnamese, chinese, pronunciation]) => `<button class="phrase-row" type="button" title="复制越南语" data-copy-text="${esc(vietnamese)}"><span class="phrase-main"><b>${esc(chinese)}</b><i>·</i><strong lang="vi">${esc(vietnamese)}</strong></span><small><span>罗马音 ${esc(vietnameseRomanization(vietnamese))}</span><em>${esc(pronunciation)}</em></small></button>`).join("");
 }
 
 $("#phrase-tabs").addEventListener("click", event => {
