@@ -2406,7 +2406,7 @@ body {
   transition: color .18s ease, background .18s ease, border-color .18s ease, transform .24s var(--spring);
 }
 
-.node-plays button::after { margin-left: 7px; color: var(--accent); content: "⧉"; font-size: 8px; }
+.node-plays button::after { content: none; }
 .node-plays span::before { content: none; }
 
 .node-caution {
@@ -2523,7 +2523,6 @@ body {
   animation: copyPop .42s var(--spring);
 }
 
-.node-plays button.is-copied::after { color: var(--void); content: "✓"; }
 
 .preset-bar {
   margin-top: 24px;
@@ -3077,7 +3076,7 @@ body {
 }
 
 .node-plays button { min-height: 31px; padding: 5px 10px; font-size: 10px; text-align: left; }
-.node-plays button::after { margin-left: 7px; color: var(--accent); content: "⧉"; font-size: 8px; }
+.node-plays button::after { content: none; }
 
 .inline-place {
   display: inline;
@@ -3087,7 +3086,7 @@ body {
   vertical-align: baseline;
 }
 
-.inline-place::after { margin-left: 4px; color: var(--accent); content: "⧉"; font-size: .72em; }
+.inline-place::after { content: none; }
 .node-caution { max-width: 760px; padding: 7px 10px; border: 0; border-radius: 10px; background: rgba(216, 189, 123, .12); color: #7a6844; cursor: default; font-size: 11px; }
 
 .night-stepper {
@@ -3212,8 +3211,6 @@ body {
 .phrase-row > small em { display: inline; color: inherit; font-size: inherit; font-style: normal; }
 
 .is-copied { background: var(--accent) !important; color: #fff !important; animation: copyPop .32s var(--ease); }
-.inline-place.is-copied::after,
-.node-plays button.is-copied::after { color: #fff; content: "✓"; }
 
 @media (hover: hover) {
   .tool-actions button:hover { background: rgba(255, 250, 240, .1); color: #fff; }
@@ -3720,6 +3717,13 @@ body {
   content: "+";
   font-size: 20px;
 }
+
+#night-balance:empty,
+#advice-list:empty,
+#trip-allocation > span:empty { display: none; }
+
+#night-balance.is-warning,
+#advice-list li { color: #b6543e; }
 
 .city-detail[open] summary i { transform: none; }
 .city-detail[open] summary i::before { content: "×"; }

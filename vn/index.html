@@ -8,7 +8,7 @@
   <meta name="description" content="可编辑的 2026 越南路线规划器。">
   <title>越南路线规划器 · 2026</title>
   <link rel="preload" as="image" href="vietnam-road-illustration.webp" fetchpriority="high">
-  <link rel="stylesheet" href="planner.css?v=20260904-33">
+  <link rel="stylesheet" href="planner.css?v=20260904-34">
 </head>
 <body class="night-atlas">
   <header class="appbar">
@@ -32,15 +32,15 @@
               <div class="journey-heading">
                 <span class="section-kicker">25 SEP — 07 OCT · 2026</span>
                 <h1 class="hero-wordmark"><span>VIỆT</span><span>NAM</span></h1>
-                <p class="sr-only" id="route-title">河内 → 岘港 → 大叻 → 芽庄 → 芽庄 · 金兰湾</p>
+                <p class="sr-only" id="route-title">河内 → 岘港 → 大叻 → 芽庄 → 河内（返程经芽庄金兰湾）</p>
               </div>
               <div class="trip-window" aria-label="已确认的行程边界">
                 <span><b>09.25—27</b><strong>河内 2 晚 · 17:45 抵达</strong></span>
                 <i aria-hidden="true"></i>
-                <span class="is-open"><b>09.27—10.05</b><strong>8 晚待规划</strong></span>
+                <span class="is-open"><b id="middle-window">09.27—10.05</b><strong id="middle-window-label">8 晚待规划</strong></span>
                 <i aria-hidden="true"></i>
-                <span><b>10.05—07</b><strong>Fusion · 7 日 14:05 飞</strong></span>
-                <output class="allocation-pill is-balanced" id="trip-allocation" aria-live="polite"><strong>13 / 13 天</strong><span>已排满</span></output>
+                <span><b id="end-window">10.05—07</b><strong id="end-window-label">Fusion · 2 晚 · 14:05 飞</strong></span>
+                <output class="allocation-pill is-balanced" id="trip-allocation" aria-live="polite"><strong>13 / 13 天</strong><span></span></output>
               </div>
             </div>
             <div class="route-rail-wrap">
@@ -53,16 +53,6 @@
         <div class="route-workspace">
           <ol class="route-editor" id="route-editor" aria-label="行程节点" aria-live="polite"></ol>
 
-          <div class="preset-bar">
-            <div class="preset-label"><span>快速方案</span><small id="preset-caption">选择后仍可继续修改</small></div>
-            <div class="preset-options" id="preset-options" role="tablist" aria-label="路线预设"></div>
-          </div>
-          <p class="preset-note" id="preset-note"></p>
-
-          <button class="add-node" id="add-node" type="button">
-            <span aria-hidden="true">＋</span>
-            添加中间节点
-          </button>
         </div>
 
         <aside class="analysis-panel" aria-live="polite">
@@ -72,7 +62,7 @@
               <h2>路线检查</h2>
               <div class="night-meter">
                 <div class="meter-track"><span id="night-meter-fill"></span></div>
-                <div class="meter-copy"><span id="night-meter-label">中段 8 / 8 晚</span><strong id="night-balance">日期吻合</strong></div>
+                <div class="meter-copy"><span id="night-meter-label">中段 8 / 8 晚</span><strong id="night-balance"></strong></div>
               </div>
             </div>
             <div class="analysis-content">
@@ -107,15 +97,6 @@
   <footer class="footer shell">
     <p>资料：<a href="https://vietnam.travel/place-to-go" target="_blank" rel="noopener">越南国家旅游局</a> · <a href="https://www.vietjetair.com/en/pages/flight-procedures-1607050130104" target="_blank" rel="noopener">Vietjet 值机规则</a> · <a href="https://noibaiairport.vn/en/free-shuttle-bus-between-terminals-at-noi-bai-international-airport-nid178.html" target="_blank" rel="noopener">内排机场接驳</a></p>
   </footer>
-
-  <dialog class="city-dialog" id="city-dialog" aria-labelledby="city-dialog-title">
-    <div class="dialog-head">
-      <div><span class="section-kicker">节点</span><h2 id="city-dialog-title">添加机场城市</h2></div>
-      <button class="close-button" id="close-city-dialog" type="button" aria-label="关闭">×</button>
-    </div>
-    <p class="dialog-intro">仅添加到 9 月 27 日至 10 月 5 日的 8 晚中段。</p>
-    <div class="city-options" id="city-options"></div>
-  </dialog>
 
   <div class="drawer-backdrop" id="drawer-backdrop"></div>
   <aside class="tool-drawer" id="tool-drawer" aria-hidden="true">
@@ -188,6 +169,6 @@
 
   <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">已复制</div>
 
-  <script src="planner.js?v=20260904-33"></script>
+  <script src="planner.js?v=20260904-34"></script>
 </body>
 </html>
