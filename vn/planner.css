@@ -3525,7 +3525,7 @@ body {
   .node-side,
   .route-node.sortable .node-side {
     min-width: 0;
-    padding-top: 8px;
+    padding: 8px 0 0;
     grid-column: 4;
     grid-row: 1;
     grid-template-columns: 1fr;
@@ -3665,5 +3665,77 @@ body {
     width: calc(100vw + 20px);
     max-width: none;
     padding-right: 40px;
+  }
+}
+
+/* Clarity pass — keep copy affordances local and text inside its layout tracks. */
+.planner-hero { overflow: clip; }
+
+.node-main,
+.node-city,
+.node-info,
+.node-side,
+.city-detail,
+.city-detail-body,
+.detail-copy,
+.day-plan,
+.day-plan li,
+.day-marker,
+.halfday-copy { min-width: 0; }
+
+.node-schedule-row {
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.node-period {
+  min-width: 0;
+  flex: 1 1 180px;
+  overflow-wrap: anywhere;
+}
+
+.night-stepper { flex: 0 1 auto; }
+
+.inline-place {
+  cursor: copy;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.city-detail summary > span { min-width: 0; }
+
+.city-detail summary i {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  place-items: center;
+  font-size: 0;
+  line-height: 1;
+  transform: none;
+}
+
+.city-detail summary i::before {
+  content: "+";
+  font-size: 20px;
+}
+
+.city-detail[open] summary i { transform: none; }
+.city-detail[open] summary i::before { content: "×"; }
+
+@media (max-width: 680px) {
+  .node-plays {
+    display: flex;
+    margin-inline: 0;
+    padding: 0;
+    overflow: visible;
+    flex-wrap: wrap;
+  }
+
+  .node-plays button {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    scroll-snap-align: none;
   }
 }
