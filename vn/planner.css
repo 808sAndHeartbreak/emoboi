@@ -4837,4 +4837,12 @@ body.map-tool-open .fallback-map-overlay { min-height: 350px; }
   .day-food { border-radius: 10px; }
   .planning-timeline { border-bottom-color: rgba(54, 113, 96, .13); }
   .timeline-item.is-active button { box-shadow: inset 2px 0 0 var(--signal); }
+
+  /* Keep the five tools on one compact rail; a wrapped flight button obscures the hero. */
+  .tool-actions { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .tool-actions button { min-width: 0; padding-inline: 1px; font-size: 8px; }
+
+  /* The date rail remains touch-scrollable without exposing a second heavy scrollbar. */
+  .trip-timeline { scrollbar-width: none; }
+  .trip-timeline::-webkit-scrollbar { display: none; }
 }

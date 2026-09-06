@@ -30,7 +30,13 @@ const CITIES = {
     move: "老城以步行为主；升龙皇城、文庙、西湖之间用 Grab，单段约 10–25 分钟。机场快线 86 路可作为轻装备备选，带行李或晚高峰优先 Grab。离开日退房后把行李寄存在前台。",
     airportInfo: "内排 HAN → 还剑湖 / 老城区：约 27–30 km，Grab 通常 45–75 分钟；晚高峰按 90 分钟留量。86 路机场快线耗时受站点与路况影响，适合不赶时间时使用。",
     days: [
-      { theme: "老城与咖啡", blocks: [
+      { theme: "老城与咖啡", mapStops: [
+        { id: "hanoi-hoan-kiem", time: "13:15–15:00" },
+        { id: "hanoi-36-streets", time: "13:15–15:00" },
+        { id: "hanoi-cathedral", time: "13:15–15:00" },
+        { id: "hanoi-coffee", time: "15:00–17:00" },
+        { id: "hanoi-weekend-walk", time: "20:30–22:30" }
+      ], blocks: [
         { time: "12:00–13:00", text: "起床、午饭；住在还剑湖或老城边缘，先把当天路线控制在步行范围。" },
         { time: "13:15–15:00", text: "还剑湖 → 36 行街 → 河内大教堂，拍照和慢走；不为上午场提前起床。" },
         { time: "15:00–17:00", text: "咖啡工作坊 Coffee Workshop（需预约）；没有预约就改为老城咖啡店与街区建筑。" },
@@ -69,7 +75,13 @@ const CITIES = {
     move: "DAD → 美溪约 5–7 km / 15–25 分钟；DAD → 海州（大教堂、韩市场、占婆博物馆）约 3–5 km / 10–15 分钟；会安约 30 km / 45–60 分钟；巴拿山约 35–40 km，正常约 45–75 分钟，接送按 60–90 分钟留量。",
     airportInfo: "岘港 DAD → 美溪海滩住宿区：约 5–7 km，Grab 通常 15–25 分钟；→ 海州区（岘港大教堂 / 韩市场）约 3–5 km，约 10–15 分钟。",
     days: [
-      { theme: "海州与美溪", blocks: [
+      { theme: "海州与美溪", mapStops: [
+        { id: "danang-my-khe", time: "12:00–13:00" },
+        { id: "danang-cathedral", time: "13:30–15:00" },
+        { id: "danang-market", time: "13:30–15:00" },
+        { id: "danang-cham", time: "15:15–17:00" },
+        { id: "danang-han-river", time: "20:00–21:30" }
+      ], blocks: [
         { time: "12:00–13:00", text: "起床、午饭；美溪海滩或海州区就近解决。" },
         { time: "13:30–15:00", text: "岘港大教堂与韩市场；海州区点位集中，步行串联比反复打车更省力。" },
         { time: "15:15–17:00", text: "占婆雕刻博物馆，常见开放窗口约到 17:30，安排在下午前段；以当天公告为准。" },
@@ -77,7 +89,9 @@ const CITIES = {
         { time: "18:30–19:30", text: "海鲜晚饭，一小时。" },
         { time: "20:00–21:30", text: "沿韩江或龙桥散步；喷火 / 喷水通常看周末、节假日与当天公告，错过就直接回酒店。" }
       ], food: "午饭优先试 Bún chả cá（鱼饼米粉）；下午可在 WONDERLUST 或 Cộng Cà Phê 休息，晚饭在美溪海边选海鲜或 Bánh xèo。" },
-      { theme: "巴拿山（必要早起）", blocks: [
+      { theme: "巴拿山（必要早起）", mapStops: [
+        { id: "danang-ba-na", time: "09:30–16:30" }
+      ], blocks: [
         { time: "07:00–08:00", text: "起床、早餐；这天需要早起，因为巴拿山园区与缆车按白天窗口运营。" },
         { time: "08:00–09:30", text: "从美溪 / 海州出发去巴拿山，车程通常约 45–75 分钟；接送与高峰按 60–90 分钟留量，尽量在上午到达。" },
         { time: "09:30–16:30", text: "连续游玩巴拿山 Ba Na Hills：缆车、金桥、法式村与室内项目；具体开放时段、缆车末班和天气以 Sun World 官方当天公告为准，至少预留 6 小时。" },
@@ -85,7 +99,9 @@ const CITIES = {
         { time: "18:30–19:30", text: "回到住宿区后晚饭。" },
         { time: "20:30 后", text: "直接回酒店休息；不再安排会安或夜间跨城。" }
       ], food: "巴拿山山上餐饮选择有限，早餐先吃饱并带水；回到美溪后再安排一小时晚饭，不为山上餐厅绕路。" },
-      { theme: "会安古城", blocks: [
+      { theme: "会安古城", mapStops: [
+        { id: "danang-hoi-an", time: "14:00–21:00" }
+      ], blocks: [
         { time: "12:00–13:00", text: "起床、午饭；从岘港出发前往会安，车程约 45–60 分钟。" },
         { time: "14:00–17:30", text: "会安古城：来远桥、会馆与古城遗迹按现场开放时间取舍；部分遗迹需古城票，核心区域以步行为主，车辆停外围。" },
         { time: "18:00–19:00", text: "会安河边晚饭，一小时。" },
@@ -110,13 +126,13 @@ const CITIES = {
   },
   nhatrang: {
     name: "芽庄", local: "Nha Trang", airport: "CXR", region: "中南部",
-    minNights: 2, recommendedNights: 4, maxNights: 6, defaultNights: 4, budget: [1000000, 2100000], order: 12.2388,
+    minNights: 2, recommendedNights: 4, maxNights: 4, defaultNights: 4, budget: [1000000, 2100000], order: 12.2388,
     coordinates: [12.2388, 109.1967],
     themes: ["占婆文化", "泥浆浴", "海岛", "度假"],
     durationGuide: {
-      2: "1 个完整日：婆那加塔与泥浆浴最稳妥，出海和珍珠岛先不塞。",
-      3: "2 个完整日：文化泥浴一天，跳岛或珍珠岛二选一。",
-      4: "3 个完整日：增加海洋博物馆、海边与半天休息，给风浪留替代方案。",
+      2: "2 晚全部给 Fusion Resort：从大叻直送、入住与度假，不安排芽庄市区；想看市区至少选 3 晚。",
+      3: "1 个芽庄市区完整日 + 2 个 Fusion 晚：优先婆那加塔、钟屿石岬与泥浴北线。",
+      4: "1 个芽庄市区完整日 + 2 个 Fusion 晚，再多一个抵达缓冲夜；海岛与珍珠岛留作替换，不硬塞。",
     },
     summary: "海滩、婆那加塔、泥浆浴与海岛活动；10.05–10.07 已确认入住 Fusion Resort Cam Ranh，之后留在度假村。",
     plays: ["婆那加塔 Po Nagar", "龙山寺 Long Sơn Pagoda", "芽庄大教堂 Nha Trang Cathedral", "I-Resort 泥浆浴", "跳岛团 / 黑珍珠号候选", "珍珠岛 VinWonders", "国家海洋博物馆", "陈富海滩 Trần Phú"],
@@ -125,7 +141,11 @@ const CITIES = {
     move: "市区用 Grab；婆那加塔、钟屿石岬与 I-Resort 在北侧可连排，龙山寺与芽庄大教堂作为市区文化备选。跳岛团或珍珠岛都要单独占一天。",
     airportInfo: "金兰 CXR → 芽庄陈富海滩住宿区：约 35–40 km，Grab / 接送通常 45–60 分钟；机场不在芽庄市区，抵达日只排入住、看海和晚饭。→ Fusion Resort Cam Ranh 约 5–6 km，约 10–15 分钟。",
     days: [
-      { theme: "占婆与泥浴", blocks: [
+      { theme: "占婆与泥浴", mapStops: [
+        { id: "nhatrang-po-nagar", time: "13:30–15:00" },
+        { id: "nhatrang-hon-chong", time: "15:15–16:00" },
+        { id: "nhatrang-i-resort", time: "16:15–17:45" }
+      ], blocks: [
         { time: "12:00–13:00", text: "起床、午饭；从陈富海滩住宿区出发。" },
         { time: "13:30–15:00", text: "婆那加塔 Po Nagar；下午仍在常见开放时段内，预留约 1.5 小时。" },
         { time: "15:15–16:00", text: "钟屿石岬 Hon Chong，顺路看海。" },
@@ -133,14 +153,19 @@ const CITIES = {
         { time: "18:30–19:30", text: "回陈富海滩附近吃海鲜。" },
         { time: "20:00 后", text: "沿海散步或回酒店；不再安排夜间远距离移动。" }
       ], food: "午饭可试 Bún Chả Cá（鱼饼米粉）；泥浴后晚饭安排 Nem Nướng（烤肉卷）、Bánh Căn（小煎饼）或海鲜，按当日胃口三选一。" },
-      { theme: "海岛全天（必要早起）", blocks: [
+      { theme: "海岛全天（必要早起）", mapStops: [
+        { id: "nhatrang-port", time: "08:00–16:00" }
+      ], blocks: [
         { time: "07:00–08:00", text: "起床、早餐；跳岛团常见 07:30–08:30 集合，这天需要早起。" },
         { time: "08:00–16:00", text: "跳岛团 / 出海；风浪不好就改为珍珠岛 VinWonders，按船班或缆车运营时间完整留一天。" },
         { time: "16:30–18:00", text: "返程、洗漱和休息。" },
         { time: "18:30–19:30", text: "晚饭，一小时。" },
         { time: "20:30 后", text: "回酒店；出海日不再叠加夜市以外的景点。" }
       ], food: "出海团餐和饮水以实际预订为准；回城后若仍有体力，再吃鱼饼米粉或海鲜，不把晚饭排到跨区。" },
-      { theme: "海洋与慢游", blocks: [
+      { theme: "海洋与慢游", mapStops: [
+        { id: "nhatrang-long-son", time: "13:30–15:30" },
+        { id: "nhatrang-tran-phu", time: "16:00–18:00" }
+      ], blocks: [
         { time: "12:00–13:00", text: "起床、午饭。" },
         { time: "13:30–15:30", text: "龙山寺与芽庄大教堂二选一，预留约 2 小时；若更想看海，再改越南国家海洋博物馆。" },
         { time: "16:00–18:00", text: "陈富海滩、咖啡或酒店休息；若前一晚确认风浪不适合出海，这天作为跳岛替代日。" },
@@ -148,7 +173,10 @@ const CITIES = {
         { time: "20:00–21:30", text: "芽庄夜市与海边散步，之后回酒店。" }
       ], food: "下午用海景咖啡缓冲，晚饭可在陈富海滩附近选海鲜、Bánh Căn 或 Nem Nướng；夜市只补小吃，不重复吃撑。" }
     ],
-    resortTransition: { theme: "入住金兰湾", blocks: [
+    resortTransition: { theme: "入住金兰湾", mapStops: [
+      { id: "nhatrang-tran-phu", time: "11:30–12:30" },
+      { id: "nhatrang-fusion", time: "13:30–14:30" }
+    ], blocks: [
       { time: "10:30–11:30", text: "起床、早餐、收拾行李；不再新增芽庄市区景点。" },
       { time: "11:30–12:30", text: "退房后在陈富海滩附近吃午饭，补好饮水和零食。" },
       { time: "13:30–14:30", text: "芽庄市区 → Fusion Resort Cam Ranh，约 35–45 km，打车 / 酒店接送通常 45–70 分钟。" },
@@ -156,7 +184,9 @@ const CITIES = {
       { time: "19:00–20:00", text: "度假村晚餐，一小时。" },
       { time: "20:30 后", text: "留在金兰湾休息。" }
     ], food: "午饭在芽庄市区解决；入住 Fusion 后晚餐留在度假村，不为一顿饭往返市区。" },
-    resortDay: { theme: "金兰湾度假", blocks: [
+    resortDay: { theme: "金兰湾度假", mapStops: [
+      { id: "nhatrang-fusion", time: "13:30–20:30" }
+    ], blocks: [
       { time: "12:00–13:00", text: "睡到自然醒，在 Fusion Resort 吃午饭。" },
       { time: "13:30–17:00", text: "海滩、泳池与度假村活动；SPA 按预约时段插入，不再往返芽庄市区。" },
       { time: "17:00–18:00", text: "回房间休息，看金兰湾日落。" },
@@ -227,7 +257,11 @@ const CITIES = {
     move: "景点分散：旧火车站、灵福寺是东线；达坦拉、竹林禅院、泉林湖是南线。城区步行，郊区建议包车或摩托。",
     airportInfo: "联姜 DLI → 春香湖 / 大叻市场：约 30–35 km，接送通常 40–60 分钟；→ 疯狂屋、旧火车站等市区点位需先到住宿区，再步行或短途打车；→ 达坦拉 / 泉林湖南线还要从市区再走约 15–30 分钟。",
     days: [
-      { theme: "建筑与咖啡", blocks: [
+      { theme: "建筑与咖啡", mapStops: [
+        { id: "dalat-railway", time: "13:30–15:00" },
+        { id: "dalat-crazy-house", time: "15:30–17:00" },
+        { id: "dalat-market", time: "17:30–18:30" }
+      ], blocks: [
         { time: "12:00–13:00", text: "起床、午饭；春香湖或大叻市场周边解决。" },
         { time: "13:30–15:00", text: "大叻旧火车站，预留约 1.5 小时；按当天班次和成行条件决定是否坐小火车去灵福寺，不把灵福寺当成必达。" },
         { time: "15:30–17:00", text: "疯狂屋 Crazy House，或改回城咖啡；灵福寺与疯狂屋不强行同排。" },
@@ -235,7 +269,11 @@ const CITIES = {
         { time: "19:00–20:00", text: "晚饭，一小时。" },
         { time: "20:30 后", text: "选一家咖啡店继续坐，或直接回酒店。" }
       ], food: "大叻市场可试 Bánh tráng nướng（烤米纸）；下午喝 La Viet 或 CHẠM 的咖啡/牛油果甜品，晚上用豆浆和热食收尾。" },
-      { theme: "瀑布与山湖", blocks: [
+      { theme: "瀑布与山湖", mapStops: [
+        { id: "dalat-datanla", time: "11:30–14:00" },
+        { id: "dalat-truc-lam", time: "14:30–16:30" },
+        { id: "dalat-tuyen-lam", time: "14:30–16:30" }
+      ], blocks: [
         { time: "10:00–11:00", text: "起床、早餐；这条南线不必凌晨出发，但要在午后降雨前进入户外。" },
         { time: "11:00–11:30", text: "从市区前往达坦拉瀑布，车程约 15–25 分钟。" },
         { time: "11:30–14:00", text: "达坦拉瀑布 Datanla：过山车、步道与拍照预留约 2–2.5 小时；雨大或路滑就取消户外项目。" },
@@ -243,7 +281,10 @@ const CITIES = {
         { time: "17:00–18:00", text: "回城休息。" },
         { time: "19:00–20:00", text: "晚饭；20:30 后直接回酒店。" }
       ], food: "南线回城后吃一小时热食；天气凉时可选 Lẩu bò Quán Gỗ 或蔬菜火锅，雨天不为餐厅继续绕路。" },
-      { theme: "产地咖啡（需预约才早起）", blocks: [
+      { theme: "产地咖啡（需预约才早起）", mapStops: [
+        { id: "dalat-cau-dat", time: "09:00–12:00" },
+        { id: "dalat-kho-coffee", time: "13:30–17:00" }
+      ], blocks: [
         { time: "09:00–12:00", text: "有预约才早起前往 Cầu Đất 茶咖啡产区，往返约占半天，出发前确认参观与杯测时段；没有预约则继续休息，12:00 起床，不去远郊。" },
         { time: "12:00–13:00", text: "有预约：回城吃午饭；无预约：起床后在市区吃午饭。" },
         { time: "13:30–17:00", text: "无预约方案改为 K’Ho Coffee、大叻市场或酒店休息；有预约方案也不再叠加南线景点。" },
@@ -1160,6 +1201,20 @@ function getLeg(a, b) {
   };
 }
 
+function getRouteLeg(node, next) {
+  if (node.city === "dalat" && next.role === "end" && next.city === "nhatrang" && next.nights === 2) {
+    return {
+      mode: "Klook 专车直送",
+      duration: [3.5, 4.5],
+      price: [350000, 1500000],
+      note: "两晚保底方案从大叻直接送到 Fusion Resort Cam Ranh；若坐 FUTA 到芽庄市区，还要再接车。",
+      warning: "山路弯道多；请酒店前台协助下单专车，并准备晕车药。",
+      window: "10 月 5 日 09:30–10:30 退房出发，约 14:00–15:00 抵达 Fusion。"
+    };
+  }
+  return getLeg(node.city, next.city);
+}
+
 function legKey(a, b) {
   return [a, b].sort().join("|");
 }
@@ -1214,7 +1269,7 @@ function flightTransferBlocks(origin, destination, date) {
 
   return [
     { time: clockRange(early ? shiftClock(flight.depart, -195) : shiftClock(leaveCity, -80), leaveCity), text: `${early ? "必要早起、简单吃点东西" : "起床、早午餐"}；退房并把行李交给前台寄存。${early ? "这班需要早起。" : "不安排远郊。"}` },
-    { time: clockRange(leaveCity, airportArrival), text: `${CITIES[origin].name} → ${CITIES[origin].airport} T1，${airportNote}；${airportArrival} 前抵达（国内航班提前 1.5 小时），到机场后完成托运、安检。` },
+    { time: clockRange(leaveCity, airportArrival), text: `从${origin === "hanoi" ? "还剑湖 / 老城" : "美溪 / 海州"}到 ${CITIES[origin].airport} T1，${airportNote}；${airportArrival} 前抵达（国内航班提前 1.5 小时），到机场后完成托运、安检。` },
     { time: clockRange(flight.depart, flight.arrive), text: `越捷航空 ${flight.depart} → ${flight.arrive}，${CITIES[origin].airport} T1 → ${CITIES[destination].airport} T1，${flight.duration}；前段到此结束。` }
   ];
 }
@@ -1222,6 +1277,12 @@ function flightTransferBlocks(origin, destination, date) {
 function transferBlocksForNode(previous, node, date, transfer) {
   if (FLIGHTS[legKey(previous.city, node.city)]) {
     return flightTransferBlocks(previous.city, node.city, date);
+  }
+  if (previous.city === "dalat" && node.city === "nhatrang" && node.nights === 2) {
+    return [
+      { time: "09:30–10:30", text: "起床、早餐、退房；请大叻酒店前台协助安排 Klook 专车直送 Fusion Resort。若选 FUTA，大巴到芽庄市区后还要再接车，不适合只有两晚的保底方案。" },
+      { time: "10:30–14:30", text: "大叻 → Fusion Resort Cam Ranh，山路约 3.5–4.5 小时；专车直接送到度假村，途中准备晕车药和饮水。" }
+    ];
   }
   if (previous.city === "dalat" && node.city === "nhatrang") {
     return [
@@ -1257,6 +1318,14 @@ function transferBlocksForNode(previous, node, date, transfer) {
 }
 
 function arrivalBlocksForNode(previous, node, date) {
+  if (node.role === "end" && node.city === "nhatrang" && node.nights === 2) {
+    return [
+      { time: "14:00–15:00", text: "从大叻山路抵达 Fusion Resort Cam Ranh；办理入住，之后只留在金兰湾度假村内。" },
+      { time: "15:00–17:00", text: "泳池、海滩和 SPA 按预约安排；不再往返芽庄市区。" },
+      { time: "19:00–20:00", text: "度假村晚餐，一小时。" },
+      { time: "20:30 后", text: "留在金兰湾休息，为 10 月 7 日返程留余量。" }
+    ];
+  }
   if (node.city === "camranh") {
     return [
       { time: "15:00–15:30", text: "抵达 Fusion Resort Cam Ranh，办理入住；后续留在金兰湾度假村内。" },
@@ -1434,7 +1503,7 @@ function durationGuide(city, nights) {
 function plansForNode(node, index, dates) {
   const city = CITIES[node.city];
   const plans = [];
-  const addPlan = (date, tag, blocks, restful = false, theme = "", food = "", kind = "day") => plans.push({ date: dateLabel(date), tag, blocks, restful, theme, food, kind });
+  const addPlan = (date, tag, blocks, restful = false, theme = "", food = "", kind = "day", mapStops = null) => plans.push({ date: dateLabel(date), tag, blocks, restful, theme, food, kind, mapStops });
 
   if (node.role === "start") {
     addPlan(dates[index].start, "抵达日", [
@@ -1456,12 +1525,12 @@ function plansForNode(node, index, dates) {
     const isResortStay = node.role === "end" && node.city === "nhatrang" && currentDate > HOTEL_CHECKIN_DATE && currentDate < HOTEL_CHECKOUT_DATE;
     const plan = isResortCheckIn ? city.resortTransition : isResortStay ? city.resortDay : cityPlans[offset - 1] || city.restDay;
     const restful = !cityPlans[offset - 1] && !isResortCheckIn;
-    addPlan(addDays(dates[index].start, offset), restful ? "休息日" : "完整日", legacyPlanBlocks(plan), restful, plan.theme || (restful ? "放松" : "探索"), plan.food);
+    addPlan(addDays(dates[index].start, offset), restful ? "休息日" : "完整日", legacyPlanBlocks(plan), restful, plan.theme || (restful ? "放松" : "探索"), plan.food, "day", plan.mapStops);
   }
 
   if (node.role !== "end") {
     const next = route[index + 1];
-    const transfer = getLeg(node.city, next.city);
+    const transfer = getRouteLeg(node, next);
     addPlan(dates[index].end, "转场日", transferBlocksForNode(node, next, dates[index].end, transfer), false, "移动", transferFoodForNode(node, next), "transfer");
   }
 
@@ -1539,18 +1608,34 @@ function mapNodes() {
 }
 
 function mapPlaceMatches(places, plan) {
+  if (Array.isArray(plan.mapStops)) {
+    const seen = new Set();
+    return plan.mapStops
+      .map(stop => ({
+        place: places.find(place => place.id === stop.id),
+        time: stop.time || ""
+      }))
+      .filter(stop => stop.place && !seen.has(stop.place.id) && seen.add(stop.place.id));
+  }
+
   const matches = [];
+  const seen = new Set();
+  const allowContext = ["抵达日", "转场日", "返程日"].includes(plan.tag);
   (plan.blocks || []).forEach(block => {
     const text = String(block.text || "");
     const found = places
       .map(place => {
+        if (!allowContext && place.kind === "context") return null;
         const positions = place.terms.map(term => text.indexOf(term)).filter(position => position >= 0);
         return positions.length ? { place, position: Math.min(...positions) } : null;
       })
       .filter(Boolean)
       .sort((first, second) => first.position - second.position);
     found.forEach(({ place }) => {
-      if (matches.at(-1)?.place.id !== place.id) matches.push({ place, time: block.time });
+      if (!seen.has(place.id)) {
+        seen.add(place.id);
+        matches.push({ place, time: block.time });
+      }
     });
   });
   return matches;
@@ -1867,7 +1952,7 @@ function renderRoute() {
         </div>
         <div class="node-side">
           <span class="compact-night-count"><strong>${node.nights}</strong> 晚${node.locked ? " · 已确认" : ""}</span>
-          <span class="node-budget"><strong>${formatCny(budgetMin)}–${formatCny(budgetMax)}</strong>${node.role === "end" ? "芽庄停留 / 人" : "本地停留 / 人"}${node.role === "start" ? "<small>默认 2 晚 · 可调 2–3 晚</small>" : node.role === "end" ? "<small>默认 4 晚 · 可调 2–6 晚</small>" : ""}</span>
+          <span class="node-budget"><strong>${formatCny(budgetMin)}–${formatCny(budgetMax)}</strong>${node.role === "end" ? "芽庄停留 / 人" : "本地停留 / 人"}${node.role === "start" ? "<small>默认 2 晚 · 可调 2–3 晚</small>" : node.role === "end" ? "<small>默认 4 晚 · 可调 2–4 晚</small>" : ""}</span>
         </div>
       </div>
       <details class="city-detail"${expandedNodeIds.has(node.id) ? " open" : ""}>
@@ -1892,7 +1977,7 @@ function routeTotals() {
     const budget = budgetForNode(node);
     return [sum[0] + budget[0], sum[1] + budget[1]];
   }, [0, 0]);
-  const legs = route.slice(0, -1).map((node, index) => getLeg(node.city, route[index + 1].city));
+  const legs = route.slice(0, -1).map((node, index) => getRouteLeg(node, route[index + 1]));
   const transportBudget = legs.reduce((sum, item) => [sum[0] + item.price[0], sum[1] + item.price[1]], [0, 0]);
   const hours = legs.reduce((sum, item) => {
     const airportTime = /飞机/.test(item.mode) ? 3 : 0;
@@ -1942,7 +2027,7 @@ function renderTransport() {
   const dates = nodeDates();
   const routeRows = route.slice(0, -1).map((node, index) => {
     const next = route[index + 1];
-    const data = getLeg(node.city, next.city);
+    const data = getRouteLeg(node, next);
     const time = data.duration[0] === data.duration[1] ? `${data.duration[0]}h` : `${data.duration[0]}–${data.duration[1]}h`;
     const routeName = node.city === "nhatrang" && next.city === "camranh"
       ? "芽庄市区 → 金兰湾"
