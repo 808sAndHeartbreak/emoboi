@@ -9,7 +9,7 @@
   <title>越南路线规划器 · 2026</title>
   <link rel="preload" as="image" href="vietnam-road-illustration.webp" fetchpriority="high">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  <link rel="stylesheet" href="planner.css?v=20260906-41">
+  <link rel="stylesheet" href="planner.css?v=20260906-42">
 </head>
 <body class="night-atlas">
   <header class="appbar">
@@ -111,7 +111,14 @@
   <div class="drawer-backdrop" id="drawer-backdrop"></div>
   <aside class="tool-drawer" id="tool-drawer" aria-hidden="true">
     <header class="drawer-head">
-      <div><span class="section-kicker">工具</span><h2 id="drawer-title">旅行工具</h2></div>
+      <div class="drawer-heading"><span class="section-kicker">工具 / TOOLKIT</span><h2 id="drawer-title">旅行工具</h2></div>
+      <nav class="drawer-tool-nav" aria-label="切换旅行工具">
+        <button type="button" data-tool="weather" aria-label="天气" aria-expanded="false">天气</button>
+        <button type="button" data-tool="exchange" aria-label="汇率" aria-expanded="false">汇率</button>
+        <button type="button" data-tool="phrases" aria-label="常用语" aria-expanded="false">常用语</button>
+        <button type="button" data-tool="map" aria-label="地图" aria-expanded="false">地图</button>
+        <button type="button" data-tool="flights" aria-label="机票" aria-expanded="false">机票</button>
+      </nav>
       <button class="close-button" id="close-drawer" type="button" aria-label="关闭旅行工具">×</button>
     </header>
 
@@ -159,6 +166,12 @@
           <span><i class="map-legend-dot is-alternative"></i>备选景点</span>
         </div>
       </div>
+      <div class="map-signal-bar" aria-label="地图当前状态">
+        <span><i class="signal-dot"></i><b id="map-signal-city">—</b><small>当前城市</small></span>
+        <span><b id="map-signal-day">—</b><small>当前日期</small></span>
+        <span><b id="map-signal-stops">—</b><small>当天站点</small></span>
+        <span><b id="map-signal-options">—</b><small>可选地点</small></span>
+      </div>
       <div class="map-city-tabs" id="map-city-tabs" role="tablist" aria-label="地图城市"></div>
       <div class="map-day-tabs" id="map-day-tabs" role="tablist" aria-label="地图规划日期"></div>
       <div class="map-layout">
@@ -204,6 +217,6 @@
   <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">已复制</div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="planner.js?v=20260906-41"></script>
+  <script src="planner.js?v=20260906-42"></script>
 </body>
 </html>

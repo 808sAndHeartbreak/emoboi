@@ -971,9 +971,12 @@ let revealObserver = null;
 let activeNodeId = route[0]?.id || null;
 let mapCityKey = route.find(node => MAP_PLACES[node.city])?.city || "hanoi";
 let mapPlanIndex = 0;
+let mapSelectedStopId = null;
 let mapInstance = null;
 let mapMarkerLayer = null;
 let mapRouteLayer = null;
+let mapMarkerRefs = new Map();
+let mapActivePlaceIds = new Set();
 const expandedNodeIds = new Set(route.map(node => node.id));
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -1580,6 +1583,8 @@ function renderMapFallback(places, sequence) {
 
 function renderLeafletMap(places, sequence) {
   const activeIds = new Set(sequence.map(stop => stop.place.id));
+  mapActivePlaceIds = activeIds;
+  mapMarkerRefs = new Map();
   const order = new Map();
   sequence.forEach((stop, index) => { if (!order.has(stop.place.id)) order.set(stop.place.id, index + 1); });
   mapMarkerLayer.clearLayers();
@@ -1593,6 +1598,9 @@ function renderLeafletMap(places, sequence) {
       fillColor: active ? "#f36f59" : place.kind === "alternative" ? "#d4b376" : "#9ac9b9",
       fillOpacity: active ? .96 : place.kind === "alternative" ? .48 : .62
     }).addTo(mapMarkerLayer);
+    mapMarkerRefs.set(place.id, marker);
+    marker.__mapPlace = place;
+    marker.on("click", () => selectMapPlace(place.id, true));
     marker.bindTooltip(`${order.has(place.id) ? `${order.get(place.id)} · ` : ""}${place.name}`, {
       permanent: active,
       direction: "top",
@@ -1615,6 +1623,33 @@ function renderLeafletMap(places, sequence) {
   requestAnimationFrame(() => mapInstance.invalidateSize({ pan: false }));
 }
 
+function selectMapPlace(placeId, center = false) {
+  const place = MAP_PLACES[mapCityKey]?.find(item => item.id === placeId);
+  if (!place) return;
+  mapSelectedStopId = mapActivePlaceIds.has(placeId) ? placeId : null;
+  $$("[data-map-stop-id]").forEach(button => {
+    const active = button.dataset.mapStopId === mapSelectedStopId;
+    button.classList.toggle("is-selected", active);
+    if (active) button.setAttribute("aria-current", "location");
+    else button.removeAttribute("aria-current");
+  });
+  mapMarkerRefs.forEach((marker, id) => {
+    const active = mapActivePlaceIds.has(id);
+    const selected = id === mapSelectedStopId;
+    marker.setStyle({
+      radius: selected ? 11 : active ? 8 : marker.__mapPlace?.kind === "alternative" ? 5 : 4,
+      weight: selected ? 4 : active ? 3 : 1.5,
+      color: selected ? "#fffaf0" : active ? "#f36f59" : marker.__mapPlace?.kind === "alternative" ? "#b9904b" : "#427c6c",
+      fillColor: selected ? "#f36f59" : active ? "#f36f59" : marker.__mapPlace?.kind === "alternative" ? "#d4b376" : "#9ac9b9",
+      fillOpacity: selected ? 1 : active ? .96 : marker.__mapPlace?.kind === "alternative" ? .48 : .62
+    });
+  });
+  if (center && mapInstance) {
+    mapInstance.flyTo([place.lat, place.lng], Math.max(mapInstance.getZoom(), 13), { duration: .45 });
+    mapMarkerRefs.get(placeId)?.openTooltip();
+  }
+}
+
 function renderMap() {
   const mapPanel = $("[data-tool-panel='map']");
   if (!mapPanel || mapPanel.hidden) return;
@@ -1630,21 +1665,27 @@ function renderMap() {
   const places = MAP_PLACES[selectedNode.city];
   const sequence = mapPlaceMatches(places, plan);
   const city = CITIES[selectedNode.city];
+  if (!sequence.some(stop => stop.place.id === mapSelectedStopId)) mapSelectedStopId = null;
+  const planSequences = plans.map(item => mapPlaceMatches(places, item));
 
   $("#map-city-tabs").innerHTML = nodes.map(node => {
     const nodeDate = dates[route.findIndex(item => item.id === node.id)];
-    return `<button type="button" role="tab" aria-selected="${String(node.city === mapCityKey)}" data-map-city="${esc(node.city)}"><strong>${esc(CITIES[node.city].name)}</strong><small>${dateLabel(nodeDate.start)}—${dateLabel(nodeDate.end)}</small></button>`;
+    return `<button type="button" role="tab" aria-selected="${String(node.city === mapCityKey)}" data-map-city="${esc(node.city)}"><strong>${esc(CITIES[node.city].name)}</strong><small>${dateLabel(nodeDate.start)}—${dateLabel(nodeDate.end)} · ${node.nights} 晚</small></button>`;
   }).join("");
-  $("#map-day-tabs").innerHTML = plans.map((item, index) => `<button type="button" role="tab" aria-selected="${String(index === mapPlanIndex)}" data-map-plan-index="${index}"><time>${esc(item.date)}</time><span>${esc(item.tag)}</span></button>`).join("");
-  $("#map-selection").innerHTML = `<strong>${esc(city.name)} · ${esc(plan.date)}</strong><span>${esc(plan.tag)} · ${sequence.length ? `当天 ${sequence.length} 个地点` : "当天没有可定位地点"}</span>`;
+  $("#map-day-tabs").innerHTML = plans.map((item, index) => `<button type="button" role="tab" aria-selected="${String(index === mapPlanIndex)}" data-map-plan-index="${index}"><time>${esc(item.date)}</time><span>${esc(item.tag)} · ${planSequences[index].length} 站</span></button>`).join("");
+  $("#map-selection").innerHTML = `<strong>${esc(city.name)} · ${esc(plan.date)}</strong><span>${esc(plan.tag)} · ${sequence.length ? `按时间连接 ${sequence.length} 个地点` : "当天以转场 / 休息为主"}</span>`;
+  $("#map-signal-city").textContent = city.name;
+  $("#map-signal-day").textContent = plan.date;
+  $("#map-signal-stops").textContent = sequence.length ? `${sequence.length} 站` : "—";
+  $("#map-signal-options").textContent = `${(city.alternatives || []).length} 个`;
   $("#map-route-list").innerHTML = sequence.length
-    ? sequence.map((stop, index) => `<li><b>${esc(stop.time)}</b><span><i>${index + 1}</i>${esc(stop.place.name)}</span></li>`).join("")
+    ? sequence.map((stop, index) => `<li><button type="button" data-map-stop-id="${esc(stop.place.id)}" class="${stop.place.id === mapSelectedStopId ? "is-selected" : ""}"><b>${esc(stop.time)}</b><span><i>${String(index + 1).padStart(2, "0")}</i>${esc(stop.place.name)}</span><em aria-hidden="true">↗</em></button></li>`).join("")
     : `<li class="map-empty">这一天以机场、转场或休息为主，未匹配到可定位景点。</li>`;
   const alternatives = city.alternatives || [];
   $("#map-alternatives").innerHTML = alternatives.length
     ? `<h3>备选景点</h3><p>金色点位会一直保留在地图上；天数增加或替换方案时可直接对照位置。</p><ul>${alternatives.map(item => {
       const place = mapPlaceForAlternative(places, item.name);
-      return `<li>${place ? `<button type="button" data-map-focus="${esc(place.id)}">${esc(item.name)}</button>` : `<strong>${esc(item.name)}</strong>`}<span>${esc(item.note)}</span></li>`;
+      return `<li>${place ? `<button type="button" data-map-focus="${esc(place.id)}">${esc(item.name)} <em aria-hidden="true">↗</em></button>` : `<strong>${esc(item.name)}</strong>`}<span>${esc(item.note)}</span></li>`;
     }).join("")}</ul>`
     : "";
 
@@ -1665,6 +1706,7 @@ function renderMap() {
   } else {
     renderMapFallback(places, sequence);
   }
+  if (mapSelectedStopId) selectMapPlace(mapSelectedStopId);
 }
 
 function activateNode(id) {
@@ -1959,6 +2001,7 @@ function openTool(name) {
   if (name === "map") {
     mapCityKey = route.find(node => node.id === activeNodeId && MAP_PLACES[node.city])?.city || mapCityKey;
     mapPlanIndex = 0;
+    mapSelectedStopId = null;
     renderMap();
   }
 }
@@ -1971,7 +2014,11 @@ function closeTool() {
   $$("[data-tool]").forEach(button => button.setAttribute("aria-expanded", "false"));
 }
 
-$$("[data-tool]").forEach(button => button.addEventListener("click", () => {
+$$(`[data-tool]`).forEach(button => button.addEventListener("click", () => {
+  if (button.closest(".drawer-tool-nav")) {
+    openTool(button.dataset.tool);
+    return;
+  }
   if (activeTool === button.dataset.tool && document.body.classList.contains("drawer-open")) closeTool();
   else openTool(button.dataset.tool);
 }));
@@ -1984,6 +2031,7 @@ $("#map-city-tabs").addEventListener("click", event => {
   if (!button) return;
   mapCityKey = button.dataset.mapCity;
   mapPlanIndex = 0;
+  mapSelectedStopId = null;
   renderMap();
 });
 
@@ -1991,14 +2039,25 @@ $("#map-day-tabs").addEventListener("click", event => {
   const button = event.target.closest("[data-map-plan-index]");
   if (!button) return;
   mapPlanIndex = Number(button.dataset.mapPlanIndex);
+  mapSelectedStopId = null;
   renderMap();
+});
+
+$("#map-route-list").addEventListener("click", event => {
+  const button = event.target.closest("[data-map-stop-id]");
+  if (!button) return;
+  selectMapPlace(button.dataset.mapStopId, true);
 });
 
 $("#map-alternatives").addEventListener("click", event => {
   const button = event.target.closest("[data-map-focus]");
   if (!button || !mapInstance) return;
   const place = MAP_PLACES[mapCityKey]?.find(item => item.id === button.dataset.mapFocus);
-  if (place) mapInstance.setView([place.lat, place.lng], Math.max(mapInstance.getZoom(), 13), { animate: true });
+  if (place) {
+    mapSelectedStopId = null;
+    mapInstance.flyTo([place.lat, place.lng], Math.max(mapInstance.getZoom(), 13), { duration: .45 });
+    mapMarkerRefs.get(place.id)?.openTooltip();
+  }
 });
 
 function uniqueRouteCities() {
@@ -2006,7 +2065,7 @@ function uniqueRouteCities() {
 }
 
 function renderWeatherPlaceholder(message = "正在读取…") {
-  $("#weather-list").innerHTML = uniqueRouteCities().map(key => `<div class="weather-row" data-weather-city="${key}"><span>${CITIES[key].name}</span><strong>${message}</strong></div>`).join("");
+  $("#weather-list").innerHTML = uniqueRouteCities().map(key => `<div class="weather-row" data-weather-city="${key}"><span class="weather-city"><b>${CITIES[key].name}</b><small>${CITIES[key].local} · ${CITIES[key].region}</small></span><strong class="weather-value">${message}</strong></div>`).join("");
 }
 
 function weatherDescription(code) {
@@ -2038,9 +2097,9 @@ async function loadWeather() {
       const response = await fetch(url);
       if (!response.ok) throw new Error("weather request failed");
       const data = await response.json();
-      if (requestId === weatherRequestId && row) row.querySelector("strong").textContent = `${weatherDescription(data.current.weather_code)} · ${Math.round(data.current.temperature_2m)}°C · 体感 ${Math.round(data.current.apparent_temperature)}°C`;
+      if (requestId === weatherRequestId && row) row.querySelector(".weather-value").textContent = `${weatherDescription(data.current.weather_code)} · ${Math.round(data.current.temperature_2m)}°C · 体感 ${Math.round(data.current.apparent_temperature)}°C`;
     } catch {
-      if (requestId === weatherRequestId && row) row.querySelector("strong").textContent = "暂时读取失败";
+      if (requestId === weatherRequestId && row) row.querySelector(".weather-value").textContent = "暂时读取失败";
     }
   }));
   if (requestId !== weatherRequestId) return;
