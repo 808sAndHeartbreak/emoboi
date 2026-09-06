@@ -1013,6 +1013,9 @@ let activeNodeId = route[0]?.id || null;
 let mapCityKey = route.find(node => MAP_PLACES[node.city])?.city || "hanoi";
 let mapPlanIndex = 0;
 let mapSelectedStopId = null;
+let mapShowAlternatives = false;
+let mapViewState = null;
+let mapRenderedCityKey = null;
 let mapInstance = null;
 let mapMarkerLayer = null;
 let mapRouteLayer = null;
@@ -1656,14 +1659,30 @@ function refreshMapSize(delay = 0) {
   else requestAnimationFrame(refresh);
 }
 
-function renderMapFallback(places, sequence) {
+function captureMapView() {
+  if (!mapInstance || !mapRenderedCityKey || mapViewState) return;
+  const size = mapInstance.getSize();
+  if (!size?.x || !size?.y) return;
+  const center = mapInstance.getCenter();
+  mapViewState = {
+    city: mapRenderedCityKey,
+    center: [center.lat, center.lng],
+    zoom: mapInstance.getZoom()
+  };
+}
+
+function renderMapFallback(places, sequence, viewState = null) {
   const container = $("#trip-map");
   if (!container) return;
   const tileSize = 256;
   const width = Math.max(container.clientWidth, 320);
   const height = Math.max(container.clientHeight, 260);
-  const longitudes = places.map(place => place.lng);
-  const latitudes = places.map(place => place.lat);
+  const activeIds = new Set(sequence.map(stop => stop.place.id));
+  mapActivePlaceIds = activeIds;
+  const visiblePlaces = places.filter(place => place.kind !== "alternative" || mapShowAlternatives || activeIds.has(place.id));
+  const mapPlaces = visiblePlaces.length ? visiblePlaces : places;
+  const longitudes = mapPlaces.map(place => place.lng);
+  const latitudes = mapPlaces.map(place => place.lat);
   const worldX = (lng, zoom) => ((lng + 180) / 360) * (2 ** zoom) * tileSize;
   const worldY = (lat, zoom) => {
     const safeLat = Math.max(-85.0511, Math.min(85.0511, lat));
@@ -1697,22 +1716,22 @@ function renderMapFallback(places, sequence) {
       tiles.push(`<img src="https://${host}.tile.openstreetmap.org/${zoom}/${wrappedX}/${y}.png" alt="" aria-hidden="true" loading="eager" style="left:${x * tileSize - originX}px;top:${y * tileSize - originY}px">`);
     }
   }
-  const activeIds = new Set(sequence.map(stop => stop.place.id));
-  mapActivePlaceIds = activeIds;
   mapMarkerRefs = new Map();
   const order = new Map();
   sequence.forEach((stop, index) => { if (!order.has(stop.place.id)) order.set(stop.place.id, index + 1); });
   const line = sequence.length > 1 ? `<polyline class="fallback-map-route" points="${sequence.map(stop => project(stop.place).join(",")).join(" ")}"/>` : "";
-  const markers = places.map(place => {
+  const markers = visiblePlaces.map(place => {
     const [x, y] = project(place);
     const active = activeIds.has(place.id);
-    const label = order.has(place.id) ? `<text x="${x + 8}" y="${y + 4}">${order.get(place.id)} · ${esc(place.name)}</text>` : "";
+    const label = order.has(place.id) || (mapShowAlternatives && place.kind === "alternative")
+      ? `<text x="${x + 8}" y="${y + 4}">${order.has(place.id) ? `${order.get(place.id)} · ` : ""}${esc(place.name)}</text>`
+      : "";
     return `<g class="fallback-map-marker ${active ? "is-active" : place.kind === "alternative" ? "is-alternative" : ""}" data-map-fallback-place="${esc(place.id)}" tabindex="0" role="button" aria-label="${esc(place.name)}"><circle cx="${x}" cy="${y}" r="${active ? 7 : place.kind === "alternative" ? 5 : 4}"/>${label}<title>${esc(order.has(place.id) ? `${order.get(place.id)} · ` : "")}${esc(place.name)}</title></g>`;
   }).join("");
   container.innerHTML = `<div class="tile-map-fallback" role="img" aria-label="基于 OpenStreetMap 的景点分布地图"><div class="tile-map-tiles">${tiles.join("")}</div><svg class="fallback-map-overlay" viewBox="0 0 ${width} ${height}" aria-hidden="true">${line}${markers}</svg><span class="map-live-badge">LIVE MAP · OSM</span></div><p class="map-fallback-note">OpenStreetMap 瓦片 · 当前为简化加载模式</p>`;
 }
 
-function renderLeafletMap(places, sequence) {
+function renderLeafletMap(places, sequence, viewState = null) {
   const activeIds = new Set(sequence.map(stop => stop.place.id));
   mapActivePlaceIds = activeIds;
   mapMarkerRefs = new Map();
@@ -1722,18 +1741,19 @@ function renderLeafletMap(places, sequence) {
   mapRouteLayer.clearLayers();
   places.forEach(place => {
     const active = activeIds.has(place.id);
+    if (place.kind === "alternative" && !mapShowAlternatives && !active) return;
     const marker = L.circleMarker([place.lat, place.lng], {
-      radius: active ? 8 : place.kind === "alternative" ? 5 : 4,
+      radius: active ? 8 : place.kind === "alternative" ? 7 : 4,
       color: active ? "#f36f59" : place.kind === "alternative" ? "#b9904b" : "#427c6c",
-      weight: active ? 3 : 1.5,
-      fillColor: active ? "#f36f59" : place.kind === "alternative" ? "#d4b376" : "#9ac9b9",
-      fillOpacity: active ? .96 : place.kind === "alternative" ? .48 : .62
+      weight: active ? 3 : place.kind === "alternative" ? 2 : 1.5,
+      fillColor: active ? "#f36f59" : place.kind === "alternative" ? "#e8cb84" : "#9ac9b9",
+      fillOpacity: active ? .96 : place.kind === "alternative" ? .9 : .62
     }).addTo(mapMarkerLayer);
     mapMarkerRefs.set(place.id, marker);
     marker.__mapPlace = place;
     marker.on("click", () => selectMapPlace(place.id, true));
     marker.bindTooltip(`${order.has(place.id) ? `${order.get(place.id)} · ` : ""}${place.name}`, {
-      permanent: active,
+      permanent: active || (place.kind === "alternative" && mapShowAlternatives),
       direction: "top",
       offset: [0, -7],
       className: active ? "map-tooltip is-route" : place.kind === "alternative" ? "map-tooltip is-alternative" : "map-tooltip"
@@ -1749,8 +1769,14 @@ function renderLeafletMap(places, sequence) {
       lineJoin: "round"
     }).addTo(mapRouteLayer);
   }
-  const bounds = L.latLngBounds(places.map(place => [place.lat, place.lng]));
-  mapInstance.fitBounds(bounds, { padding: [48, 48], maxZoom: 14, animate: false });
+  if (viewState) {
+    mapInstance.setView(viewState.center, viewState.zoom, { animate: false });
+  } else {
+    const visiblePlaces = places.filter(place => place.kind !== "alternative" || mapShowAlternatives || activeIds.has(place.id));
+    const boundsPlaces = visiblePlaces.length ? visiblePlaces : places;
+    const bounds = L.latLngBounds(boundsPlaces.map(place => [place.lat, place.lng]));
+    mapInstance.fitBounds(bounds, { padding: [48, 48], maxZoom: 14, animate: false });
+  }
   refreshMapSize();
   refreshMapSize(450);
 }
@@ -1790,6 +1816,7 @@ function renderMap() {
   if (!mapPanel || mapPanel.hidden) return;
   const nodes = mapNodes();
   if (!nodes.length) return;
+  captureMapView();
   const selectedNode = nodes.find(node => node.city === mapCityKey) || nodes[0];
   mapCityKey = selectedNode.city;
   const nodeIndex = route.findIndex(node => node.id === selectedNode.id);
@@ -1800,6 +1827,7 @@ function renderMap() {
   const places = MAP_PLACES[selectedNode.city];
   const sequence = mapPlaceMatches(places, plan);
   const city = CITIES[selectedNode.city];
+  const viewState = mapViewState?.city === selectedNode.city ? mapViewState : null;
   if (!sequence.some(stop => stop.place.id === mapSelectedStopId)) mapSelectedStopId = null;
   const planSequences = plans.map(item => mapPlaceMatches(places, item));
 
@@ -1808,17 +1836,16 @@ function renderMap() {
     return `<button type="button" role="tab" aria-selected="${String(node.city === mapCityKey)}" data-map-city="${esc(node.city)}"><strong>${esc(CITIES[node.city].name)}</strong><small>${dateLabel(nodeDate.start)}—${dateLabel(nodeDate.end)} · ${node.nights} 晚</small></button>`;
   }).join("");
   $("#map-day-tabs").innerHTML = plans.map((item, index) => `<button type="button" role="tab" aria-selected="${String(index === mapPlanIndex)}" data-map-plan-index="${index}"><time>${esc(item.date)}</time><span>${esc(item.tag)} · ${planSequences[index].length} 站</span></button>`).join("");
-  $("#map-selection").innerHTML = `<strong>${esc(city.name)} · ${esc(plan.date)}</strong><span>${esc(plan.tag)} · ${sequence.length ? `按时间连接 ${sequence.length} 个地点` : "当天以转场 / 休息为主"}</span>`;
-  $("#map-signal-city").textContent = city.name;
+  $("#map-selection").innerHTML = `<strong>${esc(plan.date)}</strong><span>${esc(plan.tag)} · ${sequence.length ? `按时间连接 ${sequence.length} 个地点` : "当天以转场 / 休息为主"}</span>`;
   $("#map-signal-day").textContent = plan.date;
   $("#map-signal-stops").textContent = sequence.length ? `${sequence.length} 站` : "—";
   $("#map-signal-options").textContent = `${(city.alternatives || []).length} 个`;
   $("#map-route-list").innerHTML = sequence.length
-    ? sequence.map((stop, index) => `<li><button type="button" data-map-stop-id="${esc(stop.place.id)}" class="${stop.place.id === mapSelectedStopId ? "is-selected" : ""}"><b>${esc(stop.time)}</b><span><i>${String(index + 1).padStart(2, "0")}</i>${esc(stop.place.name)}</span><em aria-hidden="true">↗</em></button></li>`).join("")
+    ? sequence.map((stop, index) => `<li><button type="button" data-map-stop-id="${esc(stop.place.id)}" class="${stop.place.id === mapSelectedStopId ? "is-selected" : ""}"><b>${esc(stop.time)}</b><span><i>${String(index + 1).padStart(2, "0")}</i><strong class="map-stop-name">${esc(stop.place.name)}</strong></span><em aria-hidden="true">↗</em></button></li>`).join("")
     : `<li class="map-empty">这一天以机场、转场或休息为主，未匹配到可定位景点。</li>`;
   const alternatives = city.alternatives || [];
   $("#map-alternatives").innerHTML = alternatives.length
-    ? `<h3>备选景点</h3><p>金色点位，可点击定位。</p><ul>${alternatives.map(item => {
+    ? `<div class="map-alternatives-head"><h3>备选景点</h3><label class="map-alternatives-toggle${mapShowAlternatives ? " is-on" : ""}"><input id="map-show-alternatives" type="checkbox" aria-label="在地图上显示备选景点" ${mapShowAlternatives ? "checked" : ""}><span>显示在地图</span></label></div><ul>${alternatives.map(item => {
       const place = mapPlaceForAlternative(places, item.name);
       return `<li>${place ? `<button type="button" data-map-focus="${esc(place.id)}">${esc(item.name)} <em aria-hidden="true">↗</em></button>` : `<strong>${esc(item.name)}</strong>`}<span>${esc(item.note)}</span></li>`;
     }).join("")}</ul>`
@@ -1842,10 +1869,12 @@ function renderMap() {
       L.control.scale({ imperial: false, position: "bottomleft" }).addTo(mapInstance);
       container.insertAdjacentHTML("beforeend", `<span class="map-live-badge">LIVE MAP · OSM</span>`);
     }
-    renderLeafletMap(places, sequence);
+    renderLeafletMap(places, sequence, viewState);
   } else {
-    renderMapFallback(places, sequence);
+    renderMapFallback(places, sequence, viewState);
   }
+  mapRenderedCityKey = selectedNode.city;
+  mapViewState = null;
   if (mapSelectedStopId) selectMapPlace(mapSelectedStopId);
 }
 
@@ -2146,6 +2175,8 @@ function openTool(name) {
     mapCityKey = route.find(node => node.id === activeNodeId && MAP_PLACES[node.city])?.city || mapCityKey;
     mapPlanIndex = 0;
     mapSelectedStopId = null;
+    mapViewState = null;
+    mapRenderedCityKey = null;
     renderMap();
   }
 }
@@ -2187,6 +2218,13 @@ $("#map-day-tabs").addEventListener("click", event => {
   renderMap();
 });
 
+$("#map-alternatives").addEventListener("change", event => {
+  const input = event.target.closest("#map-show-alternatives");
+  if (!input) return;
+  mapShowAlternatives = input.checked;
+  renderMap();
+});
+
 $("#map-route-list").addEventListener("click", event => {
   const button = event.target.closest("[data-map-stop-id]");
   if (!button) return;
@@ -2209,12 +2247,18 @@ $("#trip-map").addEventListener("keydown", event => {
 
 $("#map-alternatives").addEventListener("click", event => {
   const button = event.target.closest("[data-map-focus]");
-  if (!button || !mapInstance) return;
+  if (!button) return;
   const place = MAP_PLACES[mapCityKey]?.find(item => item.id === button.dataset.mapFocus);
   if (place) {
+    if (!mapShowAlternatives) {
+      mapShowAlternatives = true;
+      renderMap();
+    }
     mapSelectedStopId = null;
-    mapInstance.flyTo([place.lat, place.lng], Math.max(mapInstance.getZoom(), 13), { duration: .45 });
-    mapMarkerRefs.get(place.id)?.openTooltip();
+    if (mapInstance) {
+      mapInstance.flyTo([place.lat, place.lng], Math.max(mapInstance.getZoom(), 13), { duration: .45 });
+      mapMarkerRefs.get(place.id)?.openTooltip();
+    }
   }
 });
 
