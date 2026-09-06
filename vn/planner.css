@@ -4823,7 +4823,12 @@ body.map-tool-open .fallback-map-overlay { min-height: 350px; }
     overflow: visible;
     grid-template-columns: minmax(0, 1fr);
   }
-  body.map-tool-open .trip-map { height: 320px; min-height: 320px; }
+  /* Keep the full canvas inside the first mobile viewport when the device is short.
+     Taller phones still get the more comfortable 320px map. */
+  body.map-tool-open .trip-map {
+    height: clamp(220px, calc(100svh - 434px), 320px);
+    min-height: 0;
+  }
   body.map-tool-open .map-sidebar { max-height: none; height: auto; overflow: visible; padding: 18px 1px 36px 0; }
   body.map-tool-open .map-selection { margin-bottom: 12px; }
   body.map-tool-open .map-route-list { overflow: visible; }

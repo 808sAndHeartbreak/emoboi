@@ -1645,6 +1645,17 @@ function mapPlaceForAlternative(places, name) {
   return places.find(place => place.terms.some(term => name.includes(term) || term.includes(name)));
 }
 
+function refreshMapSize(delay = 0) {
+  if (!mapInstance) return;
+  const refresh = () => {
+    if (mapInstance && document.body.classList.contains("map-tool-open")) {
+      mapInstance.invalidateSize({ pan: false });
+    }
+  };
+  if (delay) window.setTimeout(refresh, delay);
+  else requestAnimationFrame(refresh);
+}
+
 function renderMapFallback(places, sequence) {
   const container = $("#trip-map");
   if (!container) return;
@@ -1740,7 +1751,8 @@ function renderLeafletMap(places, sequence) {
   }
   const bounds = L.latLngBounds(places.map(place => [place.lat, place.lng]));
   mapInstance.fitBounds(bounds, { padding: [48, 48], maxZoom: 14, animate: false });
-  requestAnimationFrame(() => mapInstance.invalidateSize({ pan: false }));
+  refreshMapSize();
+  refreshMapSize(450);
 }
 
 function selectMapPlace(placeId, center = false) {
@@ -1836,6 +1848,10 @@ function renderMap() {
   }
   if (mapSelectedStopId) selectMapPlace(mapSelectedStopId);
 }
+
+window.addEventListener("resize", () => {
+  if (activeTool === "map") refreshMapSize(80);
+});
 
 function activateNode(id) {
   if (!route.some(node => node.id === id)) return;
