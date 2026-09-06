@@ -4858,3 +4858,71 @@ body.map-tool-open .fallback-map-overlay { min-height: 350px; }
   .trip-timeline { scrollbar-width: none; }
   .trip-timeline::-webkit-scrollbar { display: none; }
 }
+
+/* Final composition pass — use the desktop canvas without making the route feel sparse. */
+@media (min-width: 1200px) {
+  .shell { width: min(1440px, calc(100% - 48px)); }
+
+  .planner-hero .hero-inner { padding-inline: 0; }
+  .journey-board {
+    padding-inline: clamp(28px, 3vw, 44px);
+    background:
+      linear-gradient(90deg, rgba(22, 58, 49, .9), rgba(22, 58, 49, .46) 72%),
+      rgba(22, 58, 49, .48);
+  }
+  .journey-head {
+    grid-template-columns: minmax(210px, .38fr) minmax(0, 1.62fr);
+    gap: clamp(30px, 4vw, 64px);
+  }
+
+  .route-workspace {
+    padding-inline: 24px;
+    background:
+      linear-gradient(90deg, rgba(225, 239, 226, .74) 0 220px, rgba(255, 250, 240, .97) 220px);
+  }
+  .route-workspace-layout {
+    grid-template-columns: 168px minmax(0, 1fr);
+    gap: 32px;
+  }
+  .planning-timeline { padding-inline: 6px 10px; }
+  .node-main {
+    grid-template-columns: 50px minmax(210px, .46fr) minmax(0, 1.54fr) 152px;
+    gap: 20px;
+  }
+  .time-block {
+    grid-template-columns: minmax(96px, .2fr) minmax(0, 1fr);
+    gap: 22px;
+  }
+}
+
+@media (hover: hover) {
+  .tool-actions button:hover:not([aria-expanded="true"]) {
+    background: rgba(255, 250, 240, .12);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+  .route-node:not(.is-active):hover {
+    border-color: rgba(54, 113, 96, .28);
+    box-shadow: 0 18px 44px rgba(21, 58, 50, .08);
+    transform: translateY(-1px);
+  }
+  .night-stepper button:hover:not(:disabled) {
+    background: var(--accent);
+    color: #fffaf0;
+  }
+  .city-detail summary:hover { background: rgba(184, 223, 200, .18); }
+  .transport-row:hover {
+    border-left-color: var(--gold);
+    background: rgba(231, 197, 110, .06);
+    transform: translateX(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-node,
+  .transport-row,
+  .tool-actions button { transition: none; }
+  .route-node:not(.is-active):hover,
+  .transport-row:hover,
+  .tool-actions button:hover:not([aria-expanded="true"]) { transform: none; }
+}
