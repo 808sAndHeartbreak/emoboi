@@ -32,14 +32,14 @@
               <div class="journey-heading">
                 <span class="section-kicker">25 SEP — 07 OCT · 2026</span>
                 <h1 class="hero-wordmark"><span>VIỆT</span><span>NAM</span></h1>
-                <p class="sr-only" id="route-title">河内 → 岘港 → 大叻 → 芽庄 → 河内（返程经芽庄金兰湾）</p>
+                <p class="sr-only" id="route-title">河内 → 岘港 → 大叻 → 芽庄 → 河内</p>
               </div>
               <div class="trip-window" aria-label="已确认的行程边界">
                 <span><b>09.25—27</b><strong>河内 2 晚 · 17:45 抵达</strong></span>
                 <i aria-hidden="true"></i>
                 <span class="is-open"><b id="middle-window">09.27—10.05</b><strong id="middle-window-label">8 晚待规划</strong></span>
                 <i aria-hidden="true"></i>
-                <span><b id="end-window">10.05—07</b><strong id="end-window-label">Fusion · 2 晚 · 14:05 飞</strong></span>
+                <span><b id="end-window">10.03—07</b><strong id="end-window-label">芽庄 4 晚 · Fusion 2 晚 · 14:05 飞</strong></span>
                 <output class="allocation-pill is-balanced" id="trip-allocation" aria-live="polite"><strong>13 / 13 天</strong><span></span></output>
               </div>
             </div>
@@ -51,7 +51,13 @@
       </div>
       <div class="workspace shell" id="route-planner">
         <div class="route-workspace">
-          <ol class="route-editor" id="route-editor" aria-label="行程节点" aria-live="polite"></ol>
+          <div class="route-workspace-layout">
+            <aside class="planning-timeline" aria-label="按日期查看规划">
+              <div class="timeline-heading"><span class="section-kicker">DAYS / 13</span><strong>时间轴</strong><small>点击日期跳到对应规划</small></div>
+              <ol class="trip-timeline" id="trip-timeline"></ol>
+            </aside>
+            <ol class="route-editor" id="route-editor" aria-label="行程节点" aria-live="polite"></ol>
+          </div>
 
         </div>
 
@@ -172,6 +178,6 @@
 
   <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">已复制</div>
 
-  <script src="planner.js?v=20260904-39"></script>
+  <script src="planner.js?v=20260906-40"></script>
 </body>
 </html>

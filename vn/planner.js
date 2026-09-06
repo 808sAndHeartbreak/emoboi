@@ -110,7 +110,7 @@ const CITIES = {
   },
   nhatrang: {
     name: "芽庄", local: "Nha Trang", airport: "CXR", region: "中南部",
-    minNights: 2, recommendedNights: 3, maxNights: 4, defaultNights: 2, budget: [1000000, 2100000], order: 12.2388,
+    minNights: 2, recommendedNights: 4, maxNights: 6, defaultNights: 4, budget: [1000000, 2100000], order: 12.2388,
     coordinates: [12.2388, 109.1967],
     themes: ["占婆文化", "泥浆浴", "海岛", "度假"],
     durationGuide: {
@@ -118,7 +118,7 @@ const CITIES = {
       3: "2 个完整日：文化泥浴一天，跳岛或珍珠岛二选一。",
       4: "3 个完整日：增加海洋博物馆、海边与半天休息，给风浪留替代方案。",
     },
-    summary: "泥浆浴、海岛活动、珍珠岛与纯度假。",
+    summary: "海滩、婆那加塔、泥浆浴与海岛活动；10.05–10.07 已确认入住 Fusion Resort Cam Ranh，之后留在度假村。",
     plays: ["婆那加塔 Po Nagar", "龙山寺 Long Sơn Pagoda", "芽庄大教堂 Nha Trang Cathedral", "I-Resort 泥浆浴", "跳岛团 / 黑珍珠号候选", "珍珠岛 VinWonders", "国家海洋博物馆", "陈富海滩 Trần Phú"],
     caution: "9–12 月是雨季；出海前一晚确认风浪、船班与集合码头。CXR 到陈富海滩住宿区约 35–40 km。",
     stay: "陈富海滩中段最省事；北部安静但餐饮较少；离岛玩法从南部码头出发。",
@@ -148,6 +148,21 @@ const CITIES = {
         { time: "20:00–21:30", text: "芽庄夜市与海边散步，之后回酒店。" }
       ], food: "下午用海景咖啡缓冲，晚饭可在陈富海滩附近选海鲜、Bánh Căn 或 Nem Nướng；夜市只补小吃，不重复吃撑。" }
     ],
+    resortTransition: { theme: "入住金兰湾", blocks: [
+      { time: "10:30–11:30", text: "起床、早餐、收拾行李；不再新增芽庄市区景点。" },
+      { time: "11:30–12:30", text: "退房后在陈富海滩附近吃午饭，补好饮水和零食。" },
+      { time: "13:30–14:30", text: "芽庄市区 → Fusion Resort Cam Ranh，约 35–45 km，打车 / 酒店接送通常 45–70 分钟。" },
+      { time: "15:00–17:00", text: "办理入住，泳池、海滩和 SPA 按预约安排；之后不再往返芽庄市区。" },
+      { time: "19:00–20:00", text: "度假村晚餐，一小时。" },
+      { time: "20:30 后", text: "留在金兰湾休息。" }
+    ], food: "午饭在芽庄市区解决；入住 Fusion 后晚餐留在度假村，不为一顿饭往返市区。" },
+    resortDay: { theme: "金兰湾度假", blocks: [
+      { time: "12:00–13:00", text: "睡到自然醒，在 Fusion Resort 吃午饭。" },
+      { time: "13:30–17:00", text: "海滩、泳池与度假村活动；SPA 按预约时段插入，不再往返芽庄市区。" },
+      { time: "17:00–18:00", text: "回房间休息，看金兰湾日落。" },
+      { time: "19:00–20:00", text: "度假村晚餐。" },
+      { time: "20:30 后", text: "继续在度假村休息，或直接睡觉。" }
+    ], food: "All Spa Inclusive 以度假村餐厅为主；返程前不尝试距离过远的新店，把时间留给收拾和确认送机。" },
     alternatives: [
       { name: "珍珠岛 VinWonders", note: "增加一晚时整天安排，跨海缆车与园区末班时间出发前复核。" },
       { name: "跳岛团 / 黑珍珠号候选", note: "需要 07:30–08:30 集合；前一晚确认风浪、码头和船班。" },
@@ -368,8 +383,7 @@ const DEFAULT_ROUTE = [
   { id: "start", city: "hanoi", nights: 2, role: "start", locked: true },
   { id: "danang", city: "danang", nights: 3, role: "middle" },
   { id: "dalat", city: "dalat", nights: 3, role: "middle" },
-  { id: "nhatrang", city: "nhatrang", nights: 2, role: "middle" },
-  { id: "end", city: "camranh", nights: 2, role: "end", locked: true }
+  { id: "end", city: "nhatrang", nights: 4, role: "end", locked: true }
 ];
 
 const TRANSPORT = {};
@@ -917,7 +931,7 @@ function middleNightsTarget() {
 }
 
 function canAdjustNights(node) {
-  return node.role === "start" || node.role === "middle" || node.city === "camranh";
+  return node.role === "start" || node.role === "middle" || (node.role === "end" && node.city === "nhatrang");
 }
 
 function loadRoute() {
@@ -931,6 +945,15 @@ function loadRoute() {
         .filter(node => node && CITIES[node.city])
         .map(node => [node.city, clampNights(node.nights, node.city)])
     );
+    const legacyCamranhNights = parsed
+      .filter(node => node?.city === "camranh")
+      .reduce((sum, node) => sum + clampNights(node.nights, "camranh"), 0);
+    if (legacyCamranhNights) {
+      const legacyNhaTrangNights = parsed
+        .filter(node => node?.city === "nhatrang")
+        .reduce((sum, node) => sum + clampNights(node.nights, "nhatrang"), 0);
+      storedNights.set("nhatrang", clampNights(legacyNhaTrangNights + legacyCamranhNights, "nhatrang"));
+    }
     return cloneDefaultRoute().map(node => {
       const nights = storedNights.get(node.city);
       return nights === undefined
@@ -963,6 +986,17 @@ function saveRoute() {
 
 function saveFlightChoices() {
   localStorage.setItem(FLIGHT_STORAGE_KEY, JSON.stringify(flightChoices));
+}
+
+function budgetForNode(node) {
+  if (node.role === "end" && node.city === "nhatrang") {
+    const cityNights = Math.max(0, node.nights - 2);
+    return [
+      CITIES.nhatrang.budget[0] * cityNights + CITIES.camranh.budget[0] * 2,
+      CITIES.nhatrang.budget[1] * cityNights + CITIES.camranh.budget[1] * 2
+    ];
+  }
+  return [CITIES[node.city].budget[0] * node.nights, CITIES[node.city].budget[1] * node.nights];
 }
 
 function ensureActiveNode() {
@@ -1114,11 +1148,7 @@ function transferBlocksForNode(previous, node, date, transfer) {
   if (previous.city === "dalat" && node.city === "nhatrang") {
     return [
       { time: "10:00–11:00", text: "起床、早餐、退房；请大叻酒店前台协助确认 Klook 专车，或提前确认 FUTA 大巴班次。" },
-      { time: "11:00–14:00", text: "大叻 → 芽庄，Klook 专车 / FUTA 大巴约 3 小时；专车可送到酒店，大巴到站后再打车。" },
-      { time: "14:00–15:00", text: "抵达芽庄住宿区、办理入住并吃饭。" },
-      { time: "17:00–18:00", text: "陈富海滩散步，看海或回酒店休息。" },
-      { time: "19:00–20:00", text: "晚饭，一小时。" },
-      { time: "20:30 后", text: "芽庄海边散步或直接回酒店。" }
+      { time: "11:00–14:00", text: "大叻 → 芽庄，Klook 专车 / FUTA 大巴约 3 小时；专车可送到酒店，大巴到站后再打车。" }
     ];
   }
   if (previous.city === "nhatrang" && node.city === "camranh") {
@@ -1204,7 +1234,9 @@ function arrivalBlocksForNode(previous, node, date) {
 
   if (previous.city === "dalat" && node.city === "nhatrang") {
     return [
-      { time: "14:00–15:00", text: "上一日已完成大叻 → 芽庄转场；抵达住宿区后办理入住、放下行李。" },
+      { time: "14:00–15:00", text: "抵达芽庄住宿区、办理入住并放下行李。" },
+      { time: "17:00–18:00", text: "陈富海滩散步，看海或回酒店休息。" },
+      { time: "19:00–20:00", text: "晚饭，一小时。" },
       { time: "20:30 后", text: "芽庄海边散步或直接回酒店。" }
     ];
   }
@@ -1217,12 +1249,13 @@ function arrivalBlocksForNode(previous, node, date) {
 
 function transferFoodForNode(previous, node) {
   if (FLIGHTS[legKey(previous.city, node.city)]) return "";
-  if (node.city === "nhatrang") return "大叻 → 芽庄车上备水和简单零食；入住后在陈富海滩附近吃海鲜或鱼饼米粉。";
+  if (previous.city === "dalat" && node.city === "nhatrang") return "";
   if (node.city === "camranh" && previous.city === "nhatrang") return "午饭在芽庄市区解决，入住 Fusion 后晚餐留在度假村，不为一顿饭往返市区。";
   return "转场日按附近可见的干净店铺解决一小时正餐，抵达后不跨区寻找餐厅。";
 }
 
 function arrivalFoodForNode(previous, node) {
+  if (previous.city === "dalat" && node.city === "nhatrang") return "大叻 → 芽庄车上备水和简单零食；入住后在陈富海滩附近吃海鲜或鱼饼米粉。";
   if (!FLIGHTS[legKey(previous.city, node.city)]) return "";
   if (node.city === "danang") return "抵达美溪 / 海州后就近吃饭；晚班只补充简单正餐和水，不把第一晚安排成跨区觅食。";
   if (node.city === "dalat") return "落地大叻后先在市场或酒店附近吃热食；抵达日不专程去远处找店。";
@@ -1340,8 +1373,11 @@ function plansForNode(node, index, dates) {
 
   for (let offset = 1; offset < node.nights; offset += 1) {
     const cityPlans = city.days;
-    const plan = cityPlans[offset - 1] || city.restDay;
-    const restful = !cityPlans[offset - 1];
+    const currentDate = addDays(dates[index].start, offset);
+    const isResortCheckIn = node.role === "end" && node.city === "nhatrang" && dateKey(currentDate) === dateKey(HOTEL_CHECKIN_DATE);
+    const isResortStay = node.role === "end" && node.city === "nhatrang" && currentDate > HOTEL_CHECKIN_DATE && currentDate < HOTEL_CHECKOUT_DATE;
+    const plan = isResortCheckIn ? city.resortTransition : isResortStay ? city.resortDay : cityPlans[offset - 1] || city.restDay;
+    const restful = !cityPlans[offset - 1] && !isResortCheckIn;
     addPlan(addDays(dates[index].start, offset), restful ? "休息日" : "完整日", legacyPlanBlocks(plan), restful, plan.theme || (restful ? "放松" : "探索"), plan.food);
   }
 
@@ -1369,6 +1405,7 @@ function plansForNode(node, index, dates) {
 function render() {
   ensureActiveNode();
   renderRoute();
+  renderTimeline();
   renderHeroRail();
   renderAnalysis();
   renderTransport();
@@ -1385,7 +1422,7 @@ function renderHeroRail() {
   $("#middle-window").textContent = `${dateLabel(middleStartDate())}—${dateLabel(endDates.start)}`;
   $("#middle-window-label").textContent = `${middleNightsTarget()} 晚待规划`;
   $("#end-window").textContent = `${dateLabel(endDates.start)}—${dateLabel(endDates.end)}`;
-  $("#end-window-label").textContent = `Fusion · ${endNights()} 晚 · 14:05 飞`;
+  $("#end-window-label").textContent = `芽庄 ${endNights()} 晚 · Fusion 2 晚 · 14:05 飞`;
   rail.style.setProperty("--stop-count", route.length);
   rail.setAttribute("role", "list");
   rail.innerHTML = route.map((node, index) => {
@@ -1397,11 +1434,33 @@ function renderHeroRail() {
   }).join("");
 }
 
+function renderTimeline() {
+  const timeline = $("#trip-timeline");
+  if (!timeline) return;
+  const dates = nodeDates();
+  const entries = route.flatMap((node, index) => plansForNode(node, index, dates).map((plan, planIndex) => ({
+    anchor: `${node.id}-${planIndex}`,
+    city: CITIES[node.city].name,
+    date: plan.date,
+    label: plan.tag,
+    nodeId: node.id,
+    kind: plan.kind
+  })));
+  timeline.innerHTML = entries.map(entry => `<li class="timeline-item${entry.nodeId === activeNodeId ? " is-active" : ""}">
+    <button type="button" data-timeline-target="${esc(entry.anchor)}" data-timeline-node="${esc(entry.nodeId)}">
+      <time>${esc(entry.date)}</time>
+      <span>${esc(entry.city)}</span>
+      <b>${esc(entry.label)}</b>
+    </button>
+  </li>`).join("");
+}
+
 function activateNode(id) {
   if (!route.some(node => node.id === id)) return;
   transitionUpdate(() => {
     activeNodeId = id;
     renderRoute();
+    renderTimeline();
     renderHeroRail();
   });
 
@@ -1421,6 +1480,19 @@ $(".planner-hero").addEventListener("click", event => {
   const button = event.target.closest("button[data-jump-node]");
   if (!button) return;
   activateNode(button.dataset.jumpNode);
+});
+
+$("#trip-timeline").addEventListener("click", event => {
+  const button = event.target.closest("button[data-timeline-target]");
+  if (!button) return;
+  activateNode(button.dataset.timelineNode);
+  requestAnimationFrame(() => {
+    const target = routeEditor.querySelector(`[data-plan-anchor="${button.dataset.timelineTarget}"]`);
+    target?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      block: "center"
+    });
+  });
 });
 
 function setupReveals() {
@@ -1455,19 +1527,18 @@ function renderRoute() {
     const periodLabel = node.role === "start"
       ? `${dateLabel(ARRIVAL_DATE)} 17:45 抵达 · ${dateLabel(middleStartDate())} 中午后可飞`
       : node.role === "end"
-        ? `${dateLabel(dates[index].start)} 15:00 入住 · 10.07 12:00 退房`
+        ? `${dateLabel(dates[index].start)} 抵达 · 10.05 15:00 度假村入住 · 10.07 12:00 退房`
         : `${dateLabel(dates[index].start)} 入住 · ${dateLabel(dates[index].end)} 离开`;
-    const budgetMin = city.budget[0] * node.nights;
-    const budgetMax = city.budget[1] * node.nights;
-    const roleLabel = node.role === "start" ? "已确认" : node.role === "end" ? "已确认 · 金兰湾" : "固定路线";
-    const caution = node.city === "camranh" && node.nights !== 2
-      ? `当前计划 ${dateLabel(dates[index].start)} 15:00 入住、10 月 7 日 12:00 退房；已确认订单仍是 10.05–10.07 2 晚，改为 ${node.nights} 晚需另行确认酒店。`
+    const [budgetMin, budgetMax] = budgetForNode(node);
+    const roleLabel = node.role === "start" ? "已确认" : node.role === "end" ? "已确认 · 芽庄" : "固定路线";
+    const caution = node.role === "end" && node.city === "nhatrang" && node.nights !== city.defaultNights
+      ? `当前芽庄合计 ${node.nights} 晚；Fusion Resort 订单仍固定为 10.05–10.07 2 晚，前后市区停留会随天数调整。`
       : city.caution;
     const plans = plansForNode(node, index, dates);
     const lastDayPlanIndex = plans.reduce((lastIndex, plan, planIndex) => plan.kind === "day" ? planIndex : lastIndex, -1);
     const dayPlanHtml = plans.map((plan, planIndex) => {
-      return `<li class="${plan.restful ? "restful" : ""}">
-        <div class="day-marker"><span>${plan.date}</span><strong>${plan.tag}${plan.theme ? ` · ${esc(plan.theme)}` : ""}</strong></div>
+      return `<li class="${plan.restful ? "restful" : ""}" data-plan-anchor="${esc(`${node.id}-${planIndex}`)}">
+        <div class="day-marker"><span>${plan.date}</span></div>
         <div class="halfday-copy">${renderTimeBlocks(plan.blocks)}${renderDayFood(plan.food)}${planIndex === lastDayPlanIndex ? renderAlternatives(city, node) : ""}</div>
       </li>`;
     }).join("");
@@ -1499,22 +1570,13 @@ function renderRoute() {
         </div>
         <div class="node-side">
           <span class="compact-night-count"><strong>${node.nights}</strong> 晚${node.locked ? " · 已确认" : ""}</span>
-          <span class="node-budget"><strong>${formatCny(budgetMin)}–${formatCny(budgetMax)}</strong>${node.role === "end" ? "度假期间额外消费 / 人" : "本地停留 / 人"}${node.role === "start" ? "<small>默认 2 晚 · 可调 2–3 晚</small>" : node.role === "end" ? "<small>默认 2 晚 · 可调 1–3 晚</small>" : ""}</span>
+          <span class="node-budget"><strong>${formatCny(budgetMin)}–${formatCny(budgetMax)}</strong>${node.role === "end" ? "芽庄停留 / 人" : "本地停留 / 人"}${node.role === "start" ? "<small>默认 2 晚 · 可调 2–3 晚</small>" : node.role === "end" ? "<small>默认 4 晚 · 可调 2–6 晚</small>" : ""}</span>
         </div>
       </div>
       <details class="city-detail"${expandedNodeIds.has(node.id) ? " open" : ""}>
         <summary><span>规划</span><i aria-hidden="true">＋</i></summary>
         <div class="city-detail-body${city.image ? " has-image" : ""}">
           <div class="detail-copy">
-            <div class="stay-guide">
-              <p>${esc(durationGuide(city, node.nights))}</p>
-              <div class="theme-list">${city.themes.map(theme => `<span>${esc(theme)}</span>`).join("")}</div>
-            </div>
-            ${node.city !== "camranh" ? `<dl class="city-facts">
-              <div><dt>住</dt><dd>${renderPlanText(city.stay)}</dd></div>
-              <div><dt>走</dt><dd>${renderPlanText(city.move)}</dd></div>
-              ${city.airportInfo ? `<div><dt>机场</dt><dd>${renderPlanText(city.airportInfo)}</dd></div>` : ""}
-            </dl>` : ""}
             <ol class="day-plan">${dayPlanHtml}</ol>
           </div>
           ${city.image ? `<figure class="city-figure"><a href="${city.image.src}" target="_blank" rel="noopener"><img src="${city.image.src}" alt="${city.image.alt}" loading="lazy"></a><figcaption>${city.image.caption} · 点击看原图</figcaption></figure>` : ""}
@@ -1523,13 +1585,16 @@ function renderRoute() {
     </li>`;
   }).join("");
 
-  $("#route-title").textContent = "河内 → 岘港 → 大叻 → 芽庄 → 河内（返程经芽庄金兰湾）";
+  $("#route-title").textContent = "河内 → 岘港 → 大叻 → 芽庄 → 河内";
 }
 
 function routeTotals() {
   const middleNights = route.filter(node => node.role === "middle").reduce((sum, node) => sum + node.nights, 0);
   const plannedDays = route.reduce((sum, node) => sum + node.nights, 0) + 1;
-  const cityBudget = route.reduce((sum, node) => [sum[0] + CITIES[node.city].budget[0] * node.nights, sum[1] + CITIES[node.city].budget[1] * node.nights], [0, 0]);
+  const cityBudget = route.reduce((sum, node) => {
+    const budget = budgetForNode(node);
+    return [sum[0] + budget[0], sum[1] + budget[1]];
+  }, [0, 0]);
   const legs = route.slice(0, -1).map((node, index) => getLeg(node.city, route[index + 1].city));
   const transportBudget = legs.reduce((sum, item) => [sum[0] + item.price[0], sum[1] + item.price[1]], [0, 0]);
   const hours = legs.reduce((sum, item) => {
@@ -1603,10 +1668,10 @@ function renderTransport() {
       <div class="transport-details"><p class="transport-note"><b>${selectedWindowText}</b>${data.note}</p>${flightOptions}</div>
     </article>`;
   }).join("");
-  const returnCopy = "10.07｜金兰湾 → 河内 → 上海\n14:05 VJ772：CXR T1 → 15:55 HAN T1（国内航班，提前 1.5 小时到 CXR）\n18:45 MU6014：HAN T2 → 22:50 PVG T1（国际航班，提前 2 小时到 T2）\nHAN T1 取行李后乘免费接驳前往 T2，目标 16:45 前到达。";
+  const returnCopy = "10.07｜芽庄 Fusion Resort → 河内 → 上海\n14:05 VJ772：CXR T1 → 15:55 HAN T1（国内航班，提前 1.5 小时到 CXR）\n18:45 MU6014：HAN T2 → 22:50 PVG T1（国际航班，提前 2 小时到 T2）\nHAN T1 取行李后乘免费接驳前往 T2，目标 16:45 前到达。";
   const returnRow = `<article class="transport-row fixed-transfer" role="button" tabindex="0" title="点击复制返程衔接" aria-label="复制 10 月 7 日返程衔接" data-copy-text="${esc(returnCopy)}">
     <span class="transport-index">返</span>
-    <div class="transport-route"><strong>金兰湾 → 河内 → 上海</strong><span>10.07 · CXR T1 / HAN T1 → T2 / PVG T1</span></div>
+    <div class="transport-route"><strong>芽庄 · Fusion Resort → 河内 → 上海</strong><span>10.07 · CXR T1 / HAN T1 → T2 / PVG T1</span></div>
     <div class="transport-mode"><strong>VJ772 + MU6014</strong><span>14:05 → 15:55 · 18:45 → 22:50</span></div>
     <p class="transport-note"><b>国际航班目标 16:45 前到 HAN T2。</b>CXR 国内段按提前 1.5 小时到机场；抵达 HAN T1 后取行李、乘免费接驳到 T2，再办理国际值机、出境和安检。</p>
   </article>`;
