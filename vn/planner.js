@@ -1109,7 +1109,7 @@ function renderDayFood(food) {
 
 function renderAlternatives(city, node) {
   if (node.nights >= city.maxNights || !city.alternatives?.length) return "";
-  return `<section class="alternative-shelf" aria-label="备选景点"><div class="alternative-head"><span>备选景点</span><small>天数未拉满时，从这里替换或补入</small></div><ul class="alternative-list">${city.alternatives.map(item => `<li><button type="button" title="点击复制地点" data-copy-text="${esc(PLACE_ALIASES[item.name] || item.name)}">${esc(item.name)}</button><span>${esc(item.note)}</span></li>`).join("")}</ul></section>`;
+  return `<section class="alternative-shelf" aria-label="备选景点"><div class="alternative-head"><span>备选景点</span></div><ul class="alternative-list">${city.alternatives.map(item => `<li><button type="button" title="点击复制地点" data-copy-text="${esc(PLACE_ALIASES[item.name] || item.name)}">${esc(item.name)}</button><span>${esc(item.note)}</span></li>`).join("")}</ul></section>`;
 }
 
 function vietnameseRomanization(value) {
@@ -1563,22 +1563,57 @@ function mapPlaceForAlternative(places, name) {
 function renderMapFallback(places, sequence) {
   const container = $("#trip-map");
   if (!container) return;
+  const tileSize = 256;
+  const width = Math.max(container.clientWidth, 320);
+  const height = Math.max(container.clientHeight, 260);
   const longitudes = places.map(place => place.lng);
   const latitudes = places.map(place => place.lat);
-  const minLng = Math.min(...longitudes) - .02;
-  const maxLng = Math.max(...longitudes) + .02;
-  const minLat = Math.min(...latitudes) - .02;
-  const maxLat = Math.max(...latitudes) + .02;
-  const project = place => `${12 + ((place.lng - minLng) / (maxLng - minLng)) * 76},${88 - ((place.lat - minLat) / (maxLat - minLat)) * 76}`;
+  const worldX = (lng, zoom) => ((lng + 180) / 360) * (2 ** zoom) * tileSize;
+  const worldY = (lat, zoom) => {
+    const safeLat = Math.max(-85.0511, Math.min(85.0511, lat));
+    const sin = Math.sin((safeLat * Math.PI) / 180);
+    return (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * (2 ** zoom) * tileSize;
+  };
+  let zoom = 8;
+  for (let candidate = 8; candidate <= 16; candidate += 1) {
+    const xs = longitudes.map(value => worldX(value, candidate));
+    const ys = latitudes.map(value => worldY(value, candidate));
+    if (Math.max(...xs) - Math.min(...xs) <= width * .78 && Math.max(...ys) - Math.min(...ys) <= height * .78) zoom = candidate;
+    else break;
+  }
+  const centerLng = (Math.min(...longitudes) + Math.max(...longitudes)) / 2;
+  const centerLat = (Math.min(...latitudes) + Math.max(...latitudes)) / 2;
+  const originX = worldX(centerLng, zoom) - width / 2;
+  const originY = worldY(centerLat, zoom) - height / 2;
+  const project = place => [worldX(place.lng, zoom) - originX, worldY(place.lat, zoom) - originY];
+  const tileMinX = Math.floor(originX / tileSize);
+  const tileMaxX = Math.floor((originX + width) / tileSize);
+  const tileMinY = Math.floor(originY / tileSize);
+  const tileMaxY = Math.floor((originY + height) / tileSize);
+  const tileCount = 2 ** zoom;
+  const tileHosts = ["a", "b", "c"];
+  const tiles = [];
+  for (let x = tileMinX; x <= tileMaxX; x += 1) {
+    for (let y = tileMinY; y <= tileMaxY; y += 1) {
+      if (y < 0 || y >= tileCount) continue;
+      const wrappedX = ((x % tileCount) + tileCount) % tileCount;
+      const host = tileHosts[Math.abs(x + y) % tileHosts.length];
+      tiles.push(`<img src="https://${host}.tile.openstreetmap.org/${zoom}/${wrappedX}/${y}.png" alt="" aria-hidden="true" loading="eager" style="left:${x * tileSize - originX}px;top:${y * tileSize - originY}px">`);
+    }
+  }
   const activeIds = new Set(sequence.map(stop => stop.place.id));
+  mapActivePlaceIds = activeIds;
+  mapMarkerRefs = new Map();
   const order = new Map();
   sequence.forEach((stop, index) => { if (!order.has(stop.place.id)) order.set(stop.place.id, index + 1); });
-  const line = sequence.length > 1 ? `<polyline class="fallback-map-route" points="${sequence.map(stop => project(stop.place)).join(" ")}"/>` : "";
+  const line = sequence.length > 1 ? `<polyline class="fallback-map-route" points="${sequence.map(stop => project(stop.place).join(",")).join(" ")}"/>` : "";
   const markers = places.map(place => {
-    const [x, y] = project(place).split(",");
-    return `<g class="fallback-map-marker ${activeIds.has(place.id) ? "is-active" : place.kind === "alternative" ? "is-alternative" : ""}"><circle cx="${x}" cy="${y}" r="${activeIds.has(place.id) ? 2.8 : 1.8}"/><title>${esc(order.has(place.id) ? `${order.get(place.id)} · ` : "")}${esc(place.name)}</title></g>`;
+    const [x, y] = project(place);
+    const active = activeIds.has(place.id);
+    const label = order.has(place.id) ? `<text x="${x + 8}" y="${y + 4}">${order.get(place.id)} · ${esc(place.name)}</text>` : "";
+    return `<g class="fallback-map-marker ${active ? "is-active" : place.kind === "alternative" ? "is-alternative" : ""}" data-map-fallback-place="${esc(place.id)}" tabindex="0" role="button" aria-label="${esc(place.name)}"><circle cx="${x}" cy="${y}" r="${active ? 7 : place.kind === "alternative" ? 5 : 4}"/>${label}<title>${esc(order.has(place.id) ? `${order.get(place.id)} · ` : "")}${esc(place.name)}</title></g>`;
   }).join("");
-  container.innerHTML = `<svg class="fallback-map" viewBox="0 0 100 100" role="img" aria-label="景点分布示意图"><path class="fallback-map-water" d="M0 0h100v100H0z"/><path class="fallback-map-grid" d="M0 20h100M0 40h100M0 60h100M0 80h100M20 0v100M40 0v100M60 0v100M80 0v100"/>${line}${markers}</svg><p class="map-fallback-note">地图底图暂不可用，已显示地点分布示意。</p>`;
+  container.innerHTML = `<div class="tile-map-fallback" role="img" aria-label="基于 OpenStreetMap 的景点分布地图"><div class="tile-map-tiles">${tiles.join("")}</div><svg class="fallback-map-overlay" viewBox="0 0 ${width} ${height}" aria-hidden="true">${line}${markers}</svg><span class="map-live-badge">LIVE MAP · OSM</span></div><p class="map-fallback-note">OpenStreetMap 瓦片 · 当前为简化加载模式</p>`;
 }
 
 function renderLeafletMap(places, sequence) {
@@ -1619,7 +1654,7 @@ function renderLeafletMap(places, sequence) {
     }).addTo(mapRouteLayer);
   }
   const bounds = L.latLngBounds(places.map(place => [place.lat, place.lng]));
-  mapInstance.fitBounds(bounds, { padding: [24, 24], maxZoom: 13, animate: false });
+  mapInstance.fitBounds(bounds, { padding: [48, 48], maxZoom: 14, animate: false });
   requestAnimationFrame(() => mapInstance.invalidateSize({ pan: false }));
 }
 
@@ -1643,6 +1678,9 @@ function selectMapPlace(placeId, center = false) {
       fillColor: selected ? "#f36f59" : active ? "#f36f59" : marker.__mapPlace?.kind === "alternative" ? "#d4b376" : "#9ac9b9",
       fillOpacity: selected ? 1 : active ? .96 : marker.__mapPlace?.kind === "alternative" ? .48 : .62
     });
+  });
+  $$('[data-map-fallback-place]').forEach(marker => {
+    marker.classList.toggle("is-selected", marker.dataset.mapFallbackPlace === mapSelectedStopId);
   });
   if (center && mapInstance) {
     mapInstance.flyTo([place.lat, place.lng], Math.max(mapInstance.getZoom(), 13), { duration: .45 });
@@ -1683,7 +1721,7 @@ function renderMap() {
     : `<li class="map-empty">这一天以机场、转场或休息为主，未匹配到可定位景点。</li>`;
   const alternatives = city.alternatives || [];
   $("#map-alternatives").innerHTML = alternatives.length
-    ? `<h3>备选景点</h3><p>金色点位会一直保留在地图上；天数增加或替换方案时可直接对照位置。</p><ul>${alternatives.map(item => {
+    ? `<h3>备选景点</h3><p>金色点位，可点击定位。</p><ul>${alternatives.map(item => {
       const place = mapPlaceForAlternative(places, item.name);
       return `<li>${place ? `<button type="button" data-map-focus="${esc(place.id)}">${esc(item.name)} <em aria-hidden="true">↗</em></button>` : `<strong>${esc(item.name)}</strong>`}<span>${esc(item.note)}</span></li>`;
     }).join("")}</ul>`
@@ -1696,11 +1734,16 @@ function renderMap() {
       mapInstance = L.map(container, { zoomControl: false, scrollWheelZoom: true, attributionControl: true });
       L.control.zoom({ position: "bottomright" }).addTo(mapInstance);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 18,
+        maxZoom: 19,
+        detectRetina: true,
+        noWrap: true,
+        crossOrigin: true,
         attribution: "© OpenStreetMap contributors"
       }).addTo(mapInstance);
       mapMarkerLayer = L.layerGroup().addTo(mapInstance);
       mapRouteLayer = L.layerGroup().addTo(mapInstance);
+      L.control.scale({ imperial: false, position: "bottomleft" }).addTo(mapInstance);
+      container.insertAdjacentHTML("beforeend", `<span class="map-live-badge">LIVE MAP · OSM</span>`);
     }
     renderLeafletMap(places, sequence);
   } else {
@@ -2047,6 +2090,20 @@ $("#map-route-list").addEventListener("click", event => {
   const button = event.target.closest("[data-map-stop-id]");
   if (!button) return;
   selectMapPlace(button.dataset.mapStopId, true);
+});
+
+$("#trip-map").addEventListener("click", event => {
+  const marker = event.target.closest("[data-map-fallback-place]");
+  if (!marker) return;
+  selectMapPlace(marker.dataset.mapFallbackPlace);
+});
+
+$("#trip-map").addEventListener("keydown", event => {
+  if (!['Enter', ' '].includes(event.key)) return;
+  const marker = event.target.closest("[data-map-fallback-place]");
+  if (!marker) return;
+  event.preventDefault();
+  selectMapPlace(marker.dataset.mapFallbackPlace);
 });
 
 $("#map-alternatives").addEventListener("click", event => {
