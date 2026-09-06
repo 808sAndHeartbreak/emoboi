@@ -379,6 +379,76 @@ const CITIES = {
   }
 };
 
+const MAP_PLACES = {
+  hanoi: [
+    { id: "hanoi-airport", name: "内排机场 HAN", lat: 21.2212, lng: 105.8072, kind: "context", terms: ["HAN T1", "HAN T2", "内排"] },
+    { id: "hanoi-old-quarter", name: "老城区", lat: 21.0341, lng: 105.8502, kind: "context", terms: ["老城区", "老城"] },
+    { id: "hanoi-hoan-kiem", name: "还剑湖", lat: 21.0287, lng: 105.8525, kind: "core", terms: ["还剑湖", "Hoàn Kiếm"] },
+    { id: "hanoi-36-streets", name: "36 行街", lat: 21.0355, lng: 105.851, kind: "core", terms: ["36 行街"] },
+    { id: "hanoi-cathedral", name: "河内大教堂", lat: 21.0289, lng: 105.8487, kind: "core", terms: ["河内大教堂"] },
+    { id: "hanoi-coffee", name: "咖啡工作坊", lat: 21.0311, lng: 105.8515, kind: "core", terms: ["咖啡工作坊", "Coffee Workshop"] },
+    { id: "hanoi-weekend-walk", name: "老城周末步行街 / 夜市", lat: 21.0338, lng: 105.8524, kind: "core", terms: ["老城周末步行街", "夜市"] },
+    { id: "hanoi-imperial-city", name: "升龙皇城", lat: 21.0356, lng: 105.8335, kind: "core", terms: ["升龙皇城"] },
+    { id: "hanoi-temple-literature", name: "文庙", lat: 21.028, lng: 105.8353, kind: "core", terms: ["文庙"] },
+    { id: "hanoi-west-lake", name: "西湖与镇国寺", lat: 21.0455, lng: 105.8369, kind: "core", terms: ["西湖与镇国寺", "西湖"] },
+    { id: "hanoi-fine-arts", name: "越南美术馆", lat: 21.0308, lng: 105.8369, kind: "alternative", terms: ["越南美术馆"] },
+    { id: "hanoi-market", name: "同春市场", lat: 21.0394, lng: 105.8471, kind: "alternative", terms: ["同春市场"] },
+    { id: "hanoi-train-street", name: "河内火车街", lat: 21.0245, lng: 105.8412, kind: "alternative", terms: ["河内火车街"] }
+  ],
+  danang: [
+    { id: "danang-airport", name: "岘港机场 DAD", lat: 16.0439, lng: 108.1997, kind: "context", terms: ["DAD T1"] },
+    { id: "danang-my-khe", name: "美溪海滩", lat: 16.0678, lng: 108.2467, kind: "core", terms: ["美溪海滩", "美溪"] },
+    { id: "danang-hai-chau", name: "海州区", lat: 16.0678, lng: 108.2208, kind: "context", terms: ["海州区"] },
+    { id: "danang-cathedral", name: "岘港大教堂", lat: 16.0687, lng: 108.222, kind: "core", terms: ["岘港大教堂"] },
+    { id: "danang-market", name: "韩市场", lat: 16.0698, lng: 108.2225, kind: "core", terms: ["韩市场"] },
+    { id: "danang-cham", name: "占婆雕刻博物馆", lat: 16.0607, lng: 108.2233, kind: "core", terms: ["占婆雕刻博物馆"] },
+    { id: "danang-han-river", name: "韩江 / 龙桥", lat: 16.0615, lng: 108.2267, kind: "core", terms: ["韩江", "龙桥"] },
+    { id: "danang-son-tra", name: "山茶半岛", lat: 16.1044, lng: 108.2783, kind: "alternative", terms: ["山茶半岛"] },
+    { id: "danang-linh-ung", name: "灵应寺", lat: 16.1048, lng: 108.2845, kind: "alternative", terms: ["灵应寺"] },
+    { id: "danang-marble", name: "五行山", lat: 16.0035, lng: 108.2638, kind: "alternative", terms: ["五行山"] },
+    { id: "danang-ba-na", name: "巴拿山", lat: 15.9958, lng: 107.9965, kind: "core", terms: ["巴拿山", "Ba Na Hills"] },
+    { id: "danang-hoi-an", name: "会安古城", lat: 15.877, lng: 108.3275, kind: "core", terms: ["会安古城", "会安"] },
+    { id: "danang-tra-que", name: "Tra Que 菜园", lat: 15.9034, lng: 108.3455, kind: "alternative", terms: ["Tra Que 菜园"] },
+    { id: "danang-an-bang", name: "安邦海滩", lat: 15.9112, lng: 108.3555, kind: "alternative", terms: ["安邦海滩"] },
+    { id: "danang-my-son", name: "美山圣地", lat: 15.7645, lng: 108.969, kind: "alternative", terms: ["美山圣地"] }
+  ],
+  dalat: [
+    { id: "dalat-airport", name: "联姜机场 DLI", lat: 11.7509, lng: 108.3663, kind: "context", terms: ["DLI T1", "联姜"] },
+    { id: "dalat-xuan-huong", name: "春香湖", lat: 11.9467, lng: 108.4419, kind: "context", terms: ["春香湖"] },
+    { id: "dalat-market", name: "大叻市场", lat: 11.9406, lng: 108.4371, kind: "context", terms: ["大叻市场"] },
+    { id: "dalat-railway", name: "大叻旧火车站", lat: 11.9472, lng: 108.4543, kind: "core", terms: ["大叻旧火车站"] },
+    { id: "dalat-crazy-house", name: "疯狂屋", lat: 11.9404, lng: 108.4289, kind: "core", terms: ["疯狂屋", "Crazy House"] },
+    { id: "dalat-datanla", name: "达坦拉瀑布", lat: 11.901, lng: 108.4434, kind: "core", terms: ["达坦拉瀑布", "Datanla"] },
+    { id: "dalat-truc-lam", name: "竹林禅院", lat: 11.8844, lng: 108.4356, kind: "core", terms: ["竹林禅院"] },
+    { id: "dalat-tuyen-lam", name: "泉林湖", lat: 11.899, lng: 108.4197, kind: "core", terms: ["泉林湖"] },
+    { id: "dalat-linh-phuoc", name: "灵福寺", lat: 11.9759, lng: 108.4653, kind: "alternative", terms: ["灵福寺"] },
+    { id: "dalat-flower-park", name: "大叻花园", lat: 11.9475, lng: 108.443, kind: "alternative", terms: ["大叻花园"] },
+    { id: "dalat-domaine", name: "玛利亚修道院", lat: 11.947, lng: 108.4264, kind: "alternative", terms: ["玛利亚修道院"] },
+    { id: "dalat-lumiere", name: "Lumiere Da Lat", lat: 11.9623, lng: 108.4456, kind: "alternative", terms: ["Lumiere Da Lat"] },
+    { id: "dalat-cau-dat", name: "Cầu Đất 咖啡产区", lat: 11.7802, lng: 108.5343, kind: "core", terms: ["Cầu Đất"] },
+    { id: "dalat-kho-coffee", name: "K’Ho Coffee", lat: 11.938, lng: 108.438, kind: "core", terms: ["K’Ho Coffee", "K'Ho Coffee"] },
+    { id: "dalat-strawberry", name: "草莓园", lat: 11.963, lng: 108.414, kind: "alternative", terms: ["草莓园"] },
+    { id: "dalat-dapa-hill", name: "Dapa Hill", lat: 11.969, lng: 108.355, kind: "alternative", terms: ["Dapa Hill"] }
+  ],
+  nhatrang: [
+    { id: "nhatrang-airport", name: "金兰机场 CXR", lat: 12.0067, lng: 109.2186, kind: "context", terms: ["CXR T1", "金兰 CXR"] },
+    { id: "nhatrang-city", name: "芽庄市区", lat: 12.2388, lng: 109.1967, kind: "context", terms: ["芽庄住宿区"] },
+    { id: "nhatrang-tran-phu", name: "陈富海滩", lat: 12.238, lng: 109.196, kind: "core", terms: ["陈富海滩"] },
+    { id: "nhatrang-po-nagar", name: "婆那加塔", lat: 12.2659, lng: 109.1957, kind: "core", terms: ["婆那加塔", "Po Nagar"] },
+    { id: "nhatrang-hon-chong", name: "钟屿石岬", lat: 12.2711, lng: 109.2013, kind: "core", terms: ["钟屿石岬", "Hon Chong"] },
+    { id: "nhatrang-i-resort", name: "I-Resort 泥浆浴", lat: 12.2795, lng: 109.1794, kind: "core", terms: ["I-Resort 泥浆浴"] },
+    { id: "nhatrang-long-son", name: "龙山寺", lat: 12.2488, lng: 109.1828, kind: "core", terms: ["龙山寺"] },
+    { id: "nhatrang-cathedral", name: "芽庄大教堂", lat: 12.2457, lng: 109.1946, kind: "core", terms: ["芽庄大教堂"] },
+    { id: "nhatrang-museum", name: "国家海洋博物馆", lat: 12.2078, lng: 109.214, kind: "core", terms: ["国家海洋博物馆"] },
+    { id: "nhatrang-port", name: "南部码头 / 跳岛集合", lat: 12.192, lng: 109.214, kind: "core", terms: ["跳岛团", "黑珍珠号", "南部码头"] },
+    { id: "nhatrang-vinwonders", name: "珍珠岛 VinWonders", lat: 12.2023, lng: 109.238, kind: "core", terms: ["珍珠岛", "VinWonders"] },
+    { id: "nhatrang-hon-tam", name: "蚕岛 Hòn Tằm", lat: 12.1724, lng: 109.264, kind: "alternative", terms: ["蚕岛", "Hòn Tằm"] },
+    { id: "nhatrang-thap-ba", name: "Tháp Bà 热矿泥浴", lat: 12.2688, lng: 109.194, kind: "alternative", terms: ["Tháp Bà"] },
+    { id: "nhatrang-100-eggs", name: "100 Eggs 泥浴", lat: 12.1932, lng: 109.17, kind: "alternative", terms: ["100 Eggs"] },
+    { id: "nhatrang-fusion", name: "Fusion Resort Cam Ranh", lat: 12.0447, lng: 109.1951, kind: "core", terms: ["Fusion Resort", "金兰湾"] }
+  ]
+};
+
 const DEFAULT_ROUTE = [
   { id: "start", city: "hanoi", nights: 2, role: "start", locked: true },
   { id: "danang", city: "danang", nights: 3, role: "middle" },
@@ -899,6 +969,11 @@ let fxCurrency = "CNY";
 let activePhraseCategory = Object.keys(PHRASES)[0];
 let revealObserver = null;
 let activeNodeId = route[0]?.id || null;
+let mapCityKey = route.find(node => MAP_PLACES[node.city])?.city || "hanoi";
+let mapPlanIndex = 0;
+let mapInstance = null;
+let mapMarkerLayer = null;
+let mapRouteLayer = null;
 const expandedNodeIds = new Set(route.map(node => node.id));
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -1409,6 +1484,7 @@ function render() {
   renderHeroRail();
   renderAnalysis();
   renderTransport();
+  if (activeTool === "map") renderMap();
   if (activeTool === "weather") void loadWeather();
   saveRoute();
   setupReveals();
@@ -1453,6 +1529,142 @@ function renderTimeline() {
       <b>${esc(entry.label)}</b>
     </button>
   </li>`).join("");
+}
+
+function mapNodes() {
+  return route.filter(node => MAP_PLACES[node.city]);
+}
+
+function mapPlaceMatches(places, plan) {
+  const matches = [];
+  (plan.blocks || []).forEach(block => {
+    const text = String(block.text || "");
+    const found = places
+      .map(place => {
+        const positions = place.terms.map(term => text.indexOf(term)).filter(position => position >= 0);
+        return positions.length ? { place, position: Math.min(...positions) } : null;
+      })
+      .filter(Boolean)
+      .sort((first, second) => first.position - second.position);
+    found.forEach(({ place }) => {
+      if (matches.at(-1)?.place.id !== place.id) matches.push({ place, time: block.time });
+    });
+  });
+  return matches;
+}
+
+function mapPlaceForAlternative(places, name) {
+  return places.find(place => place.terms.some(term => name.includes(term) || term.includes(name)));
+}
+
+function renderMapFallback(places, sequence) {
+  const container = $("#trip-map");
+  if (!container) return;
+  const longitudes = places.map(place => place.lng);
+  const latitudes = places.map(place => place.lat);
+  const minLng = Math.min(...longitudes) - .02;
+  const maxLng = Math.max(...longitudes) + .02;
+  const minLat = Math.min(...latitudes) - .02;
+  const maxLat = Math.max(...latitudes) + .02;
+  const project = place => `${12 + ((place.lng - minLng) / (maxLng - minLng)) * 76},${88 - ((place.lat - minLat) / (maxLat - minLat)) * 76}`;
+  const activeIds = new Set(sequence.map(stop => stop.place.id));
+  const order = new Map();
+  sequence.forEach((stop, index) => { if (!order.has(stop.place.id)) order.set(stop.place.id, index + 1); });
+  const line = sequence.length > 1 ? `<polyline class="fallback-map-route" points="${sequence.map(stop => project(stop.place)).join(" ")}"/>` : "";
+  const markers = places.map(place => {
+    const [x, y] = project(place).split(",");
+    return `<g class="fallback-map-marker ${activeIds.has(place.id) ? "is-active" : place.kind === "alternative" ? "is-alternative" : ""}"><circle cx="${x}" cy="${y}" r="${activeIds.has(place.id) ? 2.8 : 1.8}"/><title>${esc(order.has(place.id) ? `${order.get(place.id)} · ` : "")}${esc(place.name)}</title></g>`;
+  }).join("");
+  container.innerHTML = `<svg class="fallback-map" viewBox="0 0 100 100" role="img" aria-label="景点分布示意图"><path class="fallback-map-water" d="M0 0h100v100H0z"/><path class="fallback-map-grid" d="M0 20h100M0 40h100M0 60h100M0 80h100M20 0v100M40 0v100M60 0v100M80 0v100"/>${line}${markers}</svg><p class="map-fallback-note">地图底图暂不可用，已显示地点分布示意。</p>`;
+}
+
+function renderLeafletMap(places, sequence) {
+  const activeIds = new Set(sequence.map(stop => stop.place.id));
+  const order = new Map();
+  sequence.forEach((stop, index) => { if (!order.has(stop.place.id)) order.set(stop.place.id, index + 1); });
+  mapMarkerLayer.clearLayers();
+  mapRouteLayer.clearLayers();
+  places.forEach(place => {
+    const active = activeIds.has(place.id);
+    const marker = L.circleMarker([place.lat, place.lng], {
+      radius: active ? 8 : place.kind === "alternative" ? 5 : 4,
+      color: active ? "#f36f59" : place.kind === "alternative" ? "#b9904b" : "#427c6c",
+      weight: active ? 3 : 1.5,
+      fillColor: active ? "#f36f59" : place.kind === "alternative" ? "#d4b376" : "#9ac9b9",
+      fillOpacity: active ? .96 : place.kind === "alternative" ? .48 : .62
+    }).addTo(mapMarkerLayer);
+    marker.bindTooltip(`${order.has(place.id) ? `${order.get(place.id)} · ` : ""}${place.name}`, {
+      permanent: active,
+      direction: "top",
+      offset: [0, -7],
+      className: active ? "map-tooltip is-route" : place.kind === "alternative" ? "map-tooltip is-alternative" : "map-tooltip"
+    });
+  });
+  if (sequence.length > 1) {
+    L.polyline(sequence.map(stop => [stop.place.lat, stop.place.lng]), {
+      color: "#f36f59",
+      weight: 3,
+      opacity: .86,
+      dashArray: "7 6",
+      lineCap: "round",
+      lineJoin: "round"
+    }).addTo(mapRouteLayer);
+  }
+  const bounds = L.latLngBounds(places.map(place => [place.lat, place.lng]));
+  mapInstance.fitBounds(bounds, { padding: [24, 24], maxZoom: 13, animate: false });
+  requestAnimationFrame(() => mapInstance.invalidateSize({ pan: false }));
+}
+
+function renderMap() {
+  const mapPanel = $("[data-tool-panel='map']");
+  if (!mapPanel || mapPanel.hidden) return;
+  const nodes = mapNodes();
+  if (!nodes.length) return;
+  const selectedNode = nodes.find(node => node.city === mapCityKey) || nodes[0];
+  mapCityKey = selectedNode.city;
+  const nodeIndex = route.findIndex(node => node.id === selectedNode.id);
+  const dates = nodeDates();
+  const plans = plansForNode(selectedNode, nodeIndex, dates);
+  if (!plans[mapPlanIndex]) mapPlanIndex = 0;
+  const plan = plans[mapPlanIndex];
+  const places = MAP_PLACES[selectedNode.city];
+  const sequence = mapPlaceMatches(places, plan);
+  const city = CITIES[selectedNode.city];
+
+  $("#map-city-tabs").innerHTML = nodes.map(node => {
+    const nodeDate = dates[route.findIndex(item => item.id === node.id)];
+    return `<button type="button" role="tab" aria-selected="${String(node.city === mapCityKey)}" data-map-city="${esc(node.city)}"><strong>${esc(CITIES[node.city].name)}</strong><small>${dateLabel(nodeDate.start)}—${dateLabel(nodeDate.end)}</small></button>`;
+  }).join("");
+  $("#map-day-tabs").innerHTML = plans.map((item, index) => `<button type="button" role="tab" aria-selected="${String(index === mapPlanIndex)}" data-map-plan-index="${index}"><time>${esc(item.date)}</time><span>${esc(item.tag)}</span></button>`).join("");
+  $("#map-selection").innerHTML = `<strong>${esc(city.name)} · ${esc(plan.date)}</strong><span>${esc(plan.tag)} · ${sequence.length ? `当天 ${sequence.length} 个地点` : "当天没有可定位地点"}</span>`;
+  $("#map-route-list").innerHTML = sequence.length
+    ? sequence.map((stop, index) => `<li><b>${esc(stop.time)}</b><span><i>${index + 1}</i>${esc(stop.place.name)}</span></li>`).join("")
+    : `<li class="map-empty">这一天以机场、转场或休息为主，未匹配到可定位景点。</li>`;
+  const alternatives = city.alternatives || [];
+  $("#map-alternatives").innerHTML = alternatives.length
+    ? `<h3>备选景点</h3><p>金色点位会一直保留在地图上；天数增加或替换方案时可直接对照位置。</p><ul>${alternatives.map(item => {
+      const place = mapPlaceForAlternative(places, item.name);
+      return `<li>${place ? `<button type="button" data-map-focus="${esc(place.id)}">${esc(item.name)}</button>` : `<strong>${esc(item.name)}</strong>`}<span>${esc(item.note)}</span></li>`;
+    }).join("")}</ul>`
+    : "";
+
+  if (window.L) {
+    const container = $("#trip-map");
+    if (!mapInstance) {
+      container.innerHTML = "";
+      mapInstance = L.map(container, { zoomControl: false, scrollWheelZoom: true, attributionControl: true });
+      L.control.zoom({ position: "bottomright" }).addTo(mapInstance);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18,
+        attribution: "© OpenStreetMap contributors"
+      }).addTo(mapInstance);
+      mapMarkerLayer = L.layerGroup().addTo(mapInstance);
+      mapRouteLayer = L.layerGroup().addTo(mapInstance);
+    }
+    renderLeafletMap(places, sequence);
+  } else {
+    renderMapFallback(places, sequence);
+  }
 }
 
 function activateNode(id) {
@@ -1734,20 +1946,27 @@ routeEditor.addEventListener("keydown", event => {
 
 function openTool(name) {
   activeTool = name;
-  const titles = { weather: "路线天气", exchange: "汇率换算", phrases: "越南常用语", flights: "机票与酒店" };
+  const titles = { weather: "路线天气", exchange: "汇率换算", phrases: "越南常用语", map: "路线地图", flights: "机票与酒店" };
   $("#drawer-title").textContent = titles[name];
   $$('[data-tool-panel]').forEach(panel => { panel.hidden = panel.dataset.toolPanel !== name; });
   $$("[data-tool]").forEach(button => button.setAttribute("aria-expanded", String(button.dataset.tool === name)));
   document.body.classList.add("drawer-open");
+  document.body.classList.toggle("map-tool-open", name === "map");
   $("#tool-drawer").setAttribute("aria-hidden", "false");
   if (name === "weather") void loadWeather();
   if (name === "exchange") updateExchange();
   if (name === "phrases") renderPhrases();
+  if (name === "map") {
+    mapCityKey = route.find(node => node.id === activeNodeId && MAP_PLACES[node.city])?.city || mapCityKey;
+    mapPlanIndex = 0;
+    renderMap();
+  }
 }
 
 function closeTool() {
   activeTool = null;
   document.body.classList.remove("drawer-open");
+  document.body.classList.remove("map-tool-open");
   $("#tool-drawer").setAttribute("aria-hidden", "true");
   $$("[data-tool]").forEach(button => button.setAttribute("aria-expanded", "false"));
 }
@@ -1759,6 +1978,28 @@ $$("[data-tool]").forEach(button => button.addEventListener("click", () => {
 $("#close-drawer").addEventListener("click", closeTool);
 $("#drawer-backdrop").addEventListener("click", closeTool);
 document.addEventListener("keydown", event => { if (event.key === "Escape" && document.body.classList.contains("drawer-open")) closeTool(); });
+
+$("#map-city-tabs").addEventListener("click", event => {
+  const button = event.target.closest("[data-map-city]");
+  if (!button) return;
+  mapCityKey = button.dataset.mapCity;
+  mapPlanIndex = 0;
+  renderMap();
+});
+
+$("#map-day-tabs").addEventListener("click", event => {
+  const button = event.target.closest("[data-map-plan-index]");
+  if (!button) return;
+  mapPlanIndex = Number(button.dataset.mapPlanIndex);
+  renderMap();
+});
+
+$("#map-alternatives").addEventListener("click", event => {
+  const button = event.target.closest("[data-map-focus]");
+  if (!button || !mapInstance) return;
+  const place = MAP_PLACES[mapCityKey]?.find(item => item.id === button.dataset.mapFocus);
+  if (place) mapInstance.setView([place.lat, place.lng], Math.max(mapInstance.getZoom(), 13), { animate: true });
+});
 
 function uniqueRouteCities() {
   return [...new Set(route.map(node => node.city))];

@@ -8,7 +8,8 @@
   <meta name="description" content="可编辑的 2026 越南路线规划器。">
   <title>越南路线规划器 · 2026</title>
   <link rel="preload" as="image" href="vietnam-road-illustration.webp" fetchpriority="high">
-  <link rel="stylesheet" href="planner.css?v=20260904-38">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="planner.css?v=20260906-41">
 </head>
 <body class="night-atlas">
   <header class="appbar">
@@ -17,6 +18,7 @@
         <button type="button" data-tool="weather" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4 4 0 1 1 1.6-7.7A5.5 5.5 0 0 1 19 12.5 2.8 2.8 0 0 1 18.2 18H7Z"/></svg><span>天气</span></button>
         <button type="button" data-tool="exchange" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 3-3m0 0L7 1m3 3H3m14 13-3 3m0 0 3 3m-3-3h7M5 10h11M8 7v10m8-7H8m8 0v7"/></svg><span>汇率</span></button>
         <button type="button" data-tool="phrases" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Zm4 5h8M8 7.5h5"/></svg><span>常用语</span></button>
+        <button type="button" data-tool="map" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3-6 2v16l6-2 6 2 6-2V3l-6 2-6-2Zm0 0v16m6-14v16"/></svg><span>地图</span></button>
         <button type="button" data-tool="flights" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 15 7.5-3.5V5.8c0-1.2.7-3.3 1.5-3.3s1.5 2.1 1.5 3.3v5.7L21 15v2l-7.5-1.5V20l2.5 1.5V23L12 22l-4 1v-1.5l2.5-1.5v-4.5L3 17v-2Z"/></svg><span>机票</span></button>
       </div>
     </div>
@@ -146,6 +148,29 @@
       <div class="phrase-list" id="phrase-list"></div>
     </section>
 
+    <section class="tool-panel map-panel" data-tool-panel="map" hidden>
+      <div class="map-panel-head">
+        <div>
+          <p class="tool-intro">路线地图</p>
+          <p class="map-panel-note">按当前规划查看当天地点；灰色为城市景点，金色为备选，珊瑚色为当天路线。</p>
+        </div>
+        <div class="map-legend" aria-label="地图图例">
+          <span><i class="map-legend-dot is-route"></i>当天路线</span>
+          <span><i class="map-legend-dot is-alternative"></i>备选景点</span>
+        </div>
+      </div>
+      <div class="map-city-tabs" id="map-city-tabs" role="tablist" aria-label="地图城市"></div>
+      <div class="map-day-tabs" id="map-day-tabs" role="tablist" aria-label="地图规划日期"></div>
+      <div class="map-layout">
+        <div class="trip-map" id="trip-map" role="application" aria-label="越南行程地图"></div>
+        <aside class="map-sidebar" aria-live="polite">
+          <div class="map-selection" id="map-selection"></div>
+          <ol class="map-route-list" id="map-route-list"></ol>
+          <section class="map-alternatives" id="map-alternatives"></section>
+        </aside>
+      </div>
+    </section>
+
     <section class="tool-panel" data-tool-panel="flights" hidden>
       <p class="tool-intro">已确认订单 · 时间均为当地时间</p>
       <p class="tool-intro">河内→岘港、岘港→大叻的截图航班会按离开日期显示，可在“节点之间怎么走”中点击时间切换。</p>
@@ -178,6 +203,7 @@
 
   <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">已复制</div>
 
-  <script src="planner.js?v=20260906-40"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="planner.js?v=20260906-41"></script>
 </body>
 </html>
