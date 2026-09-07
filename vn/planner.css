@@ -5080,3 +5080,22 @@ body.map-tool-open .tool-panel[data-tool-panel="map"] {
   .trip-timeline::-webkit-scrollbar-track { background: rgba(54, 113, 96, .08); }
   .trip-timeline::-webkit-scrollbar-thumb { border-radius: 99px; background: rgba(54, 113, 96, .42); }
 }
+
+.route-node.is-skipped .compact-restore {
+  display: inline-flex;
+  min-width: 62px;
+  min-height: 34px;
+  padding: 5px 8px;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 1px solid rgba(232, 111, 82, .32);
+  border-radius: 999px;
+  background: rgba(232, 111, 82, .08);
+  color: var(--accent);
+  cursor: pointer;
+  font: 700 11px/1 var(--sans);
+}
+
+.route-node.is-skipped .compact-restore i { font-size: 14px; font-style: normal; }
+.route-node.is-skipped .compact-restore:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }

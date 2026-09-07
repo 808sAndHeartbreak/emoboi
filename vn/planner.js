@@ -5,9 +5,9 @@ document.documentElement.classList.add("js");
 const TOTAL_NIGHTS = 12;
 const TOTAL_DAYS = 13;
 const CNY_TO_VND = 3880;
-const STORAGE_KEY = "emoboi-vn-route-v5";
+const STORAGE_KEY = "emoboi-vn-route-v6";
 const FLIGHT_STORAGE_KEY = "emoboi-vn-flight-choices-v1";
-const LEGACY_STORAGE_KEYS = ["emoboi-vn-route-v4", "emoboi-vn-route-v3", "emoboi-vn-route-v2"];
+const LEGACY_STORAGE_KEYS = ["emoboi-vn-route-v5", "emoboi-vn-route-v4", "emoboi-vn-route-v3", "emoboi-vn-route-v2"];
 const ARRIVAL_DATE = new Date("2026-09-25T17:45:00+07:00");
 const MIDDLE_START_DATE = new Date("2026-09-27T12:00:00+07:00");
 const HOTEL_CHECKIN_DATE = new Date("2026-10-05T15:00:00+07:00");
@@ -60,13 +60,17 @@ const CITIES = {
   },
   danang: {
     name: "岘港", local: "Đà Nẵng", airport: "DAD", region: "中部",
-    minNights: 3, recommendedNights: 3, maxNights: 4, defaultNights: 3, budget: [900000, 1800000], order: 16.0544,
+    minNights: 3, recommendedNights: 4, maxNights: 8, defaultNights: 4, budget: [900000, 1800000], order: 16.0544,
     coordinates: [16.0544, 108.2022],
     themes: ["海边", "会安", "占婆文化", "慢生活"],
     durationGuide: {
       2: "只有 1 个完整日：岘港与会安必须二选一，不建议这样排。",
       3: "2 个完整日：城市线 + 巴拿山（必要早起）；会安建议增加到 4 晚再安排。",
       4: "3 个完整日：城市线、巴拿山与会安各占一条主线，节奏仍可控。",
+      5: "4 个完整日：加山茶半岛或五行山，不再把两条远线硬塞同一天。",
+      6: "5 个完整日：山茶、五行山与会安乡村慢游可以分开，节奏最舒服。",
+      7: "6 个完整日：再加一天海钓 / 海上活动，需早起并看海况。",
+      8: "7 个完整日：核心景点、海钓与雨天缓冲都能分开安排，适合不赶行程。",
     },
     summary: "海滩、山茶半岛、巴拿山与会安；以岘港为住宿节点。",
     plays: ["美溪海滩 Mỹ Khê", "岘港大教堂 Da Nang Cathedral", "韩市场 Hàn Market", "占婆雕刻博物馆", "山茶半岛 Sơn Trà", "五行山 Ngũ Hành Sơn", "巴拿山 Ba Na Hills", "会安古城 Hội An", "Tra Que 菜园 / An Bàng 海滩"],
@@ -107,13 +111,56 @@ const CITIES = {
         { time: "18:00–19:00", text: "会安河边晚饭，一小时。" },
         { time: "19:30–21:00", text: "灯笼夜景、河边与夜市；把最适合拍照的时段留到天黑后。" },
         { time: "21:00–22:00", text: "返回岘港，或在天数充足时改为住会安；夜间不再追加远点。" }
-      ], food: "会安晚饭可按口味选 Cơm gà（鸡饭）、Cao lầu（高楼面）或白玫瑰；甜品和滴漏咖啡留到河边慢慢吃，优先现场看座位与卫生。" }
+      ], food: "会安晚饭可按口味选 Cơm gà（鸡饭）、Cao lầu（高楼面）或白玫瑰；甜品和滴漏咖啡留到河边慢慢吃，优先现场看座位与卫生。" },
+      { theme: "山茶半岛与灵应寺", mapStops: [
+        { id: "danang-son-tra", time: "13:30–16:30" },
+        { id: "danang-linh-ung", time: "14:30–16:00" }
+      ], blocks: [
+        { time: "12:00–13:00", text: "起床、午饭；这天不需要早起，午后从美溪出发去山茶半岛。" },
+        { time: "13:30–16:30", text: "山茶半岛与灵应寺：看海、观景和短停，山路弯且天气变化快；用车比骑摩托更稳妥。" },
+        { time: "17:00–18:00", text: "回美溪或海州休息，天气不好就提前返程。" },
+        { time: "19:00–20:00", text: "晚饭，一小时。" },
+        { time: "20:30 后", text: "沿海散步或回酒店，不再跨城。" }
+      ], food: "午饭在美溪解决；山茶回程后就近吃海鲜或越南煎饼，不为一顿饭再去海州排队。" },
+      { theme: "五行山与安邦海滩", mapStops: [
+        { id: "danang-marble", time: "13:30–15:30" },
+        { id: "danang-tra-que", time: "16:00–17:30" },
+        { id: "danang-an-bang", time: "17:30–18:30" }
+      ], blocks: [
+        { time: "12:00–13:00", text: "起床、午饭；五行山石阶多、洞穴湿滑，穿防滑鞋。" },
+        { time: "13:30–15:30", text: "五行山，按体力选择水山主线；炎热或下雨时缩短洞穴路线。" },
+        { time: "16:00–17:30", text: "Tra Que 菜园慢走，或直接前往安邦海滩看海；两者只保留轻量停留。" },
+        { time: "18:00–19:00", text: "会安 / 安邦附近晚饭，一小时。" },
+        { time: "19:30–21:00", text: "有体力再去会安古城看灯，不舒服就直接回岘港。" }
+      ], food: "这天可以在会安吃高楼面或鸡饭；若只走五行山，则回美溪附近吃晚饭，避免路线反复。" },
+      { theme: "海钓 / 海上活动（需预约）", mapStops: [
+        { id: "danang-fishing-port", time: "07:00–13:00" },
+        { id: "danang-my-khe", time: "16:30–18:00" }
+      ], blocks: [
+        { time: "05:30–07:00", text: "这天必须早起；按船家确认的时间前往 Thọ Quang / Tiên Sa 一带集合，具体码头与接送点以订单为准。" },
+        { time: "07:00–13:00", text: "海钓或半日海上活动；风浪、降雨、船班和成行人数都会影响安排，前一晚确认，天气差就不要硬出海。" },
+        { time: "13:00–16:00", text: "返回后午饭、洗澡和补眠；不再叠加巴拿山或会安。" },
+        { time: "16:30–18:00", text: "美溪海滩轻松散步，看体力决定是否下水。" },
+        { time: "19:00–20:00", text: "晚饭，一小时。" },
+        { time: "20:30 后", text: "早点休息；海上活动日不安排夜间跨区。" }
+      ], food: "船上餐食按船家确认；上船前自备水和防晒，回岸后以热食和电解质饮料恢复，不安排复杂晚餐。" },
+      { theme: "雨天缓冲与美山备选", mapStops: [
+        { id: "danang-my-khe", time: "13:30–16:30" },
+        { id: "danang-han-river", time: "20:00–21:30" }
+      ], blocks: [
+        { time: "12:00–13:00", text: "起床、午饭；把这天作为天气缓冲，不提前锁死远郊。" },
+        { time: "13:30–16:30", text: "天气好且愿意早起时，把这天替换为美山圣地整日线；否则留在美溪，安排咖啡、按摩、商场或海边慢走。" },
+        { time: "17:00–18:30", text: "回酒店休息，确认下一段航班 / 交通与行李。" },
+        { time: "19:00–20:00", text: "晚饭，一小时。" },
+        { time: "20:00–21:30", text: "沿韩江或龙桥散步；天气差就直接回酒店。" }
+      ], food: "雨天优先选择海州或美溪的室内餐厅；若安排美山，午餐按当地团 / 包车确认，回城后再吃一顿简单热食。" }
     ],
     alternatives: [
       { name: "会安古城", note: "增加到 4 晚时安排一整条黄昏—夜景线；默认 3 晚先不塞进城市日。" },
       { name: "山茶半岛", note: "海况和天气好时安排半天，山路弯、用车比摩托更稳妥。" },
       { name: "灵应寺", note: "和山茶半岛绑定，不建议单独跨城往返。" },
       { name: "五行山", note: "石阶多、洞穴湿滑；替换半天城市线，穿防滑鞋并留意开放时间。" },
+      { name: "海钓 / 海上活动", note: "需早起和提前预约；Thọ Quang / Tiên Sa 具体集合码头、船班与风浪以前一晚确认为准。" },
       { name: "美山圣地", note: "需要早起和较长车程，只在愿意牺牲午睡时作为整日备选。" },
       { name: "安邦海滩", note: "如果会安当天想减少古迹，可和 Tra Que 菜园组成慢游半天。" }
     ],
@@ -126,11 +173,11 @@ const CITIES = {
   },
   nhatrang: {
     name: "芽庄", local: "Nha Trang", airport: "CXR", region: "中南部",
-    minNights: 2, recommendedNights: 4, maxNights: 4, defaultNights: 4, budget: [1000000, 2100000], order: 12.2388,
+    minNights: 2, recommendedNights: 2, maxNights: 4, defaultNights: 2, budget: [1000000, 2100000], order: 12.2388,
     coordinates: [12.2388, 109.1967],
     themes: ["占婆文化", "泥浆浴", "海岛", "度假"],
     durationGuide: {
-      2: "2 晚全部给 Fusion Resort：从大叻直送、入住与度假，不安排芽庄市区；想看市区至少选 3 晚。",
+      2: "2 晚全部给 Fusion Resort：从大叻山路直送或岘港飞金兰，入住后只留在度假村；不安排芽庄市区。",
       3: "1 个芽庄市区完整日 + 2 个 Fusion 晚：优先婆那加塔、钟屿石岬与泥浴北线。",
       4: "1 个芽庄市区完整日 + 2 个 Fusion 晚，再多一个抵达缓冲夜；海岛与珍珠岛留作替换，不硬塞。",
     },
@@ -242,7 +289,7 @@ const CITIES = {
   },
   dalat: {
     name: "大叻", local: "Đà Lạt", airport: "DLI", region: "中部高原",
-    minNights: 2, recommendedNights: 3, maxNights: 4, defaultNights: 3, budget: [850000, 1700000], order: 11.9404,
+    minNights: 0, recommendedNights: 4, maxNights: 4, defaultNights: 4, budget: [850000, 1700000], order: 11.9404,
     coordinates: [11.9404, 108.4583],
     themes: ["咖啡", "高原建筑", "瀑布", "慢生活"],
     durationGuide: {
@@ -449,6 +496,7 @@ const MAP_PLACES = {
     { id: "danang-marble", name: "五行山", lat: 16.0035, lng: 108.2638, kind: "alternative", terms: ["五行山"] },
     { id: "danang-ba-na", name: "巴拿山", lat: 15.9958, lng: 107.9965, kind: "core", terms: ["巴拿山", "Ba Na Hills"] },
     { id: "danang-hoi-an", name: "会安古城", lat: 15.877, lng: 108.3275, kind: "core", terms: ["会安古城", "会安"] },
+    { id: "danang-fishing-port", name: "海钓集合码头（Thọ Quang / Tiên Sa）", lat: 16.1172, lng: 108.2262, kind: "alternative", terms: ["Thọ Quang", "Tiên Sa", "海钓", "海上活动"] },
     { id: "danang-tra-que", name: "Tra Que 菜园", lat: 15.9034, lng: 108.3455, kind: "alternative", terms: ["Tra Que 菜园"] },
     { id: "danang-an-bang", name: "安邦海滩", lat: 15.9112, lng: 108.3555, kind: "alternative", terms: ["安邦海滩"] },
     { id: "danang-my-son", name: "美山圣地", lat: 15.7645, lng: 108.969, kind: "alternative", terms: ["美山圣地"] }
@@ -493,9 +541,9 @@ const MAP_PLACES = {
 
 const DEFAULT_ROUTE = [
   { id: "start", city: "hanoi", nights: 2, role: "start", locked: true },
-  { id: "danang", city: "danang", nights: 3, role: "middle" },
-  { id: "dalat", city: "dalat", nights: 3, role: "middle" },
-  { id: "end", city: "nhatrang", nights: 4, role: "end", locked: true }
+  { id: "danang", city: "danang", nights: 4, role: "middle" },
+  { id: "dalat", city: "dalat", nights: 4, role: "middle" },
+  { id: "end", city: "nhatrang", nights: 2, role: "end", locked: true }
 ];
 
 const TRANSPORT = {};
@@ -745,14 +793,27 @@ const PHRASES = {
     ["Cảm ơn", "谢谢", "嘎门"],
     ["Xin lỗi", "对不起 / 不好意思", "新 洛伊"],
     ["Tạm biệt", "再见", "答姆 别"],
+    ["Xin phép", "请问 / 借过", "新 费普"],
+    ["Làm ơn", "麻烦 / 请", "蓝 恩"],
     ["Vâng / Dạ", "是的（礼貌）", "旺 / 亚"],
     ["Không", "不是 / 不要", "空"],
+    ["Đúng rồi", "对，就是这样", "东 若伊"],
+    ["Không có", "没有", "空 果"],
+    ["Hết rồi", "没有了 / 用完了", "黑特 若伊"],
+    ["Tôi tên là…", "我叫……", "多伊 颠 拉"],
+    ["Tôi là người Trung Quốc", "我是中国人", "多伊 拉 努伊 仲 国"],
+    ["Tôi nói tiếng Việt một chút", "我会说一点越南语", "多伊 诺伊 颠 越 木 朱"],
+    ["Bạn khỏe không?", "你好吗？", "班 快 空"],
+    ["Tôi khỏe, cảm ơn", "我很好，谢谢", "多伊 快 嘎门"],
     ["Tôi không hiểu", "我听不懂", "多伊 空 友"],
     ["Bạn có nói tiếng Anh không?", "你会说英语吗？", "伴 果 诺 颠 安 空"],
     ["Nói chậm một chút", "请说慢一点", "诺 枕 木 朱"],
     ["Bạn viết ra giúp tôi", "请帮我写下来", "伴 越 扎 族 多伊"],
+    ["Bạn có thể nói bằng tiếng Trung không?", "你可以说中文吗？", "伴 果 特 诺伊 棒 颠 仲 空"],
     ["Tôi biết một chút", "我会一点", "多伊 别 木 朱"],
-    ["Không sao", "没关系", "空 勺"]
+    ["Không sao", "没关系", "空 桑"],
+    ["Đợi một chút", "请等一下", "多伊 木 朱"],
+    ["Tôi cần giúp đỡ", "我需要帮助", "多伊 根 族 德"]
   ],
   出行: [
     ["Cho tôi đến địa chỉ này", "请带我去这个地址", "卓 多伊 登 地啊 只 奈"],
@@ -799,41 +860,19 @@ const PHRASES = {
     ["Tôi trả tiền mặt", "我付现金", "多伊 茶 甜 末"],
     ["Cho tôi túi", "请给我一个袋子", "卓 多伊 杜伊"]
   ],
-  酒店: [
-    ["Tôi có đặt phòng", "我预订了房间", "多伊 果 达 风"],
-    ["Tên tôi là…", "我的名字是……", "颠 多伊 拉"],
-    ["Mấy giờ nhận phòng?", "几点可以入住？", "美 约 任 风"],
-    ["Mấy giờ trả phòng?", "几点退房？", "美 约 茶 风"],
-    ["Tôi có thể gửi hành lý không?", "可以寄存行李吗？", "多伊 果 特 归 杭 李 空"],
-    ["Cho tôi thêm khăn tắm", "请多给我浴巾", "卓 多伊 添 堪 探"],
-    ["Máy lạnh không hoạt động", "空调坏了", "麦 冷 空 活 冬"],
-    ["Mật khẩu Wi-Fi là gì?", "Wi-Fi 密码是什么？", "末 口 歪法 拉 夷"],
-    ["Phòng quá ồn", "房间太吵", "风 瓜 翁"],
-    ["Không có nước nóng", "没有热水", "空 果 讷 农"],
-    ["Cho tôi phòng yên tĩnh", "请给我安静的房间", "卓 多伊 风 烟 丁"],
-    ["Bữa sáng ở đâu?", "早餐在哪里？", "布啊 桑 额 兜"],
-    ["Gọi taxi giúp tôi", "请帮我叫出租车", "戈 达西 族 多伊"]
-  ],
-  求助: [
-    ["Tôi cần giúp đỡ", "我需要帮助", "多伊 根 族 德"],
-    ["Tôi bị lạc", "我迷路了", "多伊 比 腊"],
-    ["Tôi bị mất hộ chiếu", "我的护照丢了", "多伊 比 麦 护 照"],
-    ["Gọi cảnh sát, làm ơn", "请报警", "戈 景 萨，蓝 恩"],
-    ["Gọi xe cấp cứu, làm ơn", "请叫救护车", "戈 些 格 久，蓝 恩"],
-    ["Bệnh viện gần nhất ở đâu?", "最近的医院在哪里？", "病 院 根 一 额 兜"],
-    ["Tôi không khỏe", "我不舒服", "多伊 空 快"],
-    ["Bạn có thể viết ra không?", "你可以写下来吗？", "伴 果 特 越 扎 空"],
-    ["Tôi cần bác sĩ", "我需要医生", "多伊 根 巴 西"],
-    ["Tôi bị dị ứng", "我过敏了", "多伊 比 夷 翁"],
-    ["Nhà thuốc ở đâu?", "药店在哪里？", "雅 图 额 兜"],
-    ["Xin gọi cho số này", "请拨打这个号码", "新 戈 卓 苏 奈"]
-  ],
   语法: [
+    ["Xin …", "请……", "新"],
+    ["Làm ơn + 动词", "麻烦请……", "蓝 恩"],
     ["Tôi muốn …", "我想要……", "多伊 木温"],
     ["Tôi cần …", "我需要……", "多伊 根"],
+    ["Tôi thích …", "我喜欢……", "多伊 特伊克"],
+    ["Tôi không thích …", "我不喜欢……", "多伊 空 特伊克"],
     ["Cho tôi …", "请给我……", "卓 多伊"],
+    ["Cho tôi một …", "请给我一个……", "卓 多伊 木 ……"],
+    ["Cho tôi thêm …", "请再给我……", "卓 多伊 添 ……"],
     ["Tôi có thể … không?", "我可以……吗？", "多伊 果 特 …… 空"],
     ["Có … không?", "有……吗？", "果 …… 空"],
+    ["Có thể … không?", "可以……吗？", "果 特 …… 空"],
     ["… ở đâu?", "……在哪里？", "……额 兜"],
     ["… là gì?", "……是什么？", "……拉 伊"],
     ["Bao nhiêu tiền?", "多少钱？", "包 纽 甜"],
@@ -850,6 +889,8 @@ const PHRASES = {
     ["Tôi muốn đi …", "我想去……", "多伊 木温 滴"],
     ["Tôi đã đặt …", "我已经预订了……", "多伊 达 达 ……"],
     ["Tôi đang …", "我正在……", "多伊 当"],
+    ["Tôi đã …", "我已经……", "多伊 达 ……"],
+    ["Tôi chưa …", "我还没有……", "多伊 朱啊 ……"],
     ["Tôi không muốn …", "我不想要……", "多伊 空 木温"],
     ["Không …", "不要 / 不……", "空"],
     ["Đừng …", "请不要……", "登"],
@@ -857,6 +898,7 @@ const PHRASES = {
     ["Làm ơn …", "麻烦请……", "蓝 恩"],
     ["Nói chậm một chút", "请说慢一点", "诺伊 枕 木 朱"],
     ["Bạn nói lại được không?", "你可以再说一遍吗？", "伴 诺伊 莱 德 空"],
+    ["Bạn có thể viết ra không?", "你可以写下来吗？", "伴 果 特 越 扎 空"],
     ["Tôi hiểu / Tôi không hiểu", "我懂 / 我不懂", "多伊 休伊 / 多伊 空 休伊"],
     ["Tôi nói tiếng Việt không tốt", "我越南语说得不好", "多伊 诺伊 颠 越 空 多特"],
     ["Nói bằng tiếng Anh được không?", "可以用英语说吗？", "诺伊 棒 颠 安 德 空"],
@@ -864,6 +906,7 @@ const PHRASES = {
     ["Đây là …", "这是……", "呆 拉"],
     ["Tôi có … / Tôi không có …", "我有…… / 我没有……", "多伊 果 / 多伊 空 果"],
     ["Có thể đổi … không?", "可以换……吗？", "果 特 多伊 空"],
+    ["Có thể thanh toán bằng thẻ không?", "可以刷卡吗？", "果 特 汤 顿 棒 特 空"],
     ["Một …, làm ơn", "请给我一个……", "木 …… 蓝 恩"],
     ["Thêm … / Ít …", "多一点…… / 少一点……", "添 …… / 一 ……"],
     ["Không cay / Ít cay", "不要辣 / 少辣", "空 该 / 一 该"],
@@ -876,6 +919,21 @@ const PHRASES = {
     ["Tôi xuống ở đây", "我在这里下车", "多伊 松 额 呆"],
     ["Tính tiền, làm ơn", "请买单", "丁 甜 蓝 恩"]
   ]
+};
+
+const PHRASE_READINGS = {
+  "Tôi": "多伊", "Bạn": "班", "Anh / Chị": "英 / 只", "Em": "诶姆", "Chúng ta": "仲 达", "Chúng tôi": "仲 多伊",
+  "Có": "哥", "Không": "空", "Được": "得", "Đúng": "东", "Đúng rồi": "东 若伊", "Rồi": "若伊", "Chưa": "朱啊",
+  "Cũng": "贡", "Rất": "惹特", "Quá": "瓜", "Một chút": "木 朱", "Nhiều": "纽", "Ít": "一特", "Tất cả": "特 嘎",
+  "Một": "莫特", "Hai": "海", "Ba": "巴", "Bốn": "奔", "Năm": "南", "Sáu": "扫", "Bảy": "拜", "Tám": "探姆", "Chín": "紧", "Mười": "梅",
+  "Trăm": "占", "Nghìn": "宁", "Đồng": "东", "Đây": "呆", "Đó": "多", "Đâu": "兜", "Gì": "伊", "Ai": "哎", "Nào": "瑙",
+  "Bao nhiêu": "包 纽", "Bao lâu": "包 楼", "Khi nào": "基 瑙", "Tại sao": "代 桑", "Ở đâu": "额 兜", "Hôm nay": "轰 奈", "Ngày mai": "艾 买", "Bây giờ": "拜 哟",
+  "Sáng": "桑", "Trưa": "朱啊", "Chiều": "桥", "Tối": "多伊", "Giờ": "约", "Phút": "富特", "Đi": "滴", "Đến": "登", "Về": "维", "Ăn": "安", "Uống": "翁",
+  "Mua": "木啊", "Bán": "班", "Xem": "森姆", "Tìm": "丁姆", "Chờ": "卓", "Gọi": "戈伊", "Đặt": "达", "Nhận": "任", "Trả": "茶", "Đổi": "多伊", "Chọn": "仲",
+  "Nói": "诺伊", "Viết": "越特", "Hiểu": "休伊", "Biết": "别特", "Cần": "根", "Muốn": "木温", "Mở": "么", "Đóng": "东", "Dừng": "用", "Lên": "连", "Xuống": "松", "Vào": "瓦奥", "Ra": "扎",
+  "Trái": "摘", "Phải": "法伊", "Thẳng": "探", "Gần": "根", "Xa": "萨", "Trên": "真", "Dưới": "祖伊", "Trong": "仲", "Ngoài": "外伊", "Bên cạnh": "宾 景", "Ở giữa": "额 朱啊", "Lối vào": "洛伊 瓦奥", "Lối ra": "洛伊 扎",
+  "Chậm": "枕", "Nhanh": "娘", "Tốt": "多特", "Ngon": "农", "Rẻ": "热", "Đắt": "达特", "Nóng": "农", "Lạnh": "冷", "Nước": "讷", "Cơm": "根", "Phở": "佛", "Bún": "本", "Cà phê": "嘎 费", "Bia": "比啊", "Trà": "茶", "Đá": "达", "Đường": "东", "Muối": "木伊", "Thịt": "特", "Gà": "嘎", "Bò": "波", "Cá": "嘎", "Rau": "饶", "Hải sản": "海 桑",
+  "Nhà vệ sinh": "雅 卫 生", "Sân bay": "森 拜", "Ga tàu": "嘎 道", "Bến xe": "本 些", "Xe": "些", "Taxi": "塔西", "Vé": "维", "Tiền": "甜", "Giá": "架", "Thẻ": "特", "Tiền mặt": "甜 末", "Hộ chiếu": "霍 诏", "Hành lý": "杭 李", "Điện thoại": "电 陶伊", "Pin": "宾", "Cửa hàng": "古啊 杭", "Chợ": "卓"
 };
 
 const PLACE_ALIASES = {
@@ -1040,6 +1098,18 @@ function cloneDefaultRoute() {
   return cloneRoute(DEFAULT_ROUTE);
 }
 
+function activeRouteNodes() {
+  return route.filter(node => node.role !== "middle" || node.nights > 0);
+}
+
+function routeNodeIndex(id) {
+  return route.findIndex(node => node.id === id);
+}
+
+function isSkippedNode(node) {
+  return node.role === "middle" && node.nights === 0;
+}
+
 function endNights() {
   return route.find(node => node.role === "end")?.nights || 2;
 }
@@ -1067,6 +1137,11 @@ function loadRoute() {
     const legacy = current ? null : LEGACY_STORAGE_KEYS.map(key => localStorage.getItem(key)).find(Boolean);
     const parsed = JSON.parse(current || legacy);
     if (!Array.isArray(parsed)) return cloneDefaultRoute();
+    const legacyDefault = parsed
+      .filter(node => node && CITIES[node.city])
+      .map(node => `${node.city}:${Number.parseInt(node.nights, 10)}`)
+      .join("|") === "hanoi:2|danang:3|dalat:3|nhatrang:4";
+    if (!current && legacyDefault) return cloneDefaultRoute();
     const storedNights = new Map(
       parsed
         .filter(node => node && CITIES[node.city])
@@ -1102,9 +1177,11 @@ function loadFlightChoices() {
 }
 
 function clampNights(value, cityKey) {
-  const minimum = CITIES[cityKey]?.minNights || 1;
-  const maximum = CITIES[cityKey]?.maxNights || 5;
-  return Math.max(minimum, Math.min(maximum, Number.parseInt(value, 10) || minimum));
+  const minimum = CITIES[cityKey]?.minNights ?? 1;
+  const maximum = CITIES[cityKey]?.maxNights ?? 5;
+  const parsed = Number.parseInt(value, 10);
+  const normalized = Number.isFinite(parsed) ? parsed : minimum;
+  return Math.max(minimum, Math.min(maximum, normalized));
 }
 
 function saveRoute() {
@@ -1157,15 +1234,9 @@ function renderDayFood(food) {
 }
 
 function renderAlternatives(city, node) {
+  if (node.role === "end" && node.city === "nhatrang" && node.nights === 2) return "";
   if (node.nights >= city.maxNights || !city.alternatives?.length) return "";
   return `<section class="alternative-shelf" aria-label="备选景点"><div class="alternative-head"><span>备选景点</span></div><ul class="alternative-list">${city.alternatives.map(item => `<li><button type="button" title="点击复制地点" data-copy-text="${esc(PLACE_ALIASES[item.name] || item.name)}">${esc(item.name)}</button><span>${esc(item.note)}</span></li>`).join("")}</ul></section>`;
-}
-
-function vietnameseRomanization(value) {
-  return String(value)
-    .normalize("NFD")
-    .replace(/[\u0300\u0301\u0303\u0309\u0323]/g, "")
-    .normalize("NFC");
 }
 
 function dateLabel(date) {
@@ -1286,6 +1357,18 @@ function transferBlocksForNode(previous, node, date, transfer) {
   if (FLIGHTS[legKey(previous.city, node.city)]) {
     return flightTransferBlocks(previous.city, node.city, date);
   }
+  if (previous.city === "danang" && node.city === "nhatrang") {
+    const arrivalArea = node.nights === 2 ? "Fusion Resort Cam Ranh" : "芽庄陈富海滩住宿区";
+    const airportRide = node.nights === 2
+      ? "CXR 到 Fusion Resort 约 5–6 km、10–15 分钟"
+      : "CXR 到芽庄陈富海滩住宿区约 35–40 km、45–60 分钟";
+    return [
+      { time: "09:30–10:30", text: "起床、早餐、退房；把行李交给前台寄存，确认 DAD → CXR 的当天航班和机场接送。" },
+      { time: "10:30–11:00", text: "从美溪 / 海州住宿区前往岘港 DAD T1，Grab 通常 15–25 分钟；国内航班按起飞前 1.5 小时到机场。" },
+      { time: "航班待确认", text: "岘港 DAD T1 → 金兰 CXR T1，飞行约 1.1–1.3 小时；具体班次需要按离开日期确认，前段在 DAD 起飞后结束。" },
+      { time: "抵达后约 1 小时", text: `从金兰 CXR T1 前往${arrivalArea}；${airportRide}，抵达后只安排入住、吃饭和休息。` }
+    ];
+  }
   if (previous.city === "dalat" && node.city === "nhatrang" && node.nights === 2) {
     return [
       { time: "09:30–10:30", text: "起床、早餐、退房；请大叻酒店前台协助安排 Klook 专车直送 Fusion Resort。若选 FUTA，先到 FUTA 大叻联运站再转车，不适合只有两晚的保底方案。" },
@@ -1328,6 +1411,28 @@ function transferBlocksForNode(previous, node, date, transfer) {
 }
 
 function arrivalBlocksForNode(previous, node, date) {
+  if (previous.city === "danang" && node.city === "nhatrang") {
+    const arrivalArea = node.nights === 2 ? "Fusion Resort Cam Ranh" : "芽庄陈富海滩住宿区";
+    const airportRide = node.nights === 2
+      ? "CXR 到 Fusion Resort 约 5–6 km、10–15 分钟"
+      : "CXR 到芽庄陈富海滩住宿区约 35–40 km、45–60 分钟";
+    if (node.nights === 3) {
+      return [
+        { time: "航班待确认", text: "从岘港 DAD T1 飞往金兰 CXR T1，约 1.1–1.3 小时；具体班次按离开日期确认，国内航班提前 1.5 小时到机场。" },
+        { time: "抵达后约 1 小时", text: "从金兰 CXR T1 前往芽庄陈富海滩住宿区，约 35–40 km、45–60 分钟，办理入住。" },
+        { time: "15:30–17:00", text: "婆那加塔 Po Nagar；如果航班较晚就取消，不把抵达日变成赶景点。" },
+        { time: "17:15–18:00", text: "钟屿石岬 Hon Chong 或陈富海滩二选一，看海后回住宿区。" },
+        { time: "19:00–20:00", text: "晚饭，一小时；不再安排泥浴或出海。" },
+        { time: "20:30 后", text: "回酒店休息，10 月 5 日按 Fusion Resort 入住时间转场。" }
+      ];
+    }
+    return [
+      { time: "航班待确认", text: "从岘港 DAD T1 飞往金兰 CXR T1，约 1.1–1.3 小时；具体班次按离开日期确认，国内航班提前 1.5 小时到机场。" },
+      { time: "抵达后约 1 小时", text: `从金兰 CXR T1 前往${arrivalArea}；${airportRide}，办理入住。` },
+      { time: "入住后 1 小时", text: node.nights === 2 ? "在 Fusion Resort 吃饭、补水；之后只留在金兰湾，不往返芽庄市区。" : "在陈富海滩住宿区附近吃饭、补水；不在抵达日安排泥浴或出海。" },
+      { time: "晚上", text: node.nights === 2 ? "泳池、海滩或直接休息，为 10 月 7 日返程留余量。" : "沿海散步或回酒店休息，不再安排远点。" }
+    ];
+  }
   if (node.role === "end" && node.city === "nhatrang" && node.nights === 2) {
     return [
       { time: "14:00–15:00", text: "从大叻山路抵达 Fusion Resort Cam Ranh；办理入住，之后只留在金兰湾度假村内。" },
@@ -1390,6 +1495,15 @@ function arrivalBlocksForNode(previous, node, date) {
   }
 
   if (previous.city === "dalat" && node.city === "nhatrang") {
+    if (node.nights === 3) {
+      return [
+        { time: "14:00–15:00", text: "大叻 → 芽庄抵达住宿区，办理入住并放下行李。" },
+        { time: "15:30–17:00", text: "婆那加塔 Po Nagar；若山路延误就取消，保留为抵达日弹性段。" },
+        { time: "17:15–18:00", text: "钟屿石岬 Hon Chong 或陈富海滩二选一，看海后回住宿区。" },
+        { time: "19:00–20:00", text: "晚饭，一小时。" },
+        { time: "20:30 后", text: "回酒店休息，为 10 月 5 日转去 Fusion Resort 留余量。" }
+      ];
+    }
     return [
       { time: "14:00–15:00", text: "抵达芽庄住宿区、办理入住并放下行李。" },
       { time: "17:00–18:00", text: "陈富海滩散步，看海或回酒店休息。" },
@@ -1412,11 +1526,12 @@ function transferFoodForNode(previous, node) {
 }
 
 function arrivalFoodForNode(previous, node) {
+  if (node.city === "nhatrang" && node.nights === 2) return "大叻 → Fusion Resort 车上备水和简单零食；入住后在度假村内用餐，不往返芽庄市区。";
   if (previous.city === "dalat" && node.city === "nhatrang") return "大叻 → 芽庄车上备水和简单零食；入住后在陈富海滩附近吃海鲜或鱼饼米粉。";
   if (!FLIGHTS[legKey(previous.city, node.city)]) return "";
   if (node.city === "danang") return "抵达美溪 / 海州后就近吃饭；晚班只补充简单正餐和水，不把第一晚安排成跨区觅食。";
   if (node.city === "dalat") return "落地大叻后先在市场或酒店附近吃热食；抵达日不专程去远处找店。";
-  if (node.city === "nhatrang") return "抵达芽庄后在陈富海滩附近吃海鲜或鱼饼米粉；不把抵达日安排成泥浴或出海。";
+  if (node.city === "nhatrang") return "抵达芽庄后在陈富海滩住宿区附近吃海鲜或鱼饼米粉；不把抵达日安排成泥浴或出海。";
   return "抵达后在住宿区附近解决一小时正餐，先补水和休息。";
 }
 
@@ -1443,13 +1558,21 @@ function legacyPlanBlocks(plan) {
 
 function nodeDates() {
   let cursor = middleStartDate();
-  return route.map(node => {
-    if (node.role === "start") return { start: new Date(ARRIVAL_DATE), end: middleStartDate() };
-    if (node.role === "end") return { start: addDays(HOTEL_CHECKIN_DATE, 2 - node.nights), end: new Date(HOTEL_CHECKOUT_DATE) };
+  const datesById = new Map();
+  route.forEach(node => {
+    if (node.role === "start") {
+      datesById.set(node.id, { start: new Date(ARRIVAL_DATE), end: middleStartDate() });
+      return;
+    }
+    if (node.role === "end") {
+      datesById.set(node.id, { start: addDays(HOTEL_CHECKIN_DATE, 2 - node.nights), end: new Date(HOTEL_CHECKOUT_DATE) });
+      return;
+    }
     const start = new Date(cursor);
     cursor = addDays(cursor, node.nights);
-    return { start, end: new Date(cursor) };
+    datesById.set(node.id, { start, end: new Date(cursor) });
   });
+  return route.map(node => datesById.get(node.id));
 }
 
 function transitionUpdate(callback) {
@@ -1511,8 +1634,11 @@ function durationGuide(city, nights) {
 }
 
 function plansForNode(node, index, dates) {
+  if (isSkippedNode(node)) return [];
   const city = CITIES[node.city];
   const plans = [];
+  const activeNodes = activeRouteNodes();
+  const activeIndex = activeNodes.findIndex(item => item.id === node.id);
   const addPlan = (date, tag, blocks, restful = false, theme = "", food = "", kind = "day", mapStops = null) => plans.push({ date: dateLabel(date), tag, blocks, restful, theme, food, kind, mapStops });
 
   if (node.role === "start") {
@@ -1524,7 +1650,7 @@ function plansForNode(node, index, dates) {
       { time: "20:30 后", text: "直接回酒店休息，不再安排景点。" }
     ], false, "轻量", "PVG T1 先解决正餐；抵达河内后在还剑湖 / 老城附近就近吃河粉或 Bánh mì，不为晚餐跨区。店铺以当日营业和卫生状况为准。");
   } else {
-    const previous = route[index - 1];
+    const previous = activeNodes[activeIndex - 1];
     addPlan(dates[index].start, "抵达日", arrivalBlocksForNode(previous, node, dates[index].start), false, "抵达", arrivalFoodForNode(previous, node));
   }
 
@@ -1539,7 +1665,7 @@ function plansForNode(node, index, dates) {
   }
 
   if (node.role !== "end") {
-    const next = route[index + 1];
+    const next = activeNodes[activeIndex + 1];
     const transfer = getRouteLeg(node, next);
     addPlan(dates[index].end, "转场日", transferBlocksForNode(node, next, dates[index].end, transfer), false, "移动", transferFoodForNode(node, next), "transfer");
   }
@@ -1586,9 +1712,9 @@ function renderHeroRail() {
   rail.innerHTML = route.map((node, index) => {
     const city = CITIES[node.city];
     const railName = city.shortName || city.name;
-    const period = compactDateRange(dates[index].start, dates[index].end);
+    const period = isSkippedNode(node) ? "0 晚" : compactDateRange(dates[index].start, dates[index].end);
     const active = node.id === activeNodeId;
-    return `<span class="rail-stop ${node.role}${node.locked ? " is-locked" : ""}${active ? " is-active" : ""}" role="listitem"><button type="button" data-jump-node="${esc(node.id)}" aria-label="查看${city.name} ${period} 规划"${active ? ' aria-current="step"' : ""}><i aria-hidden="true"></i><b>${railName}<em>${city.airport}</em></b><small>${period}</small></button></span>`;
+    return `<span class="rail-stop ${node.role}${isSkippedNode(node) ? " is-skipped" : ""}${node.locked ? " is-locked" : ""}${active ? " is-active" : ""}" role="listitem"><button type="button" data-jump-node="${esc(node.id)}" aria-label="查看${city.name} ${period} 规划"${active ? ' aria-current="step"' : ""}><i aria-hidden="true"></i><b>${railName}<em>${city.airport}</em></b><small>${period}</small></button></span>`;
   }).join("");
 }
 
@@ -1614,7 +1740,7 @@ function renderTimeline() {
 }
 
 function mapNodes() {
-  return route.filter(node => MAP_PLACES[node.city]);
+  return activeRouteNodes().filter(node => MAP_PLACES[node.city]);
 }
 
 function mapPlaceMatches(places, plan) {
@@ -2073,6 +2199,16 @@ function renderRoute() {
 
   routeEditor.innerHTML = route.map((node, index) => {
     const city = CITIES[node.city];
+    if (isSkippedNode(node)) {
+      const active = node.id === activeNodeId;
+      return `<li class="route-node is-compact is-skipped ${active ? "is-active" : ""}" data-id="${esc(node.id)}" data-select-node="true" tabindex="0" aria-label="${esc(city.name)}，0 晚">
+        <div class="node-main">
+          <span class="node-number">${String(index + 1).padStart(2, "0")}</span>
+          <div class="node-city"><strong class="compact-city-name">${esc(city.name)}</strong></div>
+          <div class="node-side"><button type="button" class="compact-night-count compact-restore" data-action="increase" aria-label="恢复${esc(city.name)}规划"><strong>0</strong> 晚 <i aria-hidden="true">＋</i></button></div>
+        </div>
+      </li>`;
+    }
     const adjustable = canAdjustNights(node);
     const periodLabel = node.role === "start"
       ? `${dateLabel(ARRIVAL_DATE)} 17:45 抵达 · ${dateLabel(middleStartDate())} 中午后可飞`
@@ -2081,11 +2217,23 @@ function renderRoute() {
         : `${dateLabel(dates[index].start)} 入住 · ${dateLabel(dates[index].end)} 离开`;
     const [budgetMin, budgetMax] = budgetForNode(node);
     const roleLabel = node.role === "start" ? "已确认" : node.role === "end" ? "已确认 · 芽庄" : "固定路线";
-    const caution = node.role === "end" && node.city === "nhatrang" && node.nights !== city.defaultNights
+    const resortOnly = node.role === "end" && node.city === "nhatrang" && node.nights === 2;
+    const summary = resortOnly
+      ? "10.05–10.07 已确认入住 Fusion Resort Cam Ranh；两晚全部留在金兰湾。"
+      : city.summary;
+    const plays = resortOnly
+      ? ["Fusion Resort Cam Ranh", "金兰湾海滩", "泳池与 SPA"]
+      : city.plays;
+    const caution = resortOnly
+      ? "芽庄 2 晚为保底度假方案：不安排芽庄市区，10 月 7 日从 CXR 返程。"
+      : node.role === "end" && node.city === "nhatrang" && node.nights !== city.defaultNights
       ? `当前芽庄合计 ${node.nights} 晚；Fusion Resort 订单仍固定为 10.05–10.07 2 晚，前后市区停留会随天数调整。`
       : city.caution;
     const plans = plansForNode(node, index, dates);
-    const lastDayPlanIndex = plans.reduce((lastIndex, plan, planIndex) => plan.kind === "day" ? planIndex : lastIndex, -1);
+    const lastDayPlanIndex = plans.reduce((lastIndex, plan, planIndex) => {
+      const isResortPlan = node.role === "end" && node.city === "nhatrang" && /金兰湾|Fusion/.test(plan.theme);
+      return plan.kind === "day" && !isResortPlan ? planIndex : lastIndex;
+    }, -1);
     const dayPlanHtml = plans.map((plan, planIndex) => {
       return `<li class="${plan.restful ? "restful" : ""}" data-plan-anchor="${esc(`${node.id}-${planIndex}`)}">
         <div class="day-marker"><span>${plan.date}</span></div>
@@ -2114,13 +2262,13 @@ function renderRoute() {
               <button type="button" data-action="increase" aria-label="增加${city.name}住宿晚数"${node.nights >= city.maxNights ? " disabled" : ""}>＋</button>
             </div>` : ""}
           </div>
-          <p class="node-summary">${city.summary}</p>
-          <div class="node-plays" aria-label="地点与体验">${city.plays.map(play => `<button type="button" title="点击复制地点" data-copy-text="${esc(play)}">${esc(play)}</button>`).join("")}</div>
+          <p class="node-summary">${esc(summary)}</p>
+          <div class="node-plays" aria-label="地点与体验">${plays.map(play => `<button type="button" title="点击复制地点" data-copy-text="${esc(play)}">${esc(play)}</button>`).join("")}</div>
           <p class="node-caution">${esc(caution)}</p>
         </div>
         <div class="node-side">
           <span class="compact-night-count"><strong>${node.nights}</strong> 晚${node.locked ? " · 已确认" : ""}</span>
-          <span class="node-budget"><strong>${formatCny(budgetMin)}–${formatCny(budgetMax)}</strong>${node.role === "end" ? "芽庄停留 / 人" : "本地停留 / 人"}${node.role === "start" ? "<small>默认 2 晚 · 可调 2–3 晚</small>" : node.role === "end" ? "<small>默认 4 晚 · 可调 2–4 晚</small>" : ""}</span>
+          <span class="node-budget"><strong>${formatCny(budgetMin)}–${formatCny(budgetMax)}</strong>${node.role === "end" ? "芽庄停留 / 人" : "本地停留 / 人"}${node.role === "start" ? "<small>默认 2 晚 · 可调 2–3 晚</small>" : node.role === "end" ? "<small>默认 2 晚 · 可调 2–4 晚</small>" : ""}</span>
         </div>
       </div>
       <details class="city-detail"${expandedNodeIds.has(node.id) ? " open" : ""}>
@@ -2135,17 +2283,18 @@ function renderRoute() {
     </li>`;
   }).join("");
 
-  $("#route-title").textContent = "河内 → 岘港 → 大叻 → 芽庄 → 河内";
+  $("#route-title").textContent = `${activeRouteNodes().map(node => CITIES[node.city].name).concat("河内").join(" → ")}`;
 }
 
 function routeTotals() {
-  const middleNights = route.filter(node => node.role === "middle").reduce((sum, node) => sum + node.nights, 0);
+  const activeNodes = activeRouteNodes();
+  const middleNights = activeNodes.filter(node => node.role === "middle").reduce((sum, node) => sum + node.nights, 0);
   const plannedDays = route.reduce((sum, node) => sum + node.nights, 0) + 1;
   const cityBudget = route.reduce((sum, node) => {
     const budget = budgetForNode(node);
     return [sum[0] + budget[0], sum[1] + budget[1]];
   }, [0, 0]);
-  const legs = route.slice(0, -1).map((node, index) => getRouteLeg(node, route[index + 1]));
+  const legs = activeNodes.slice(0, -1).map((node, index) => getRouteLeg(node, activeNodes[index + 1]));
   const transportBudget = legs.reduce((sum, item) => [sum[0] + item.price[0], sum[1] + item.price[1]], [0, 0]);
   const hours = legs.reduce((sum, item) => {
     const airportTime = /飞机/.test(item.mode) ? 3 : 0;
@@ -2178,7 +2327,7 @@ function renderAnalysis() {
   $("#city-budget").textContent = `${formatCny(totals.cityBudget[0])}–${formatCny(totals.cityBudget[1])}`;
   $("#transport-budget").textContent = `${formatCny(totals.transportBudget[0])}–${formatCny(totals.transportBudget[1])}`;
   $("#total-budget").textContent = `${formatCny(totals.cityBudget[0] + totals.transportBudget[0])}–${formatCny(totals.cityBudget[1] + totals.transportBudget[1])}`;
-  $("#transfer-count").textContent = `${route.length - 1} 次 + 返程`;
+  $("#transfer-count").textContent = `${activeRouteNodes().length - 1} 次 + 返程`;
   $("#transport-hours").textContent = `约 ${Math.round(totals.hours[0] * 10) / 10}–${Math.round(totals.hours[1] * 10) / 10}h`;
 
   const advice = [];
@@ -2193,14 +2342,15 @@ function renderAnalysis() {
 
 function renderTransport() {
   const dates = nodeDates();
-  const routeRows = route.slice(0, -1).map((node, index) => {
-    const next = route[index + 1];
+  const activeNodes = activeRouteNodes();
+  const routeRows = activeNodes.slice(0, -1).map((node, index) => {
+    const next = activeNodes[index + 1];
     const data = getRouteLeg(node, next);
     const time = data.duration[0] === data.duration[1] ? `${data.duration[0]}h` : `${data.duration[0]}–${data.duration[1]}h`;
     const routeName = node.city === "nhatrang" && next.city === "camranh"
       ? "芽庄市区 → 金兰湾"
       : `${CITIES[node.city].name} → ${CITIES[next.city].name}`;
-    const transferDateValue = dates[index].end;
+    const transferDateValue = dates[routeNodeIndex(node.id)].end;
     const transferDate = dateLabel(transferDateValue);
     const windowText = transferWindow(data, node, transferDateValue);
     const selected = selectedFlightFor(node.city, next.city, transferDateValue);
@@ -2297,7 +2447,7 @@ function openTool(name, trigger = null) {
   if (name === "exchange") updateExchange();
   if (name === "phrases") renderPhrases();
   if (name === "map") {
-    mapCityKey = route.find(node => node.id === activeNodeId && MAP_PLACES[node.city])?.city || mapCityKey;
+    mapCityKey = activeRouteNodes().find(node => node.id === activeNodeId && MAP_PLACES[node.city])?.city || mapCityKey;
     mapPlanIndex = 0;
     mapSelectedStopId = null;
     mapViewState = null;
@@ -2397,7 +2547,7 @@ $("#map-alternatives").addEventListener("click", event => {
 });
 
 function uniqueRouteCities() {
-  return [...new Set(route.map(node => node.city))];
+  return [...new Set(activeRouteNodes().map(node => node.city))];
 }
 
 function renderWeatherPlaceholder(message = "正在读取…") {
@@ -2529,7 +2679,10 @@ document.addEventListener("keydown", event => {
 function renderPhrases() {
   $("#phrase-tabs").innerHTML = Object.keys(PHRASES).map(category => `<button type="button" role="tab" data-phrase-category="${category}" class="${category === activePhraseCategory ? "active" : ""}" aria-selected="${category === activePhraseCategory}">${category}</button>`).join("");
   $("#phrase-list").classList.toggle("is-words", activePhraseCategory === "高频词");
-  $("#phrase-list").innerHTML = PHRASES[activePhraseCategory].map(([vietnamese, chinese, pronunciation]) => `<button class="phrase-row" type="button" title="复制越南语" data-copy-text="${esc(vietnamese)}"><span class="phrase-main"><b>${esc(chinese)}</b><i>·</i><strong lang="vi">${esc(vietnamese)}</strong></span><small><span>罗马音 ${esc(vietnameseRomanization(vietnamese))}</span><em>${esc(pronunciation)}</em></small></button>`).join("");
+  $("#phrase-list").innerHTML = PHRASES[activePhraseCategory].map(([vietnamese, chinese, pronunciation]) => {
+    const reading = PHRASE_READINGS[vietnamese] || pronunciation;
+    return `<button class="phrase-row" type="button" title="复制越南语" data-copy-text="${esc(vietnamese)}"><span class="phrase-main"><b>${esc(chinese)}</b><i>·</i><strong lang="vi">${esc(vietnamese)}</strong></span><small><span>读法 · ${esc(reading)}</span></small></button>`;
+  }).join("");
 }
 
 $("#phrase-tabs").addEventListener("click", event => {
