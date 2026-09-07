@@ -10,6 +10,7 @@
   <link rel="preload" as="image" href="vietnam-road-illustration.webp" fetchpriority="high">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   <link rel="stylesheet" href="planner.css?v=20260907-58">
+  <link rel="stylesheet" href="reading.css?v=20260907-59">
 </head>
 <body class="night-atlas">
   <header class="appbar">
@@ -37,7 +38,7 @@
                 <p class="sr-only" id="route-title">河内 → 岘港 → 大叻 → 芽庄 → 河内</p>
               </div>
               <div class="trip-window" aria-label="已确认的行程边界">
-                <span><b>09.25—27</b><strong>河内 2 晚 · 17:45 抵达</strong></span>
+                <span><b id="start-window">09.25—27</b><strong id="start-window-label">河内 2 晚 · 17:45 抵达</strong></span>
                 <i aria-hidden="true"></i>
                 <span class="is-open"><b id="middle-window">09.27—10.05</b><strong id="middle-window-label">8 晚可分配</strong></span>
                 <i aria-hidden="true"></i>
@@ -97,7 +98,7 @@
   </footer>
 
   <div class="drawer-backdrop" id="drawer-backdrop"></div>
-  <aside class="tool-drawer" id="tool-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true">
+  <aside class="tool-drawer" id="tool-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true" inert>
     <header class="drawer-head">
       <div class="drawer-heading"><span class="section-kicker">工具 / TOOLKIT</span><h2 id="drawer-title">旅行工具</h2></div>
       <button class="close-button" id="close-drawer" type="button" aria-label="关闭旅行工具">×</button>
@@ -132,6 +133,7 @@
     </section>
 
     <section class="tool-panel" data-tool-panel="phrases" hidden>
+      <p class="tool-intro">点选复制越南语。中文读音仅作辅助，不表示准确声调。</p>
       <div class="phrase-tabs" id="phrase-tabs" role="tablist" aria-label="常用语分类"></div>
       <div class="phrase-list" id="phrase-list"></div>
     </section>
@@ -204,6 +206,6 @@
   <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">已复制</div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="planner.js?v=20260907-58"></script>
+  <script src="planner.js?v=20260907-59"></script>
 </body>
 </html>

@@ -156,7 +156,7 @@ const CITIES = {
       ], food: "雨天优先选择海州或美溪的室内餐厅；若安排美山，午餐按当地团 / 包车确认，回城后再吃一顿简单热食。" }
     ],
     alternatives: [
-      { name: "会安古城", note: "增加到 4 晚时安排一整条黄昏—夜景线；默认 3 晚先不塞进城市日。" },
+      { name: "会安古城", note: "适合下午出发、看灯笼夜景；与巴拿山分开安排。" },
       { name: "山茶半岛", note: "海况和天气好时安排半天，山路弯、用车比摩托更稳妥。" },
       { name: "灵应寺", note: "和山茶半岛绑定，不建议单独跨城往返。" },
       { name: "五行山", note: "石阶多、洞穴湿滑；替换半天城市线，穿防滑鞋并留意开放时间。" },
@@ -499,7 +499,8 @@ const MAP_PLACES = {
     { id: "danang-fishing-port", name: "海钓集合码头（Thọ Quang / Tiên Sa）", lat: 16.1172, lng: 108.2262, kind: "alternative", terms: ["Thọ Quang", "Tiên Sa", "海钓", "海上活动"] },
     { id: "danang-tra-que", name: "Tra Que 菜园", lat: 15.9034, lng: 108.3455, kind: "alternative", terms: ["Tra Que 菜园"] },
     { id: "danang-an-bang", name: "安邦海滩", lat: 15.9112, lng: 108.3555, kind: "alternative", terms: ["安邦海滩"] },
-    { id: "danang-my-son", name: "美山圣地", lat: 15.7645, lng: 108.969, kind: "alternative", terms: ["美山圣地"] }
+    // Approximate sanctuary location: https://en.wikipedia.org/wiki/Mỹ_Sơn
+    { id: "danang-my-son", name: "美山圣地", lat: 15.767, lng: 108.117, kind: "alternative", terms: ["美山圣地"] }
   ],
   dalat: [
     { id: "dalat-airport", name: "联姜机场 DLI", lat: 11.7509, lng: 108.3663, kind: "context", terms: ["DLI T1", "联姜"] },
@@ -619,7 +620,7 @@ const PHRASES = {
     ["Tôi", "我", "多伊"],
     ["Bạn", "你 / 朋友", "伴"],
     ["Anh / Chị", "您 / 先生 / 女士", "英 / 姐"],
-    ["Em", "我（较年轻） / 你（对年长者）", "诶姆"],
+    ["Em", "我（对年长者自称） / 你（称较年轻者）", "诶姆"],
     ["Chúng ta", "我们（包括对方）", "仲 达"],
     ["Người", "人", "努伊"],
     ["Cái", "个 / 件（物品量词）", "该"],
@@ -861,7 +862,6 @@ const PHRASES = {
   ],
   语法: [
     ["Xin …", "请……", "新"],
-    ["Làm ơn + 动词", "麻烦请……", "蓝 恩"],
     ["Tôi muốn …", "我想要……", "多伊 木温"],
     ["Tôi cần …", "我需要……", "多伊 根"],
     ["Tôi thích …", "我喜欢……", "多伊 特伊克"],
@@ -893,7 +893,6 @@ const PHRASES = {
     ["Tôi không muốn …", "我不想要……", "多伊 空 木温"],
     ["Không …", "不要 / 不……", "空"],
     ["Đừng …", "请不要……", "登"],
-    ["Xin …", "请……", "新"],
     ["Làm ơn …", "麻烦请……", "蓝 恩"],
     ["Nói chậm một chút", "请说慢一点", "诺伊 枕 木 朱"],
     ["Bạn nói lại được không?", "你可以再说一遍吗？", "伴 诺伊 莱 德 空"],
@@ -911,7 +910,7 @@ const PHRASES = {
     ["Không cay / Ít cay", "不要辣 / 少辣", "空 该 / 一 该"],
     ["Không có …", "没有……", "空 果 ……"],
     ["Đã … chưa?", "已经……了吗？", "达 …… 朱啊"],
-    ["Rất … / Quá …", "很…… / 太……了", "热 …… / 瓜 ……"],
+    ["Rất … / … quá!", "很＋形容词 / 形容词＋太……了（如 ngon quá：太好吃了）", "惹特 …… / …… 瓜"],
     ["Ở đây / ở đó", "在这里 / 在那里", "额 呆 / 额 多"],
     ["Bên trái / bên phải", "左边 / 右边", "本 摘 / 本 法伊"],
     ["Ở trên / ở dưới", "在上面 / 在下面", "额 真 / 额 祖伊"],
@@ -931,7 +930,7 @@ const PHRASE_READINGS = {
   "Mua": "木啊", "Bán": "班", "Xem": "森姆", "Tìm": "丁姆", "Chờ": "卓", "Gọi": "戈伊", "Đặt": "达", "Nhận": "任", "Trả": "茶", "Đổi": "多伊", "Chọn": "仲",
   "Nói": "诺伊", "Viết": "越特", "Hiểu": "休伊", "Biết": "别特", "Cần": "根", "Muốn": "木温", "Mở": "么", "Đóng": "东", "Dừng": "用", "Lên": "连", "Xuống": "松", "Vào": "瓦奥", "Ra": "扎",
   "Trái": "摘", "Phải": "法伊", "Thẳng": "探", "Gần": "根", "Xa": "萨", "Trên": "真", "Dưới": "祖伊", "Trong": "仲", "Ngoài": "外伊", "Bên cạnh": "宾 景", "Ở giữa": "额 朱啊", "Lối vào": "洛伊 瓦奥", "Lối ra": "洛伊 扎",
-  "Chậm": "枕", "Nhanh": "娘", "Tốt": "多特", "Ngon": "农", "Rẻ": "热", "Đắt": "达特", "Nóng": "农", "Lạnh": "冷", "Nước": "讷", "Cơm": "根", "Phở": "佛", "Bún": "本", "Cà phê": "嘎 费", "Bia": "比啊", "Trà": "茶", "Đá": "达", "Đường": "东", "Muối": "木伊", "Thịt": "特", "Gà": "嘎", "Bò": "波", "Cá": "嘎", "Rau": "饶", "Hải sản": "海 桑",
+  "Chậm": "枕", "Nhanh": "娘", "Tốt": "多特", "Ngon": "农", "Rẻ": "热", "Đắt": "达特", "Nóng": "农", "Lạnh": "冷", "Nước": "讷", "Cơm": "哥姆", "Phở": "佛", "Bún": "本", "Cà phê": "嘎 费", "Bia": "比啊", "Trà": "茶", "Đá": "达", "Đường": "东", "Muối": "木伊", "Thịt": "特", "Gà": "嘎", "Bò": "波", "Cá": "嘎", "Rau": "饶", "Hải sản": "海 桑",
   "Nhà vệ sinh": "雅 卫 生", "Sân bay": "森 拜", "Ga tàu": "嘎 道", "Bến xe": "本 些", "Xe": "些", "Taxi": "塔西", "Vé": "维", "Tiền": "甜", "Giá": "架", "Thẻ": "特", "Tiền mặt": "甜 末", "Hộ chiếu": "霍 诏", "Hành lý": "杭 李", "Điện thoại": "电 陶伊", "Pin": "宾", "Cửa hàng": "古啊 杭", "Chợ": "卓"
 };
 
@@ -1084,6 +1083,7 @@ let mapMarkerRefs = new Map();
 let mapActivePlaceIds = new Set();
 let mapOtherPlaceIds = new Set();
 let timelineObserver = null;
+let timelineFrame = null;
 let activePlanAnchor = null;
 let placeMenuContext = null;
 let pendingMapFocus = null;
@@ -1218,11 +1218,47 @@ function findMapPlace(term, cityKey = null) {
   const places = cityKey && MAP_PLACES[cityKey]
     ? MAP_PLACES[cityKey]
     : Object.values(MAP_PLACES).flat();
-  return places.find(place => place.terms.some(candidate => candidate === term || candidate.includes(term) || term.includes(candidate))) || null;
+  return places.find(place => place.name === term || place.terms.includes(term))
+    || places.find(place => place.terms.some(candidate => candidate.includes(term) || term.includes(candidate))) || null;
 }
+
+const PLACE_ORIGINALS = {
+  'hanoi-airport': 'Sân bay quốc tế Nội Bài', 'hanoi-old-quarter': 'Phố cổ Hà Nội',
+  'hanoi-hoan-kiem': 'Hồ Hoàn Kiếm', 'hanoi-36-streets': 'Hà Nội 36 phố phường',
+  'hanoi-cathedral': 'Nhà thờ Lớn Hà Nội', 'hanoi-coffee': 'Coffee Workshop, Hanoi',
+  'hanoi-weekend-walk': 'Phố đi bộ Hồ Hoàn Kiếm / Chợ đêm phố cổ Hà Nội',
+  'hanoi-imperial-city': 'Hoàng thành Thăng Long', 'hanoi-temple-literature': 'Văn Miếu – Quốc Tử Giám',
+  'hanoi-west-lake': 'Hồ Tây / Chùa Trấn Quốc', 'hanoi-fine-arts': 'Bảo tàng Mỹ thuật Việt Nam',
+  'hanoi-market': 'Chợ Đồng Xuân', 'hanoi-train-street': 'Hanoi Train Street',
+  'danang-airport': 'Sân bay quốc tế Đà Nẵng', 'danang-my-khe': 'Bãi biển Mỹ Khê',
+  'danang-hai-chau': 'Hải Châu', 'danang-cathedral': 'Nhà thờ Chính tòa Đà Nẵng',
+  'danang-market': 'Chợ Hàn', 'danang-cham': 'Bảo tàng Điêu khắc Chăm Đà Nẵng',
+  'danang-han-river': 'Sông Hàn / Cầu Rồng', 'danang-son-tra': 'Bán đảo Sơn Trà',
+  'danang-linh-ung': 'Chùa Linh Ứng Sơn Trà', 'danang-marble': 'Ngũ Hành Sơn',
+  'danang-ba-na': 'Bà Nà Hills', 'danang-hoi-an': 'Phố cổ Hội An',
+  'danang-fishing-port': 'Cảng cá Thọ Quang / Cảng Tiên Sa', 'danang-tra-que': 'Làng rau Trà Quế',
+  'danang-an-bang': 'Bãi biển An Bàng', 'danang-my-son': 'Thánh địa Mỹ Sơn',
+  'dalat-airport': 'Sân bay Liên Khương', 'dalat-futa-station': 'Bến xe liên tỉnh Đà Lạt, 01 Tô Hiến Thành',
+  'dalat-xuan-huong': 'Hồ Xuân Hương', 'dalat-market': 'Chợ Đà Lạt',
+  'dalat-railway': 'Ga Đà Lạt', 'dalat-crazy-house': 'Crazy House – Biệt thự Hằng Nga',
+  'dalat-datanla': 'Thác Datanla', 'dalat-truc-lam': 'Thiền viện Trúc Lâm Đà Lạt',
+  'dalat-tuyen-lam': 'Hồ Tuyền Lâm', 'dalat-linh-phuoc': 'Chùa Linh Phước',
+  'dalat-flower-park': 'Vườn hoa thành phố Đà Lạt', 'dalat-domaine': 'Nhà thờ Domaine de Marie',
+  'dalat-lumiere': 'Lumiere Da Lat', 'dalat-cau-dat': 'Cầu Đất', 'dalat-kho-coffee': 'K’Ho Coffee',
+  'dalat-strawberry': 'Vườn dâu tây Đà Lạt', 'dalat-dapa-hill': 'Dapa Hill',
+  'nhatrang-airport': 'Sân bay quốc tế Cam Ranh', 'nhatrang-city': 'Nha Trang',
+  'nhatrang-tran-phu': 'Bãi biển Trần Phú', 'nhatrang-po-nagar': 'Tháp Bà Ponagar',
+  'nhatrang-hon-chong': 'Hòn Chồng', 'nhatrang-i-resort': 'I-Resort Nha Trang',
+  'nhatrang-long-son': 'Chùa Long Sơn', 'nhatrang-cathedral': 'Nhà thờ Núi Nha Trang',
+  'nhatrang-museum': 'Bảo tàng Hải dương học', 'nhatrang-port': 'Bến tàu du lịch Nha Trang',
+  'nhatrang-vinwonders': 'VinWonders Nha Trang', 'nhatrang-hon-tam': 'Hòn Tằm',
+  'nhatrang-thap-ba': 'Tắm bùn Tháp Bà', 'nhatrang-100-eggs': 'Trăm Trứng',
+  'nhatrang-fusion': 'Fusion Resort Cam Ranh'
+};
 
 function placeAttributes({ place, displayName, source, cityKey, planIndex = -1, anchor = "", inline = false }) {
   if (!place) return "";
+  source = PLACE_ORIGINALS[place.id] || source;
   return `class="${inline ? "inline-place " : ""}place-trigger" role="button" tabindex="0" aria-haspopup="dialog" aria-label="打开${esc(displayName)}地点操作" data-place-id="${esc(place.id)}" data-place-name="${esc(displayName)}" data-place-source="${esc(source)}" data-place-city="${esc(cityKey)}" data-place-plan-index="${planIndex}" data-place-anchor="${esc(anchor)}"`;
 }
 
@@ -1378,9 +1414,9 @@ function flightTransferBlocks(origin, destination, date) {
     : "从美溪 / 海州到 DAD T1 通常 15–25 分钟";
 
   return [
-    { time: clockRange(early ? shiftClock(flight.depart, -195) : shiftClock(leaveCity, -80), leaveCity), text: `${early ? "必要早起、简单吃点东西" : "起床、早午餐"}；退房并把行李交给前台寄存。${early ? "这班需要早起。" : "不安排远郊。"}` },
+    { time: clockRange(early ? shiftClock(flight.depart, -195) : shiftClock(leaveCity, -80), leaveCity), text: `${early ? "必要早起、简单吃点东西" : "起床、早午餐"}；退房，带齐行李出发。` },
     { time: clockRange(leaveCity, airportArrival), text: `${airportNote}；${airportArrival} 前抵达（国内航班提前 1.5 小时），到机场后完成托运、安检。` },
-    { time: clockRange(flight.depart, flight.arrive), text: `越捷航空 ${flight.depart} → ${flight.arrive}，${CITIES[origin].airport} T1 → ${CITIES[destination].airport} T1，${flight.duration}；前段到此结束。` }
+    { time: clockRange(flight.depart, flight.arrive), text: `越捷航空 ${flight.depart} → ${flight.arrive}，${CITIES[origin].airport} T1 → ${CITIES[destination].airport} T1，${flight.duration}。` }
   ];
 }
 
@@ -1389,15 +1425,10 @@ function transferBlocksForNode(previous, node, date, transfer) {
     return flightTransferBlocks(previous.city, node.city, date);
   }
   if (previous.city === "danang" && node.city === "nhatrang") {
-    const arrivalArea = node.nights === 2 ? "Fusion Resort Cam Ranh" : "芽庄陈富海滩住宿区";
-    const airportRide = node.nights === 2
-      ? "CXR 到 Fusion Resort 约 5–6 km、10–15 分钟"
-      : "CXR 到芽庄陈富海滩住宿区约 35–40 km、45–60 分钟";
     return [
-      { time: "09:30–10:30", text: "起床、早餐、退房；把行李交给前台寄存，确认 DAD → CXR 的当天航班和机场接送。" },
-      { time: "10:30–11:00", text: "从美溪 / 海州住宿区前往岘港 DAD T1，Grab 通常 15–25 分钟；国内航班按起飞前 1.5 小时到机场。" },
-      { time: "航班待确认", text: "岘港 DAD T1 → 金兰 CXR T1，飞行约 1.1–1.3 小时；具体班次需要按离开日期确认，前段在 DAD 起飞后结束。" },
-      { time: "抵达后约 1 小时", text: `从金兰 CXR T1 前往${arrivalArea}；${airportRide}，抵达后只安排入住、吃饭和休息。` }
+      { time: "起飞前约 3 小时", text: "用餐、退房，带齐行李；按已选航班安排起床时间。" },
+      { time: "起飞前约 2 小时", text: "从美溪 / 海州住宿区前往岘港 DAD T1，Grab 通常 15–25 分钟；起飞前 1.5 小时抵达机场。" },
+      { time: "航班待确认", text: "岘港 DAD T1 → 金兰 CXR T1；如有直飞，飞行约 1.1–1.3 小时。按离开日期核实班次后再确定当天安排。" }
     ];
   }
   if (previous.city === "dalat" && node.city === "nhatrang" && node.nights === 2) {
@@ -1509,7 +1540,7 @@ function arrivalBlocksForNode(previous, node, date) {
           { time: `${mealEnd} 后`, text: "正餐后洗漱和休息；晚班抵达日不再安排夜间景点。" }
         ];
     return [
-      { time: clockRange(flight.depart, flight.arrive), text: `越捷航空 ${flight.depart} → ${flight.arrive}，${CITIES[previous.city].airport} T1 → ${CITIES[node.city].airport} T1，${flight.duration}；与上一段重合的仅此航班，后一段从这里接上。` },
+      { time: clockRange(flight.depart, flight.arrive), text: `越捷航空 ${flight.depart} → ${flight.arrive}，${CITIES[previous.city].airport} T1 → ${CITIES[node.city].airport} T1，${flight.duration}。` },
       { time: clockRange(flight.arrive, settleEnd), text: `从 ${CITIES[node.city].airport} T1 前往${destinationArea}；${node.city === "danang" ? "机场到美溪约 15–25 分钟" : node.city === "dalat" ? "DLI 到市区约 40–60 分钟" : `${CITIES[node.city].airport} 到住宿区按当天接送估算`}，办理入住。` },
       { time: clockRange(settleEnd, mealEnd), text: "入住后在住宿区附近吃饭、补水，一小时；不跨区觅食。" },
       ...arrivalPlan
@@ -1598,12 +1629,8 @@ function nodeDates() {
 }
 
 function transitionUpdate(callback) {
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (!document.startViewTransition || reduceMotion) {
-    callback();
-    return;
-  }
-  document.startViewTransition(callback);
+  // Update controls immediately; a full-page snapshot delays repeated +/- clicks.
+  callback();
 }
 
 const ARRIVAL_PLANS = {
@@ -1725,6 +1752,8 @@ function renderHeroRail() {
   const dates = nodeDates();
   const endIndex = route.findIndex(node => node.role === "end");
   const endDates = dates[endIndex];
+  $("#start-window").textContent = `${dateLabel(ARRIVAL_DATE)}—${dateLabel(middleStartDate())}`;
+  $("#start-window-label").textContent = `河内 ${startNights()} 晚 · 17:45 抵达`;
   $("#middle-window").textContent = `${dateLabel(middleStartDate())}—${dateLabel(endDates.start)}`;
   $("#middle-window-label").textContent = `${middleNightsTarget()} 晚可分配`;
   $("#end-window").textContent = `${dateLabel(endDates.start)}—${dateLabel(endDates.end)}`;
@@ -1765,27 +1794,56 @@ function renderTimeline() {
   </li>`).join("");
 }
 
+function alignTimeline() {
+  const timeline = $('#trip-timeline');
+  const top = timeline.getBoundingClientRect().top;
+  timeline.style.height = `${Math.max(0, routeEditor.getBoundingClientRect().bottom - top)}px`;
+  $$('[data-timeline-target]', timeline).forEach(button => {
+    const target = $(`[data-plan-anchor="${button.dataset.timelineTarget}"]`, routeEditor);
+    const visible = target?.closest('details')?.open;
+    button.parentElement.hidden = !visible;
+    if (visible) button.parentElement.style.top = `${target.querySelector('.day-marker span').getBoundingClientRect().top - top - 4}px`;
+  });
+  syncReadingPosition();
+}
+
+function syncReadingPosition() {
+  if (activeTool) return;
+  const items = $$('[data-plan-anchor]', routeEditor).filter(item => item.closest('details')?.open);
+  const readingLine = Math.min(220, window.innerHeight * .28);
+  const current = items.find(item => {
+    const rect = item.getBoundingClientRect();
+    return rect.top <= readingLine && rect.bottom > readingLine;
+  }) || items.find(item => item.getBoundingClientRect().top >= readingLine);
+  if (!current) return;
+  activePlanAnchor = current.dataset.planAnchor;
+  const nodeId = current.closest('.route-node').dataset.id;
+  $$('[data-timeline-target]').forEach(button => {
+    const selected = button.dataset.timelineTarget === activePlanAnchor;
+    button.parentElement.classList.toggle('is-active', selected);
+    if (selected) button.setAttribute('aria-current', 'date');
+    else button.removeAttribute('aria-current');
+  });
+  $$('[data-plan-anchor]').forEach(item => item.classList.toggle('is-reading', item === current));
+  if (activeNodeId !== nodeId) {
+    activeNodeId = nodeId;
+    $$('.route-node').forEach(node => node.classList.toggle('is-active', node.dataset.id === nodeId));
+    renderHeroRail();
+  }
+}
+
 function setupTimelineSync() {
   timelineObserver?.disconnect();
-  const planItems = $$('[data-plan-anchor]', routeEditor);
-  if (!planItems.length) return;
-  if (!("IntersectionObserver" in window)) return;
-  timelineObserver = new IntersectionObserver(entries => {
-    const visible = entries
-      .filter(entry => entry.isIntersecting)
-      .sort((first, second) => second.intersectionRatio - first.intersectionRatio)[0];
-    if (!visible) return;
-    const anchor = visible.target.dataset.planAnchor;
-    const nodeId = visible.target.closest(".route-node")?.dataset.id;
-    if (!anchor || !nodeId || (anchor === activePlanAnchor && nodeId === activeNodeId)) return;
-    activePlanAnchor = anchor;
-    activeNodeId = nodeId;
-    $$(".route-node").forEach(node => node.classList.toggle("is-active", node.dataset.id === nodeId));
-    renderTimeline();
-    renderHeroRail();
-  }, { threshold: [0.2, 0.45, 0.7], rootMargin: "-12% 0px -58% 0px" });
-  planItems.forEach(item => timelineObserver.observe(item));
+  timelineObserver = new ResizeObserver(() => requestAnimationFrame(alignTimeline));
+  timelineObserver.observe(routeEditor);
+  requestAnimationFrame(alignTimeline);
 }
+
+window.addEventListener('scroll', () => {
+  if (timelineFrame) return;
+  timelineFrame = requestAnimationFrame(() => { timelineFrame = null; syncReadingPosition(); });
+}, { passive: true });
+routeEditor.addEventListener('toggle', () => requestAnimationFrame(alignTimeline), true);
 
 function mapNodes() {
   return activeRouteNodes().filter(node => MAP_PLACES[node.city]);
@@ -1864,7 +1922,7 @@ function mapLegEstimate(from, to, cityKey) {
 }
 
 function mapLegMeta(from, to, cityKey) {
-  return `直线 ${formatMapDistance(haversineKm(from, to))} · ${mapLegEstimate(from, to, cityKey)}`;
+  return `直线 ${formatMapDistance(haversineKm(from, to))} · 估算${mapLegEstimate(from, to, cityKey)}`;
 }
 
 function collectOtherDayStops(planSequences, currentIndex) {
@@ -2306,9 +2364,12 @@ function renderRoute() {
     const dayPlanHtml = plans.map((plan, planIndex) => {
       const planAnchor = `${node.id}-${planIndex}`;
       const planContext = { cityKey: node.city, planIndex, anchor: planAnchor };
+      const next = activeRouteNodes()[activeRouteNodes().findIndex(item => item.id === node.id) + 1];
+      const flights = plan.kind === 'transfer' && next
+        ? renderFlightOptions(node.city, next.city, dates[index].end) : '';
       return `<li class="${plan.restful ? "restful" : ""}" data-plan-anchor="${esc(planAnchor)}">
-        <div class="day-marker"><span>${plan.date}</span></div>
-        <div class="halfday-copy">${renderTimeBlocks(plan.blocks, planContext)}${renderDayFood(plan.food, planContext)}${planIndex === lastDayPlanIndex ? renderAlternatives(city, node, plans) : ""}</div>
+        <div class="day-marker"><span>${plan.date}</span><small>${esc(city.name)} · ${esc(plan.tag)}</small></div>
+        <div class="halfday-copy">${flights}${renderTimeBlocks(plan.blocks, planContext)}${renderDayFood(plan.food, planContext)}${planIndex === lastDayPlanIndex ? renderAlternatives(city, node, plans) : ""}</div>
       </li>`;
     }).join("");
 
@@ -2418,9 +2479,16 @@ function renderAnalysis() {
 function updateNode(id, updater) {
   const index = route.findIndex(node => node.id === id);
   if (index < 0) return;
+  const action = document.activeElement?.dataset.action;
   transitionUpdate(() => {
     updater(index);
     render();
+    if (action) {
+      const node = routeEditor.querySelector(`[data-id="${id}"]`);
+      const control = node?.querySelector(`[data-action="${action}"]:not(:disabled)`)
+        || node?.querySelector('[data-action]:not(:disabled)');
+      control?.focus({ preventScroll: true });
+    }
   });
 }
 
@@ -2470,6 +2538,7 @@ routeEditor.addEventListener("keydown", event => {
 });
 
 function openTool(name, trigger = null) {
+  closePlaceMenu();
   const wasOpen = document.body.classList.contains("drawer-open");
   if (trigger && !trigger.closest(".drawer-tool-nav")) lastToolTrigger = trigger;
   activeTool = name;
@@ -2480,13 +2549,18 @@ function openTool(name, trigger = null) {
   document.body.classList.add("drawer-open");
   document.body.classList.toggle("map-tool-open", name === "map");
   $("#tool-drawer").setAttribute("aria-hidden", "false");
+  $("#tool-drawer").inert = false;
+  $('main').inert = true;
+  $('.appbar').inert = true;
+  $('.footer').inert = true;
   if (name === "weather") void loadWeather();
   if (name === "exchange") updateExchange();
   if (name === "phrases") renderPhrases();
   if (name === "map") {
     const focus = pendingMapFocus;
     mapCityKey = focus?.cityKey || activeRouteNodes().find(node => node.id === activeNodeId && MAP_PLACES[node.city])?.city || mapCityKey;
-    mapPlanIndex = Number.isInteger(focus?.planIndex) && focus.planIndex >= 0 ? focus.planIndex : 0;
+    const readingDay = activePlanAnchor ? Number(activePlanAnchor.split('-').at(-1)) : 0;
+    mapPlanIndex = Number.isInteger(focus?.planIndex) && focus.planIndex >= 0 ? focus.planIndex : readingDay;
     mapSelectedStopId = focus?.placeId || null;
     mapViewState = null;
     mapRenderedCityKey = null;
@@ -2503,6 +2577,10 @@ function closeTool() {
   document.body.classList.remove("drawer-open");
   document.body.classList.remove("map-tool-open");
   $("#tool-drawer").setAttribute("aria-hidden", "true");
+  $("#tool-drawer").inert = true;
+  $('main').inert = false;
+  $('.appbar').inert = false;
+  $('.footer').inert = false;
   $$("[data-tool]").forEach(button => button.setAttribute("aria-expanded", "false"));
   if (trigger?.isConnected) requestAnimationFrame(() => trigger.focus({ preventScroll: true }));
 }
@@ -2513,7 +2591,20 @@ $$(`[data-tool]`).forEach(button => button.addEventListener("click", () => {
 }));
 $("#close-drawer").addEventListener("click", closeTool);
 $("#drawer-backdrop").addEventListener("click", closeTool);
-document.addEventListener("keydown", event => { if (event.key === "Escape" && document.body.classList.contains("drawer-open")) closeTool(); });
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && placeMenuContext) {
+    const trigger = placeMenuContext.trigger;
+    closePlaceMenu();
+    trigger?.focus({ preventScroll: true });
+  } else if (event.key === 'Escape' && activeTool) closeTool();
+  if (event.key !== 'Tab') return;
+  const surface = placeMenuContext ? $('#place-action-menu') : activeTool ? $('#tool-drawer') : null;
+  if (!surface) return;
+  const focusable = $$('button, a[href], input, [tabindex="0"]', surface).filter(el => !el.disabled && el.getClientRects().length);
+  const first = focusable[0], last = focusable.at(-1);
+  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+});
 
 $("#map-city-tabs").addEventListener("click", event => {
   const button = event.target.closest("[data-map-city]");
@@ -2765,9 +2856,11 @@ document.addEventListener("click", event => {
     const actionName = action.dataset.placeAction;
     closePlaceMenu();
     if (actionName === "map") {
+      lastToolTrigger = context.trigger;
       focusPlaceInMap({ cityKey: context.cityKey, planIndex: Number.isFinite(context.planIndex) && context.planIndex >= 0 ? context.planIndex : 0, placeId: context.placeId });
     } else {
       copyText(actionName === "copy-source" ? context.source : context.name);
+      context.trigger?.focus({ preventScroll: true });
     }
     return;
   }
