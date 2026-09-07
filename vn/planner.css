@@ -5099,6 +5099,39 @@ body.map-tool-open .tool-panel[data-tool-panel="map"] {
 
 .route-node.is-skipped .compact-restore i { font-size: 14px; font-style: normal; }
 .route-node.is-skipped .compact-restore:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+/* Interaction finish — locations open one focused action surface. */
+.place-trigger { cursor: pointer; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.place-trigger:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; }
+.place-action-menu { position: fixed; z-index: 60; width: min(300px, calc(100vw - 24px)); padding: 8px; border: 1px solid rgba(158, 219, 208, .32); border-radius: 16px; background: linear-gradient(145deg, #103b32, #0a241f); box-shadow: 0 22px 60px rgba(3, 18, 15, .34), inset 0 1px 0 rgba(255, 250, 240, .08); color: var(--text); animation: placeMenuIn .2s var(--ease) both; }
+.place-action-primary, .place-action-secondary button { display: flex; width: 100%; min-height: 42px; border: 1px solid transparent; border-radius: 10px; background: transparent; cursor: pointer; align-items: center; justify-content: space-between; color: inherit; font-size: 12px; font-weight: 750; text-align: left; transition: background .18s ease, border-color .18s ease, transform .18s var(--ease); }
+.place-action-primary { min-height: 56px; padding: 12px 14px; border-color: rgba(255, 118, 94, .58); background: linear-gradient(135deg, var(--signal), #e97a5d); color: #fffaf0; box-shadow: 0 8px 20px rgba(255, 118, 94, .16); font-size: 15px; }
+.place-action-primary b { font: 700 18px/1 var(--mono); }
+.place-action-secondary { display: grid; margin-top: 6px; grid-template-columns: 1fr 1fr; gap: 6px; }
+.place-action-secondary button { padding: 8px 10px; border-color: rgba(245, 241, 232, .12); color: var(--muted-dark); font-size: 10px; }
+.place-action-primary:hover, .place-action-secondary button:hover { transform: translateY(-1px); }
+.place-action-secondary button:hover { border-color: rgba(158, 219, 208, .35); background: rgba(158, 219, 208, .1); color: #fff; }
+.place-action-primary:focus-visible, .place-action-secondary button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+@keyframes placeMenuIn { from { opacity: 0; transform: translateY(5px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.leaflet-interactive.is-flashing { animation: mapMarkerFlash .88s ease-in-out 2; }
+.fallback-map-marker.is-flashing circle { animation: fallbackMarkerFlash .88s ease-in-out 2; }
+@keyframes mapMarkerFlash { 50% { stroke: #fffaf0; stroke-width: 7px; filter: drop-shadow(0 0 10px #ff765e); } }
+@keyframes fallbackMarkerFlash { 50% { r: 12px; stroke: #fffaf0; stroke-width: 5px; filter: drop-shadow(0 0 8px #ff765e); } }
+.map-tooltip.is-airport { border-color: var(--gold); background: #fff1c8; color: #5d4a27; }
+.map-tooltip.is-airport::before { border-top-color: #fff1c8; }
+.fallback-map-marker.is-airport circle { fill: #f0d38c; stroke: #fffaf0; stroke-width: 2.5; }
+.fallback-map-marker.is-airport text { font-weight: 900; }
+@media (min-width: 821px) {
+  .appbar { position: fixed; top: 50%; right: 16px; left: auto; transform: translateY(-50%); }
+  .appbar-inner { padding: 6px 5px; border-radius: 18px; background: rgba(10, 39, 33, .9); }
+  .tool-actions { flex-direction: column; gap: 3px; }
+  .tool-actions button { width: 48px; min-height: 49px; padding: 7px 4px; border-radius: 12px; flex-direction: column; gap: 4px; font-size: 8px; }
+  .tool-actions svg { width: 16px; height: 16px; }
+}
+@media (max-width: 680px) {
+  .place-action-menu { width: min(286px, calc(100vw - 24px)); border-radius: 14px; }
+  .place-action-primary { min-height: 54px; }
+  .place-action-secondary button { min-height: 44px; }
+}
 
 /* Final density pass — keep the route header expressive without spending the first mobile screen on empty canvas. */
 @media (max-width: 680px) {

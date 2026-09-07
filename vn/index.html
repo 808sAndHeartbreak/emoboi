@@ -9,7 +9,7 @@
   <title>越南路线规划器 · 2026</title>
   <link rel="preload" as="image" href="vietnam-road-illustration.webp" fetchpriority="high">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  <link rel="stylesheet" href="planner.css?v=20260907-53">
+  <link rel="stylesheet" href="planner.css?v=20260907-58">
 </head>
 <body class="night-atlas">
   <header class="appbar">
@@ -88,18 +88,6 @@
       </div>
     </section>
 
-    <section class="transport-section">
-      <div class="shell">
-        <header class="section-head">
-          <div>
-            <span class="section-kicker">TRANSFERS / 02</span>
-            <h2>节点之间怎么走</h2>
-          </div>
-        </header>
-        <div class="transport-list" id="transport-list"></div>
-      </div>
-    </section>
-
   </main>
 
   <footer class="footer shell">
@@ -112,13 +100,6 @@
   <aside class="tool-drawer" id="tool-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true">
     <header class="drawer-head">
       <div class="drawer-heading"><span class="section-kicker">工具 / TOOLKIT</span><h2 id="drawer-title">旅行工具</h2></div>
-      <nav class="drawer-tool-nav" aria-label="切换旅行工具">
-        <button type="button" data-tool="weather" aria-label="天气" aria-expanded="false">天气</button>
-        <button type="button" data-tool="exchange" aria-label="汇率" aria-expanded="false">汇率</button>
-        <button type="button" data-tool="phrases" aria-label="常用语" aria-expanded="false">常用语</button>
-        <button type="button" data-tool="map" aria-label="地图" aria-expanded="false">地图</button>
-        <button type="button" data-tool="flights" aria-label="机票" aria-expanded="false">机票</button>
-      </nav>
       <button class="close-button" id="close-drawer" type="button" aria-label="关闭旅行工具">×</button>
     </header>
 
@@ -168,7 +149,7 @@
             <span><i class="map-legend-dot is-other-day"></i>其他日期</span>
             <span><i class="map-legend-dot is-alternative"></i>备选景点</span>
           </div>
-          <label class="map-display-toggle"><input id="map-show-all" type="checkbox" aria-label="显示当前城市其他日期的地点"><span>全部展示</span><small>同城其他日期</small></label>
+          <label class="map-display-toggle"><input id="map-show-all" type="checkbox" aria-label="显示同城其他日期的地点"><span>全部展示</span><small>同城其他日期</small></label>
         </div>
       </div>
       <div class="map-city-tabs" id="map-city-tabs" role="tablist" aria-label="地图城市"></div>
@@ -185,7 +166,7 @@
 
     <section class="tool-panel" data-tool-panel="flights" hidden>
       <p class="tool-intro">已确认订单 · 时间均为当地时间</p>
-      <p class="tool-intro">河内→岘港、岘港→大叻的截图航班会按离开日期显示，可在“节点之间怎么走”中点击时间切换。</p>
+      <p class="tool-intro">河内→岘港、岘港→大叻的截图航班会按离开日期显示，可在对应转场日的规划中点击时间切换。</p>
       <article class="confirmed-hotel">
         <div class="booking-status"><span>10.05—10.07 · 2 晚</span><strong>已确认</strong></div>
         <h3>Fusion Resort Cam Ranh</h3>
@@ -213,9 +194,16 @@
     </section>
   </aside>
 
+  <div class="place-action-menu" id="place-action-menu" hidden role="dialog" aria-label="地点操作">
+    <button class="place-action-primary" type="button" data-place-action="map"><span>地图中查看</span><b aria-hidden="true">↗</b></button>
+    <div class="place-action-secondary">
+      <button type="button" data-place-action="copy-name">复制名称</button>
+      <button type="button" data-place-action="copy-source">复制地点原文</button>
+    </div>
+  </div>
   <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">已复制</div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="planner.js?v=20260907-53"></script>
+  <script src="planner.js?v=20260907-58"></script>
 </body>
 </html>
