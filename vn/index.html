@@ -9,7 +9,7 @@
   <title>越南路线规划器 · 2026</title>
   <link rel="preload" as="image" href="vietnam-road-illustration.webp" fetchpriority="high">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  <link rel="stylesheet" href="planner.css?v=20260907-52">
+  <link rel="stylesheet" href="planner.css?v=20260907-53">
 </head>
 <body class="night-atlas">
   <header class="appbar">
@@ -39,7 +39,7 @@
               <div class="trip-window" aria-label="已确认的行程边界">
                 <span><b>09.25—27</b><strong>河内 2 晚 · 17:45 抵达</strong></span>
                 <i aria-hidden="true"></i>
-                <span class="is-open"><b id="middle-window">09.27—10.05</b><strong id="middle-window-label">8 晚待规划</strong></span>
+                <span class="is-open"><b id="middle-window">09.27—10.05</b><strong id="middle-window-label">8 晚可分配</strong></span>
                 <i aria-hidden="true"></i>
                 <span><b id="end-window">10.05—07</b><strong id="end-window-label">芽庄 2 晚 · Fusion 2 晚 · 14:05 飞</strong></span>
                 <output class="allocation-pill is-balanced" id="trip-allocation" aria-live="polite"><strong>13 / 13 天</strong><span></span></output>
@@ -159,7 +159,7 @@
       <div class="map-panel-head">
         <div>
           <p class="tool-intro">路线地图</p>
-          <p class="map-panel-note">按日期查看路线；开启「全部展示」可比较同城不同日期。</p>
+          <p class="map-panel-note">切换城市与日期查看路线；「全部展示」可比较同城不同日期。</p>
         </div>
         <div class="map-head-actions">
           <div class="map-legend" aria-label="地图图例">
@@ -216,6 +216,6 @@
   <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">已复制</div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="planner.js?v=20260907-52"></script>
+  <script src="planner.js?v=20260907-53"></script>
 </body>
 </html>

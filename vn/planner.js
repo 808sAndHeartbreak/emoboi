@@ -72,7 +72,7 @@ const CITIES = {
       7: "6 个完整日：再加一天海钓 / 海上活动，需早起并看海况。",
       8: "7 个完整日：核心景点、海钓与雨天缓冲都能分开安排，适合不赶行程。",
     },
-    summary: "海滩、山茶半岛、巴拿山与会安；以岘港为住宿节点。",
+    summary: "海滩、山茶半岛、巴拿山与会安。",
     plays: ["美溪海滩 Mỹ Khê", "岘港大教堂 Da Nang Cathedral", "韩市场 Hàn Market", "占婆雕刻博物馆", "山茶半岛 Sơn Trà", "五行山 Ngũ Hành Sơn", "巴拿山 Ba Na Hills", "会安古城 Hội An", "Tra Que 菜园 / An Bàng 海滩"],
     caution: "9 月底仍温暖，但中部进入降雨窗口；巴拿山园区、缆车末班和天气以官方当天公告为准。",
     stay: "美溪海滩适合休闲，海州区适合餐饮和夜生活；两区通常打车 10–20 分钟。",
@@ -1518,21 +1518,12 @@ function arrivalBlocksForNode(previous, node, date) {
   ];
 }
 
-function transferFoodForNode(previous, node) {
-  if (FLIGHTS[legKey(previous.city, node.city)]) return "";
-  if (previous.city === "dalat" && node.city === "nhatrang") return "";
-  if (node.city === "camranh" && previous.city === "nhatrang") return "午饭在芽庄市区解决，入住 Fusion 后晚餐留在度假村，不为一顿饭往返市区。";
-  return "转场日按附近可见的干净店铺解决一小时正餐，抵达后不跨区寻找餐厅。";
+function transferFoodForNode() {
+  return "";
 }
 
-function arrivalFoodForNode(previous, node) {
-  if (node.city === "nhatrang" && node.nights === 2) return "大叻 → Fusion Resort 车上备水和简单零食；入住后在度假村内用餐，不往返芽庄市区。";
-  if (previous.city === "dalat" && node.city === "nhatrang") return "大叻 → 芽庄车上备水和简单零食；入住后在陈富海滩附近吃海鲜或鱼饼米粉。";
-  if (!FLIGHTS[legKey(previous.city, node.city)]) return "";
-  if (node.city === "danang") return "抵达美溪 / 海州后就近吃饭；晚班只补充简单正餐和水，不把第一晚安排成跨区觅食。";
-  if (node.city === "dalat") return "落地大叻后先在市场或酒店附近吃热食；抵达日不专程去远处找店。";
-  if (node.city === "nhatrang") return "抵达芽庄后在陈富海滩住宿区附近吃海鲜或鱼饼米粉；不把抵达日安排成泥浴或出海。";
-  return "抵达后在住宿区附近解决一小时正餐，先补水和休息。";
+function arrivalFoodForNode() {
+  return "";
 }
 
 function returnDayBlocks() {
@@ -1704,7 +1695,7 @@ function renderHeroRail() {
   const endIndex = route.findIndex(node => node.role === "end");
   const endDates = dates[endIndex];
   $("#middle-window").textContent = `${dateLabel(middleStartDate())}—${dateLabel(endDates.start)}`;
-  $("#middle-window-label").textContent = `${middleNightsTarget()} 晚待规划`;
+  $("#middle-window-label").textContent = `${middleNightsTarget()} 晚可分配`;
   $("#end-window").textContent = `${dateLabel(endDates.start)}—${dateLabel(endDates.end)}`;
   $("#end-window-label").textContent = `芽庄 ${endNights()} 晚 · Fusion 2 晚 · 14:05 飞`;
   rail.style.setProperty("--stop-count", route.length);
@@ -2216,7 +2207,7 @@ function renderRoute() {
         ? `${dateLabel(dates[index].start)} 抵达 · 10.05 15:00 度假村入住 · 10.07 12:00 退房`
         : `${dateLabel(dates[index].start)} 入住 · ${dateLabel(dates[index].end)} 离开`;
     const [budgetMin, budgetMax] = budgetForNode(node);
-    const roleLabel = node.role === "start" ? "已确认" : node.role === "end" ? "已确认 · 芽庄" : "固定路线";
+    const roleLabel = node.role === "start" ? "已确认" : node.role === "end" ? "已确认 · 芽庄" : "";
     const resortOnly = node.role === "end" && node.city === "nhatrang" && node.nights === 2;
     const summary = resortOnly
       ? "10.05–10.07 已确认入住 Fusion Resort Cam Ranh；两晚全部留在金兰湾。"
@@ -2224,11 +2215,6 @@ function renderRoute() {
     const plays = resortOnly
       ? ["Fusion Resort Cam Ranh", "金兰湾海滩", "泳池与 SPA"]
       : city.plays;
-    const caution = resortOnly
-      ? "芽庄 2 晚为保底度假方案：不安排芽庄市区，10 月 7 日从 CXR 返程。"
-      : node.role === "end" && node.city === "nhatrang" && node.nights !== city.defaultNights
-      ? `当前芽庄合计 ${node.nights} 晚；Fusion Resort 订单仍固定为 10.05–10.07 2 晚，前后市区停留会随天数调整。`
-      : city.caution;
     const plans = plansForNode(node, index, dates);
     const lastDayPlanIndex = plans.reduce((lastIndex, plan, planIndex) => {
       const isResortPlan = node.role === "end" && node.city === "nhatrang" && /金兰湾|Fusion/.test(plan.theme);
@@ -2247,7 +2233,7 @@ function renderRoute() {
       <div class="node-main">
         <span class="node-number">${String(index + 1).padStart(2, "0")}</span>
         <div class="node-city">
-          <span class="node-anchor">${roleLabel}</span>
+          ${roleLabel ? `<span class="node-anchor">${roleLabel}</span>` : ""}
           <strong class="compact-city-name">${city.name}</strong>
           <span class="compact-period">${compactPeriod}</span>
           <strong class="fixed-city">${city.name}</strong>
@@ -2264,11 +2250,10 @@ function renderRoute() {
           </div>
           <p class="node-summary">${esc(summary)}</p>
           <div class="node-plays" aria-label="地点与体验">${plays.map(play => `<button type="button" title="点击复制地点" data-copy-text="${esc(play)}">${esc(play)}</button>`).join("")}</div>
-          <p class="node-caution">${esc(caution)}</p>
         </div>
         <div class="node-side">
           <span class="compact-night-count"><strong>${node.nights}</strong> 晚${node.locked ? " · 已确认" : ""}</span>
-          <span class="node-budget"><strong>${formatCny(budgetMin)}–${formatCny(budgetMax)}</strong>${node.role === "end" ? "芽庄停留 / 人" : "本地停留 / 人"}${node.role === "start" ? "<small>默认 2 晚 · 可调 2–3 晚</small>" : node.role === "end" ? "<small>默认 2 晚 · 可调 2–4 晚</small>" : ""}</span>
+          <span class="node-budget"><strong>${formatCny(budgetMin)}–${formatCny(budgetMax)}</strong>${node.role === "end" ? "芽庄 / 人" : "本地 / 人"}</span>
         </div>
       </div>
       <details class="city-detail"${expandedNodeIds.has(node.id) ? " open" : ""}>

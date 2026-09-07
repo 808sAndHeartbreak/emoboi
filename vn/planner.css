@@ -5099,3 +5099,21 @@ body.map-tool-open .tool-panel[data-tool-panel="map"] {
 
 .route-node.is-skipped .compact-restore i { font-size: 14px; font-style: normal; }
 .route-node.is-skipped .compact-restore:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* Final density pass — keep the route header expressive without spending the first mobile screen on empty canvas. */
+@media (max-width: 680px) {
+  .planner-hero,
+  .hero-inner { min-height: 354px; }
+
+  .hero-inner { padding-top: 62px; padding-bottom: 9px; }
+
+  .journey-board {
+    min-height: 282px;
+    padding-top: 14px;
+    padding-bottom: 9px;
+  }
+
+  .journey-head { gap: 8px; }
+  .route-rail-wrap { padding-top: 9px; }
+  .rail-stop button { min-height: 52px; }
+}
