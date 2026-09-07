@@ -5050,3 +5050,33 @@ body.map-tool-open .map-panel-head {
   .day-marker span { font-size: 12px; }
   .time-block time { font-size: 10px; }
 }
+
+/* Responsive finish — make scrollable rails discoverable without widening the page. */
+.tool-drawer,
+body.map-tool-open .tool-panel[data-tool-panel="map"] {
+  scrollbar-color: rgba(158, 219, 208, .42) transparent;
+  scrollbar-width: thin;
+}
+
+@media (max-width: 680px) {
+  .trip-timeline,
+  .map-city-tabs,
+  .map-day-tabs {
+    scroll-padding-inline: 8px;
+    scroll-snap-type: x proximity;
+    overscroll-behavior-inline: contain;
+  }
+
+  .timeline-item,
+  .map-city-tabs button,
+  .map-day-tabs button { scroll-snap-align: start; }
+
+  .trip-timeline {
+    scrollbar-color: rgba(54, 113, 96, .42) transparent;
+    scrollbar-width: thin;
+  }
+
+  .trip-timeline::-webkit-scrollbar { display: block; height: 3px; }
+  .trip-timeline::-webkit-scrollbar-track { background: rgba(54, 113, 96, .08); }
+  .trip-timeline::-webkit-scrollbar-thumb { border-radius: 99px; background: rgba(54, 113, 96, .42); }
+}

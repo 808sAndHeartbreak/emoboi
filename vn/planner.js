@@ -1007,6 +1007,7 @@ const PLACE_PATTERN = new RegExp(
 let route = loadRoute();
 let flightChoices = loadFlightChoices();
 let activeTool = null;
+let lastToolTrigger = null;
 let fxCurrency = "CNY";
 let activePhraseCategory = Object.keys(PHRASES)[0];
 let revealObserver = null;
@@ -1019,6 +1020,7 @@ let mapShowAll = false;
 let mapViewState = null;
 let mapRenderedCityKey = null;
 let mapInstance = null;
+let mapResizeObserver = null;
 let mapMarkerLayer = null;
 let mapRouteLayer = null;
 let mapMarkerRefs = new Map();
@@ -1985,6 +1987,10 @@ function renderMap() {
       mapRouteLayer = L.layerGroup().addTo(mapInstance);
       L.control.scale({ imperial: false, position: "bottomleft" }).addTo(mapInstance);
       container.insertAdjacentHTML("beforeend", `<span class="map-live-badge">LIVE MAP · OSM</span>`);
+      if ("ResizeObserver" in window) {
+        mapResizeObserver = new ResizeObserver(() => refreshMapSize());
+        mapResizeObserver.observe(container);
+      }
     }
     renderLeafletMap(places, sequence, viewState, otherDayStops);
   } else {
@@ -2276,7 +2282,9 @@ routeEditor.addEventListener("keydown", event => {
   activateNode(compactNode.dataset.id);
 });
 
-function openTool(name) {
+function openTool(name, trigger = null) {
+  const wasOpen = document.body.classList.contains("drawer-open");
+  if (trigger && !trigger.closest(".drawer-tool-nav")) lastToolTrigger = trigger;
   activeTool = name;
   const titles = { weather: "路线天气", exchange: "汇率换算", phrases: "越南常用语", map: "路线地图", flights: "机票与酒店" };
   $("#drawer-title").textContent = titles[name];
@@ -2296,14 +2304,18 @@ function openTool(name) {
     mapRenderedCityKey = null;
     renderMap();
   }
+  if (!wasOpen) requestAnimationFrame(() => $("#close-drawer")?.focus({ preventScroll: true }));
 }
 
 function closeTool() {
+  const trigger = lastToolTrigger;
+  lastToolTrigger = null;
   activeTool = null;
   document.body.classList.remove("drawer-open");
   document.body.classList.remove("map-tool-open");
   $("#tool-drawer").setAttribute("aria-hidden", "true");
   $$("[data-tool]").forEach(button => button.setAttribute("aria-expanded", "false"));
+  if (trigger?.isConnected) requestAnimationFrame(() => trigger.focus({ preventScroll: true }));
 }
 
 $$(`[data-tool]`).forEach(button => button.addEventListener("click", () => {
@@ -2312,7 +2324,7 @@ $$(`[data-tool]`).forEach(button => button.addEventListener("click", () => {
     return;
   }
   if (activeTool === button.dataset.tool && document.body.classList.contains("drawer-open")) closeTool();
-  else openTool(button.dataset.tool);
+  else openTool(button.dataset.tool, button);
 }));
 $("#close-drawer").addEventListener("click", closeTool);
 $("#drawer-backdrop").addEventListener("click", closeTool);
