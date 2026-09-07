@@ -9,7 +9,7 @@
   <title>越南路线规划器 · 2026</title>
   <link rel="preload" as="image" href="vietnam-road-illustration.webp" fetchpriority="high">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  <link rel="stylesheet" href="planner.css?v=20260907-48">
+  <link rel="stylesheet" href="planner.css?v=20260907-49">
 </head>
 <body class="night-atlas">
   <header class="appbar">
@@ -159,17 +159,16 @@
       <div class="map-panel-head">
         <div>
           <p class="tool-intro">路线地图</p>
-          <p class="map-panel-note">按时间连线查看当天路线；金色点位可按需显示备选景点。</p>
+          <p class="map-panel-note">按时间连线查看当天路线；可叠加同城其他日期，金色点位可按需显示备选景点。</p>
         </div>
-        <div class="map-legend" aria-label="地图图例">
-          <span><i class="map-legend-dot is-route"></i>当天路线</span>
-          <span><i class="map-legend-dot is-place"></i>规划地点</span>
-          <span><i class="map-legend-dot is-alternative"></i>备选景点</span>
-        </div>
-        <div class="map-signal-bar" aria-label="地图当前状态">
-          <span><b id="map-signal-day">—</b><small>当前日期</small></span>
-          <span><b id="map-signal-stops">—</b><small>当天站点</small></span>
-          <span><b id="map-signal-options">—</b><small>可选地点</small></span>
+        <div class="map-head-actions">
+          <div class="map-legend" aria-label="地图图例">
+            <span><i class="map-legend-dot is-route"></i>当天路线</span>
+            <span><i class="map-legend-dot is-place"></i>规划地点</span>
+            <span><i class="map-legend-dot is-other-day"></i>其他日期</span>
+            <span><i class="map-legend-dot is-alternative"></i>备选景点</span>
+          </div>
+          <label class="map-display-toggle"><input id="map-show-all" type="checkbox" aria-label="显示当前城市其他日期的地点"><span>全部展示</span><small>同城其他日期</small></label>
         </div>
       </div>
       <div class="map-city-tabs" id="map-city-tabs" role="tablist" aria-label="地图城市"></div>
@@ -217,6 +216,6 @@
   <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">已复制</div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="planner.js?v=20260907-48"></script>
+  <script src="planner.js?v=20260907-49"></script>
 </body>
 </html>

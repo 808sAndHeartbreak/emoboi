@@ -455,6 +455,7 @@ const MAP_PLACES = {
   ],
   dalat: [
     { id: "dalat-airport", name: "联姜机场 DLI", lat: 11.7509, lng: 108.3663, kind: "context", terms: ["DLI T1", "联姜"] },
+    { id: "dalat-futa-station", name: "FUTA 大叻联运站", lat: 11.9268818, lng: 108.4455138, kind: "transfer", terms: ["FUTA 大叻", "大叻联运站", "Bến Xe Liên Tỉnh", "Tô Hiến Thành", "To Hien Thanh"] },
     { id: "dalat-xuan-huong", name: "春香湖", lat: 11.9467, lng: 108.4419, kind: "context", terms: ["春香湖"] },
     { id: "dalat-market", name: "大叻市场", lat: 11.9406, lng: 108.4371, kind: "context", terms: ["大叻市场"] },
     { id: "dalat-railway", name: "大叻旧火车站", lat: 11.9472, lng: 108.4543, kind: "core", terms: ["大叻旧火车站"] },
@@ -1014,6 +1015,7 @@ let mapCityKey = route.find(node => MAP_PLACES[node.city])?.city || "hanoi";
 let mapPlanIndex = 0;
 let mapSelectedStopId = null;
 let mapShowAlternatives = false;
+let mapShowAll = false;
 let mapViewState = null;
 let mapRenderedCityKey = null;
 let mapInstance = null;
@@ -1021,6 +1023,7 @@ let mapMarkerLayer = null;
 let mapRouteLayer = null;
 let mapMarkerRefs = new Map();
 let mapActivePlaceIds = new Set();
+let mapOtherPlaceIds = new Set();
 const expandedNodeIds = new Set(route.map(node => node.id));
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -1283,13 +1286,15 @@ function transferBlocksForNode(previous, node, date, transfer) {
   }
   if (previous.city === "dalat" && node.city === "nhatrang" && node.nights === 2) {
     return [
-      { time: "09:30–10:30", text: "起床、早餐、退房；请大叻酒店前台协助安排 Klook 专车直送 Fusion Resort。若选 FUTA，大巴到芽庄市区后还要再接车，不适合只有两晚的保底方案。" },
+      { time: "09:30–10:30", text: "起床、早餐、退房；请大叻酒店前台协助安排 Klook 专车直送 Fusion Resort。若选 FUTA，先到 FUTA 大叻联运站再转车，不适合只有两晚的保底方案。" },
+      { time: "10:30–11:00", text: "若改坐大巴：从酒店前往 FUTA 大叻联运站（01 Tô Hiến Thành），Grab 约 10–20 分钟；专车方案则由酒店上门接。班次与上车点以 FUTA / 前台当天确认。" },
       { time: "10:30–14:30", text: "大叻 → Fusion Resort Cam Ranh，山路约 3.5–4.5 小时；专车直接送到度假村，途中准备晕车药和饮水。" }
     ];
   }
   if (previous.city === "dalat" && node.city === "nhatrang") {
     return [
       { time: "10:00–11:00", text: "起床、早餐、退房；请大叻酒店前台协助确认 Klook 专车，或提前确认 FUTA 大巴班次。" },
+      { time: "10:30–11:00", text: "若选 FUTA：从酒店前往 FUTA 大叻联运站（01 Tô Hiến Thành），Grab 约 10–20 分钟；班次与具体上车点以 FUTA / 酒店前台当天确认。专车则由酒店上门接。" },
       { time: "11:00–14:00", text: "大叻 → 芽庄，Klook 专车 / FUTA 大巴约 3 小时；专车可送到酒店，大巴到站后再打车。" }
     ];
   }
@@ -1648,6 +1653,79 @@ function mapPlaceForAlternative(places, name) {
   return places.find(place => place.terms.some(term => name.includes(term) || term.includes(name)));
 }
 
+function haversineKm(from, to) {
+  const earthRadius = 6371;
+  const latDelta = (to.lat - from.lat) * Math.PI / 180;
+  const lngDelta = (to.lng - from.lng) * Math.PI / 180;
+  const fromLat = from.lat * Math.PI / 180;
+  const toLat = to.lat * Math.PI / 180;
+  const value = Math.sin(latDelta / 2) ** 2 + Math.cos(fromLat) * Math.cos(toLat) * Math.sin(lngDelta / 2) ** 2;
+  return earthRadius * 2 * Math.atan2(Math.sqrt(value), Math.sqrt(1 - value));
+}
+
+function formatMapDistance(km) {
+  return km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(km < 10 ? 1 : 0)} km`;
+}
+
+function mapLegEstimate(from, to, cityKey) {
+  const straightKm = haversineKm(from, to);
+  if (!Number.isFinite(straightKm) || straightKm < 0.05) return "就在附近";
+  const profiles = {
+    hanoi: { roadFactor: 1.3, speed: [24, 34], mode: "Grab / 打车" },
+    danang: { roadFactor: 1.24, speed: [27, 40], mode: "Grab / 打车" },
+    dalat: { roadFactor: 1.35, speed: [22, 34], mode: "Grab / 打车" },
+    nhatrang: { roadFactor: 1.28, speed: [25, 38], mode: "Grab / 打车" }
+  };
+  if (straightKm <= 0.9) {
+    const walkMinutes = Math.max(6, Math.round(straightKm * 1.3 / 4.5 * 60));
+    return `步行约 ${walkMinutes}–${walkMinutes + 6} 分钟`;
+  }
+  const profile = profiles[cityKey] || profiles.danang;
+  const roadKm = straightKm * profile.roadFactor;
+  const low = Math.max(7, Math.round(roadKm / profile.speed[1] * 60) + 3);
+  const high = Math.max(low + 5, Math.round(roadKm / profile.speed[0] * 60) + 5);
+  return `${profile.mode}约 ${low}–${high} 分钟`;
+}
+
+function mapLegMeta(from, to, cityKey) {
+  return `直线 ${formatMapDistance(haversineKm(from, to))} · ${mapLegEstimate(from, to, cityKey)}`;
+}
+
+function collectOtherDayStops(planSequences, currentIndex) {
+  if (!mapShowAll) return [];
+  return planSequences.flatMap((item, index) => index === currentIndex
+    ? []
+    : item.sequence.map(stop => ({
+      ...stop,
+      date: item.plan.date,
+      tag: item.plan.tag,
+      planIndex: index
+    })));
+}
+
+function otherDayMeta(stops) {
+  const ids = new Set();
+  const labels = new Map();
+  stops.forEach(stop => {
+    ids.add(stop.place.id);
+    const existing = labels.get(stop.place.id) || [];
+    if (!existing.includes(stop.date)) existing.push(stop.date);
+    labels.set(stop.place.id, existing);
+  });
+  return { ids, labels };
+}
+
+function renderMapRouteList(sequence) {
+  if (!sequence.length) return `<li class="map-empty">这一天以机场、转场或休息为主，未匹配到可定位地点。</li>`;
+  return sequence.map((stop, index) => {
+    const previous = sequence[index - 1];
+    const legMeta = previous
+      ? `<div class="map-leg-meta"><span aria-hidden="true"></span><small>${esc(mapLegMeta(previous.place, stop.place, mapCityKey))}</small></div>`
+      : "";
+    return `<li>${legMeta}<button type="button" data-map-stop-id="${esc(stop.place.id)}" class="${stop.place.id === mapSelectedStopId ? "is-selected" : ""}"><b>${esc(stop.time)}</b><span><i>${String(index + 1).padStart(2, "0")}</i><strong class="map-stop-name">${esc(stop.place.name)}</strong></span><em aria-hidden="true">↗</em></button></li>`;
+  }).join("");
+}
+
 function refreshMapSize(delay = 0) {
   if (!mapInstance) return;
   const refresh = () => {
@@ -1671,15 +1749,17 @@ function captureMapView() {
   };
 }
 
-function renderMapFallback(places, sequence, viewState = null) {
+function renderMapFallback(places, sequence, viewState = null, otherDayStops = []) {
   const container = $("#trip-map");
   if (!container) return;
   const tileSize = 256;
   const width = Math.max(container.clientWidth, 320);
   const height = Math.max(container.clientHeight, 260);
   const activeIds = new Set(sequence.map(stop => stop.place.id));
+  const { ids: otherIds, labels: otherLabels } = otherDayMeta(otherDayStops);
   mapActivePlaceIds = activeIds;
-  const visiblePlaces = places.filter(place => place.kind !== "alternative" || mapShowAlternatives || activeIds.has(place.id));
+  mapOtherPlaceIds = otherIds;
+  const visiblePlaces = places.filter(place => place.kind !== "alternative" || mapShowAlternatives || activeIds.has(place.id) || otherIds.has(place.id));
   const mapPlaces = visiblePlaces.length ? visiblePlaces : places;
   const longitudes = mapPlaces.map(place => place.lng);
   const latitudes = mapPlaces.map(place => place.lat);
@@ -1719,21 +1799,38 @@ function renderMapFallback(places, sequence, viewState = null) {
   mapMarkerRefs = new Map();
   const order = new Map();
   sequence.forEach((stop, index) => { if (!order.has(stop.place.id)) order.set(stop.place.id, index + 1); });
-  const line = sequence.length > 1 ? `<polyline class="fallback-map-route" points="${sequence.map(stop => project(stop.place).join(",")).join(" ")}"/>` : "";
+  const routeLines = [];
+  if (sequence.length > 1) {
+    routeLines.push(`<polyline class="fallback-map-route" points="${sequence.map(stop => project(stop.place).join(",")).join(" ")}"/>`);
+  }
+  if (mapShowAll) {
+    const otherSequences = new Map();
+    otherDayStops.forEach(stop => {
+      const sequenceForDay = otherSequences.get(stop.planIndex) || [];
+      sequenceForDay.push(stop);
+      otherSequences.set(stop.planIndex, sequenceForDay);
+    });
+    otherSequences.forEach(daySequence => {
+      if (daySequence.length > 1) routeLines.push(`<polyline class="fallback-map-route is-other-day" points="${daySequence.map(stop => project(stop.place).join(",")).join(" ")}"/>`);
+    });
+  }
   const markers = visiblePlaces.map(place => {
     const [x, y] = project(place);
     const active = activeIds.has(place.id);
-    const label = order.has(place.id) || (mapShowAlternatives && place.kind === "alternative")
-      ? `<text x="${x + 8}" y="${y + 4}">${order.has(place.id) ? `${order.get(place.id)} · ` : ""}${esc(place.name)}</text>`
+    const other = !active && otherIds.has(place.id);
+    const label = active || other || (mapShowAlternatives && place.kind === "alternative")
+      ? `<text x="${x + 8}" y="${y + 4}">${order.has(place.id) ? `${order.get(place.id)} · ` : other ? `${otherLabels.get(place.id).join("/")} · ` : ""}${esc(place.name)}</text>`
       : "";
-    return `<g class="fallback-map-marker ${active ? "is-active" : place.kind === "alternative" ? "is-alternative" : ""}" data-map-fallback-place="${esc(place.id)}" tabindex="0" role="button" aria-label="${esc(place.name)}"><circle cx="${x}" cy="${y}" r="${active ? 7 : place.kind === "alternative" ? 5 : 4}"/>${label}<title>${esc(order.has(place.id) ? `${order.get(place.id)} · ` : "")}${esc(place.name)}</title></g>`;
+    return `<g class="fallback-map-marker ${active ? "is-active" : other ? "is-other-day" : place.kind === "alternative" ? "is-alternative" : ""}" data-map-fallback-place="${esc(place.id)}" tabindex="0" role="button" aria-label="${esc(place.name)}"><circle cx="${x}" cy="${y}" r="${active ? 7 : other ? 5 : place.kind === "alternative" ? 5 : 4}"/>${label}<title>${esc(order.has(place.id) ? `${order.get(place.id)} · ` : other ? `${otherLabels.get(place.id).join("/")} · ` : "")}${esc(place.name)}</title></g>`;
   }).join("");
-  container.innerHTML = `<div class="tile-map-fallback" role="img" aria-label="基于 OpenStreetMap 的景点分布地图"><div class="tile-map-tiles">${tiles.join("")}</div><svg class="fallback-map-overlay" viewBox="0 0 ${width} ${height}" aria-hidden="true">${line}${markers}</svg><span class="map-live-badge">LIVE MAP · OSM</span></div><p class="map-fallback-note">OpenStreetMap 瓦片 · 当前为简化加载模式</p>`;
+  container.innerHTML = `<div class="tile-map-fallback" role="img" aria-label="基于 OpenStreetMap 的景点分布地图"><div class="tile-map-tiles">${tiles.join("")}</div><svg class="fallback-map-overlay" viewBox="0 0 ${width} ${height}" aria-hidden="true">${routeLines.join("")}${markers}</svg><span class="map-live-badge">LIVE MAP · OSM</span></div><p class="map-fallback-note">OpenStreetMap 瓦片 · 当前为简化加载模式</p>`;
 }
 
-function renderLeafletMap(places, sequence, viewState = null) {
+function renderLeafletMap(places, sequence, viewState = null, otherDayStops = []) {
   const activeIds = new Set(sequence.map(stop => stop.place.id));
+  const { ids: otherIds, labels: otherLabels } = otherDayMeta(otherDayStops);
   mapActivePlaceIds = activeIds;
+  mapOtherPlaceIds = otherIds;
   mapMarkerRefs = new Map();
   const order = new Map();
   sequence.forEach((stop, index) => { if (!order.has(stop.place.id)) order.set(stop.place.id, index + 1); });
@@ -1741,22 +1838,23 @@ function renderLeafletMap(places, sequence, viewState = null) {
   mapRouteLayer.clearLayers();
   places.forEach(place => {
     const active = activeIds.has(place.id);
-    if (place.kind === "alternative" && !mapShowAlternatives && !active) return;
+    const other = !active && otherIds.has(place.id);
+    if (place.kind === "alternative" && !mapShowAlternatives && !active && !other) return;
     const marker = L.circleMarker([place.lat, place.lng], {
-      radius: active ? 8 : place.kind === "alternative" ? 7 : 4,
-      color: active ? "#f36f59" : place.kind === "alternative" ? "#b9904b" : "#427c6c",
-      weight: active ? 3 : place.kind === "alternative" ? 2 : 1.5,
-      fillColor: active ? "#f36f59" : place.kind === "alternative" ? "#e8cb84" : "#9ac9b9",
-      fillOpacity: active ? .96 : place.kind === "alternative" ? .9 : .62
+      radius: active ? 8 : other ? 6 : place.kind === "alternative" ? 7 : 4,
+      color: active ? "#f36f59" : other ? "#5f9a9c" : place.kind === "alternative" ? "#b9904b" : "#427c6c",
+      weight: active ? 3 : other ? 2 : place.kind === "alternative" ? 2 : 1.5,
+      fillColor: active ? "#f36f59" : other ? "#afd0c7" : place.kind === "alternative" ? "#e8cb84" : "#9ac9b9",
+      fillOpacity: active ? .96 : other ? .7 : place.kind === "alternative" ? .9 : .62
     }).addTo(mapMarkerLayer);
     mapMarkerRefs.set(place.id, marker);
     marker.__mapPlace = place;
     marker.on("click", () => selectMapPlace(place.id, true));
-    marker.bindTooltip(`${order.has(place.id) ? `${order.get(place.id)} · ` : ""}${place.name}`, {
+    marker.bindTooltip(`${order.has(place.id) ? `${order.get(place.id)} · ` : other ? `${otherLabels.get(place.id).join("/")} · ` : ""}${place.name}`, {
       permanent: active || (place.kind === "alternative" && mapShowAlternatives),
       direction: "top",
       offset: [0, -7],
-      className: active ? "map-tooltip is-route" : place.kind === "alternative" ? "map-tooltip is-alternative" : "map-tooltip"
+      className: active ? "map-tooltip is-route" : other ? "map-tooltip is-other-day" : place.kind === "alternative" ? "map-tooltip is-alternative" : "map-tooltip"
     });
   });
   if (sequence.length > 1) {
@@ -1769,10 +1867,30 @@ function renderLeafletMap(places, sequence, viewState = null) {
       lineJoin: "round"
     }).addTo(mapRouteLayer);
   }
+  if (mapShowAll) {
+    const otherSequences = new Map();
+    otherDayStops.forEach(stop => {
+      const sequenceForDay = otherSequences.get(stop.planIndex) || [];
+      sequenceForDay.push(stop);
+      otherSequences.set(stop.planIndex, sequenceForDay);
+    });
+    otherSequences.forEach(daySequence => {
+      if (daySequence.length > 1) {
+        L.polyline(daySequence.map(stop => [stop.place.lat, stop.place.lng]), {
+          color: "#5f9a9c",
+          weight: 2,
+          opacity: .46,
+          dashArray: "3 7",
+          lineCap: "round",
+          lineJoin: "round"
+        }).addTo(mapRouteLayer);
+      }
+    });
+  }
   if (viewState) {
     mapInstance.setView(viewState.center, viewState.zoom, { animate: false });
   } else {
-    const visiblePlaces = places.filter(place => place.kind !== "alternative" || mapShowAlternatives || activeIds.has(place.id));
+    const visiblePlaces = places.filter(place => place.kind !== "alternative" || mapShowAlternatives || activeIds.has(place.id) || otherIds.has(place.id));
     const boundsPlaces = visiblePlaces.length ? visiblePlaces : places;
     const bounds = L.latLngBounds(boundsPlaces.map(place => [place.lat, place.lng]));
     mapInstance.fitBounds(bounds, { padding: [48, 48], maxZoom: 14, animate: false });
@@ -1784,7 +1902,7 @@ function renderLeafletMap(places, sequence, viewState = null) {
 function selectMapPlace(placeId, center = false) {
   const place = MAP_PLACES[mapCityKey]?.find(item => item.id === placeId);
   if (!place) return;
-  mapSelectedStopId = mapActivePlaceIds.has(placeId) ? placeId : null;
+  mapSelectedStopId = mapActivePlaceIds.has(placeId) || mapOtherPlaceIds.has(placeId) ? placeId : null;
   $$("[data-map-stop-id]").forEach(button => {
     const active = button.dataset.mapStopId === mapSelectedStopId;
     button.classList.toggle("is-selected", active);
@@ -1793,13 +1911,14 @@ function selectMapPlace(placeId, center = false) {
   });
   mapMarkerRefs.forEach((marker, id) => {
     const active = mapActivePlaceIds.has(id);
+    const other = mapOtherPlaceIds.has(id) && !active;
     const selected = id === mapSelectedStopId;
     marker.setStyle({
-      radius: selected ? 11 : active ? 8 : marker.__mapPlace?.kind === "alternative" ? 5 : 4,
-      weight: selected ? 4 : active ? 3 : 1.5,
-      color: selected ? "#fffaf0" : active ? "#f36f59" : marker.__mapPlace?.kind === "alternative" ? "#b9904b" : "#427c6c",
-      fillColor: selected ? "#f36f59" : active ? "#f36f59" : marker.__mapPlace?.kind === "alternative" ? "#d4b376" : "#9ac9b9",
-      fillOpacity: selected ? 1 : active ? .96 : marker.__mapPlace?.kind === "alternative" ? .48 : .62
+      radius: selected ? 11 : active ? 8 : other ? 6 : marker.__mapPlace?.kind === "alternative" ? 5 : 4,
+      weight: selected ? 4 : active ? 3 : other ? 2 : 1.5,
+      color: selected ? "#fffaf0" : active ? "#f36f59" : other ? "#5f9a9c" : marker.__mapPlace?.kind === "alternative" ? "#b9904b" : "#427c6c",
+      fillColor: selected ? "#f36f59" : active ? "#f36f59" : other ? "#afd0c7" : marker.__mapPlace?.kind === "alternative" ? "#d4b376" : "#9ac9b9",
+      fillOpacity: selected ? 1 : active ? .96 : other ? .7 : marker.__mapPlace?.kind === "alternative" ? .48 : .62
     });
   });
   $$('[data-map-fallback-place]').forEach(marker => {
@@ -1825,24 +1944,22 @@ function renderMap() {
   if (!plans[mapPlanIndex]) mapPlanIndex = 0;
   const plan = plans[mapPlanIndex];
   const places = MAP_PLACES[selectedNode.city];
-  const sequence = mapPlaceMatches(places, plan);
   const city = CITIES[selectedNode.city];
+  const showAllInput = $("#map-show-all");
+  if (showAllInput) showAllInput.checked = mapShowAll;
   const viewState = mapViewState?.city === selectedNode.city ? mapViewState : null;
-  if (!sequence.some(stop => stop.place.id === mapSelectedStopId)) mapSelectedStopId = null;
-  const planSequences = plans.map(item => mapPlaceMatches(places, item));
+  const planSequences = plans.map(item => ({ plan: item, sequence: mapPlaceMatches(places, item) }));
+  const sequence = planSequences[mapPlanIndex].sequence;
+  const otherDayStops = collectOtherDayStops(planSequences, mapPlanIndex);
+  if (!sequence.some(stop => stop.place.id === mapSelectedStopId) && !otherDayStops.some(stop => stop.place.id === mapSelectedStopId)) mapSelectedStopId = null;
 
   $("#map-city-tabs").innerHTML = nodes.map(node => {
     const nodeDate = dates[route.findIndex(item => item.id === node.id)];
     return `<button type="button" role="tab" aria-selected="${String(node.city === mapCityKey)}" data-map-city="${esc(node.city)}"><strong>${esc(CITIES[node.city].name)}</strong><small>${dateLabel(nodeDate.start)}—${dateLabel(nodeDate.end)} · ${node.nights} 晚</small></button>`;
   }).join("");
-  $("#map-day-tabs").innerHTML = plans.map((item, index) => `<button type="button" role="tab" aria-selected="${String(index === mapPlanIndex)}" data-map-plan-index="${index}"><time>${esc(item.date)}</time><span>${esc(item.tag)} · ${planSequences[index].length} 站</span></button>`).join("");
+  $("#map-day-tabs").innerHTML = plans.map((item, index) => `<button type="button" role="tab" aria-selected="${String(index === mapPlanIndex)}" data-map-plan-index="${index}"><time>${esc(item.date)}</time><span>${esc(item.tag)} · ${planSequences[index].sequence.length} 站</span></button>`).join("");
   $("#map-selection").innerHTML = `<strong>${esc(plan.date)}</strong><span>${esc(plan.tag)} · ${sequence.length ? `按时间连接 ${sequence.length} 个地点` : "当天以转场 / 休息为主"}</span>`;
-  $("#map-signal-day").textContent = plan.date;
-  $("#map-signal-stops").textContent = sequence.length ? `${sequence.length} 站` : "—";
-  $("#map-signal-options").textContent = `${(city.alternatives || []).length} 个`;
-  $("#map-route-list").innerHTML = sequence.length
-    ? sequence.map((stop, index) => `<li><button type="button" data-map-stop-id="${esc(stop.place.id)}" class="${stop.place.id === mapSelectedStopId ? "is-selected" : ""}"><b>${esc(stop.time)}</b><span><i>${String(index + 1).padStart(2, "0")}</i><strong class="map-stop-name">${esc(stop.place.name)}</strong></span><em aria-hidden="true">↗</em></button></li>`).join("")
-    : `<li class="map-empty">这一天以机场、转场或休息为主，未匹配到可定位景点。</li>`;
+  $("#map-route-list").innerHTML = renderMapRouteList(sequence);
   const alternatives = city.alternatives || [];
   $("#map-alternatives").innerHTML = alternatives.length
     ? `<div class="map-alternatives-head"><h3>备选景点</h3><label class="map-alternatives-toggle${mapShowAlternatives ? " is-on" : ""}"><input id="map-show-alternatives" type="checkbox" aria-label="在地图上显示备选景点" ${mapShowAlternatives ? "checked" : ""}><span>显示在地图</span></label></div><ul>${alternatives.map(item => {
@@ -1869,9 +1986,9 @@ function renderMap() {
       L.control.scale({ imperial: false, position: "bottomleft" }).addTo(mapInstance);
       container.insertAdjacentHTML("beforeend", `<span class="map-live-badge">LIVE MAP · OSM</span>`);
     }
-    renderLeafletMap(places, sequence, viewState);
+    renderLeafletMap(places, sequence, viewState, otherDayStops);
   } else {
-    renderMapFallback(places, sequence, viewState);
+    renderMapFallback(places, sequence, viewState, otherDayStops);
   }
   mapRenderedCityKey = selectedNode.city;
   mapViewState = null;
@@ -2215,6 +2332,11 @@ $("#map-day-tabs").addEventListener("click", event => {
   if (!button) return;
   mapPlanIndex = Number(button.dataset.mapPlanIndex);
   mapSelectedStopId = null;
+  renderMap();
+});
+
+$("#map-show-all").addEventListener("change", event => {
+  mapShowAll = event.target.checked;
   renderMap();
 });
 
