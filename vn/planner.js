@@ -23,32 +23,33 @@ const CITIES = {
       2: "1 个完整日：老城、建筑与咖啡足够；离开日按航班保留半天机动。",
       3: "2 个完整日：增加升龙皇城、西湖或一场博物馆，不必跑远郊。",
     },
-    summary: "老城区、大教堂、咖啡与历史建筑。",
+    summary: "还剑湖老城区连住3晚。老城步行一天，文庙—皇城—西湖一天；周末湖区步行化，接送约在酒店可通车的路口。",
     plays: ["还剑湖", "河内大教堂", "升龙皇城", "文庙", "咖啡工作坊", "西湖与镇国寺", "老城周末步行街 / 夜市"],
     caution: "9–10 月通常舒适；HAN 在城北，去市区的车程容易受晚高峰影响。9 月 26 日周六晚可优先安排老城周末步行街与夜市。",
     stay: "住还剑湖西北侧或老城区边缘：大教堂、咖啡和老城步行可达，夜间比老城腹地安静。",
     move: "老城以步行为主；升龙皇城、文庙、西湖之间用 Grab，单段约 10–25 分钟。机场快线 86 路可作为轻装备备选，带行李或晚高峰优先 Grab。离开日退房后把行李寄存在前台。",
-    airportInfo: "内排 HAN → 还剑湖 / 老城区：约 27–30 km，Grab 通常 45–75 分钟；晚高峰按 90 分钟留量。86 路机场快线耗时受站点与路况影响，适合不赶时间时使用。",
+    airportInfo: "内排 HAN → 还剑湖 / 老城区：约 30–35 km，Grab 通常 45–75 分钟；晚高峰按 90 分钟留量。86 路机场快线耗时受站点与路况影响，适合不赶时间时使用。",
     days: [
       { theme: "老城与咖啡", mapStops: [
         { id: "hanoi-hoan-kiem", time: "13:15–15:00" },
         { id: "hanoi-36-streets", time: "13:15–15:00" },
         { id: "hanoi-cathedral", time: "13:15–15:00" },
-        { id: "hanoi-coffee", time: "15:00–17:00" },
         { id: "hanoi-weekend-walk", time: "20:30–22:30" }
       ], blocks: [
         { time: "12:00–13:00", text: "起床、午饭；住在还剑湖或老城边缘，先把当天路线控制在步行范围。" },
         { time: "13:15–15:00", text: "还剑湖 → 36 行街 → 河内大教堂，拍照和慢走；不为上午场提前起床。" },
-        { time: "15:00–17:00", text: "咖啡工作坊 Coffee Workshop（需预约）；没有预约就改为老城咖啡店与街区建筑。" },
+        { time: "15:00–17:00", text: "老城咖啡与街区建筑，坐下来休息；想体验咖啡工作坊，可用已预约的课程替换这段，集合地点按订单。" },
         { time: "17:30–18:30", text: "回酒店休息或沿还剑湖再走一圈。" },
         { time: "19:00–20:00", text: "老城晚饭，控制在一小时。" },
-        { time: "20:30–22:30", text: "9 月 26 日周六优先逛老城周末步行街与夜市；非周末则沿还剑湖慢走，累了直接回酒店。" }
+        { time: "20:30–22:30", text: "周六逛老城周末步行街与夜市，累了直接回酒店。" }
       ], food: "午饭可在老城就近吃 Pho 10 或 Bún Bò Nam Bộ；下午用 Cafe Giang 试蛋咖啡，晚饭再选 Bún chả 或 Bánh mì 25。" }
     ],
     alternatives: [
       { name: "升龙皇城", note: "把下午咖啡替换成历史线，留约 1.5–2 小时；先确认开放时段。" },
       { name: "西湖与镇国寺", note: "想从老城换到湖边时安排半天，往返用 Grab，不和老城硬串。" },
-      { name: "越南美术馆", note: "雨天室内备选，适合替换一段街区慢走。" },
+      { name: "越南美术馆", note: "09.27｜1.5–2小时。就在文庙附近，雨天替换皇城，不额外叠加。" },
+      { name: "越南女性博物馆", note: "09.26｜1.5–2小时。还剑湖南侧，替换咖啡工作坊；适合了解服饰、家庭与女性生活。" },
+      { name: "火炉监狱遗址", note: "09.26｜1–1.5小时。还剑湖西南侧的历史展馆，替换一段老城散步；题材较沉重。" },
       { name: "同春市场", note: "想买咖啡、零食或伴手礼时，替换夜市前的一段逛街。" },
       { name: "河内火车街", note: "只在现场允许进入且安全秩序明确时短停，不为拍照等待列车。" }
     ],
@@ -72,7 +73,7 @@ const CITIES = {
       7: "6 个完整日：再加一天海钓 / 海上活动，需早起并看海况。",
       8: "7 个完整日：核心景点、海钓与雨天缓冲都能分开安排，适合不赶行程。",
     },
-    summary: "海滩、山茶半岛、巴拿山与会安。",
+    summary: "暂按美溪 / 安上街区住宿估算。市区、巴拿山、会安、山茶分日安排；9月底进入雨季，山顶大雾或强降雨时改室内，不硬上山出海。",
     plays: ["美溪海滩", "岘港大教堂", "韩市场", "占婆雕刻博物馆", "山茶半岛", "五行山", "巴拿山", "会安古城", "Tra Que 菜园 / 安邦海滩"],
     caution: "9 月底仍温暖，但中部进入降雨窗口；巴拿山园区、缆车末班和天气以官方当天公告为准。",
     stay: "美溪海滩适合休闲，海州区适合餐饮和夜生活；两区通常打车 10–20 分钟。",
@@ -80,34 +81,39 @@ const CITIES = {
     airportInfo: "岘港 DAD → 美溪海滩住宿区：约 5–7 km，Grab 通常 15–25 分钟；→ 海州区（岘港大教堂 / 韩市场）约 3–5 km，约 10–15 分钟。",
     days: [
       { theme: "海州与美溪", mapStops: [
-        { id: "danang-my-khe", time: "12:00–13:00" },
-        { id: "danang-cathedral", time: "13:30–15:00" },
-        { id: "danang-market", time: "13:30–15:00" },
-        { id: "danang-cham", time: "15:15–17:00" },
-        { id: "danang-han-river", time: "20:00–21:30" }
+        { id: "danang-cathedral", time: "13:20–14:00" },
+        { id: "danang-market", time: "14:00–15:00" },
+        { id: "danang-cham", time: "15:15–16:45" },
+        { id: "danang-my-khe", time: "17:15–18:15" }
       ], blocks: [
-        { time: "12:00–13:00", text: "起床、午饭；美溪海滩或海州区就近解决。" },
-        { time: "13:30–15:00", text: "岘港大教堂与韩市场；海州区点位集中，步行串联比反复打车更省力。" },
-        { time: "15:15–17:00", text: "占婆雕刻博物馆，常见开放窗口约到 17:30，安排在下午前段；以当天公告为准。" },
-        { time: "17:30–18:30", text: "回美溪海滩散步、看海或回酒店休息；不把山茶半岛硬塞进同一天。" },
-        { time: "18:30–19:30", text: "海鲜晚饭，一小时。" },
-        { time: "20:00–21:30", text: "沿韩江或龙桥散步；喷火 / 喷水通常看周末、节假日与当天公告，错过就直接回酒店。" }
-      ], food: "午饭优先试 Bún chả cá（鱼饼米粉）；下午可在 WONDERLUST 或 Cộng Cà Phê 休息，晚饭在美溪海边选海鲜或 Bánh xèo。" },
+        { time: "12:00–13:00", text: "起床、午饭，美溪住宿区就近吃；昨晚晚到，今天不早起。" },
+        { time: "13:00–13:20", text: "Grab 过河到岘港大教堂，约 4–6 km、15–25 分钟。" },
+        { time: "13:20–15:00", text: "岘港大教堂看建筑外观，再步行约 5 分钟到韩市场；市场购物留 45–60 分钟，其余时间喝咖啡。教堂礼拜期间不进入打扰。" },
+        { time: "15:00–16:45", text: "沿河向南到占婆雕刻博物馆，步行约 15–20 分钟或短程打车；参观约 1.5 小时，安排在闭馆前。" },
+        { time: "16:45–18:15", text: "一次过河回美溪海滩，车程约 15–25 分钟；散步、看海，累了直接回酒店。" },
+        { time: "18:30–19:30", text: "美溪 / 安上街区晚饭。" },
+        { time: "20:00–21:00", text: "住宿区附近咖啡或按摩，之后回酒店；今晚不再跨河，明天去巴拿山需要早起。" }
+      ], food: "午饭试 Mì Quảng（广南面）或 Bún chả cá（鱼饼米粉）；韩市场一带顺路喝椰子咖啡。晚饭选 Bánh tráng cuốn thịt heo（猪肉米纸卷）或海鲜，点海鲜先确认计价单位。" },
       { theme: "巴拿山（必要早起）", mapStops: [
         { id: "danang-ba-na", time: "09:30–16:30" }
       ], blocks: [
         { time: "07:00–08:00", text: "起床、早餐；这天需要早起，因为巴拿山园区与缆车按白天窗口运营。" },
         { time: "08:00–09:30", text: "从美溪 / 海州出发去巴拿山，车程通常约 45–75 分钟；接送与高峰按 60–90 分钟留量，尽量在上午到达。" },
-        { time: "09:30–16:30", text: "连续游玩巴拿山 Ba Na Hills：缆车、金桥、法式村与室内项目；具体开放时段、缆车末班和天气以 Sun World 官方当天公告为准，至少预留 6 小时。" },
-        { time: "16:30–18:00", text: "按缆车末班下山返回岘港；雨雾、排队或运营调整时，优先保证下山与返程安全。" },
+        { time: "09:30–12:00", text: "巴拿山 Ba Na Hills：入园、缆车、金桥与花园；换乘和排队也计入这段，不为拍空景反复上下山。" },
+        { time: "12:00–13:00", text: "山上午饭、补水和坐下休息，餐食是否包含按所购票种。" },
+        { time: "13:00–16:00", text: "继续游玩法式村与 Fantasy Park 室内项目，按当日开放区选择；15:30开始关注下山排队，不把最后一个项目压在缆车末班。" },
+        { time: "16:00–16:30", text: "集合、缆车下山；具体线路末班以 Sun World 当日公告为准。" },
+        { time: "16:30–18:00", text: "乘车返回岘港，预留雨天路况余量。" },
         { time: "18:30–19:30", text: "回到住宿区后晚饭。" },
         { time: "20:30 后", text: "直接回酒店休息；不再安排会安或夜间跨城。" }
       ], food: "巴拿山山上餐饮选择有限，早餐先吃饱并带水；回到美溪后再安排一小时晚饭，不为山上餐厅绕路。" },
       { theme: "会安古城", mapStops: [
         { id: "danang-hoi-an", time: "14:00–21:00" }
       ], blocks: [
-        { time: "12:00–13:00", text: "起床、午饭；从岘港出发前往会安，车程约 45–60 分钟。" },
-        { time: "14:00–17:30", text: "会安古城：来远桥、会馆与古城遗迹按现场开放时间取舍；部分遗迹需古城票，核心区域以步行为主，车辆停外围。" },
+        { time: "12:00–13:00", text: "起床、午饭，带雨具；提前约好21:00返程车和古城外围上车点。" },
+        { time: "13:00–14:00", text: "岘港 → 会安古城，约30 km、45–60分钟；古城内步行，车停外围。" },
+        { time: "14:00–16:00", text: "会安古城先看福建会馆，再沿陈富街向西走到古宅和来远桥；收费建筑只选1–2处，古城参观券不是所有船票或表演的通票。" },
+        { time: "16:00–17:30", text: "古城咖啡休息约45分钟，再走河岸看黄昏；不额外往返安邦海滩或椰林。" },
         { time: "18:00–19:00", text: "会安河边晚饭，一小时。" },
         { time: "19:30–21:00", text: "灯笼夜景、河边与夜市；把最适合拍照的时段留到天黑后。" },
         { time: "21:00–22:00", text: "乘预约车辆返回岘港酒店，车程约 45–60 分钟；不在会安换酒店。" }
@@ -160,8 +166,8 @@ const CITIES = {
       { name: "会安古城", note: "适合下午出发、看灯笼夜景；与巴拿山分开安排。" },
       { name: "山茶半岛", note: "海况和天气好时安排半天，山路弯、用车比摩托更稳妥。" },
       { name: "灵应寺", note: "和山茶半岛绑定，不建议单独跨城往返。" },
-      { name: "五行山", note: "石阶多、洞穴湿滑；替换半天城市线，穿防滑鞋并留意开放时间。" },
-      { name: "海钓 / 海上活动", note: "需早起和提前预约；Thọ Quang / Tiên Sa 具体集合码头、船班与风浪以前一晚确认为准。" },
+      { name: "五行山", note: "10.01｜1.5–2小时。位于去会安途中；想加入就13:00出发先游山，约16:00进古城，删掉部分会馆。石阶湿滑时取消。" },
+      { name: "海钓 / 海上活动", note: "10.02｜半天至一天。替换山茶线，通常需清晨集合；先确认船家、实际码头、救生衣与取消条件，强风浪不出海。" },
       { name: "美山圣地", note: "需要早起和较长车程，只在愿意牺牲午睡时作为整日备选。" },
       { name: "安邦海滩", note: "如果会安当天想减少古迹，可和 Tra Que 菜园组成慢游半天。" }
     ],
@@ -182,7 +188,7 @@ const CITIES = {
       3: "1 个芽庄市区完整日 + 2 个 Fusion 晚：优先婆那加塔、钟屿石岬与泥浴北线。",
       4: "1 个芽庄市区完整日 + 2 个 Fusion 晚，再多一个抵达缓冲夜；海岛与珍珠岛留作替换，不硬塞。",
     },
-    summary: "海滩、婆那加塔、泥浆浴与海岛活动；10.05–10.07 已确认入住 Fusion Resort Cam Ranh，之后留在度假村。",
+    summary: "市区只留一个完整日，优先婆那加塔与泥浴。10.05起住金兰 Fusion Resort 两晚，不再往返市区；海岛玩法只能替换10.04整天。",
     plays: ["婆那加塔", "龙山寺", "芽庄大教堂", "I-Resort 泥浆浴", "跳岛团 / 黑珍珠号候选", "珍珠岛", "国家海洋博物馆", "陈富海滩"],
     caution: "9–12 月是雨季；出海前一晚确认风浪、船班与集合码头。CXR 到陈富海滩住宿区约 35–40 km。",
     stay: "陈富海滩中段最省事；北部安静但餐饮较少；离岛玩法从南部码头出发。",
@@ -190,17 +196,18 @@ const CITIES = {
     airportInfo: "金兰 CXR → 芽庄陈富海滩住宿区：约 35–40 km，Grab / 接送通常 45–60 分钟；机场不在芽庄市区，抵达日只排入住、看海和晚饭。→ Fusion Resort Cam Ranh 约 5–6 km，约 10–15 分钟。",
     days: [
       { theme: "占婆与泥浴", mapStops: [
-        { id: "nhatrang-po-nagar", time: "13:30–15:00" },
-        { id: "nhatrang-hon-chong", time: "15:15–16:00" },
-        { id: "nhatrang-i-resort", time: "16:15–17:45" }
+        { id: "nhatrang-po-nagar", time: "13:15–14:15" },
+        { id: "nhatrang-i-resort", time: "14:45–17:15" },
+        { id: "nhatrang-tran-phu", time: "18:00–19:30" }
       ], blocks: [
-        { time: "12:00–13:00", text: "起床、午饭；从陈富海滩住宿区出发。" },
-        { time: "13:30–15:00", text: "婆那加塔 Po Nagar；下午仍在常见开放时段内，预留约 1.5 小时。" },
-        { time: "15:15–16:00", text: "钟屿石岬 Hon Chong，顺路看海。" },
-        { time: "16:15–17:45", text: "I-Resort 泥浆浴；按预约和最后入场时间调整，不能把泥浴拖到太晚。" },
-        { time: "18:30–19:30", text: "回陈富海滩附近吃海鲜。" },
-        { time: "20:00 后", text: "沿海散步或回酒店；不再安排夜间远距离移动。" }
-      ], food: "午饭可试 Bún Chả Cá（鱼饼米粉）；泥浴后晚饭安排 Nem Nướng（烤肉卷）、Bánh Căn（小煎饼）或海鲜，按当日胃口三选一。" },
+        { time: "12:00–13:00", text: "起床，在陈富海滩住宿区午饭；带泳衣、干衣和防水袋。" },
+        { time: "13:00–14:15", text: "Grab 北上到婆那加塔，约 4–5 km、15–20 分钟；参观一小时，入祠遮肩过膝。" },
+        { time: "14:15–14:45", text: "婆那加塔 → I-Resort 泥浆浴，向西约 4–5 km，预留 20–30 分钟接送。" },
+        { time: "14:45–17:15", text: "I-Resort 泥浆浴：留 2.5 小时给换衣、泥浴、矿泉池和淋浴。预约下午前段，不压末场；泥浴浸泡时长按工作人员指导。" },
+        { time: "17:15–18:00", text: "擦干换衣，Grab 返回陈富海滩住宿区，约 6–8 km、20–30 分钟；等车留量。" },
+        { time: "18:00–19:00", text: "酒店附近晚饭，之后不再折返北部景点。" },
+        { time: "19:30–20:30", text: "陈富海滩散步或直接回房休息；钟屿石岬留作不泡泥浴时的替换。" }
+      ], food: "午饭吃 Bún chả cá（鱼饼米粉）；晚饭在市区选 Nem nướng（烤肉卷）或 Bánh căn（小煎饼），泥浴后补水，不为某一家网红店绕路。" },
       { theme: "海岛全天（必要早起）", mapStops: [
         { id: "nhatrang-port", time: "08:00–16:00" }
       ], blocks: [
@@ -237,15 +244,16 @@ const CITIES = {
     ], blocks: [
       { time: "12:00–13:00", text: "睡到自然醒，在 Fusion Resort 吃午饭。" },
       { time: "13:30–17:00", text: "海滩、泳池与度假村活动；SPA 按预约时段插入，不再往返芽庄市区。" },
-      { time: "17:00–18:00", text: "回房间休息，看金兰湾日落。" },
+      { time: "17:00–18:00", text: "傍晚海边散步，回房休息。" },
       { time: "19:00–20:00", text: "度假村晚餐。" },
       { time: "20:30 后", text: "继续在度假村休息，或直接睡觉。" }
-    ], food: "All Spa Inclusive 以度假村餐厅为主；返程前不尝试距离过远的新店，把时间留给收拾和确认送机。" },
+    ], food: "晚饭留在度假村。All Spa Inclusive 指SPA权益，不等于三餐全包；餐食与SPA预约次数按订单确认。" },
     alternatives: [
+      { name: "钟屿石岬", note: "10.04｜45–60分钟。替换泥浴后，与婆那加塔走同一条北部线；不要为了凑点压缩泥浴换衣和接送。" },
       { name: "珍珠岛 VinWonders", note: "可替换 10 月 4 日整天的市区线；建议早起，先核对跨海缆车与园区时间。" },
       { name: "跳岛团 / 黑珍珠号候选", note: "需要 07:30–08:30 集合；前一晚确认风浪、码头和船班。" },
       { name: "蚕岛 Hòn Tằm", note: "想要更偏度假的海岛替代跳岛团，按当天船班与天气决定。" },
-      { name: "越南国家海洋博物馆", note: "雨天室内替代；与婆那加塔、泥浴不要再塞成连续打卡。" },
+      { name: "越南国家海洋博物馆", note: "10.04｜1.5–2小时。位于市区南侧，雨天替换整段北线；接陈富海滩咖啡，不再南北穿城。" },
       { name: "Tháp Bà 热矿泥浴", note: "如果 I-Resort 预约不合适，可作为泥浴替代，不安排两家都去。" },
       { name: "100 Eggs 泥浴", note: "另一条泥浴备选；确认位置和预约后再决定，避免和市区点位来回折返。" }
     ],
@@ -475,12 +483,14 @@ const MAP_PLACES = {
     { id: "hanoi-hoan-kiem", name: "还剑湖", lat: 21.0287, lng: 105.8525, kind: "core", terms: ["还剑湖", "Hoàn Kiếm"] },
     { id: "hanoi-36-streets", name: "36 行街", lat: 21.0355, lng: 105.851, kind: "core", terms: ["36 行街"] },
     { id: "hanoi-cathedral", name: "河内大教堂", lat: 21.0289, lng: 105.8487, kind: "core", terms: ["河内大教堂"] },
-    { id: "hanoi-coffee", name: "咖啡工作坊", lat: 21.0311, lng: 105.8515, kind: "core", terms: ["咖啡工作坊", "Coffee Workshop"] },
     { id: "hanoi-weekend-walk", name: "老城周末步行街 / 夜市", lat: 21.0338, lng: 105.8524, kind: "core", terms: ["老城周末步行街", "夜市"] },
     { id: "hanoi-imperial-city", name: "升龙皇城", lat: 21.0356, lng: 105.8335, kind: "core", terms: ["升龙皇城"] },
     { id: "hanoi-temple-literature", name: "文庙", lat: 21.028, lng: 105.8353, kind: "core", terms: ["文庙"] },
     { id: "hanoi-west-lake", name: "西湖与镇国寺", lat: 21.0455, lng: 105.8369, kind: "core", terms: ["西湖与镇国寺", "西湖"] },
     { id: "hanoi-fine-arts", name: "越南美术馆", lat: 21.0308, lng: 105.8369, kind: "alternative", terms: ["越南美术馆"] },
+    // Coordinates checked against the corresponding Wikipedia museum entries, 2026-09-08.
+    { id: "hanoi-women", name: "越南女性博物馆", lat: 21.023463, lng: 105.851619, kind: "alternative", terms: ["越南女性博物馆"] },
+    { id: "hanoi-hoa-lo", name: "火炉监狱遗址", lat: 21.0257, lng: 105.8461, kind: "alternative", terms: ["火炉监狱遗址"] },
     { id: "hanoi-market", name: "同春市场", lat: 21.0394, lng: 105.8471, kind: "alternative", terms: ["同春市场"] },
     { id: "hanoi-train-street", name: "河内火车街", lat: 21.0245, lng: 105.8412, kind: "alternative", terms: ["河内火车街"] }
   ],
@@ -527,7 +537,7 @@ const MAP_PLACES = {
     { id: "nhatrang-city", name: "芽庄市区", lat: 12.2388, lng: 109.1967, kind: "context", terms: ["芽庄住宿区"] },
     { id: "nhatrang-tran-phu", name: "陈富海滩", lat: 12.238, lng: 109.196, kind: "core", terms: ["陈富海滩"] },
     { id: "nhatrang-po-nagar", name: "婆那加塔", lat: 12.2659, lng: 109.1957, kind: "core", terms: ["婆那加塔", "Po Nagar"] },
-    { id: "nhatrang-hon-chong", name: "钟屿石岬", lat: 12.2711, lng: 109.2013, kind: "core", terms: ["钟屿石岬", "Hon Chong"] },
+    { id: "nhatrang-hon-chong", name: "钟屿石岬", lat: 12.2711, lng: 109.2013, kind: "alternative", terms: ["钟屿石岬", "Hon Chong"] },
     { id: "nhatrang-i-resort", name: "I-Resort 泥浆浴", lat: 12.2795, lng: 109.1794, kind: "core", terms: ["I-Resort 泥浆浴"] },
     { id: "nhatrang-long-son", name: "龙山寺", lat: 12.2488, lng: 109.1828, kind: "core", terms: ["龙山寺"] },
     { id: "nhatrang-cathedral", name: "芽庄大教堂", lat: 12.2457, lng: 109.1946, kind: "core", terms: ["芽庄大教堂"] },
@@ -941,6 +951,8 @@ const PHRASE_READINGS = {
 };
 
 const PLACE_ALIASES = {
+  "越南女性博物馆": "Bảo tàng Phụ nữ Việt Nam",
+  "火炉监狱遗址": "Di tích Nhà tù Hỏa Lò",
   "还剑湖": "还剑湖 Hoàn Kiếm",
   "36 行街": "河内老城区 36 行街 Hanoi Old Quarter",
   "河内大教堂": "河内大教堂 St. Joseph’s Cathedral",
@@ -1196,6 +1208,7 @@ function findMapPlace(term, cityKey = null) {
 }
 
 const PLACE_ORIGINALS = {
+  'hanoi-women': 'Bảo tàng Phụ nữ Việt Nam', 'hanoi-hoa-lo': 'Di tích Nhà tù Hỏa Lò',
   'hanoi-airport': 'Sân bay quốc tế Nội Bài', 'hanoi-old-quarter': 'Phố cổ Hà Nội',
   'hanoi-hoan-kiem': 'Hồ Hoàn Kiếm', 'hanoi-36-streets': 'Hà Nội 36 phố phường',
   'hanoi-cathedral': 'Nhà thờ Lớn Hà Nội', 'hanoi-coffee': 'Coffee Workshop, Hanoi',
@@ -1282,7 +1295,7 @@ function renderAlternatives(city, node, plans = []) {
   return `<section class="alternative-shelf" aria-label="备选景点"><div class="alternative-head"><span>备选景点</span></div><ul class="alternative-list">${alternatives.map(item => {
     const place = findMapPlace(item.name, node.city);
     const trigger = place
-      ? placeAttributes({ place, displayName: item.name, source: PLACE_ALIASES[item.name] || item.name, cityKey: node.city, planIndex: Math.max(0, findPlanIndexForPlace(node.city, plans, item.name)) })
+      ? placeAttributes({ place, displayName: item.name, source: PLACE_ALIASES[item.name] || item.name, cityKey: node.city, planIndex: Math.max(0, plans.findIndex(plan => plan.date === item.note.slice(0, 5)), findPlanIndexForPlace(node.city, plans, item.name)) })
       : `type="button" title="点击复制地点" data-copy-text="${esc(PLACE_ALIASES[item.name] || item.name)}"`;
     return `<li><button type="button" ${trigger}>${esc(item.name)}</button><span>${esc(item.note)}</span></li>`;
   }).join("")}</ul></section>`;
@@ -1383,7 +1396,7 @@ function flightTransferBlocks(origin, destination, date) {
     { time: "12:00–13:00", text: "起床、午饭、退房，行李暂存前台。" },
     { time: "13:00–15:30", text: "同春市场买伴手礼，或在老城喝咖啡；不再去远郊。" },
     { time: "15:30–16:15", text: "回酒店取行李、洗手间和简餐，16:15 出发。" },
-    { time: "16:15–17:45", text: "还剑湖 / 老城区 → HAN T1，约 27–30 km；Grab 通常 45–75 分钟，按 90 分钟留量。17:45 到机场，提前 1.5 小时。" }
+    { time: "16:15–17:45", text: "还剑湖 / 老城区 → HAN T1，约 30–35 km；Grab 通常 45–75 分钟，按 90 分钟留量。17:45 到机场，提前 1.5 小时。" }
   ] : [
     { time: "12:00–13:00", text: "起床、午饭、退房，行李暂存前台。" },
     { time: "13:00–15:00", text: "美溪海滩附近咖啡或按摩，留在市区；不安排巴拿山、会安或出海。" },
@@ -1432,7 +1445,7 @@ function returnDayBlocks() {
     { time: "11:30–12:00", text: "办理退房，行李交给接送车。" },
     { time: "12:00–12:20", text: "Fusion Resort → 金兰 CXR T1，约 5–6 km，通常 10–15 分钟；14:05 国内航班按提前 1.5 小时到机场。" },
     { time: "14:05–15:55", text: "VJ772：CXR T1 → HAN T1；抵达后先取行李。" },
-    { time: "15:55–16:45", text: "HAN T1 → T2：取行李后乘免费接驳，目标 16:45 前到 T2；18:45 国际航班按提前 2 小时办理值机、出境和安检。" },
+    { time: "15:55–16:45", text: "HAN T1 → T2：取行李后乘免费接驳，争取16:45前到T2。两班间隔2小时50分，取行李与换航站楼仅留50分钟；前段延误或行李慢时，立即联系东航确认值机截止时间。" },
     { time: "16:45–18:45", text: "HAN T2 办理国际值机、出境和安检，留在候机区等待登机。" },
     { time: "18:45–22:50", text: "MU6014：HAN T2 → 上海浦东 PVG T1。" }
   ];
@@ -1522,9 +1535,10 @@ function plansForNode(node, index, dates) {
     addPlan(dates[index].start, "抵达日", [
       { time: "12:45–14:15", text: "提前 2 小时到上海浦东 PVG T1，办理国际值机、托运、出境和安检。" },
       { time: "14:45–17:45", text: "MU6013：上海浦东 PVG T1 → 河内 HAN T2。" },
-      { time: "17:45–19:30", text: "HAN T2 → 还剑湖 / 老城区，约 27–30 km，Grab 通常 45–75 分钟；晚高峰按 90 分钟留量。" },
-      { time: "19:30–20:30", text: "办理入住、老城附近晚饭。" },
-      { time: "20:30 后", text: "直接回酒店休息，不再安排景点。" }
+      { time: "17:45–18:45", text: "HAN T2 落地、办理入境和取行李；先留一小时，排队较长时顺延晚饭，不追加景点。" },
+      { time: "18:45–20:15", text: "HAN T2 → 还剑湖 / 老城区，约30–35 km，Grab通常45–75分钟，晚高峰按90分钟留量；周五步行区禁车，提前向酒店确认下车路口。" },
+      { time: "20:15–21:15", text: "办理入住、老城附近晚饭。" },
+      { time: "21:15 后", text: "回酒店休息，不再安排景点。" }
     ], false, "轻量", "PVG T1 先解决正餐；抵达河内后在还剑湖 / 老城附近就近吃河粉或 Bánh mì，不为晚餐跨区。");
   } else {
     const previous = activeNodes[activeIndex - 1];
@@ -1561,7 +1575,7 @@ function plansForNode(node, index, dates) {
 
   // Explicit stops prevent mentions of excluded/future attractions becoming today's route.
   const arrivalStops = {
-    hanoi: [{ id: "hanoi-airport", time: "17:45–19:30" }, { id: "hanoi-hoan-kiem", time: "19:30–20:30" }],
+    hanoi: [{ id: "hanoi-airport", time: "17:45–18:45" }, { id: "hanoi-hoan-kiem", time: "20:15–21:15" }],
     danang: [{ id: "danang-airport", time: "20:35–21:15" }, { id: "danang-my-khe", time: "21:15–22:00" }],
     nhatrang: [{ id: "nhatrang-airport", time: "19:15–20:00" }, { id: "nhatrang-tran-phu", time: "20:00–21:15" }]
   };
@@ -2071,6 +2085,18 @@ function renderMap() {
   }).join("");
   $("#map-day-tabs").innerHTML = plans.map((item, index) => `<button type="button" role="tab" aria-selected="${String(index === mapPlanIndex)}" data-map-plan-index="${index}"><time>${esc(item.date)}</time><span>${esc(item.tag)} · ${planSequences[index].sequence.length} 站</span></button>`).join("");
   $("#map-selection").innerHTML = "";
+  requestAnimationFrame(() => {
+    ["#map-city-tabs", "#map-day-tabs"].forEach(selector => {
+      const rail = $(selector);
+      const selected = rail.querySelector('[aria-selected="true"]');
+      if (!selected) return;
+      const box = selected.getBoundingClientRect();
+      const bounds = rail.getBoundingClientRect();
+      if (box.left < bounds.left || box.right > bounds.right) {
+        rail.scrollLeft += box.left - bounds.left - (bounds.width - box.width) / 2;
+      }
+    });
+  });
   $("#map-route-list").innerHTML = renderMapRouteList(sequence);
   const alternatives = availableAlternatives(city, plans);
   $("#map-alternatives").innerHTML = alternatives.length
@@ -2172,6 +2198,11 @@ function setupReveals() {
   });
 }
 
+function weekdayLabel(date) {
+  const [month, day] = date.split(".").map(Number);
+  return ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][new Date(2026, month - 1, day).getDay()];
+}
+
 function renderRoute() {
   const openNodeIds = new Set($$(".route-node details[open]", routeEditor).map(details => details.closest(".route-node")?.dataset.id));
   openNodeIds.forEach(id => expandedNodeIds.add(id));
@@ -2195,12 +2226,7 @@ function renderRoute() {
       : node.role === "end"
         ? `${dateLabel(dates[index].start)} 抵达 · 10.05 15:00 度假村入住 · 10.07 12:00 退房`
         : `09.28 20:35 抵达 · 10.03 18:00 飞芽庄`;
-    const [budgetMin, budgetMax] = budgetForNode(node);
     const roleLabel = node.role === "start" ? "已确认" : node.role === "end" ? "已确认 · 芽庄" : "";
-    const resortOnly = node.role === "end" && node.city === "nhatrang" && node.nights === 2;
-    const plays = resortOnly
-      ? ["Fusion Resort Cam Ranh", "金兰湾海滩", "泳池与 SPA"]
-      : city.plays;
     const plans = plansForNode(node, index, dates);
     const lastDayPlanIndex = plans.reduce((lastIndex, plan, planIndex) => {
       const isResortPlan = node.role === "end" && node.city === "nhatrang" && /金兰湾|Fusion/.test(plan.theme);
@@ -2213,7 +2239,7 @@ function renderRoute() {
       const flights = plan.kind === 'transfer' && next
         ? renderFlightOptions(node.city, next.city, dates[index].end) : '';
       return `<li class="${plan.restful ? "restful" : ""}" data-plan-anchor="${esc(planAnchor)}">
-        <div class="day-marker"><span>${plan.date}</span><small>${esc(city.name)} · ${esc(plan.tag)}</small></div>
+        <div class="day-marker"><span>${plan.date}</span><small>${weekdayLabel(plan.date)} · ${esc(plan.tag)}</small><button type="button" class="day-map-button" data-plan-map-city="${esc(node.city)}" data-plan-map-index="${planIndex}" aria-label="在地图查看${esc(city.name)}${plan.date}行程">地图 <i aria-hidden="true">↗</i></button></div>
         <div class="halfday-copy">${flights}${renderTimeBlocks(plan.blocks, planContext)}${renderDayFood(plan.food, planContext)}${planIndex === lastDayPlanIndex ? renderAlternatives(city, node, plans) : ""}</div>
       </li>`;
     }).join("");
@@ -2239,17 +2265,7 @@ function renderRoute() {
               <button type="button" data-action="increase" aria-label="增加${city.name}住宿晚数"${node.nights >= city.maxNights ? " disabled" : ""}>＋</button>
             </div>` : ""}
           </div>
-          <div class="node-plays" aria-label="地点与体验">${plays.map(play => {
-            const place = findMapPlace(play, node.city);
-            const trigger = place
-              ? placeAttributes({ place, displayName: play, source: PLACE_ALIASES[play] || play, cityKey: node.city, planIndex: Math.max(0, findPlanIndexForPlace(node.city, plans, play)) })
-              : `type="button" title="点击复制地点" data-copy-text="${esc(play)}"`;
-            return `<button type="button" ${trigger}>${esc(play)}</button>`;
-          }).join("")}</div>
-        </div>
-        <div class="node-side">
-          <span class="compact-night-count"><strong>${node.nights}</strong> 晚${node.locked ? " · 已确认" : ""}</span>
-          <span class="node-budget"><strong>${formatCny(budgetMin)}–${formatCny(budgetMax)}</strong>${node.role === "end" ? "芽庄 / 人" : "本地 / 人"}</span>
+          <p class="node-summary">${esc(city.summary)}</p>
         </div>
       </div>
       <details class="city-detail"${expandedNodeIds.has(node.id) ? " open" : ""}>
@@ -2338,6 +2354,12 @@ function updateNode(id, updater) {
 }
 
 routeEditor.addEventListener("click", event => {
+  const mapButton = event.target.closest("[data-plan-map-city]");
+  if (mapButton) {
+    pendingMapFocus = { cityKey: mapButton.dataset.planMapCity, planIndex: Number(mapButton.dataset.planMapIndex) };
+    openTool("map", mapButton);
+    return;
+  }
   const button = event.target.closest("button[data-action]");
   if (!button) {
     const compactNode = event.target.closest(".route-node.is-compact[data-select-node]");
