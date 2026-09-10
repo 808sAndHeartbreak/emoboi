@@ -10,7 +10,7 @@
   <link rel="preload" as="image" href="vietnam-road-illustration.webp" fetchpriority="high">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   <link rel="stylesheet" href="planner.css?v=20260907-58">
-  <link rel="stylesheet" href="reading.css?v=20260908-61">
+  <link rel="stylesheet" href="reading.css?v=20260910-62">
 </head>
 <body class="night-atlas">
   <header class="appbar">
@@ -37,10 +37,10 @@
                 <h1 class="hero-wordmark"><span>VIỆT</span><span>NAM</span></h1>
                 <p class="sr-only" id="route-title">河内 → 岘港 → 芽庄 → 河内</p>
               </div>
-              <div class="trip-window" aria-label="已确认的行程边界">
+              <div class="trip-window" aria-label="行程日期">
                 <span><b id="start-window">09.25—28</b><strong id="start-window-label">河内 3 晚 · 17:45 抵达</strong></span>
                 <i aria-hidden="true"></i>
-                <span class="is-open"><b id="middle-window">09.28—10.03</b><strong id="middle-window-label">岘港 5 晚 · 航班已确认</strong></span>
+                <span class="is-open"><b id="middle-window">09.28—10.03</b><strong id="middle-window-label">岘港 5 晚</strong></span>
                 <i aria-hidden="true"></i>
                 <span><b id="end-window">10.03—07</b><strong id="end-window-label">芽庄 4 晚 · Fusion 2 晚 · 14:05 飞</strong></span>
                 <output class="allocation-pill is-balanced" id="trip-allocation" aria-live="polite"><strong>13 / 13 天</strong><span></span></output>
@@ -170,10 +170,10 @@
     </section>
 
     <section class="tool-panel" data-tool-panel="flights" hidden>
-      <p class="tool-intro">已确认订单 · 时间均为当地时间</p>
-      <p class="tool-intro">行程已按机票固定。河内住还剑湖老城区；岘港与芽庄市区酒店待定。</p>
+      <p class="tool-intro">机票与住宿 · 时间均为当地时间</p>
+      <p class="tool-intro">河内住还剑湖老城区。岘港福朋 09.28—10.03；芽庄哈瓦那 10.03—10.05。两家均15:00后入住、12:00前退房。</p>
       <article class="confirmed-hotel">
-        <div class="booking-status"><span>10.05—10.07 · 2 晚</span><strong>已确认</strong></div>
+        <div class="booking-status"><span>10.05—10.07 · 2 晚</span></div>
         <h3>Fusion Resort Cam Ranh</h3>
         <p>All Spa Inclusive · 10 月 5 日 15:00 入住 · 10 月 7 日 12:00 退房</p>
         <small>金兰半岛 Cam Hai Dong · 距 CXR 约 5–6 公里</small>
@@ -195,10 +195,10 @@
           <div class="tool-flight-time"><div><small>当地时间</small><strong>18:00</strong><span>DAD T1 · 岘港</span></div><i aria-hidden="true">→</i><div><small>当地时间</small><strong>19:15</strong><span>CXR T1 · 金兰</span></div></div>
           <div class="tool-flight-meta"><span>越南航空 · 1h15</span><span>A321 · 公务舱</span><span>无餐食 · 已购</span></div>
         </article>
-        <article class="tool-flight" role="button" tabindex="0" title="点击复制航班信息" aria-label="复制越捷返程国内航班信息" data-copy-text="10月07日 周三｜越捷航空 VJ772｜14:05 芽庄金兰 CXR T1 → 15:55 河内内排 HAN T1｜已确认">
+        <article class="tool-flight" role="button" tabindex="0" title="点击复制航班信息" aria-label="复制越捷返程国内航班信息" data-copy-text="10月07日 周三｜越捷航空 VJ772｜14:05 芽庄金兰 CXR T1 → 15:55 河内内排 HAN T1">
           <div class="tool-flight-head"><span>返程第一段 · 10 月 07 日 周三</span><strong>VJ772</strong></div>
           <div class="tool-flight-time"><div><small>芽庄时间</small><strong>14:05</strong><span>CXR T1 · 芽庄金兰</span></div><i aria-hidden="true">→</i><div><small>河内时间</small><strong>15:55</strong><span>HAN T1 · 河内内排</span></div></div>
-          <div class="tool-flight-meta"><span>越捷航空</span><span>国内航班</span><span>已确认</span></div>
+          <div class="tool-flight-meta"><span>越捷航空</span><span>国内航班</span></div>
         </article>
         <article class="tool-flight" role="button" tabindex="0" title="点击复制航班信息" aria-label="复制返程航班信息" data-copy-text="10月07日 周三｜东方航空 MU6014｜18:45 河内内排 T2 → 22:50 上海浦东 T1｜3小时5分｜手提1×8kg｜托运1×23kg">
           <div class="tool-flight-head"><span>返程第二段 · 10 月 07 日 周三</span><strong>MU6014</strong></div>
@@ -220,6 +220,6 @@
   <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">已复制</div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="planner.js?v=20260908-61"></script>
+  <script src="planner.js?v=20260910-62"></script>
 </body>
 </html>

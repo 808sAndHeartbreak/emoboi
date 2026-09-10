@@ -73,7 +73,7 @@ const CITIES = {
       7: "6 个完整日：再加一天海钓 / 海上活动，需早起并看海况。",
       8: "7 个完整日：核心景点、海钓与雨天缓冲都能分开安排，适合不赶行程。",
     },
-    summary: "暂按美溪 / 安上街区住宿估算。市区、巴拿山、会安、山茶分日安排；9月底进入雨季，山顶大雾或强降雨时改室内，不硬上山出海。",
+    summary: "09.28—10.03住岘港福朋喜来登酒店，118–120 Võ Nguyên Giáp，海滩北段。市区、巴拿山、会安、山茶分日走；晚饭就近，不再专程往返安上街区。",
     plays: ["美溪海滩", "岘港大教堂", "韩市场", "占婆雕刻博物馆", "山茶半岛", "五行山", "巴拿山", "会安古城", "Tra Que 菜园 / 安邦海滩"],
     caution: "9 月底仍温暖，但中部进入降雨窗口；巴拿山园区、缆车末班和天气以官方当天公告为准。",
     stay: "美溪海滩适合休闲，海州区适合餐饮和夜生活；两区通常打车 10–20 分钟。",
@@ -86,19 +86,19 @@ const CITIES = {
         { id: "danang-cham", time: "15:15–16:45" },
         { id: "danang-my-khe", time: "17:15–18:15" }
       ], blocks: [
-        { time: "12:00–13:00", text: "起床、午饭，美溪住宿区就近吃；昨晚晚到，今天不早起。" },
+        { time: "12:00–13:00", text: "起床、午饭，福朋附近就近吃；昨晚晚到，今天不早起。" },
         { time: "13:00–13:20", text: "Grab 过河到岘港大教堂，约 4–6 km、15–25 分钟。" },
         { time: "13:20–15:00", text: "岘港大教堂看建筑外观，再步行约 5 分钟到韩市场；市场购物留 45–60 分钟，其余时间喝咖啡。教堂礼拜期间不进入打扰。" },
         { time: "15:00–16:45", text: "沿河向南到占婆雕刻博物馆，步行约 15–20 分钟或短程打车；参观约 1.5 小时，安排在闭馆前。" },
-        { time: "16:45–18:15", text: "一次过河回美溪海滩，车程约 15–25 分钟；散步、看海，累了直接回酒店。" },
-        { time: "18:30–19:30", text: "美溪 / 安上街区晚饭。" },
+        { time: "16:45–18:15", text: "一次过河回美溪海滩，车程约15–25分钟；沿海向北散步约1 km回岘港福朋喜来登酒店，累了直接打车回房。" },
+        { time: "18:30–19:30", text: "福朋附近晚饭。" },
         { time: "20:00–21:00", text: "住宿区附近咖啡或按摩，之后回酒店；今晚不再跨河，明天去巴拿山需要早起。" }
       ], food: "午饭试 Mì Quảng（广南面）或 Bún chả cá（鱼饼米粉）；韩市场一带顺路喝椰子咖啡。晚饭选 Bánh tráng cuốn thịt heo（猪肉米纸卷）或海鲜，点海鲜先确认计价单位。" },
       { theme: "巴拿山（必要早起）", mapStops: [
         { id: "danang-ba-na", time: "09:30–16:30" }
       ], blocks: [
         { time: "07:00–08:00", text: "起床、早餐；这天需要早起，因为巴拿山园区与缆车按白天窗口运营。" },
-        { time: "08:00–09:30", text: "从美溪 / 海州出发去巴拿山，车程通常约 45–75 分钟；接送与高峰按 60–90 分钟留量，尽量在上午到达。" },
+        { time: "08:00–09:30", text: "从岘港福朋喜来登酒店出发去巴拿山，车程通常约 45–75 分钟；接送与高峰按 60–90 分钟留量，尽量在上午到达。" },
         { time: "09:30–12:00", text: "巴拿山 Ba Na Hills：入园、缆车、金桥与花园；换乘和排队也计入这段，不为拍空景反复上下山。" },
         { time: "12:00–13:00", text: "山上午饭、补水和坐下休息，餐食是否包含按所购票种。" },
         { time: "13:00–16:00", text: "继续游玩法式村与 Fantasy Park 室内项目，按当日开放区选择；15:30开始关注下山排队，不把最后一个项目压在缆车末班。" },
@@ -108,24 +108,25 @@ const CITIES = {
         { time: "20:30 后", text: "直接回酒店休息；不再安排会安或夜间跨城。" }
       ], food: "巴拿山山上餐饮选择有限，早餐先吃饱并带水；回到美溪后再安排一小时晚饭，不为山上餐厅绕路。" },
       { theme: "会安古城", mapStops: [
-        { id: "danang-hoi-an", time: "14:00–21:00" }
+        { id: "danang-hoi-an", time: "14:15–21:00" }
       ], blocks: [
         { time: "12:00–13:00", text: "起床、午饭，带雨具；提前约好21:00返程车和古城外围上车点。" },
-        { time: "13:00–14:00", text: "岘港 → 会安古城，约30 km、45–60分钟；古城内步行，车停外围。" },
-        { time: "14:00–16:00", text: "会安古城先看福建会馆，再沿陈富街向西走到古宅和来远桥；收费建筑只选1–2处，古城参观券不是所有船票或表演的通票。" },
+        { time: "13:00–14:15", text: "岘港福朋喜来登酒店 → 会安古城，约32 km、50–70分钟；古城内步行，车停外围。" },
+        { time: "14:15–16:00", text: "会安古城先看福建会馆，再沿陈富街向西走到古宅和来远桥；收费建筑只选1–2处，古城参观券不是所有船票或表演的通票。" },
         { time: "16:00–17:30", text: "古城咖啡休息约45分钟，再走河岸看黄昏；不额外往返安邦海滩或椰林。" },
         { time: "18:00–19:00", text: "会安河边晚饭，一小时。" },
         { time: "19:30–21:00", text: "灯笼夜景、河边与夜市；把最适合拍照的时段留到天黑后。" },
-        { time: "21:00–22:00", text: "乘预约车辆返回岘港酒店，车程约 45–60 分钟；不在会安换酒店。" }
+        { time: "21:00–22:15", text: "乘预约车辆返回岘港福朋喜来登酒店，车程约50–70分钟；不在会安换酒店。" }
       ], food: "会安晚饭可按口味选 Cơm gà（鸡饭）、Cao lầu（高楼面）或白玫瑰；甜品和滴漏咖啡留到河边慢慢吃。" },
       { theme: "山茶半岛与灵应寺", mapStops: [
         { id: "danang-son-tra", time: "13:30–16:30" },
         { id: "danang-linh-ung", time: "14:30–16:00" },
+        { id: "danang-four-points", time: "17:00–19:30" },
         { id: "danang-han-river", time: "20:00–21:30" }
       ], blocks: [
-        { time: "12:00–13:00", text: "起床、午饭；这天不需要早起，午后从美溪出发去山茶半岛。" },
+        { time: "12:00–13:00", text: "起床、午饭；这天不需要早起，午后从岘港福朋喜来登酒店沿海岸向北去山茶半岛。" },
         { time: "13:30–16:30", text: "山茶半岛与灵应寺：看海、观景和短停，山路弯且天气变化快；用车比骑摩托更稳妥。" },
-        { time: "17:00–18:00", text: "回美溪或海州休息，天气不好就提前返程。" },
+        { time: "17:00–18:00", text: "回岘港福朋喜来登酒店休息，天气不好就提前返程。" },
         { time: "19:00–20:00", text: "晚饭，一小时。" },
         { time: "20:00–21:30", text: "10 月 2 日周五可去龙桥附近散步；如当晚有 21:00 喷火喷水表演，提前 20–30 分钟到，雨大则回酒店。" }
       ], food: "午饭在美溪解决；山茶回程后就近吃海鲜或越南煎饼，不为一顿饭再去海州排队。" },
@@ -188,7 +189,7 @@ const CITIES = {
       3: "1 个芽庄市区完整日 + 2 个 Fusion 晚：优先婆那加塔、钟屿石岬与泥浴北线。",
       4: "1 个芽庄市区完整日 + 2 个 Fusion 晚，再多一个抵达缓冲夜；海岛与珍珠岛留作替换，不硬塞。",
     },
-    summary: "市区只留一个完整日，优先婆那加塔与泥浴。10.05起住金兰 Fusion Resort 两晚，不再往返市区；海岛玩法只能替换10.04整天。",
+    summary: "10.03—10.05住芽庄哈瓦那酒店，38 Trần Phú；10.05—10.07住Fusion Resort。市区一天走婆那加塔与泥浴，之后留在金兰度假；海岛玩法替换10.04整天。",
     plays: ["婆那加塔", "龙山寺", "芽庄大教堂", "I-Resort 泥浆浴", "跳岛团 / 黑珍珠号候选", "珍珠岛", "国家海洋博物馆", "陈富海滩"],
     caution: "9–12 月是雨季；出海前一晚确认风浪、船班与集合码头。CXR 到陈富海滩住宿区约 35–40 km。",
     stay: "陈富海滩中段最省事；北部安静但餐饮较少；离岛玩法从南部码头出发。",
@@ -198,13 +199,14 @@ const CITIES = {
       { theme: "占婆与泥浴", mapStops: [
         { id: "nhatrang-po-nagar", time: "13:15–14:15" },
         { id: "nhatrang-i-resort", time: "14:45–17:15" },
-        { id: "nhatrang-tran-phu", time: "18:00–19:30" }
+        { id: "nhatrang-havana", time: "17:45–19:00" },
+        { id: "nhatrang-tran-phu", time: "19:30–20:30" }
       ], blocks: [
-        { time: "12:00–13:00", text: "起床，在陈富海滩住宿区午饭；带泳衣、干衣和防水袋。" },
-        { time: "13:00–14:15", text: "Grab 北上到婆那加塔，约 4–5 km、15–20 分钟；参观一小时，入祠遮肩过膝。" },
+        { time: "12:00–13:00", text: "起床，在芽庄哈瓦那酒店附近午饭；带泳衣、干衣和防水袋。" },
+        { time: "13:00–14:15", text: "从芽庄哈瓦那酒店打车北上到婆那加塔，约3–4 km、10–20分钟；参观一小时，入祠遮肩过膝。" },
         { time: "14:15–14:45", text: "婆那加塔 → I-Resort 泥浆浴，向西约 4–5 km，预留 20–30 分钟接送。" },
         { time: "14:45–17:15", text: "I-Resort 泥浆浴：留 2.5 小时给换衣、泥浴、矿泉池和淋浴。预约下午前段，不压末场；泥浴浸泡时长按工作人员指导。" },
-        { time: "17:15–18:00", text: "擦干换衣，Grab 返回陈富海滩住宿区，约 6–8 km、20–30 分钟；等车留量。" },
+        { time: "17:15–18:00", text: "擦干换衣，Grab 返回芽庄哈瓦那酒店，约5–7 km、15–25分钟；等车留量。" },
         { time: "18:00–19:00", text: "酒店附近晚饭，之后不再折返北部景点。" },
         { time: "19:30–20:30", text: "陈富海滩散步或直接回房休息；钟屿石岬留作不泡泥浴时的替换。" }
       ], food: "午饭吃 Bún chả cá（鱼饼米粉）；晚饭在市区选 Nem nướng（烤肉卷）或 Bánh căn（小煎饼），泥浴后补水，不为某一家网红店绕路。" },
@@ -229,12 +231,12 @@ const CITIES = {
       ], food: "下午用海景咖啡缓冲，晚饭可在陈富海滩附近选海鲜、Bánh Căn 或 Nem Nướng；夜市只补小吃，不重复吃撑。" }
     ],
     resortTransition: { theme: "入住金兰湾", mapStops: [
-      { id: "nhatrang-tran-phu", time: "11:30–12:30" },
-      { id: "nhatrang-fusion", time: "13:30–14:30" }
+      { id: "nhatrang-havana", time: "11:30–13:30" },
+      { id: "nhatrang-fusion", time: "15:00–17:00" }
     ], blocks: [
       { time: "10:30–11:30", text: "起床、早餐、收拾行李；不再新增芽庄市区景点。" },
-      { time: "11:30–12:30", text: "退房后在陈富海滩附近吃午饭，补好饮水和零食。" },
-      { time: "13:30–14:30", text: "芽庄市区 → Fusion Resort Cam Ranh，约 35–45 km，打车 / 酒店接送通常 45–70 分钟。" },
+      { time: "11:30–12:30", text: "12:00前从芽庄哈瓦那酒店退房，寄存行李后附近午饭，补好饮水和零食。" },
+      { time: "13:30–14:30", text: "芽庄哈瓦那酒店取行李 → Fusion Resort Cam Ranh，约 35–45 km，打车 / 酒店接送通常 45–70 分钟。" },
       { time: "15:00–17:00", text: "办理入住，泳池、海滩和 SPA 按预约安排；之后不再往返芽庄市区。" },
       { time: "19:00–20:00", text: "度假村晚餐，一小时。" },
       { time: "20:30 后", text: "留在金兰湾休息。" }
@@ -495,6 +497,8 @@ const MAP_PLACES = {
     { id: "hanoi-train-street", name: "河内火车街", lat: 21.0245, lng: 105.8412, kind: "alternative", terms: ["河内火车街"] }
   ],
   danang: [
+    // Public hotel map listings checked 2026-09-10; addresses from booking screenshots.
+    { id: "danang-four-points", name: "岘港福朋喜来登酒店", lat: 16.07787, lng: 108.24517, kind: "hotel", terms: ["岘港福朋喜来登酒店", "Four Points"] },
     { id: "danang-airport", name: "岘港机场 DAD", lat: 16.0439, lng: 108.1997, kind: "context", terms: ["DAD T1"] },
     { id: "danang-my-khe", name: "美溪海滩", lat: 16.0678, lng: 108.2467, kind: "core", terms: ["美溪海滩", "美溪"] },
     { id: "danang-hai-chau", name: "海州区", lat: 16.0678, lng: 108.2208, kind: "context", terms: ["海州区"] },
@@ -533,6 +537,7 @@ const MAP_PLACES = {
     { id: "dalat-dapa-hill", name: "Dapa Hill", lat: 11.969, lng: 108.355, kind: "alternative", terms: ["Dapa Hill"] }
   ],
   nhatrang: [
+    { id: "nhatrang-havana", name: "芽庄哈瓦那酒店", lat: 12.24348, lng: 109.196091, kind: "hotel", terms: ["芽庄哈瓦那酒店", "Havana"] },
     { id: "nhatrang-airport", name: "金兰机场 CXR", lat: 12.0067, lng: 109.2186, kind: "context", terms: ["CXR T1", "金兰 CXR"] },
     { id: "nhatrang-city", name: "芽庄市区", lat: 12.2388, lng: 109.1967, kind: "context", terms: ["芽庄住宿区"] },
     { id: "nhatrang-tran-phu", name: "陈富海滩", lat: 12.238, lng: 109.196, kind: "core", terms: ["陈富海滩"] },
@@ -547,7 +552,7 @@ const MAP_PLACES = {
     { id: "nhatrang-hon-tam", name: "蚕岛 Hòn Tằm", lat: 12.1724, lng: 109.264, kind: "alternative", terms: ["蚕岛", "Hòn Tằm"] },
     { id: "nhatrang-thap-ba", name: "Tháp Bà 热矿泥浴", lat: 12.2688, lng: 109.194, kind: "alternative", terms: ["Tháp Bà"] },
     { id: "nhatrang-100-eggs", name: "100 Eggs 泥浴", lat: 12.1932, lng: 109.17, kind: "alternative", terms: ["100 Eggs"] },
-    { id: "nhatrang-fusion", name: "Fusion Resort Cam Ranh", lat: 12.0447, lng: 109.1951, kind: "core", terms: ["Fusion Resort", "金兰湾"] }
+    { id: "nhatrang-fusion", name: "Fusion Resort Cam Ranh", lat: 12.0447, lng: 109.1951, kind: "hotel", terms: ["Fusion Resort", "金兰湾"] }
   ]
 };
 
@@ -951,6 +956,8 @@ const PHRASE_READINGS = {
 };
 
 const PLACE_ALIASES = {
+  "岘港福朋喜来登酒店": "Four Points by Sheraton Danang",
+  "芽庄哈瓦那酒店": "Havana Nha Trang Hotel",
   "越南女性博物馆": "Bảo tàng Phụ nữ Việt Nam",
   "火炉监狱遗址": "Di tích Nhà tù Hỏa Lò",
   "还剑湖": "还剑湖 Hoàn Kiếm",
@@ -1148,7 +1155,6 @@ function middleNightsTarget() {
   return Math.max(0, nightsUntilCheckout - endNights());
 }
 
-function canAdjustNights() { return false; }
 
 function loadRoute() {
   // Booked dates take precedence over every previously saved editable itinerary.
@@ -1208,6 +1214,8 @@ function findMapPlace(term, cityKey = null) {
 }
 
 const PLACE_ORIGINALS = {
+  'danang-four-points': 'Four Points by Sheraton Danang',
+  'nhatrang-havana': 'Havana Nha Trang Hotel',
   'hanoi-women': 'Bảo tàng Phụ nữ Việt Nam', 'hanoi-hoa-lo': 'Di tích Nhà tù Hỏa Lò',
   'hanoi-airport': 'Sân bay quốc tế Nội Bài', 'hanoi-old-quarter': 'Phố cổ Hà Nội',
   'hanoi-hoan-kiem': 'Hồ Hoàn Kiếm', 'hanoi-36-streets': 'Hà Nội 36 phố phường',
@@ -1264,7 +1272,7 @@ function renderPlanText(value, context = {}) {
     html += esc(text.slice(cursor, match.index));
     const place = findMapPlace(match[0], context.cityKey);
     html += place
-      ? `<span ${placeAttributes({ place, displayName: match[0], source: PLACE_ALIASES[match[0]] || match[0], cityKey: context.cityKey || "", planIndex: context.planIndex ?? -1, anchor: context.anchor || "", inline: true })}>${esc(match[0])}</span>`
+      ? `<span ${placeAttributes({ place, displayName: match[0], source: PLACE_ALIASES[match[0]] || match[0], cityKey: context.cityKey || "", planIndex: context.plans ? Math.max(0, findPlanIndexForPlace(context.cityKey, context.plans, match[0])) : context.planIndex ?? -1, anchor: context.anchor || "", inline: true })}>${esc(match[0])}</span>`
       : esc(match[0]);
     cursor = match.index + match[0].length;
   }
@@ -1398,10 +1406,10 @@ function flightTransferBlocks(origin, destination, date) {
     { time: "15:30–16:15", text: "回酒店取行李、洗手间和简餐，16:15 出发。" },
     { time: "16:15–17:45", text: "还剑湖 / 老城区 → HAN T1，约 30–35 km；Grab 通常 45–75 分钟，按 90 分钟留量。17:45 到机场，提前 1.5 小时。" }
   ] : [
-    { time: "12:00–13:00", text: "起床、午饭、退房，行李暂存前台。" },
-    { time: "13:00–15:00", text: "美溪海滩附近咖啡或按摩，留在市区；不安排巴拿山、会安或出海。" },
+    { time: "11:00–12:00", text: "起床、收拾行李，12:00前从岘港福朋喜来登酒店退房，行李暂存前台。" },
+    { time: "13:00–15:00", text: "岘港福朋喜来登酒店附近午饭、咖啡或海边散步，行李留前台；不再去远点。" },
     { time: "15:00–15:45", text: "简单吃点东西，回酒店取行李；这班机票标注无餐食。" },
-    { time: "15:45–16:30", text: "美溪海滩一带 → DAD T1，约 6–8 km、15–25 分钟；留 45 分钟接送余量，16:30 到机场，提前 1.5 小时。" }
+    { time: "15:45–16:30", text: "岘港福朋喜来登酒店 → DAD T1，约7–8 km、20–30分钟；留45分钟接送余量，16:30 到机场，提前 1.5 小时。" }
   ];
   return [...airportBlocks,
     { time: clockRange(shiftClock(flight.depart, -90), flight.depart), text: "值机、托运、安检，按登机牌时间到登机口。" },
@@ -1420,12 +1428,12 @@ function arrivalBlocksForNode(previous, node, date) {
   ];
   if (node.city === "danang") return [...blocks,
     { time: "20:35–21:15", text: "DAD T1 落地、取行李，联系 Grab 或酒店接送。" },
-    { time: "21:15–22:00", text: "DAD T1 → 美溪海滩一带，约 6–8 km、15–25 分钟；余量用于等车和入住。酒店未定，暂按这个区域估算。" },
+    { time: "21:15–22:00", text: "DAD T1 → 岘港福朋喜来登酒店，约7–8 km、20–30分钟；余量用于等车和入住。提前告知酒店约22:00到达。" },
     { time: "22:00–23:00", text: "酒店附近吃晚饭；若不饿就直接休息，今晚不去会安。" }
   ];
   return [...blocks,
     { time: "19:15–20:00", text: "金兰 CXR T1 落地、取行李，与司机碰面。" },
-    { time: "20:00–21:15", text: "CXR T1 → 芽庄陈富海滩一带，约 35–40 km、45–60 分钟；办理入住。10 月 3–5 日市区酒店未定，10 月 5 日再去 Fusion Resort。" },
+    { time: "20:00–21:15", text: "CXR T1 → 芽庄哈瓦那酒店，约35–40 km、45–60分钟；办理入住，提前告知酒店约21:00到达。" },
     { time: "21:15–22:15", text: "酒店附近晚饭，之后休息；今天不安排泥浴或景点。" }
   ];
 }
@@ -1576,14 +1584,23 @@ function plansForNode(node, index, dates) {
   // Explicit stops prevent mentions of excluded/future attractions becoming today's route.
   const arrivalStops = {
     hanoi: [{ id: "hanoi-airport", time: "17:45–18:45" }, { id: "hanoi-hoan-kiem", time: "20:15–21:15" }],
-    danang: [{ id: "danang-airport", time: "20:35–21:15" }, { id: "danang-my-khe", time: "21:15–22:00" }],
-    nhatrang: [{ id: "nhatrang-airport", time: "19:15–20:00" }, { id: "nhatrang-tran-phu", time: "20:00–21:15" }]
+    danang: [{ id: "danang-airport", time: "20:35–21:15" }, { id: "danang-four-points", time: "21:15–22:00" }],
+    nhatrang: [{ id: "nhatrang-airport", time: "19:15–20:00" }, { id: "nhatrang-havana", time: "20:00–21:15" }]
   };
   plans[0].mapStops = arrivalStops[node.city];
   const transferPlan = plans.find(plan => plan.kind === "transfer");
   if (transferPlan) transferPlan.mapStops = node.city === "hanoi"
     ? [{ id: "hanoi-market", time: "13:00–15:30" }, { id: "hanoi-old-quarter", time: "15:30–16:15" }, { id: "hanoi-airport", time: "17:45–19:15" }]
-    : [{ id: "danang-my-khe", time: "13:00–15:00" }, { id: "danang-airport", time: "16:30–18:00" }];
+    : [{ id: "danang-four-points", time: "13:00–15:45" }, { id: "danang-airport", time: "16:30–18:00" }];
+  // Keep hotel endpoints aligned with city-day routes.
+  plans.forEach(plan => {
+    const hotelId = node.city === "danang" ? "danang-four-points"
+      : node.city === "nhatrang" && plan.date === "10.04" ? "nhatrang-havana" : null;
+    if (hotelId && plan.kind === "day" && plan.mapStops?.length) {
+      plan.mapStops = [{ id: hotelId, time: plan.date === "09.30" ? "08:00 出发" : "13:00 出发" }, ...plan.mapStops,
+        { id: hotelId, time: plan.date === "10.01" ? "22:00–22:15 回酒店" : "晚间回酒店" }];
+    }
+  });
   return plans;
 }
 
@@ -1608,7 +1625,7 @@ function renderHeroRail() {
   $("#start-window").textContent = `${dateLabel(ARRIVAL_DATE)}—${dateLabel(middleStartDate())}`;
   $("#start-window-label").textContent = `河内 ${startNights()} 晚 · 17:45 抵达`;
   $("#middle-window").textContent = `${dateLabel(middleStartDate())}—${dateLabel(endDates.start)}`;
-  $("#middle-window-label").textContent = `岘港 5 晚 · 航班已确认`;
+  $("#middle-window-label").textContent = `岘港 5 晚`;
   $("#end-window").textContent = `${dateLabel(endDates.start)}—${dateLabel(endDates.end)}`;
   $("#end-window-label").textContent = `芽庄 ${endNights()} 晚 · Fusion 2 晚 · 14:05 飞`;
   rail.style.setProperty("--stop-count", route.length);
@@ -1710,7 +1727,7 @@ function mapPlaceMatches(places, plan) {
         place: places.find(place => place.id === stop.id),
         time: stop.time || ""
       }))
-      .filter(stop => stop.place && !seen.has(stop.place.id) && seen.add(stop.place.id));
+      .filter(stop => stop.place && (stop.place.kind === "hotel" || (!seen.has(stop.place.id) && seen.add(stop.place.id))));
   }
 
   const matches = [];
@@ -1879,14 +1896,12 @@ function renderMapFallback(places, sequence, viewState = null, otherDayStops = [
   const tileMinY = Math.floor(originY / tileSize);
   const tileMaxY = Math.floor((originY + height) / tileSize);
   const tileCount = 2 ** zoom;
-  const tileHosts = ["a", "b", "c"];
   const tiles = [];
   for (let x = tileMinX; x <= tileMaxX; x += 1) {
     for (let y = tileMinY; y <= tileMaxY; y += 1) {
       if (y < 0 || y >= tileCount) continue;
       const wrappedX = ((x % tileCount) + tileCount) % tileCount;
-      const host = tileHosts[Math.abs(x + y) % tileHosts.length];
-      tiles.push(`<img src="https://${host}.tile.openstreetmap.org/${zoom}/${wrappedX}/${y}.png" alt="" aria-hidden="true" loading="eager" style="left:${x * tileSize - originX}px;top:${y * tileSize - originY}px">`);
+      tiles.push(`<img src="https://tile.openstreetmap.org/${zoom}/${wrappedX}/${y}.png" alt="" aria-hidden="true" loading="eager" style="left:${x * tileSize - originX}px;top:${y * tileSize - originY}px">`);
     }
   }
   mapMarkerRefs = new Map();
@@ -1912,7 +1927,7 @@ function renderMapFallback(places, sequence, viewState = null, otherDayStops = [
     const active = activeIds.has(place.id);
     const other = !active && otherIds.has(place.id);
     const airport = place.kind === "context" && /机场/.test(place.name);
-    const label = active || other || airport || (mapShowAlternatives && place.kind === "alternative")
+    const label = active || other || airport || place.kind === "hotel" || (mapShowAlternatives && place.kind === "alternative")
       ? `<text x="${x + 8}" y="${y + 4}">${order.has(place.id) ? `${order.get(place.id)} · ` : other ? `${otherLabels.get(place.id).join("/")} · ` : ""}${esc(place.name)}</text>`
       : "";
     return `<g class="fallback-map-marker ${active ? "is-active" : other ? "is-other-day" : airport ? "is-airport" : place.kind === "alternative" ? "is-alternative" : ""}" data-map-fallback-place="${esc(place.id)}" tabindex="0" role="button" aria-label="${esc(place.name)}"><circle cx="${x}" cy="${y}" r="${active ? 7 : other ? 5 : airport ? 6 : place.kind === "alternative" ? 5 : 4}"/>${label}<title>${esc(order.has(place.id) ? `${order.get(place.id)} · ` : other ? `${otherLabels.get(place.id).join("/")} · ` : "")}${esc(place.name)}</title></g>`;
@@ -1936,7 +1951,7 @@ function renderLeafletMap(places, sequence, viewState = null, otherDayStops = []
     const airport = place.kind === "context" && /机场/.test(place.name);
     if (place.kind === "alternative" && !mapShowAlternatives && !active && !other) return;
     const marker = L.circleMarker([place.lat, place.lng], {
-      radius: active ? 8 : other ? 6 : airport ? 6 : place.kind === "alternative" ? 7 : 4,
+      radius: active ? 8 : other ? 6 : airport || place.kind === "hotel" ? 6 : place.kind === "alternative" ? 7 : 4,
       color: active ? "#f36f59" : other ? "#5f9a9c" : airport ? "#d4b376" : place.kind === "alternative" ? "#b9904b" : "#427c6c",
       weight: active ? 3 : other ? 2 : airport ? 2.5 : place.kind === "alternative" ? 2 : 1.5,
       fillColor: active ? "#f36f59" : other ? "#afd0c7" : airport ? "#f0d38c" : place.kind === "alternative" ? "#e8cb84" : "#9ac9b9",
@@ -1946,10 +1961,10 @@ function renderLeafletMap(places, sequence, viewState = null, otherDayStops = []
     marker.__mapPlace = place;
     marker.on("click", () => selectMapPlace(place.id, true));
     marker.bindTooltip(`${order.has(place.id) ? `${order.get(place.id)} · ` : other ? `${otherLabels.get(place.id).join("/")} · ` : ""}${place.name}`, {
-      permanent: airport || active || (place.kind === "alternative" && mapShowAlternatives),
+      permanent: airport || place.kind === "hotel" || active || (place.kind === "alternative" && mapShowAlternatives),
       direction: "top",
       offset: [0, -7],
-      className: airport ? "map-tooltip is-airport" : active ? "map-tooltip is-route" : other ? "map-tooltip is-other-day" : place.kind === "alternative" ? "map-tooltip is-alternative" : "map-tooltip"
+      className: place.kind === "hotel" && !active ? "map-tooltip is-hotel" : airport ? "map-tooltip is-airport" : active ? "map-tooltip is-route" : other ? "map-tooltip is-other-day" : place.kind === "alternative" ? "map-tooltip is-alternative" : "map-tooltip"
     });
   });
   if (sequence.length > 1) {
@@ -2112,7 +2127,7 @@ function renderMap() {
       container.innerHTML = "";
       mapInstance = L.map(container, { zoomControl: false, scrollWheelZoom: true, attributionControl: true });
       L.control.zoom({ position: "bottomright" }).addTo(mapInstance);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
         detectRetina: true,
         noWrap: true,
@@ -2216,17 +2231,15 @@ function renderRoute() {
         <div class="node-main">
           <span class="node-number">${String(index + 1).padStart(2, "0")}</span>
           <div class="node-city"><strong class="compact-city-name">${esc(city.name)}</strong></div>
-          <div class="node-side"><button type="button" class="compact-night-count compact-restore" data-action="increase" aria-label="恢复${esc(city.name)}规划"><strong>0</strong> 晚 <i aria-hidden="true">＋</i></button></div>
+          <div class="node-side"><span class="compact-night-count"><strong>0</strong> 晚</span></div>
         </div>
       </li>`;
     }
-    const adjustable = canAdjustNights(node);
     const periodLabel = node.role === "start"
       ? `${dateLabel(ARRIVAL_DATE)} 17:45 抵达 · 09.28 19:15 飞岘港`
       : node.role === "end"
         ? `${dateLabel(dates[index].start)} 抵达 · 10.05 15:00 度假村入住 · 10.07 12:00 退房`
         : `09.28 20:35 抵达 · 10.03 18:00 飞芽庄`;
-    const roleLabel = node.role === "start" ? "已确认" : node.role === "end" ? "已确认 · 芽庄" : "";
     const plans = plansForNode(node, index, dates);
     const lastDayPlanIndex = plans.reduce((lastIndex, plan, planIndex) => {
       const isResortPlan = node.role === "end" && node.city === "nhatrang" && /金兰湾|Fusion/.test(plan.theme);
@@ -2250,7 +2263,6 @@ function renderRoute() {
       <div class="node-main">
         <span class="node-number">${String(index + 1).padStart(2, "0")}</span>
         <div class="node-city">
-          ${roleLabel ? `<span class="node-anchor">${roleLabel}</span>` : ""}
           <strong class="compact-city-name">${city.name}</strong>
           <span class="compact-period">${compactPeriod}</span>
           <strong class="fixed-city">${city.name}</strong>
@@ -2259,13 +2271,8 @@ function renderRoute() {
         <div class="node-info">
           <div class="node-schedule-row">
             <span class="node-period">${periodLabel}</span>
-            ${adjustable ? `<div class="night-stepper">
-              <button type="button" data-action="decrease" aria-label="减少${city.name}住宿晚数"${node.nights <= city.minNights ? " disabled" : ""}>−</button>
-              <span class="night-count"><strong>${node.nights}</strong><span>晚</span></span>
-              <button type="button" data-action="increase" aria-label="增加${city.name}住宿晚数"${node.nights >= city.maxNights ? " disabled" : ""}>＋</button>
-            </div>` : ""}
           </div>
-          <p class="node-summary">${esc(city.summary)}</p>
+          <p class="node-summary">${renderPlanText(city.summary, { cityKey: node.city, plans })}</p>
         </div>
       </div>
       <details class="city-detail"${expandedNodeIds.has(node.id) ? " open" : ""}>
@@ -2337,22 +2344,6 @@ function renderAnalysis() {
   $("#advice-list").innerHTML = [...new Set(advice)].map(item => `<li>${esc(item.trim())}</li>`).join("");
 }
 
-function updateNode(id, updater) {
-  const index = route.findIndex(node => node.id === id);
-  if (index < 0) return;
-  const action = document.activeElement?.dataset.action;
-  transitionUpdate(() => {
-    updater(index);
-    render();
-    if (action) {
-      const node = routeEditor.querySelector(`[data-id="${id}"]`);
-      const control = node?.querySelector(`[data-action="${action}"]:not(:disabled)`)
-        || node?.querySelector('[data-action]:not(:disabled)');
-      control?.focus({ preventScroll: true });
-    }
-  });
-}
-
 routeEditor.addEventListener("click", event => {
   const mapButton = event.target.closest("[data-plan-map-city]");
   if (mapButton) {
@@ -2360,22 +2351,6 @@ routeEditor.addEventListener("click", event => {
     openTool("map", mapButton);
     return;
   }
-  const button = event.target.closest("button[data-action]");
-  if (!button) {
-    const compactNode = event.target.closest(".route-node.is-compact[data-select-node]");
-    if (!compactNode || event.target.closest("[data-drag-handle], select")) return;
-    activateNode(compactNode.dataset.id);
-    return;
-  }
-  const nodeElement = button.closest(".route-node");
-  const id = nodeElement?.dataset.id;
-  const action = button.dataset.action;
-  if (!id || !["decrease", "increase"].includes(action)) return;
-  updateNode(id, index => {
-    if (!canAdjustNights(route[index])) return;
-    const delta = action === "increase" ? 1 : -1;
-    route[index].nights = clampNights(route[index].nights + delta, route[index].city);
-  });
 });
 
 document.addEventListener("click", event => {

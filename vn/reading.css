@@ -164,3 +164,5 @@ body.map-tool-open .map-panel-head { grid-template-columns: 1fr; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+.rail-stop.is-locked small::after { content: none; display: none; }
+.leaflet-tooltip.map-tooltip.is-hotel { background: #153d34; color: #fff6dc; border: 1px solid #d4b376; font-weight: 700; }
