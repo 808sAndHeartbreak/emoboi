@@ -7,6 +7,7 @@
 ```
 ├── index.html      # Homepage
 ├── sf6/            # SF6 Frame Data Tool
+├── clocktower/     # 钟楼手记 · 血染钟楼记录与 DeepSeek 推理
 ├── gojuon/         # Japanese Gojūon Learning
 ├── gallery/        # Visual Gallery
 └── music/          # Music Player
