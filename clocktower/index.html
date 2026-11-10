@@ -534,7 +534,10 @@ textarea:focus,input:focus,select:focus{outline:2px solid #c8495d;outline-offset
     { id: 'bmr', name: '黯月初升', en: 'Bad Moon Rising', code: 'BMR', description: '死亡、保护与复活', roles: bmr }
   ];
   const updates = {"vortox": {"from": "区分处决与处决死亡；涡流世界需要系统性检查镇民信息，不能只反转一句声明。复杂醉毒交互应明确列出采用的裁定。", "to": "有效的涡流要求镇民因自身能力收到的信息为假，即使该镇民醉酒或中毒；酒鬼是外来者，不受此条直接限制。角色或阵营变化的通知不属于镇民信息能力。处决未死也发生了处决。"}, "innkeeper": {"from": "被选中醉酒的玩家可能失去其自身保护或能力；勿把保护延长至次日处决。", "to": "保护覆盖当晚各类死亡来源，刺客等明确例外另论。普通被保护者醉酒并不会取消旅店老板给予的保护；若旅店老板选自己且自己醉酒，自己的能力失效，两名目标都失去这份保护。"}, "mathematician": {"from": "计能力实际异常的玩家，不直接等于中毒醉酒人数；同一玩家通常不重复计数。具体交互有疑义时列为待裁定。", "to": "只计因其他角色而实际异常的能力；醉毒本身不计，醉毒却得到正常信息通常不计，自己的异常不计。同一玩家只计一次；误认也可能造成应计的异常。"}, "philosopher": {"from": "获得能力通常不改变自己的角色；保留何时选择与原角色是否在场的分支。", "to": "获得能力，不变成那个角色。若哲学家死亡、醉酒或中毒，由他导致的醉酒通常停止；所选角色后来入场也会受影响。首夜信息能力在获得当晚使用。"}, "scarlet_woman": {"from": "检查恶魔死亡前的存活人数和女郎状态；不能只凭恶魔死亡推断游戏必定结束。", "to": "检查恶魔死亡前的存活人数，不含旅行者；女郎需有生效能力。至少五人存活时，小恶魔自杀会由猩红女郎接任。恶魔死亡不必然结束游戏。"}, "barber": {"from": "白天或夜晚死亡均可能触发；交换角色不自动等同交换阵营。", "to": "白天或夜晚死亡均可触发；交换角色不交换阵营。恶魔可以选自己，但不能选其他恶魔；恶魔也可放弃交换。死亡后才变成理发师不补触发此前的死亡。"}, "pukka": {"from": "从首夜行动，先前目标的延迟死亡与新目标中毒要分开记录；不要按普通当晚刀口推。", "to": "从首夜行动，先中毒、随后夜晚延迟死亡。驱魔阻止其醒来选择新中毒目标，不等于撤销已有中毒。普卡醉酒可暂停既有中毒与击杀，恢复清醒后可能继续；保护阻止死亡时原中毒可结束。"}, "mayor": {"from": "胜利要求无处决，而不是无人因处决死亡；夜间死亡可被转移，不能凭刀口直接确认身份。", "to": "胜利在白天结束时检查三名存活玩家且无处决；处决未死仍有处决。旅行者计入市长的三人条件。夜间转移死亡可选择已死或受保护者而造成无人死亡。"}, "evil_twin": {"from": "双子互指不直接证明哪方邪恶；善良双子被处决的条件不应偷换成处决死亡。", "to": "配对依据对立阵营；善良的邪恶双子角色也可能由角色变化产生。双方互指不直接确认谁邪恶。善良一方被处决即可触发，不要求因处决死亡。", "fromAbility": "你和一名善良玩家知道对方是什么角色。如果善良的双子被处决，邪恶阵营获胜。如果你们都存活，善良阵营无法获胜。", "toAbility": "你和一名与你阵营相反的玩家知道对方是什么角色。如果其中善良的玩家被处决，邪恶阵营获胜。如果你们都存活，善良阵营无法获胜。"}};
-  const data = { teams, roles, scripts, updates, version: '2026-11-09.2' };
+  // BEGIN RESIDENT SCRIPTS — generated from library/*.json
+  const residentScripts = [{"id":"resident_daybreak_v1","name":"重见天日","data":[{"id":"_meta","name":"重见天日","author":"北方的预言家","specialRules":"【版本】重见天日；剧本作者：北方的预言家。依据用户提供的剧本图片整理，采用图中的角色、技能与顶部“失忆与回忆”，不替换为其他同名或新版角色组合。\n\n【遗忘之门】玩家不知道自己的角色和阵营，当他们死亡时才会得知。未知角色、未知阵营和实际身份分别处理；不因为玩家选人、收到信息或被唤醒就认证其角色。死亡后获得的信息按对应时点记录，不倒推为此前已知。\n\n【失忆与回忆·相克】移除数学家与酒鬼、数学家与疯子的两条相克规则。图中角色下方印出的这两条相克说明均不启用，不能从已移除的相克额外推导数学家数字；其余按主技能与有效交互处理。\n\n【失忆与回忆·疯子】恶魔不会知道疯子及其选择。此条覆盖图片疯子栏的常规通知文字；不得假定恶魔会跟随疯子选择。\n\n【失忆与回忆·唤醒】每个角色只有一种唤醒模式：唤醒并得到信息、唤醒并选择一名玩家、不会被唤醒。如果说书人唤醒玩家但不给出信息，代表该玩家需要选择一名玩家。仍遵守各技能的首夜、每夜*、存活和触发条件，不等于所有玩家每晚都会被唤醒。\n\n【角色范围】13镇民、4外来者、4爪牙、4恶魔，另有2个奇遇规则。遗忘之门、私货商人不占玩家座位、不是在场人数配置中的玩家角色。角色池不是实际在场名单。\n\n【配置和特殊能力】气球驾驶员可+0~1外来者，男爵+2外来者，亡骨魔-1外来者；不能只按报身份数推定实际配置。食人魔转变阵营即使醉毒仍生效；报丧女妖触发后有死后提名与双票；恐惧之灵导致阵营落败的条件是其本人提名的目标被处决，不能改成必须处决死亡。"},{"id":"empath","name":"共情者","team":"townsfolk","ability":"每个夜晚，你会得知与你邻近的两名存活的玩家中有几名是邪恶的。","notes":"跳过死亡玩家寻找两侧最近的存活玩家，不固定为最初邻座。保留每晚的存活状态。","builtin":true},{"id":"highpriestess","name":"女祭司","team":"townsfolk","ability":"每个夜晚，你会得知一名说书人认为你最应该与其交流的玩家。","notes":"这是交流建议，不直接认证该玩家的角色、阵营或信息真假。遗忘之门下，收到指认不代表已得知自己是女祭司。"},{"id":"sailor","name":"水手","team":"townsfolk","ability":"每个夜晚，你要选择一名存活的玩家：你或他之一会醉酒直到明天黄昏。你不会死亡。","notes":"若水手自己醉酒，他会失去不死能力；记录每夜选择，不把不死与醉酒同时无条件成立。","builtin":true},{"id":"balloonist","name":"气球驾驶员","team":"townsfolk","ability":"每个夜晚，你会得知一名与上个夜晚得知的玩家角色类型不同的玩家。[+0~1外来者]","notes":"按本图的逐夜相邻两次不同类型版本分析，不套旧版依次收集四类角色的技能。类型指镇民、外来者、爪牙、恶魔；设置调整为可增加0或1名外来者。"},{"id":"preacher","name":"传教士","team":"townsfolk","ability":"每个夜晚，你要选择一名玩家：如果选中了爪牙，他会得知被传教士选中。所有被你选中的爪牙失去能力。","notes":"选择不是查验反馈，传教士本人通常不因命中而收到确认。检查爪牙失能与传教士自身状态及时间线；不能把所有被选择者直接当爪牙。"},{"id":"mathematician","name":"数学家","team":"townsfolk","ability":"每个夜晚，你会得知从上个黎明到现在，有多少名玩家的能力因为其他角色的能力而未正常生效。","notes":"只计因其他角色而实际异常的能力；醉毒本身不计，醉毒却得到正常信息通常不计，自己的异常不计。同一玩家只计一次；误认也可能造成应计的异常。 本剧本“失忆与回忆”移除数学家与酒鬼、数学家与疯子的两条相克；不按这两条已移除的相克额外计数，其余仍按主技能及有效交互处理。","builtin":true},{"id":"daybreak_magistrate","name":"知府","team":"townsfolk","ability":"每个夜晚*，你会得知今天是否有非镇民且非旅行者玩家死亡。","notes":"检测当日死亡中是否包含外来者、爪牙或恶魔，不只看处决，也不是检测是否有邪恶死亡。旅行者和镇民排除在该条件外；保留当日死亡范围、角色时点及失真分支。"},{"id":"flowergirl","name":"卖花女孩","team":"townsfolk","ability":"每个夜晚*，你会得知今天白天是否有恶魔投过票。","notes":"需要全天投票记录，不能只看最终一次提名；没记录的票不能当作未投票。","builtin":true},{"id":"town_crier","name":"城镇公告员","team":"townsfolk","ability":"每个夜晚*，你会得知今天白天是否有爪牙发起过提名。","notes":"观察发起提名者，不是被提名者，也不是投票者。","builtin":true},{"id":"monk","name":"僧侣","team":"townsfolk","ability":"每个夜晚*，你要选择除你以外的一名玩家：当晚恶魔的负面效果对他无效。","notes":"已由用户确认：不能选择自己。保护只持续当晚，不等于免疫所有来源的死亡。","builtin":true},{"id":"alsaahir","name":"戏法师","team":"townsfolk","ability":"每个白天，你可以公开进行一次谁是爪牙、谁是恶魔的猜测。如果你猜对，善良阵营获胜。","notes":"需要完整区分哪些玩家是爪牙、哪些是恶魔，不是只猜某个坏人。猜错不代表每个被猜中的玩家都善良；遗忘之门下不可假定玩家已经知道自己拥有此能力。"},{"id":"ravenkeeper","name":"守鸦人","team":"townsfolk","ability":"如果你在夜晚死亡，你会被唤醒，然后你要选择一名玩家：你会得知他的角色。","notes":"触发条件是夜晚死亡，不只限于恶魔击杀；死亡当晚的触发例外需保留。","builtin":true},{"id":"banshee","name":"报丧女妖","team":"townsfolk","ability":"如果恶魔杀死了你，所有玩家都会得知此事。从现在开始，你每天可以发起两次提名，每次投票时可以投两票。","notes":"必须由恶魔杀死才触发，其他夜间死亡不自动满足条件。触发后有死后提名和额外票的特殊权限，不能套普通死者不能提名、仅一张幽灵票的限制；区分公开公告与自述。"},{"id":"ogre","name":"食人魔","team":"outsider","ability":"在你的首个夜晚，你要选择除你以外的一名玩家：你转变为他的阵营，即使你已醉酒或中毒，但你不知道你转变后的阵营。","notes":"本图食人魔对应Ogre，属于外来者，不是食人族Cannibal。首次选择改变阵营而不改变角色；醉毒不阻止该次转变。不由未知阵营、挡刀或表态推定善良，追踪选择当时目标的阵营。"},{"id":"drunk","name":"酒鬼","team":"outsider","ability":"你不知道你是酒鬼。你以为你是一个镇民角色，但其实你不是。","notes":"拿到的镇民身份不等于真实身份；酒鬼没有该镇民能力，模拟得到的信息可能真也可能假。 本剧本移除数学家与酒鬼的相克；不按该相克把酒鬼模拟反馈或能力未生效直接加进数学家数字。","builtin":true},{"id":"daybreak_lunatic","name":"疯子","team":"outsider","ability":"你以为你是一个恶魔，但其实你不是。根据本剧本“失忆与回忆”，恶魔不会知道你是疯子，也不会得知你的选择。","notes":"图中疯子栏印有常规通知文字，但顶部“失忆与回忆”明确覆盖：不向恶魔透露疯子及选择。本剧本也移除数学家与疯子的相克。疯子的选择不等于实际恶魔选择或死亡来源。"},{"id":"tinker","name":"修补匠","team":"outsider","ability":"你可能在任何时候死亡。","notes":"属于额外死亡来源，“可能”不能当成必定死亡。","builtin":true},{"id":"devils_advocate","name":"魔鬼代言人","team":"minion","ability":"每个夜晚，你要选择一名存活的玩家（与上个夜晚不同）：如果明天白天他被处决，他不会死亡。","notes":"保护仅针对处决死亡，不阻止发生处决；不能连续两晚选择同一人。","builtin":true},{"id":"witch","name":"女巫","team":"minion","ability":"每个夜晚，你要选择一名玩家：如果他明天白天发起提名，他死亡。如果只有三名存活的玩家，你失去此能力。","notes":"触发是发起提名，不是被提名；保留当时存活人数。","builtin":true},{"id":"fearmonger","name":"恐惧之灵","team":"minion","ability":"每个夜晚，你要选择一名玩家：如果你提名他且他被处决，他的阵营落败。当你首次选择或更换目标时，所有玩家都会得知你选择了新的玩家。","notes":"须由恐惧之灵本人提名其目标并发生处决，不要求处决死亡。公告只透露选了新目标，不公开目标是谁；提名者、被提名者与实际处决分开核对。"},{"id":"baron","name":"男爵","team":"minion","ability":"会有额外的两名外来者在场。[+2外来者]","notes":"开局设置改变，通常由镇民名额替换；男爵之后死亡不会撤销已经完成的设置。","builtin":true},{"id":"pukka","name":"普卡","team":"demon","ability":"每个夜晚，你要选择一名玩家：他中毒。上个因你的能力中毒的玩家会死亡并恢复健康。","notes":"从首夜行动，先中毒、随后夜晚延迟死亡。驱魔阻止其醒来选择新中毒目标，不等于撤销已有中毒。普卡醉酒可暂停既有中毒与击杀，恢复清醒后可能继续；保护阻止死亡时原中毒可结束。","builtin":true},{"id":"vigormortis","name":"亡骨魔","team":"demon","ability":"每个夜晚*，你要选择一名玩家：他死亡。被你杀死的爪牙保留他的能力，且与他邻近的两名镇民之一中毒。[-1外来者]","notes":"死亡爪牙可能继续有能力；邻近镇民不是简单的相邻座位。","builtin":true},{"id":"no_dashii","name":"诺-达鲺","team":"demon","ability":"每个夜晚*，你要选择一名玩家：他死亡。与你邻近的两名镇民中毒。","notes":"沿两个方向寻找最近镇民，不能直接等同恶魔物理邻座。","builtin":true},{"id":"lleech","name":"痢蛭","team":"demon","ability":"每个夜晚*，你要选择一名玩家：他死亡。在你的首个夜晚，你要选择一名存活的玩家：他中毒，只有当他处于死亡状态时你才会立即死亡。","notes":"采用图片这一版宿主死亡联动规则，不套普通恶魔被处决即死亡。追踪首夜宿主、宿主中毒和死亡状态、痢蛭本身是否有能力；不能仅凭某人信息异常锁定其为宿主。"},{"id":"daybreak_oblivion_gate","name":"遗忘之门","team":"loric","ability":"玩家不知道自己的角色和阵营。当他们死亡时才会得知这些信息。","notes":"这是作用于本局的奇遇规则，不占玩家座位，不是可分配给某名玩家的身份。按死亡前未知、得知死亡后获知的时间线处理；不把被唤醒、选人或收到信息当成角色认证，也不凭空补充邪恶互认所得信息。"},{"id":"bootlegger","name":"私货商人","team":"loric","ability":"这个剧本包含有自制角色或自制规则。","notes":"这是规则声明，不占玩家座位，不是可分配给玩家的角色。以本剧本图片整理版为准，特别是顶部“失忆与回忆”。"}]}];
+  // END RESIDENT SCRIPTS
+  const data = { teams, roles, scripts, residentScripts, updates, version: '2026-11-10.1' };
   if (typeof module !== 'undefined' && module.exports) module.exports = data;
   else root.ClocktowerData = data;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
@@ -627,6 +630,18 @@ textarea:focus,input:focus,select:focus{outline:2px solid #c8495d;outline-offset
     })];
   }
   function playerColumns(count) {return Math.ceil(Number(count)/Math.ceil(Number(count)/5));}
+  function playerRoles(script) {return script.roles.filter(r=>!['fabled','loric'].includes(r.team));}
+  function customLibrarySize(library) {const reserved=new Set((Data.residentScripts||[]).map(s=>s.id));return library.filter(s=>!reserved.has(s?.id)).length;}
+  function libraryHasRoom(library) {return customLibrarySize(library)<100;}
+  function seedResidentScripts(workspace) {
+    let added=0;
+    for(const pack of Data.residentScripts||[]) {
+      if(workspace.library.some(s=>s.id===pack.id))continue;
+      const script=importScript(pack.data);script.id=pack.id;
+      workspace.library.push(script);added++;
+    }
+    return added;
+  }
   function createGame({ name = '', script = builtinScript('tb'), count = 12, ownSeat = 1, ownRoleId = '', phase = 'day', day = 1 } = {}) {
     count = Number(count); ownSeat = Number(ownSeat); day = Number(day);
     if (!Number.isInteger(count) || count < 5 || count > 20) throw new Error('支持 5–20 个玩家座位。');
@@ -748,6 +763,7 @@ textarea:focus,input:focus,select:focus{outline:2px solid #c8495d;outline-offset
       game:{name:game.name,script:game.script.name,playerCount:game.count,currentPhase:{...game.current,label:phaseName(game.current)},status:game.status==='ended'?'已结束':'进行中',outcome:{good:'善良获胜',evil:'邪恶获胜',unknown:'结果未定'}[game.outcome]||'尚未记录',ownSeat:game.ownSeat,receivedRole:game.script.roles.find(r=>r.id===game.ownRoleId)?.name || '未填写',privateNotes:game.ownNotes || ''},
       seatAdjacency:Array.from({length:game.count},(_,i)=>[i+1,(i+1)%game.count+1]),
       baselineDistribution:{labels:['镇民','外来者','爪牙','恶魔'],counts:distributions[game.count]||null,qualification:game.count>15?'16–20 个座位可能包含旅行者或特殊配置；不可按总座位数推定基础阵营配比，以本局裁定和已知旅行者信息为准。':'仅为设置能力调整前的开局参考；不是已知的实际配置。'},
+      ...(game.script.roles.some(r=>['fabled','loric'].includes(r.team))?{scriptComposition:{playerRoleCount:playerRoles(game.script).length,ruleRoles:game.script.roles.filter(r=>['fabled','loric'].includes(r.team)).map(r=>r.name),qualification:'传奇/奇遇是剧本规则，不占玩家座位，不分配为玩家角色。'}}:{}),
       scriptRoles:game.script.roles.map(r=>({id:r.id,name:r.name,type:Data.teams[r.team],ability:r.ability,analysisNotes:r.notes || '',version:r.builtin?'内置整理版':'本局自定义或改写版'})),
       mechanismChecks:mechanismChecks(game),
       specialRules:game.specialRules || '未填写额外裁定。',
@@ -849,7 +865,7 @@ textarea:focus,input:focus,select:focus{outline:2px solid #c8495d;outline-offset
     return restored;
   }
   function validateWorkspace(raw) {
-    if (!raw || raw.version!==VERSION || !Array.isArray(raw.games)||!Array.isArray(raw.library)||raw.games.length>100||raw.library.length>100) throw new Error('不是受支持的钟楼手记备份（版本 1）。');
+    if (!raw || raw.version!==VERSION || !Array.isArray(raw.games)||!Array.isArray(raw.library)||raw.games.length>100||raw.library.length>100+(Data.residentScripts||[]).length||customLibrarySize(raw.library)>100) throw new Error('不是受支持的钟楼手记备份（版本 1）。');
     const games=raw.games.map(validateGame);
     if(new Set(games.map(g=>g.id)).size!==games.length) throw new Error('备份中的对局 ID 重复。');
     if(raw.activeId && !games.some(g=>g.id===raw.activeId)) throw new Error('当前对局指向无效。');
@@ -874,7 +890,7 @@ textarea:focus,input:focus,select:focus{outline:2px solid #c8495d;outline-offset
     g.analysisFocus='首夜占卜“是”与7号夜死有哪些兼容解释？2号两晚信息变化需要什么前提？';
     return g;
   }
-  const api={VERSION,PROMPT_VERSION,playerColumns,kinds,sources,distributions,GENERAL_RULES,clone,uid,clean,escape,normalizeId,builtinRole,builtinScript,normalizeRole,importScript,exportScript,createGame,phaseOrder,phaseName,activeEvents,sortEvents,saveEvent,projectPlayers,findIssues,buildContext,buildRequest,snapshotContext,conversationHistory,contextChanges,contextDelta,requestText,createSnapshot,fingerprint,validateGame,validateWorkspace,demoGame};
+  const api={VERSION,PROMPT_VERSION,playerColumns,playerRoles,seedResidentScripts,libraryHasRoom,kinds,sources,distributions,GENERAL_RULES,clone,uid,clean,escape,normalizeId,builtinRole,builtinScript,normalizeRole,importScript,exportScript,createGame,phaseOrder,phaseName,activeEvents,sortEvents,saveEvent,projectPlayers,findIssues,buildContext,buildRequest,snapshotContext,conversationHistory,contextChanges,contextDelta,requestText,createSnapshot,fingerprint,validateGame,validateWorkspace,demoGame};
   if(typeof module!=='undefined'&&module.exports) module.exports=api; else root.ClocktowerCore=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
 
@@ -1012,13 +1028,14 @@ textarea:focus,input:focus,select:focus{outline:2px solid #c8495d;outline-offset
   function ib(action,label,ico,attrs='') { return `<button type="button" class="icon-button" data-action="${action}" title="${E(label)}" aria-label="${E(label)}" ${attrs}>${icon(ico)}</button>`; }
   const opt = (value,label,current) => `<option value="${E(value)}"${String(value)===String(current)?' selected':''}>${E(label)}</option>`;
   const options = (object,current) => Object.entries(object).map(([k,v])=>opt(k,v,current)).join('');
-  function roleOptions(script,current='',empty='未指定角色') { return opt('',empty,current) + script.roles.map(r=>opt(r.id,`${r.name} · ${D.teams[r.team]}`,current)).join(''); }
+  function roleOptions(script,current='',empty='未指定角色',playersOnly=false) { return opt('',empty,current) + (playersOnly?C.playerRoles(script):script.roles).map(r=>opt(r.id,`${r.name} · ${D.teams[r.team]}`,current)).join(''); }
   const shortSource = {public:'公开',self:'本人',hearsay:'自述',hypothesis:'推测'};
   let state={version:C.VERSION,activeId:'',games:[],library:[]}, rawRecovery='', saveOK=true;
   try { const raw=localStorage.getItem(STORAGE); if(raw){ try {state=C.validateWorkspace(JSON.parse(raw));}catch(error){rawRecovery=raw;console.warn('备份需要恢复：',error.message);} } }
   catch (_) {saveOK=false;}
   state.activeId='';
   state.generalRules=state.generalRules||'';
+  const seededResidents=!rawRecovery&&C.seedResidentScripts(state);
   const ui={page:'home',scriptTab:'roles',analysisTab:'prepare',search:'',filterSeat:'',filterKind:'',filterSource:'',filterPhase:'',timelineMode:'all',searchOpen:false,roleSearch:'',snapshotId:'',record:null,importPreview:null,setup:null,roleDraft:null,undo:null,settingsReturn:'records',followupDraft:'',aiBusy:false,aiJob:null};
   let toastTimer, abortController, saveTimer;
   const game = () => state.games.find(g=>g.id===state.activeId&&!g.deletedAt);
@@ -1323,7 +1340,7 @@ textarea:focus,input:focus,select:focus{outline:2px solid #c8495d;outline-offset
     Object.values(ui.setupScripts||{}).forEach(sc=>{if(!choices.some(item=>item.id===sc.id))choices.push(sc);});
     if(!choices.some(sc=>sc.id===a.scriptId)&&a.scriptDraft)choices.push(a.scriptDraft);
     const rules=a.specialRules??script.specialRules??'';
-    modal('新对局','',`<form id="setup-form">${errorSlot}<div class="setup-counters">${counterControl('count','人数',Number(a.count),5,20)}${counterControl('ownSeat','我的座位',Number(a.ownSeat),1,Number(a.count))}</div><details class="setup-script-picker" id="setup-script-picker"><summary><span class="script-label">剧本</span><strong>${E(script.name)}</strong>${icon('down',16)}</summary><div class="script-choices">${choices.map(sc=>`<label class="script-choice"><input type="radio" name="scriptId" value="${E(sc.id)}"${sc.id===a.scriptId?' checked':''}><strong>${E(sc.id===a.scriptId?script.name:sc.name)}</strong><span class="mono">${sc.id===a.scriptId?script.roles.length:sc.roles.length}</span></label>`).join('')}</div></details><div class="setup-script-tools">${button('setup-custom-script','自定义剧本','plus','quiet small')}${button('setup-roles','调整角色','edit','text-only small')}</div><label class="field">我的角色<select name="ownRoleId">${roleOptions(script,a.ownRoleId,'暂不填写')}</select></label><details class="quiet-detail setup-rules"><summary>本局规则${rules?'<span class="tab-dot"></span>':''}${icon('down',12)}</summary><label class="sr-only" for="setup-rules">本局规则</label><textarea id="setup-rules" name="specialRules" rows="3" maxlength="24000" placeholder="本局的额外限制或说书人裁定…">${E(rules)}</textarea></details><details class="quiet-detail setup-extra"><summary>名称与起始阶段 ${icon('down',12)}</summary><div class="field-grid"><label class="field full">对局名称<input name="name" maxlength="80" value="${E(a.name)}" placeholder="选填"></label><label class="field">天／夜<input type="number" name="day" min="1" max="99" value="${a.day}" required></label><label class="field">阶段<select name="phase">${options({night:'夜晚',day:'白天'},a.phase)}</select></label></div></details><div class="modal-footer start-footer"><button type="submit" class="button primary">开始记录 ${icon('arrow',16)}</button></div></form>${setupHistory()}`,'start-dialog');
+    modal('新对局','',`<form id="setup-form">${errorSlot}<div class="setup-counters">${counterControl('count','人数',Number(a.count),5,20)}${counterControl('ownSeat','我的座位',Number(a.ownSeat),1,Number(a.count))}</div><details class="setup-script-picker" id="setup-script-picker"><summary><span class="script-label">剧本</span><strong>${E(script.name)}</strong>${icon('down',16)}</summary><div class="script-choices">${choices.map(sc=>`<label class="script-choice"><input type="radio" name="scriptId" value="${E(sc.id)}"${sc.id===a.scriptId?' checked':''}><strong>${E(sc.id===a.scriptId?script.name:sc.name)}</strong><span class="mono">${sc.id===a.scriptId?script.roles.length:sc.roles.length}</span></label>`).join('')}</div></details><div class="setup-script-tools">${button('setup-custom-script','自定义剧本','plus','quiet small')}${button('setup-roles','调整角色','edit','text-only small')}</div><label class="field">我的角色<select name="ownRoleId">${roleOptions(script,a.ownRoleId,'暂不填写',true)}</select></label><details class="quiet-detail setup-rules"><summary>本局规则${rules?'<span class="tab-dot"></span>':''}${icon('down',12)}</summary><label class="sr-only" for="setup-rules">本局规则</label><textarea id="setup-rules" name="specialRules" rows="3" maxlength="24000" placeholder="本局的额外限制或说书人裁定…">${E(rules)}</textarea></details><details class="quiet-detail setup-extra"><summary>名称与起始阶段 ${icon('down',12)}</summary><div class="field-grid"><label class="field full">对局名称<input name="name" maxlength="80" value="${E(a.name)}" placeholder="选填"></label><label class="field">天／夜<input type="number" name="day" min="1" max="99" value="${a.day}" required></label><label class="field">阶段<select name="phase">${options({night:'夜晚',day:'白天'},a.phase)}</select></label></div></details><div class="modal-footer start-footer"><button type="submit" class="button primary">开始记录 ${icon('arrow',16)}</button></div></form>${setupHistory()}`,'start-dialog');
   }
   function captureSetup() {
     const form=$('#setup-form');if(form){const d=new FormData(form);ui.setup={...ui.setup,name:d.get('name'),scriptId:d.get('scriptId'),count:d.get('count'),ownSeat:d.get('ownSeat'),ownRoleId:d.get('ownRoleId'),day:d.get('day'),phase:d.get('phase'),specialRules:d.get('specialRules')};}return ui.setup;
@@ -1339,14 +1356,14 @@ textarea:focus,input:focus,select:focus{outline:2px solid #c8495d;outline-offset
     const a=ui.setup,script=a.scriptDraft||ui.setupScripts?.[id]||selectedScript(id),form=$('#setup-form'),picker=$('#setup-script-picker');
     picker.querySelector('summary strong').textContent=script.name;
     const selected=form.querySelector('[name="scriptId"]:checked');if(selected){const row=selected.closest('.script-choice');row.querySelector('strong').textContent=script.name;row.querySelector('.mono').textContent=script.roles.length;}
-    form.elements.ownRoleId.innerHTML=roleOptions(script,a.ownRoleId,'暂不填写');
+    form.elements.ownRoleId.innerHTML=roleOptions(script,a.ownRoleId,'暂不填写',true);
     form.elements.specialRules.value=a.specialRules??script.specialRules??'';
     form.querySelector('.setup-rules>summary').innerHTML='本局规则'+(form.elements.specialRules.value?'<span class="tab-dot"></span>':'')+icon('down',12);
     ui.setupRenderedId=id;picker.open=false;picker.querySelector('summary').focus({preventScroll:true});
   }
   function openSettings() {
     const g=game();if(!g)return openSetup();
-    modal('对局设置',`${g.script.name} · ${g.count}人`,`<form id="settings-form">${errorSlot}<div class="field-grid"><label class="field full">对局名称<input name="name" value="${E(g.name)}" maxlength="80" required></label><label class="field">我是几号<input name="ownSeat" type="number" min="1" max="${g.count}" value="${g.ownSeat}" required></label><label class="field">我拿到的角色<select name="ownRoleId">${roleOptions(g.script,g.ownRoleId,'暂不填写')}</select></label><label class="field full">我的私有补充<textarea name="ownNotes" rows="4" maxlength="12000" placeholder="例如：邪恶队友信息、说书人的单独提醒、我的已知视角…">${E(g.ownNotes)}</textarea></label></div><div class="modal-footer"><button type="submit" class="button primary">保存信息</button></div></form>`);
+    modal('对局设置',`${g.script.name} · ${g.count}人`,`<form id="settings-form">${errorSlot}<div class="field-grid"><label class="field full">对局名称<input name="name" value="${E(g.name)}" maxlength="80" required></label><label class="field">我是几号<input name="ownSeat" type="number" min="1" max="${g.count}" value="${g.ownSeat}" required></label><label class="field">我拿到的角色<select name="ownRoleId">${roleOptions(g.script,g.ownRoleId,'暂不填写',true)}</select></label><label class="field full">我的私有补充<textarea name="ownNotes" rows="4" maxlength="12000" placeholder="例如：邪恶队友信息、说书人的单独提醒、我的已知视角…">${E(g.ownNotes)}</textarea></label></div><div class="modal-footer"><button type="submit" class="button primary">保存信息</button></div></form>`);
   }
   function openPhase() {
     const g=game();if(!g)return;
@@ -1396,7 +1413,7 @@ textarea:focus,input:focus,select:focus{outline:2px solid #c8495d;outline-offset
     try {
       if(ui.importToSetup){rememberSetup();ui.setupScripts={...ui.setupScripts,[sc.id]:C.clone(sc)};ui.setup={...ui.setup,scriptId:sc.id,scriptDraft:C.clone(sc),specialRules:sc.specialRules||'',ownRoleId:''};if(ui.importReturnToEditor)openRoleEditor(true);else openSetup(ui.setup);return;}
       if(apply){const g=game();ensureReferencedRoles(g,sc);g.script=C.clone(sc);g.specialRules=sc.specialRules||'';if(!sc.roles.some(r=>r.id===g.ownRoleId))g.ownRoleId='';touch();closeModal();render();toast('已更新本局剧本');return;}
-      if(state.library.length>=100)throw new Error('剧本库已达 100 份，请导出备份。');
+      if(!C.libraryHasRoom(state.library))throw new Error('剧本库已达 100 份，请导出备份。');
       state.library.push(C.clone(sc));persist();render();openLibrary();toast('已存入剧本库');
     }catch(error){modalError(error.message);}
   }
@@ -1471,7 +1488,7 @@ textarea:focus,input:focus,select:focus{outline:2px solid #c8495d;outline-offset
   }
   function saveLibraryRoles(d,roles) {
     const sc=C.importScript({name:d.get('scriptName'),author:d.get('scriptAuthor'),specialRules:d.get('scriptRules'),roles});sc.id=ui.libraryId||ui.roleDraft.id;
-    const i=state.library.findIndex(s=>s.id===sc.id);if(i<0){if(state.library.length>=100)throw new Error('剧本库已达 100 份');state.library.push(sc);}else state.library[i]=sc;
+    const i=state.library.findIndex(s=>s.id===sc.id);if(i<0){if(!C.libraryHasRoom(state.library))throw new Error('剧本库已达 100 份');state.library.push(sc);}else state.library[i]=sc;
     persist();render();openLibrary();toast('剧本已保存');
   }
 
@@ -1646,7 +1663,7 @@ textarea:focus,input:focus,select:focus{outline:2px solid #c8495d;outline-offset
       else if(action==='edit-roles')openRoleEditor();
       else if(action==='custom-role')openCustomRole(target.dataset.id);
       else if(action==='save-library'){
-        if(state.library.length>=100)return toast('常用剧本已达上限。');
+        if(!C.libraryHasRoom(state.library))return toast('常用剧本已达上限。');
         const script=C.clone(g.script);script.id='saved_'+C.uid();script.builtin=false;script.description='从对局保存';script.specialRules=g.specialRules;state.library.push(script);persist();closeModal();render();toast('已存为常用剧本，新建对局时可选择');
       }
       else if(action==='export-script'){
@@ -1800,6 +1817,7 @@ textarea:focus,input:focus,select:focus{outline:2px solid #c8495d;outline-offset
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&saveTimer)persist();});
   window.addEventListener('resize',resizeRecordInput);
   render();
+  if(seededResidents)persist();
 })();
 
 </script>
