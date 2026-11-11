@@ -1,0 +1,198 @@
+[
+  {
+    "id": "_meta",
+    "name": "华灯初上",
+    "specialRules": "【角色合集】华灯初上是官方角色合集，并非固定的平衡成品剧本。此处保存百科收录的完整角色池；开局可按实际剧本调整范围。传奇与奇遇为规则，不占玩家座位；旅行者不计入基础人数配置。",
+    "description": "角色合集",
+    "source": "https://wiki.biligame.com/bloodontheclocktower/%E5%8D%8E%E7%81%AF%E5%88%9D%E4%B8%8A"
+  },
+  {
+    "id": "banxian",
+    "name": "半仙",
+    "team": "townsfolk",
+    "ability": "任何在夜晚使用自身能力选择你的其他玩家，会改为选中另一名邪恶玩家作为替代。",
+    "notes": ""
+  },
+  {
+    "id": "facechanger",
+    "name": "变脸师",
+    "team": "townsfolk",
+    "ability": "每个白天，如果你“疯狂”地证明自己是一个善良角色（与之前不同），你可能会在当晚获得那个角色的能力，直到下个黄昏。",
+    "notes": ""
+  },
+  {
+    "id": "firewatcher",
+    "name": "打更人",
+    "team": "townsfolk",
+    "ability": "每个夜晚*，你要猜测今晚首个死亡的玩家与你的距离。如果你猜测正确，则除你以外的所有玩家今晚不会死亡，但你可能会死亡。",
+    "notes": ""
+  },
+  {
+    "id": "waiter",
+    "name": "店小二",
+    "team": "townsfolk",
+    "ability": "在你的首个夜晚，你会得知两名善良玩家。他们之中会有一人醉酒，即使你已死亡。",
+    "notes": ""
+  },
+  {
+    "id": "diva",
+    "name": "歌伶",
+    "team": "townsfolk",
+    "ability": "每局游戏限一次，在白天时，你可以提议所有玩家观看你的演出，并从同意参加的玩家中选择你的观众。如果恶魔成为了观众，你会在当晚死亡。",
+    "notes": ""
+  },
+  {
+    "id": "heshang",
+    "name": "和尚",
+    "team": "townsfolk",
+    "ability": "每个夜晚，当有邪恶玩家的能力首次选择或影响与你邻近的存活玩家时，改为此次能力不生效并持续至下个黎明，且你会得知你的能力被触发。",
+    "notes": ""
+  },
+  {
+    "id": "brocadier",
+    "name": "锦衣卫",
+    "team": "townsfolk",
+    "ability": "每个夜晚*，你要选择一名玩家：如果他在下个黄昏前死亡，你代替他死亡。",
+    "notes": ""
+  },
+  {
+    "id": "herbdoctor",
+    "name": "郎中",
+    "team": "townsfolk",
+    "ability": "每个夜晚，你要选择除你以外的一名玩家：你会得知一个与他能力相关的词语。",
+    "notes": ""
+  },
+  {
+    "id": "stargazer",
+    "name": "钦天监",
+    "team": "townsfolk",
+    "ability": "在你的首个夜晚，你会得知离你最近的邪恶玩家位于你的哪一侧（左/右/相同）。如果与你邻近的玩家中有邪恶阵营，你会得知错误信息作为替代。",
+    "notes": ""
+  },
+  {
+    "id": "enlightenedone",
+    "name": "悟道者",
+    "team": "townsfolk",
+    "ability": "你以为你是一个外来者，但你实际上不是。如果有邪恶玩家的能力选择或影响了你，你会立即变成一个不在场的镇民角色。",
+    "notes": ""
+  },
+  {
+    "id": "actor",
+    "name": "戏子",
+    "team": "townsfolk",
+    "ability": "所有戏子互相认识。不论在场的戏子数量多少或存活与否，胜负结果会被对调。[所有善良玩家都是戏子]",
+    "notes": ""
+  },
+  {
+    "id": "rascal",
+    "name": "熊孩子",
+    "team": "townsfolk",
+    "ability": "每个夜晚，你要选择一个镇民角色：他的能力会产生错误信息，直到下个黄昏。",
+    "notes": ""
+  },
+  {
+    "id": "yinyangdiviner",
+    "name": "阴阳师",
+    "team": "townsfolk",
+    "ability": "在你的首个夜晚，你会得知两个善良角色和两个邪恶角色，其中有且只有两个角色在场。",
+    "notes": ""
+  },
+  {
+    "id": "turncoat",
+    "name": "逆臣",
+    "team": "outsider",
+    "ability": "在你的首个夜晚，你要选择除你以外的一名玩家：如果他先死于处决，你会在当晚转变为邪恶；如果你先死于处决，他会在当晚转变为邪恶。",
+    "notes": ""
+  },
+  {
+    "id": "mrmisfortune",
+    "name": "煞星",
+    "team": "outsider",
+    "ability": "如果你死亡，当晚与你邻近的存活玩家之一可能会死亡。",
+    "notes": ""
+  },
+  {
+    "id": "ambassador",
+    "name": "使节",
+    "team": "outsider",
+    "ability": "每个夜晚限一次，一名玩家在使用自身能力选择邪恶玩家时会改为选中你，即使你已死亡。",
+    "notes": ""
+  },
+  {
+    "id": "pedant",
+    "name": "书生",
+    "team": "outsider",
+    "ability": "恶魔知道书生在场。每局游戏限一次，恶魔可以拜访说书人并猜测你是书生。如果恶魔猜测正确，即使你已死亡，当晚该恶魔可以选择一名玩家：他死亡。",
+    "notes": ""
+  },
+  {
+    "id": "corpsewalker",
+    "name": "赶尸人",
+    "team": "minion",
+    "ability": "与你邻近的两名镇民玩家会在其首次死亡时被当作仍然存活。[-1外来者]",
+    "notes": ""
+  },
+  {
+    "id": "vixen",
+    "name": "狐媚娘",
+    "team": "minion",
+    "ability": "在你的首个夜晚，你要选择一名玩家：他会知道狐媚娘在场。如果你死于处决，当晚他转变为邪恶阵营。",
+    "notes": ""
+  },
+  {
+    "id": "imperialist",
+    "name": "禁卫军",
+    "team": "minion",
+    "ability": "“疯狂”地想要死亡的玩家可能会立即被处决。",
+    "notes": ""
+  },
+  {
+    "id": "bugkeeper",
+    "name": "养蛊人",
+    "team": "minion",
+    "ability": "在你存活时提名你的玩家会在当晚死亡，即使你已死亡。",
+    "notes": ""
+  },
+  {
+    "id": "hundun",
+    "name": "混沌",
+    "team": "demon",
+    "ability": "每个夜晚*，你要选择一名玩家：他死亡。如果你以这种方式杀死了一名与你邻近的镇民玩家，除旅行者外的所有善良玩家会中毒直到下个黄昏。",
+    "notes": ""
+  },
+  {
+    "id": "qiongqi",
+    "name": "穷奇",
+    "team": "demon",
+    "ability": "每个夜晚*，你要选择一名玩家：他死亡。如果今天白天有外来者死亡，当晚改为你要选择一名玩家：他死亡，但被当作仍然存活，随后会有一名其他玩家死亡。[+1外来者]",
+    "notes": ""
+  },
+  {
+    "id": "taotie",
+    "name": "饕餮",
+    "team": "demon",
+    "ability": "每个夜晚*，你要选择任意数量的非旅行者玩家或一名旅行者玩家：如果他们的角色类型均不相同，他们死亡。[+1外来者]",
+    "notes": ""
+  },
+  {
+    "id": "taowu",
+    "name": "梼杌",
+    "team": "demon",
+    "ability": "每个夜晚*，你要选择一名玩家：他死亡。当你将要死亡时，改为一名存活且具有能力的爪牙失去能力。你不会得知恶魔信息。",
+    "notes": ""
+  },
+  {
+    "id": "pauper",
+    "name": "叫花子",
+    "team": "traveler",
+    "ability": "每个白天限一次，你可以公开选择一名其他玩家，让他选择一个非恶魔角色：你可能会获得这个角色的能力，直到下个黎明。",
+    "notes": ""
+  },
+  {
+    "id": "qilin",
+    "name": "麒麟",
+    "team": "fabled",
+    "ability": "在游戏的最后一天，最幸运的玩家身上会发生一些好的事情。",
+    "notes": ""
+  }
+]
