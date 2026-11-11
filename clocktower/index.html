@@ -718,7 +718,7 @@ dialog.player-dialog{scrollbar-gutter:stable;overflow-y:auto;margin:24px auto au
   'use strict';
   const Data = typeof module !== 'undefined' && module.exports ? require('./roles.js') : root.ClocktowerData;
   const VERSION = 1;
-  const PROMPT_VERSION = 'clocktower-player-6.3';
+  const PROMPT_VERSION = 'clocktower-player-6.4';
   const kinds = { statement: '发言', claim: '声明', action: '行动', feedback: '反馈', nomination: '提名', vote: '投票', execution: '处决', no_execution: '无人处决', death: '死亡', revival: '复活', role_change: '身份变化', ghost_used: '幽灵票已用', note: '笔记' };
   const sources = { public: '公开可观察事件', self: '本人经历或收到的反馈', hearsay: '他人自述或转述', hypothesis: '个人推测' };
   const distributions = { 5:[3,0,1,1],6:[3,1,1,1],7:[5,0,1,1],8:[5,1,1,1],9:[5,2,1,1],10:[7,0,2,1],11:[7,1,2,1],12:[7,2,2,1],13:[9,0,3,1],14:[9,1,3,1],15:[9,2,3,1] };
@@ -956,7 +956,9 @@ dialog.player-dialog{scrollbar-gutter:stable;overflow-y:auto;margin:24px auto au
     const role=game.script.roles.find(r=>r.id===game.ownRoleId),changes=activeEvents(game).filter(e=>phaseOrder(e)<=phaseOrder(game.current)&&e.seat===game.ownSeat&&e.kind==='role_change'&&['self','public'].includes(e.source));
     let current=role,alignment=role?(['demon','minion'].includes(role.team)?'邪恶':['townsfolk','outsider'].includes(role.team)?'善良':'未知'):'未知';
     const history=changes.map(e=>{const next=game.script.roles.find(r=>r.id===e.roleId);if(next)current=next;if(e.alignment)alignment=e.alignment==='evil'?'邪恶':'善良';return {stage:phaseName(e),ref:e.ref,...(next?{role:next.name}:{}),...(e.alignment?{alignment}:{})};});
-    return {seat:game.ownSeat,role:current?.name||'未填写',alignment,basis:role?'玩家在本人角色栏明确设置；这是私有视角前提，不是普通跳身份。':'本人身份尚未填写，不自行猜测。',...(role?{rolePolicy:'采用此身份前提；本人对外声明不覆盖它。仅按明确的本局身份未知规则、身份变化、本人更正或用户主动检验身份误认处理例外。'}:{}),...(history.length?{roleChanges:history}:{})};
+    const nightDeaths=activeEvents(game).filter(e=>e.seat===game.ownSeat&&e.phase==='night'&&phaseOrder(e)<=phaseOrder(game.current)&&['public','self'].includes(e.source)&&(e.effect==='dead'||e.kind==='death'));
+    const nightStates=nightDeaths.map(e=>({night:e.day,aliveAtNightStart:projectPlayers(game,{day:e.day-1,phase:'day'}).find(p=>p.seat===game.ownSeat).alive,observedDuringNight:'死亡',timing:'夜内死亡不等于夜初已死；死亡前已经结算的行动仍可能有效。'}));
+    return {seat:game.ownSeat,role:current?.name||'未填写',alignment,basis:role?'玩家在本人角色栏明确设置；这是私有视角前提，不是普通跳身份。':'本人身份尚未填写，不自行猜测。',...(role?{rolePolicy:'采用此身份前提；本人对外声明不覆盖它。仅按明确的本局身份未知规则、身份变化、本人更正或用户主动检验身份误认处理例外。'}:{}),...(history.length?{roleChanges:history}:{}),...(nightStates.length?{nightStates}:{})};
   }
   function orbitLayout(count) {
     count=Number(count);if(!Number.isInteger(count)||count<5||count>20)throw new Error('座位数量应为5–20。');
@@ -1000,7 +1002,7 @@ dialog.player-dialog{scrollbar-gutter:stable;overflow-y:auto;margin:24px auto au
     '每条关键角色声明及信息，在每个候选世界中须明确采用：真实且正常；真实但有具体失效/误登记；或声明/结果不实。接受真实角色和正常信息后必须满足其能力约束，类内后文不得又把该玩家当作另一角色或阵营；变更前提须明确另分支。若无本局机制改变阵营，真实镇民/外来者不能在同一世界又被当作邪恶爪牙。前提组无合法配置就排除，不能软降级后继续保留。仅排除某条信息正常，不等于证明发言者邪恶；确认邪恶须排尽合法善良解释并说明前提。',
     '投票、互踩、站边和语气只改变倾向，不能认证善良；坏人可倒钩。夜死也不是机械验好：若当前局面邪恶自刀无明显传位、控局或伪装收益，可优先采信其善良及信息；若有具体自刀收益，再列必要的邪恶分支。不把夜死者信息自动升级为硬信息。本人身份已知时直接采用，无须靠死亡重新认证。旧AI输出不是证据，同源转述不重复计权。不编造百分比；优先级依硬约束、独立支持和额外假设排序。无区分证据的分支写并列，不强排首选；少假设只是工作顺序，不是概率证明。',
     '醉毒通常无能力，反馈可真可假，不取反。酒鬼是外来者，不因所见镇民而获得其真实技能。失真必须给本局内具体来源、目标、时序、持续范围和容量；来源仅可能在场时写明条件。误登记可在信息角色清醒健康、能力正常时合法发生；正常真反馈指符合登记规则，不默认排除误登记。要从登记推到真实身份，必须另有条件排除目标误登记。误登记不改变真实身份、阵营或赋予所登记角色的能力，且可随每次能力互动不同。不得用无限制醉毒或误登记兜底。',
-    '分开身份、阵营、所获能力和登记结果，按发生时点核验。首夜→首日→次夜→次日；第N夜承接第N-1日，次夜送葬者验首日处决并不矛盾。每夜*不含首夜。座位首尾相邻，依技能区分邻座与最近存活邻居；夜间死亡和先后结算可能改变信息，不能用现在身份或存活状态套全部历史。',
+    '分开身份、阵营、所获能力和登记结果，按发生时点核验。首夜→首日→次夜→次日；第N夜承接第N-1日，次夜送葬者验首日处决并不矛盾。每夜*不含首夜。座位首尾相邻，依技能区分邻座与最近存活邻居；夜间死亡和先后结算可能改变信息，不能用现在身份或存活状态套全部历史。第N夜死亡不等于夜初已死，允许先行动后死亡；仅从第N+1夜起通常无常规行动。发言stage是发言/录入阶段，叙述的行动按原文时点解释，白天可以追述上一夜；未写明哪夜不能直接判定行动违法。',
     '提名、举票、处决、处决致死、其他死亡分别处理。只有存活者能普通提名；每人每天通常仅提名一次、被提名一次。普通投票须达存活数一半向上取整且为当天唯一最高，过半不等于已经处决。未记录不是未发生，部分举票名单的遗漏者未知；死者通常仅有一次幽灵票。',
     '基础配置是开局参考，设置能力和旅行者可改变它；不凭玩家自述数确定实际配置。通常角色不重复设置，酒鬼所见、假报、变化等不等于重复真实角色。5–6人不套七人以上恶魔/爪牙互认规则；16–20座位不能推定普通人数配比。',
     '通常死亡失去能力，死亡触发、死后误登记等按原文。善良通常需所有恶魔死亡；仍有恶魔且仅两名实际存活非旅行者通常邪恶赢。胜负例外、传位和持续时点先核验，记录不足不宣判游戏应结束。',
@@ -1023,6 +1025,7 @@ dialog.player-dialog{scrollbar-gutter:stable;overflow-y:auto;margin:24px auto au
     if(has('slayer'))add('slayer_result','猎手须存活、清醒健康且未使用，白天公开选择；醉毒使用也消耗次数。致死可为恶魔或登记恶魔的陌客，不能单凭致死锁恶魔；无事发生也可能假跳、醉毒、已用或目标已死。无死亡仅在排除失效且活目标前提下排恶魔。');
     if(has('imp')||has('scarlet_woman'))add('demon_succession','小恶魔仅以自身夜间能力杀死自己时传给存活爪牙，新小恶魔当夜不再行动。猩红女郎须存活且能力正常，恶魔死前至少5名存活非旅行者时接位；5人正好可触发，4人不行。满足条件的小恶魔自杀优先由猩红接位；普通爪牙不能因恶魔白天死而自动接位。早期占卜否不能排除某人后来成为恶魔。');
     if(has('undertaker'))add('undertaker_scope','送葬者看当日因处决死亡者的角色，不看普通日杀或夜死；第N夜验第N-1日处决死者是正常时序。未有人因处决死亡就无角色可验。酒鬼看真实酒鬼，间谍和陌客仍有死后误登记。');
+    if(has('monk'))add('monk_action_order','僧侣在其他夜通常先于恶魔行动。因此第2夜先守他人、随后被恶魔杀死完全合法，不可因第2天已死就否定第2夜守卫；只有明确行动前已死才不能行动。保护只针对恶魔负面效果，不解除爪牙投毒或其他醉酒，不认证被保护者身份或信息正常。');
     if(has('monk')||has('soldier')||has('mayor'))add('night_death_alternatives','僧侣不能选自己、首夜不行动；保护他人不保护自己。僧侣本人夜死与其保护谁不构成矛盾，不否定本人身份，也不能单凭此推出守卫目标真假。保护只针对当夜恶魔能力，不免日间处决。平安夜不认证僧侣命中：士兵、恶魔选已死目标、恶魔失效、镇长转移至已死/受保护者等也可无死，均须具备本剧本条件。保护小恶魔可阻止其自杀和传位。');
     if(has('mayor'))add('mayor_win','镇长胜利需能力正常、日末恰3人存活且当天未发生处决；不是未发生死亡，旅行者计入这3人。夜间替死只是可能，不保证发动，也不透露谁原被恶魔选中。');
     if(has('saint'))add('saint_execution','圣徒仅因处决死亡才使其队伍输，夜死/猎手日杀不触发；真圣徒醉毒时不生效。自称圣徒处决后继续游戏，不能直接认坏，须检查真圣徒失效、非真身份和本局裁定。');
@@ -1096,12 +1099,12 @@ dialog.player-dialog{scrollbar-gutter:stable;overflow-y:auto;margin:24px auto au
     }
     return changes;
   }
-  const REPORT_FORMAT='【输出要求】\n用户有具体提问或说明时，以其问题范围和关注点为准，专项作答；不要套完整局势模板，不加无关建议或复述规则。通常150–400字，简单问题几句话即可。\n未附具体问题时：按会改变判断的大类写“## 可能A：……”、 “## 可能B：……”。每类用2–4句形成条件推理链，例如“若1号真是共情者且信息正常，则2号、3号至少一邪恶；若再采信……，便可排除……”。以最关键的角色/信息是否可采为顶层大类，其他线索的真假放在类内继续推；例如5号信息正常的大类下，再讨论6号厨师信息真假。不要机械罗列真假组合，尤其不要漏掉两条都不可靠的交互。每类下仅保留必要的子分支，不将每个零散假设单列成类。一般2–3类、总计250–600字；信息少就只盘已有信息的交互、矛盾与关键缺口，100–250字即可，不强凑分类、完整世界或固定段数。唯一结论就直接说，不凑可能性。不必要不枚举全部座位范围；若枚举相邻边，必须保留首尾相邻，不能把环写成直线。\n始终区分条件结论、可排除和行为倾向；保留具体醉毒/误登记来源及时序，不能为了短而省掉决定结论的前提。缺少区分证据不硬排概率。下一步仅在能明显区分分支或直接赢时给1–2句，不固定添加总结、依据摘要、待核实等模块。\n已填写的本人角色直接作为前提，不写“若你真是/自称”；只写对候选有贡献的推导，不凑关键缺口。角色别名杀手=猎手、市长=镇长、隐士=陌客；常见简称按上下文识别，不确定时明确条件，不凭近似名字合并自定义技能。玩家写作“1号、2号”，角色用本局中文名称，术语使用“中毒”“醉酒”“疯狂”“误登记”“干扰项”等准确词。不要写思维独白或宽表格；不在标题或正文露出内部线索编号。必要引用只在句末写[[E001]]，它会由界面收进折叠依据。\n追问只回答所问，不重复整份报告；假设性问题仍标为假设。若新资料推翻旧前提，简短点明撤回什么，再回答当前问题。';
+  const REPORT_FORMAT='【输出要求】\n用户有具体提问或说明时，以其问题范围和关注点为准，专项作答；不要套完整局势模板，不加无关建议或复述规则。通常150–400字，简单问题几句话即可。\n未附具体问题时：按会改变判断的大类写“## 可能A：……”、 “## 可能B：……”。每类用2–4句形成条件推理链，例如“采信某共情者的数字时，邻居阵营须满足……；再采信厨师数字，则相邻邪恶组合收窄为……”。以最关键的角色/信息是否可采为顶层大类，其他线索的真假放在类内继续推；例如5号信息正常的大类下，再讨论6号厨师信息真假。不要机械罗列真假组合，尤其不要漏掉两条都不可靠的交互。每类下仅保留必要的子分支，不将每个零散假设单列成类。一般2–3类、总计250–600字；信息少就只盘已有信息的交互、矛盾与关键缺口，100–250字即可，不强凑分类、完整世界或固定段数。唯一结论就直接说，不凑可能性。不必要不枚举全部座位范围；若枚举相邻边，必须保留首尾相邻，不能把环写成直线。\n始终区分条件结论、可排除和行为倾向；保留具体醉毒/误登记来源及时序，不能为了短而省掉决定结论的前提。缺少区分证据不硬排概率。下一步仅在能明显区分分支或直接赢时给1–2句，不固定添加总结、依据摘要、待核实等模块。\n已填写的本人角色直接作为前提，不写“若你真是/自称”；只写对候选有贡献的推导，不凑关键缺口。角色别名杀手=猎手、市长=镇长、隐士=陌客；常见简称按上下文识别，不确定时明确条件，不凭近似名字合并自定义技能。玩家写作“1号、2号”，角色用本局中文名称，术语使用“中毒”“醉酒”“疯狂”“误登记”“干扰项”等准确词。不要写思维独白或宽表格；不在标题或正文露出内部线索编号。必要引用只在句末写[[E001]]，它会由界面收进折叠依据。\n追问只回答所问，不重复整份报告；假设性问题仍标为假设。若新资料推翻旧前提，简短点明撤回什么，再回答当前问题。';
   function buildRequest(game,options={}) {
     const context=buildContext(game),mode=options.mode==='followup'?'followup':'analysis';
     if(options.question)context.question=clean(options.question,4000);
     const system='【规则与证据标准】\n'+GENERAL_RULES.map((r,i)=>`${i+1}. ${r}`).join('\n')+'\n\n'+REPORT_FORMAT;
-    if(mode==='analysis'){const sparse=!context.question&&context.evidence.length<=3&&context.evidence.reduce((n,e)=>n+e.content.length,0)<=450;return {mode,promptVersion:PROMPT_VERSION,historyCount:0,historyIds:[],messages:[{role:'system',content:system},{role:'user',content:(sparse?'【本次信息较少：用100–250字盘点已有交互、关键条件即可，不必写完整分类或世界】':'【当前完整资料：独立分析，不沿用其他报告】')+'\n'+JSON.stringify(context)}]};}
+    if(mode==='analysis'){const sparse=!context.question&&context.evidence.length<=3&&context.evidence.reduce((n,e)=>n+e.content.length,0)<=450,task=context.question?'【专项分析：只回答question，不复述完整局面】':sparse?'【本次信息较少：用100–250字盘点已有交互、关键条件即可，不必写完整分类或世界】':'【独立局势分析：按“## 可能A：…”“## 可能B：…”写2–3个有判断价值的大类。每类先给条件结论和候选约束，再说必要例外。不要只复述公开事件、罗列未知项或写“关键缺口”模块；用当前perspective的本人身份作为前提。】';return {mode,promptVersion:PROMPT_VERSION,historyCount:0,historyIds:[],messages:[{role:'system',content:system},{role:'user',content:task+'\n'+JSON.stringify(context)}]};}
     const question=clean(options.question,4000);
     if(!question)throw new Error('请填写追问内容。');
     const parent=game.snapshots.find(s=>s.id===options.parentId);
