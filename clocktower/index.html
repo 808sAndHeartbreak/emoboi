@@ -622,6 +622,8 @@ dialog.player-dialog{scrollbar-gutter:stable;overflow-y:auto;margin:24px auto au
 .report-body h2 .report-seat{padding-inline:3px}
 @media(max-width:700px){.report-body{padding-inline:14px;font-size:15px}.report-body h2,.report-body h2:first-child{font-size:19px;line-height:1.6}.player-dialog:not(.player-subdialog) .modal-header>div{gap:7px}.player-header-controls{gap:5px}.player-header-controls .button{padding-inline:7px}.player-header-controls .player-role-button{max-width:105px}.player-header-controls .player-role-button svg{display:none}}
 @media(max-width:350px){.player-dialog .modal-header h2{font-size:18px}.player-dialog .modal-header .icon-button{min-width:32px;width:32px;padding:6px}.player-header-controls .player-role-button{max-width:88px}.player-header-controls .button{padding-inline:6px;font-size:11px}}
+.information-layout .panel-heading .backfill-button{min-height:36px;padding:7px 10px;color:#eadbd0;border:1px solid #80616d;background:#2d2029;font-size:12px;box-shadow:none;white-space:nowrap;gap:6px}
+.information-layout .panel-heading .backfill-button:hover{background:#4a293b;border-color:#d18aa1}
 
 </style>
 
@@ -746,7 +748,7 @@ dialog.player-dialog{scrollbar-gutter:stable;overflow-y:auto;margin:24px auto au
   'use strict';
   const Data = typeof module !== 'undefined' && module.exports ? require('./roles.js') : root.ClocktowerData;
   const VERSION = 1;
-  const PROMPT_VERSION = 'clocktower-player-7.1';
+  const PROMPT_VERSION = 'clocktower-player-8.0';
   const kinds = { statement: '发言', claim: '声明', action: '行动', feedback: '反馈', nomination: '提名', vote: '投票', execution: '处决', no_execution: '无人处决', death: '死亡', revival: '复活', role_change: '身份变化', ghost_used: '幽灵票已用', note: '笔记' };
   const sources = { public: '公开可观察事件', self: '本人经历或收到的反馈', hearsay: '他人自述或转述', hypothesis: '个人推测' };
   const distributions = { 5:[3,0,1,1],6:[3,1,1,1],7:[5,0,1,1],8:[5,1,1,1],9:[5,2,1,1],10:[7,0,2,1],11:[7,1,2,1],12:[7,2,2,1],13:[9,0,3,1],14:[9,1,3,1],15:[9,2,3,1] };
@@ -902,7 +904,14 @@ dialog.player-dialog{scrollbar-gutter:stable;overflow-y:auto;margin:24px auto au
     const phrase=text.replace(new RegExp('^'+seat+'号(?:玩家)?\\s*(?:(?:声称|自称|声明|表示)[：:]?)?'),'');
     const beginning=phrase.replace(/^(?:我(?:的角色|的身份)?(?:是|为)|自己是|(?:我)?(?:声明|自称|声称|跳)(?:我|自己)?(?:是|为)?|(?:角色|身份)(?:是|为|[:：]))\s*/, '').replace(/^我(?=[\u4e00-\u9fff])/,'');
     const candidates=playerRoles(game.script).flatMap(role=>[role.name,...Object.keys(ROLE_ALIASES).filter(alias=>ROLE_ALIASES[alias]===role.name)].map(name=>({role,name}))).sort((a,b)=>b.name.length-a.name.length);
-    return candidates.find(r=>beginning.startsWith(r.name)&&/^(?:$|[\s，,。；;：:]|昨|今|首|第|开|报|牌|没|别)/.test(beginning.slice(r.name.length)))?.role;
+    const found=candidates.find(r=>beginning.startsWith(r.name)&&/^(?:$|[\s，,。；;：:]|昨|今|首|第|开|报|牌|没|别)/.test(beginning.slice(r.name.length)))?.role;
+    if(found)return found;
+    // Explicit self-claim after a short preamble, not a report about another player.
+    if(!/转述|引用|他说|她说|别人说|有人说|[“”"「」]/.test(phrase)){
+      const parts=[...phrase.matchAll(/[，,。；;]\s*(我(?:的角色|的身份)?(?:是|为)|我跳|我声明(?:我是)?)\s*([^，,。；;]+)/g)];
+      for(const match of parts.reverse()){const role=declarationRole(game,seat,match[1]+match[2]);if(role)return role;}
+    }
+    return undefined;
   }
   function recordDeclaration(game,seat,text) {
     seat=Number(seat);text=clean(text,6000);
@@ -1102,7 +1111,7 @@ dialog.player-dialog{scrollbar-gutter:stable;overflow-y:auto;margin:24px auto au
     if(has('empath'))add('empath_timing','共情者在恶魔击杀后行动，数结算时左右最近的两名存活邻居，跳过已死玩家；不是固定原邻座。数字变化可来自邻居死亡、身份变化、误登记或失真，不能直接归因某一位。');
     if(has('poisoner'))add('poison_capacity','投毒者每夜一目标，影响当夜和次日；要检查目标与信息结算时序，不能同夜同时毒两人。投毒者死亡或变成小恶魔后不再维持投毒；不能把上一夜投毒无限续到更晚。');
     if(has('drunk')||has('baron'))add('setup_accounting','酒鬼是真实外来者，所见镇民不因此真的在场；须占用合法外来者名额。男爵设置+2外来者、-2镇民，其死或中毒不撤回已经完成的设置。未声称外来者不等于没有外来者，可能酒鬼未知或有人隐瞒。');
-    if(has('virgin'))add('virgin_first_nomination','贞洁者只看首次有效提名，醉毒时或非镇民提名也消耗首次机会，不可次日再测。真触发是提名者被立即处决、当天提名结束，不是贞洁者死亡。提名者须登记为镇民：酒鬼不算，间谍可算，所以触发不认证提名者善良。');
+    if(has('virgin'))add('virgin_first_nomination','贞洁者须区分成功触发与未触发。标准暗流中，明确公开的提名后立即处决提名者锁定被提名者是真贞洁者且当时能力有效，不能再列其假跳/酒鬼/中毒造成此次成功。提名者是真镇民或当次健康间谍登记镇民，真酒鬼不能触发；间谍分支须占一爪牙名额。镇民提名者自身中毒仍可触发，因此成功不保证其过去数字全真。未触发才讨论非镇民提名、贞洁者醉毒或假跳；首次有效提名已消耗机会，不可次日再测。');
     if(has('slayer'))add('slayer_result','猎手须存活、清醒健康且未使用，白天公开选择；醉毒使用也消耗次数。致死可为恶魔或登记恶魔的陌客，不能单凭致死锁恶魔；无事发生也可能假跳、醉毒、已用或目标已死。无死亡仅在排除失效且活目标前提下排恶魔。');
     if(has('imp')||has('scarlet_woman'))add('demon_succession','小恶魔仅以自身夜间能力杀死自己时传给存活爪牙，新小恶魔当夜不再行动。猩红女郎须存活且能力正常，恶魔死前至少5名存活非旅行者时接位；5人正好可触发，4人不行。满足条件的小恶魔自杀优先由猩红接位；普通爪牙不能因恶魔白天死而自动接位。早期占卜否不能排除某人后来成为恶魔。');
     if(has('undertaker'))add('undertaker_scope','送葬者看当日因处决死亡者的角色，不看普通日杀或夜死；第N夜验第N-1日处决死者是正常时序。未有人因处决死亡就无角色可验。酒鬼看真实酒鬼，间谍和陌客仍有死后误登记。');
@@ -1120,13 +1129,105 @@ dialog.player-dialog{scrollbar-gutter:stable;overflow-y:auto;margin:24px auto au
       scenarios:counts?[{condition:'没有任何设置能力或特殊裁定改变配置',counts:counts.slice()},...(standardBaron?[{condition:'原版男爵在场，且没有其他设置能力或裁定调整',counts:[counts[0]-2,counts[1]+2,counts[2],counts[3]],minionSlotsRemaining:counts[2]-1}]:[])]:[],
       qualification:!counts?'16–20 个座位可能包含旅行者或特殊配置；先确定非旅行者开局人数，再依本局裁定计算。':'开局名额，死者仍占名额；不是当前存活配比。角色池不代表全部在场；男爵也是爪牙，酒鬼所见镇民不额外占镇民名额。其他设置能力、改写技能或本局裁定须按条件组合另算。'};
   }
+  function standardTroubleBrewing(game) {
+    const ids=new Set(Data.scripts.find(s=>s.id==='tb').roles);
+    return game.script.id==='tb'&&game.script.roles.every(r=>r.builtin&&ids.has(r.id)&&r.ability===builtinRole(r.id)?.ability)&&!clean(game.specialRules)&&!clean(game.generalRules);
+  }
+  function publicVirginTriggers(game) {
+    if(!standardTroubleBrewing(game)||!distributions[game.count]||!game.script.roles.some(r=>r.id==='virgin'))return [];
+    const result=[];
+    for(const e of activeEvents(game)){
+      if(e.kind!=='execution'||e.source!=='public'||e.phase!=='day'||phaseOrder(e)>phaseOrder(game.current)||/如果|假设|据说|可能|并非|未触发|未被|没有|没触发/.test(e.content))continue;
+      for(const match of e.content.matchAll(/(?:^|[^\d])(\d{1,2})(?:号(?:玩家)?)?\s*提名\s*(\d{1,2})(?:号(?:玩家)?)?/g)){
+        const nominator=Number(match[1]),target=Number(match[2]),tail=e.content.slice(match.index+match[0].length);
+        if(nominator!==e.seat||target<1||target>game.count)continue;
+        const immediate=new RegExp('^[\\s，,：:]*(?:(?:因此|然后|随后)[\\s，,]*)?(?:'+nominator+'(?:号(?:玩家)?)?\\s*)?(?:被)?(?:立刻|立即|当即|马上)(?:被)?处决');
+        if(!immediate.test(tail))continue;
+        result.push({ref:e.ref,stage:phaseName(e),nominator,target,targetRole:'贞洁者',targetAtTrigger:'真实贞洁者且能力生效，不可用其当时醉毒/假跳解释已发生的成功触发',nominatorAtTrigger:'真实镇民，或当次登记为镇民的清醒健康间谍；不可能是真酒鬼',informationPolicy:'提名者是镇民不表示其以前的信息必然正常：其过去可能被投毒；间谍也可能假报。镇民提名者自身中毒不阻止健康贞洁者触发。'});
+      }
+    }
+    return result;
+  }
+  function combinations(items,size) {
+    const out=[];
+    function visit(at,picked){if(picked.length===size){out.push(picked.slice());return;}for(let i=at;i<=items.length-(size-picked.length);i++){picked.push(items[i]);visit(i+1,picked);picked.pop();}}
+    if(size>=0&&size<=items.length)visit(0,[]);return out;
+  }
+  // Integer max flow enforces one initial role per seat, role uniqueness and exact team quotas.
+  // Residual cycles identify every seat/role edge occurring in some quota-feasible matching.
+  function matchingCandidates(domains,roles,counts) {
+    const teams=['townsfolk','outsider','minion','demon'],n=domains.length,r=roles.length,source=n+r+4,sink=source+1,edges=Array.from({length:sink+1},()=>[]);
+    function edge(a,b,cap){const f={to:b,cap,rev:edges[b].length},back={to:a,cap:0,rev:edges[a].length};edges[a].push(f);edges[b].push(back);return f;}
+    const choices=domains.map((ids,i)=>{edge(source,i,1);return roles.flatMap((role,j)=>ids.has(role.id)?[{id:role.id,node:n+j,edge:edge(i,n+j,1)}]:[]);});
+    roles.forEach((role,j)=>edge(n+j,n+r+teams.indexOf(role.team),1));teams.forEach((team,j)=>edge(n+r+j,sink,counts[j]));
+    for(let flow=0;flow<n;flow++){
+      const parent=Array(edges.length).fill(null),queue=[source];parent[source]=[-1,-1];
+      for(let q=0;q<queue.length&&!parent[sink];q++){const node=queue[q];edges[node].forEach((e,k)=>{if(e.cap>0&&!parent[e.to]){parent[e.to]=[node,k];queue.push(e.to);}});}
+      if(!parent[sink])return null;
+      for(let node=sink;node!==source;){const [prev,k]=parent[node],e=edges[prev][k];e.cap--;edges[node][e.rev].cap++;node=prev;}
+    }
+    const incoming=edges.map(()=>[]);edges.forEach((list,node)=>list.forEach(e=>{if(e.cap>0)incoming[e.to].push(node);}));
+    return choices.map((list,i)=>{const reached=new Set([i]),queue=[i];for(let q=0;q<queue.length;q++)for(const prev of incoming[queue[q]])if(!reached.has(prev)){reached.add(prev);queue.push(prev);}return new Set(list.filter(c=>c.edge.cap===0||reached.has(c.node)).map(c=>c.id));});
+  }
+  function initialRoleAccounting(game,{acceptClaims=[],rejectClaims=[],forceRoles=[]}={}) {
+    if(!standardTroubleBrewing(game)||!distributions[game.count]||activeEvents(game).some(e=>e.kind==='role_change'))return null;
+    const roles=playerRoles(game.script),pool=new Set(roles.map(r=>r.id)),domains=game.players.map(()=>new Set(pool)),triggers=publicVirginTriggers(game);
+    const restrict=(seat,allowed)=>{if(seat>=1&&seat<=game.count)domains[seat-1]=new Set([...domains[seat-1]].filter(id=>allowed.includes(id)));};
+    if(game.ownRoleId)restrict(game.ownSeat,[game.ownRoleId]);
+    triggers.forEach(t=>{restrict(t.target,['virgin']);restrict(t.nominator,roles.filter(r=>r.team==='townsfolk'||r.id==='spy').map(r=>r.id));});
+    [...acceptClaims,...forceRoles].forEach(c=>restrict(Number(c.seat),[c.roleId]));
+    rejectClaims.forEach(c=>domains[Number(c.seat)-1]?.delete(c.roleId));
+    const union=game.players.map(()=>new Set()),setups=[];
+    const base=distributions[game.count],outsiders=roles.filter(r=>r.team==='outsider').map(r=>r.id),minions=roles.filter(r=>r.team==='minion').map(r=>r.id),towns=roles.filter(r=>r.team==='townsfolk'),demons=roles.filter(r=>r.team==='demon');
+    for(const baron of [false,true]){
+      if(baron&&!pool.has('baron'))continue;
+      const counts=[base[0]-(baron?2:0),base[1]+(baron?2:0),base[2],base[3]];
+      for(const outside of combinations(outsiders,counts[1]))for(const evil of combinations(minions,counts[2])){
+        if(evil.includes('baron')!==baron)continue;
+        const chosen=[...towns,...roles.filter(r=>outside.includes(r.id)||evil.includes(r.id)),...demons],possible=matchingCandidates(domains,chosen,counts);
+        if(!possible)continue;
+        possible.forEach((ids,i)=>ids.forEach(id=>union[i].add(id)));
+        setups.push({baron,counts,outsiders:outside.map(id=>builtinRole(id).name),minions:evil.map(id=>builtinRole(id).name),drunk:outside.includes('drunk')});
+      }
+    }
+    return {feasible:setups.length>0,setups,candidates:union.map((ids,i)=>({seat:i+1,roles:roles.filter(r=>ids.has(r.id)).map(r=>r.name)})),scope:'只检验开局人数配比、角色唯一性、本人身份、已识别的公开贞洁者触发及本次真假声明假设。未验证厨师/共情/占卜数字、逐夜行动或醉毒容量；可配额匹配不等于完整合法世界。'};
+  }
+  const accountingCache=new WeakMap();
+  function accountingSummary(game) {
+    const key=JSON.stringify([game.count,game.ownSeat,game.ownRoleId,game.current,game.script,game.specialRules,game.generalRules,game.events]);
+    if(accountingCache.get(game)?.key===key)return accountingCache.get(game).value;
+    const initial=initialRoleAccounting(game);if(!initial)return null;
+    const players=projectPlayers(game),claims=players.filter(p=>p.claimRoleId).map(p=>({seat:p.seat,roleId:p.claimRoleId}));
+    const compress=result=>{const grouped=new Map();result.candidates.forEach(c=>{const key=c.roles.join('、');if(!grouped.has(key))grouped.set(key,{seats:[],roles:c.roles});grouped.get(key).seats.push(c.seat);});return {feasible:result.feasible,candidates:[...grouped.values()].sort((a,b)=>a.seats[0]-b.seats[0]),configurations:[...new Map(result.setups.map(s=>[s.counts.join('/')+s.drunk,{counts:s.counts,baron:s.baron,drunk:s.drunk,minionSets:[...new Map(result.setups.filter(t=>t.baron===s.baron&&t.drunk===s.drunk).map(t=>[t.minions.join('/'),t.minions])).values()]}])).values()]};};
+    const all=initialRoleAccounting(game,{acceptClaims:claims});
+    const outside=claims.filter(c=>game.script.roles.find(r=>r.id===c.roleId)?.team==='outsider'),outsideCases=[];
+    // Three ordinary outsider role types in TB keep these truth combinations bounded.
+    if(outside.length<=4)for(let mask=0;mask<(1<<outside.length);mask++){
+      const accepted=outside.filter((c,i)=>mask&(1<<i)),rejected=outside.filter((c,i)=>!(mask&(1<<i))),r=initialRoleAccounting(game,{acceptClaims:accepted,rejectClaims:rejected});
+      outsideCases.push({accept:accepted.map(c=>c.seat),reject:rejected.map(c=>c.seat),feasible:r.feasible,possibleOutsiderSets:[...new Map(r.setups.map(s=>[s.outsiders.join('/'),s.outsiders])).values()],counts:[...new Map(r.setups.map(s=>[s.counts.join('/'),s.counts])).values()]});
+    }
+    const chef=claims.find(c=>c.roleId==='chef'),trigger=publicVirginTriggers(game).find(t=>claims.some(c=>c.seat===t.nominator&&c.roleId==='fortune_teller')),branches=[];
+    if(trigger){
+      const nominator=trigger.nominator;
+      for(const identity of ['fortune_teller','spy','other_townsfolk'])for(const realChef of chef?[true,false]:[null]){
+        const accept=realChef?[chef]:[],reject=realChef===false?[chef]:[],force=identity==='other_townsfolk'?[]:[{seat:nominator,roleId:identity}];
+        if(identity==='other_townsfolk')reject.push(...game.script.roles.filter(r=>r.team!=='townsfolk'||r.id==='fortune_teller').map(r=>({seat:nominator,roleId:r.id})));
+        const r=initialRoleAccounting(game,{acceptClaims:accept,rejectClaims:reject,forceRoles:force});
+        branches.push({assumptions:[nominator+'号为'+(identity==='other_townsfolk'?'其他镇民（善良假跳占卜师）':builtinRole(identity).name),...(chef?[chef.seat+'号'+(realChef?'是真厨师；数字另验':'不是真厨师；可能邪恶、酒鬼或善良穿衣服，不直接认红')]:[])],...compress(r)});
+      }
+    }else if(chef)for(const truth of [true,false]){const r=initialRoleAccounting(game,truth?{acceptClaims:[chef]}:{rejectClaims:[chef]});branches.push({assumptions:[chef.seat+'号'+(truth?'是真厨师，数字另验':'不是真厨师，不能直接认红')],...compress(r)});}
+    const summary={scope:initial.scope,knownConstraints:compress(initial),allClaimsTrue:{...compress(all),claimedTypeCounts:['townsfolk','outsider','minion','demon'].map(team=>claims.filter(c=>game.script.roles.find(r=>r.id===c.roleId)?.team===team).length),meaning:all.feasible?'当前声明可满足人数配额，但尚未验证技能反馈':'所有声明同时为真无法满足开局配额；至少一个声明不是真实角色，不等于已证明谁邪恶'},outsiderClaims:outside.map(c=>({seat:c.seat,role:builtinRole(c.roleId).name})),outsiderCases:outsideCases,branches,outsiderPolicy:'只有在本分支排除男爵/其他设置调整，且排除其他人隐藏普通外来者后，外来者缺口才可锁定酒鬼。普通未声明者也可能是陌客/管家/圣徒，不能由只跳了一个外来者直接推出另一个必是酒鬼。酒鬼所见镇民不占真实镇民名额；角色真假不等于信息真假。'};
+    accountingCache.set(game,{key,value:summary});return summary;
+  }
   function buildContext(game) {
     const events=activeEvents(game), players=projectPlayers(game);
-    const tbIds=new Set(Data.scripts.find(s=>s.id==='tb').roles),standardTB=game.script.id==='tb'&&game.script.roles.every(r=>r.builtin&&tbIds.has(r.id))&&!clean(game.specialRules)&&!clean(game.generalRules);
+    const standardTB=standardTroubleBrewing(game),triggers=publicVirginTriggers(game),accounting=accountingSummary(game);
     return {
       schemaVersion:VERSION, promptVersion:PROMPT_VERSION, rulesVersion:Data.version,
       game:{script:game.script.name,playerCount:game.count,currentPhase:{...game.current,label:phaseName(game.current)},status:game.status==='ended'?'已结束':'进行中',...(game.outcome?{outcome:{good:'善良获胜',evil:'邪恶获胜',unknown:'结果未定'}[game.outcome]||'未定'}:{}),ownSeat:game.ownSeat,receivedRole:game.script.roles.find(r=>r.id===game.ownRoleId)?.name || '未填写',...(game.ownNotes?{privateNotes:game.ownNotes}:{})},
       perspective:playerPerspective(game),
+      ...(triggers.length?{confirmedVirginTriggers:triggers}:{}),
+      ...(accounting?{localRoleAccounting:accounting}:{}),
       ...(standardTB?{claimConstraints:players.filter(p=>p.claimRoleId&&p.claimRoleId!=='recluse'&&['townsfolk','outsider'].includes(game.script.roles.find(r=>r.id===p.claimRoleId)?.team)).map(p=>({seat:p.seat,role:game.script.roles.find(r=>r.id===p.claimRoleId).name,condition:'仅在采信其真实角色、当时无阵营变化的分支适用；不是身份认证',thenAlignment:'善良',cannotBeEvilPair:[[p.seat===1?game.count:p.seat-1,p.seat],[p.seat,p.seat===game.count?1:p.seat+1]]})),fixedMechanics:{scope:'未改写技能和额外裁定的暗流涌动',firstNight:{demonKills:false,monkActs:false,meaning:'首夜平安是正常规则，不提供排人信息；不能盘成僧侣守中、士兵挡刀或恶魔空刀。'},fortuneTellerPositiveCauses:['所选目标含真实恶魔','所选目标含开局固定的善良干扰项','所选目标含此次合法登记为恶魔的陌客'],empathZero:'只表示当次两名最近存活邻居未登记为邪恶。间谍可登记善良，所以0不能直接排除爪牙或认证真实善良；真实善良结论必须另有排除误登记的条件。',unreliableInformation:'失真信息失去约束，仍可能碰巧为真；不能写成结果必然错误或取反。',fortuneTellerNegative:'仅限制对应时点的恶魔登记；不排除爪牙，也不排除后来接位成为恶魔。',monkProtection:'僧侣先于小恶魔行动；当夜先守人再被刀合法。守人只防恶魔负面效果，不解除爪牙投毒，也不认证目标身份。'}}:{}),
       seatAdjacency:Array.from({length:game.count},(_,i)=>[i+1,(i+1)%game.count+1]),
       baselineDistribution:setupDistribution(game),
@@ -1151,6 +1252,8 @@ dialog.player-dialog{scrollbar-gutter:stable;overflow-y:auto;margin:24px auto au
     if(has('fortune_teller'))checks.push('占卜正常也保留固定善良干扰项和陌客：共享目标可独自解释多次是，不能断言恶魔必在全部阳性目标中。不要问占卜师谁是干扰项，他通常不知道；问其选择目标和原始是/否，避免要求替说书人解释隐藏原因。');
     if(has('empath')&&has('spy'))checks.push('共情0只约束当次登记，不能排除间谍或确认邻居真实善良；排除必须另有依据。');
     if(has('slayer'))checks.push('采信某人真猎手时，他本身为善良，不能又把他列恶魔。若把他列恶魔须明确是假跳分支。无事发生也不能凭空认定目标受士兵或僧侣保护而免猎杀，保护不防猎手。');
+    if(has('virgin'))checks.push('成功贞洁触发是硬约束：被提名者真贞洁者、当时有效；提名者真镇民或间谍登记，非酒鬼。不要保留与confirmedVirginTriggers矛盾的分支。提名者过去仍可受投毒，不能因此全盘认下每晚信息。');
+    checks.push('localRoleAccounting是本地名额核算，必须用其可行/不可行约束排除分支；其可行不代表已验证全部逐夜信息。不能用所有声明者都为真凑出超额镇民/外来者/爪牙。酒鬼、男爵、隐藏普通外来者逐分支核算；假厨师不等于必为邪恶。');
     if(has('saint'))checks.push('真圣徒在能力正常时因处决死亡才触发败北；“不可处决”是正常能力前提下的风险建议，不是无条件规则。');
     return checks;
   }
@@ -1202,12 +1305,12 @@ dialog.player-dialog{scrollbar-gutter:stable;overflow-y:auto;margin:24px auto au
     }
     return changes;
   }
-  const REPORT_FORMAT='【输出要求】\n用户有具体提问或说明时，以其问题范围和关注点为准，专项作答，不套完整局势模板。简单问题几句话即可，通常150–400字。\n默认分析：围绕能改变决策的关键前提写“## 可能A：短结论”“## 可能B：短结论”，标题简短。每类正文仅1–2句结论与关键条件，约80–120字；候选用1–3行短串，不逐人占一条长段落。类内必要分支只写结果，不展示细致推演过程。顶层分支不重叠，子分支留在所属类；不要漏掉多条信息均不可靠的合法情况。唯一结论直接说，不凑分类。信息少只盘已有交互，100–250字，不堆全场猜测。\n有足够信息分类时，每类按座位升序概括所有玩家的可能身份／阵营；相同候选可合并，如“2号、4号：尚无区分信息”，其余仍按号码顺序。未知就写未定，不逐座位复述完整角色池。不把逐座位候选列表当作一套已验证的完整世界；只有共同满足配置、时序、能力与失真容量时才列具体身份组合。男爵与外来者名额可能改变结论时用一句点明，别堆配置表。一般2个大类，必要时增加，整份报告含候选和行动约300–650字，不为字数省略关键前提。\n默认报告最后以“## 我接下来”给1–3条可执行动作或具体追问，立足perspective与当前存活状态，说明答案如何区分分支；本人已经知道的事不要再问。死亡普通角色不能继续常规行动或普通提名，不臆定幽灵票还在；信息不足就优先问能收窄分支的问题。有专项问题时只补与问题有关的动作。\n始终区分条件结论、可排除和行为倾向；保留决定结论的醉毒／误登记来源与时序，不用笼统例外兜底。缺区分证据则并列，不硬排概率。不复述兼容事实充作新推导，不凑“关键缺口”。相邻边保留首尾相邻；先核对claimConstraints与开局名额，采信真实善良角色的分支不能又将其塞进邪恶组合。\n已填写本人角色直接采用，不写“若你真是／自称”。角色别名杀手=猎手、市长=镇长、隐士=陌客；常见简称按上下文识别，自定义技能按原文。玩家写“1号、2号”，角色用本局中文名，术语用“中毒”“醉酒”“疯狂”“误登记”“干扰项”。不写思维独白、宽表格或冗长复述；标题和正文不露内部编号，必要引用仅在句末写[[E001]]，由界面折叠。\n追问只答所问，不重复整份报告、角色清单或行动模板。假设标为假设；新资料推翻旧前提时简短撤回，再按最新资料回答。';
+  const REPORT_FORMAT='【输出要求】\n用户有具体提问或说明时专项回答，别复述整局。默认分析先列已确定的共同前提（如本人角色、公开贞洁触发）；共同前提在所有分支保持，不允许B类再推翻。按真正改变判断的关键前提列“## 可能A：…”等大类，不强限两个。成功贞洁触发后的提名者分支应区分真实所报镇民、其他镇民穿衣服、间谍登记；醉毒是否影响他过去的信息放类内。\n每类结论优先，少写推演过程；关键厨师/共情信息分“真实角色且数字正常”“真实角色但有具体失效”“并非该角色”，不把信息不真直接写成邪恶。排除矛盾配置；用localRoleAccounting的名额、外来者组合和爪牙组合具体说明一两句，例如采信两位真外来者且无男爵，则没有额外酒鬼名额；若男爵+间谍占满两爪牙，就不可再加投毒者。只知一人跳外来者不足以锁另一位酒鬼，须先排除隐藏普通外来者。\n信息充足时必须有“## 座位候选”：按号码升序覆盖所有玩家，包括死者。可合并候选相同者，写“2号、4号：…”。共同已定身份只列一次，候选需标条件，区分真实角色与声明。各主类的差异可用A/B/C引用，避免每类复制全场。未知就列未排除范围，不强行指定；逐人候选不等于可同时成立的完整身份表。必须经过所有信息、时序与醉毒容量检验才称具体合法世界；本地名额匹配不代表完整求解。\n信息少只盘已有交互，100–250字，不硬造完整分类。信息多可用450–1100字覆盖分支、坑位和全场候选，省过程不省关键条件。标题仅写条件，不在标题或正文无依据缩小恶魔范围；重复阳性可能由固定善良干扰项/陌客解释。\n最后“## 我接下来”给1–3条本人当前可执行、能区分分支的行动或具体追问。不要再问已记录的目标/原始数字，不让玩家解释自己通常不知道的隐藏机制。死者仍可发言，普通死者不能继续常规能力或普通提名，不假定幽灵票还在。\n已填写本人身份直接采用。角色用本局中文名，玩家写“1号”，术语用“中毒”“醉酒”“疯狂”“误登记”“干扰项”。不写思维独白、宽表格、内部编号；必要依据句末[[E001]]由界面折叠。专项问题只补与问题有关的行动。追问只答所问，新信息推翻旧前提时简短撤回并重算，不重复整份报告。';
   function buildRequest(game,options={}) {
     const context=buildContext(game),mode=options.mode==='followup'?'followup':'analysis';
     if(options.question)context.question=clean(options.question,4000);
     const system='【规则与证据标准】\n'+GENERAL_RULES.map((r,i)=>`${i+1}. ${r}`).join('\n')+'\n\n'+REPORT_FORMAT;
-    if(mode==='analysis'){const sparse=!context.question&&context.evidence.length<=3&&context.evidence.reduce((n,e)=>n+e.content.length,0)<=450,task=context.question?'【专项分析：以question为准】':sparse?'【信息少：简述已有交互与条件结论，给本人可执行的下一步，不强凑全场身份分类】':'【独立分析：按关键前提分可能A/B，结论优先；每类列候选约束与条件结论，按座位顺序合并身份范围；用开局名额、claimConstraints、perspective及fixedMechanics核验。最后给本人当前可执行的行动或追问。】';return {mode,promptVersion:PROMPT_VERSION,historyCount:0,historyIds:[],messages:[{role:'system',content:system},{role:'user',content:task+'\n'+JSON.stringify(context)}]};}
+    if(mode==='analysis'){const sparse=!context.question&&context.evidence.length<=3&&context.evidence.reduce((n,e)=>n+e.content.length,0)<=450,task=context.question?'【专项分析：以question为准】':sparse?'【信息少：简述已有交互与条件结论，给本人可执行的下一步，不强凑全场身份分类】':'【独立分析：从confirmedVirginTriggers与本人身份出发，按关键前提分可能A/B/C，结论优先；每类列候选约束与条件结论，用localRoleAccounting核验人数坑位。单独按座位顺序覆盖所有人的身份范围（含死者），别只分析两三人。最后给本人当前可执行的行动或追问。】';return {mode,promptVersion:PROMPT_VERSION,historyCount:0,historyIds:[],messages:[{role:'system',content:system},{role:'user',content:task+'\n'+JSON.stringify(context)}]};}
     const question=clean(options.question,4000);
     if(!question)throw new Error('请填写追问内容。');
     const parent=game.snapshots.find(s=>s.id===options.parentId);
@@ -1225,10 +1328,19 @@ dialog.player-dialog{scrollbar-gutter:stable;overflow-y:auto;margin:24px auto au
     if(request.mode!=='analysis')return [];
     const context=snapshotContext({request});if(!context||context.question)return [];
     const text=cleanReportText(report),reasons=[];
-    if(text.replace(/[\s#*\-]/g,'').length>720)reasons.push('报告冗长，压缩重复过程、逐人长段和重复配置；候选用短串，保留关键结论和条件。');
+    if(text.replace(/[\s#*\-]/g,'').length>(context.evidence.length>=8?1250:720))reasons.push('报告冗长，压缩重复过程、逐人长段和重复配置；候选用短串，保留关键结论和条件。');
     const has=id=>context.scriptRoles.some(r=>r.id===id&&r.version==='内置整理版');
     if(has('slayer')&&/真猎手[^。\n]{0,60}(?:只能为?爪牙|仍可为爪牙)/.test(text))reasons.push('报告把真猎手与爪牙混在同一条件中；真猎手是善良镇民，邪恶候选只能是假跳分支。');
     if(has('fortune_teller')&&/(?:恶魔候选集中在|恶魔在[0-9/、]{2,}附近|阳性目标[^。\n]{0,12}必含恶魔)/.test(text))reasons.push('复核占卜阳性范围：同一固定善良干扰项或陌客可独自解释多个阳性，恶魔可在这些目标外；标题与正文不能一边锁范围、一边否定该范围。');
+    if(context.evidence.length>=8){
+      const mentioned=new Set([...text.matchAll(/\b(\d{1,2})\s*号/g)].map(m=>Number(m[1])));
+      for(const match of text.matchAll(/((?:\d{1,2}\s*[、,，/]\s*)+\d{1,2})\s*号/g))match[1].split(/[、,，/]/).forEach(n=>mentioned.add(Number(n.trim())));
+      const missing=Array.from({length:context.game.playerCount},(_,i)=>i+1).filter(n=>!mentioned.has(n));
+      if(missing.length)reasons.push('信息已充足，遗漏'+missing.map(n=>n+'号').join('、')+'；按座位顺序补齐候选，包括死者，可合并相同范围，不能只分析几个号码。');
+    }
+    for(const t of context.confirmedVirginTriggers||[]){
+      if(new RegExp('(?:若|如果|或)\\s*'+t.target+'号(?:不是|非|为假|醉酒|中毒)').test(text))reasons.push(t.target+'号的公开成功贞洁触发已确认，不得再写其假跳/醉毒导致此次成功的分支；'+t.nominator+'号只可为真镇民或间谍登记，不能是真酒鬼。');
+    }
     return reasons;
   }
   function buildReportReview(request,report,reasons=reportReviewReasons(request,report)) {
@@ -1241,7 +1353,7 @@ dialog.player-dialog{scrollbar-gutter:stable;overflow-y:auto;margin:24px auto au
         has('fortune_teller')?'占卜正常含误登记，不把陌客解释归为信息失真。共享目标为固定善良干扰项时，两次占卜都是也可完全不指向恶魔；未排除这一解释不能在标题锁恶魔范围。':null,
         '用开局配比核验：死者占名额，男爵占爪牙，酒鬼占外来者。信息不足不伪装成已验证的具体世界。',
         '候选用紧凑短串按号码顺序覆盖全场，未知合并。只输出条件结论及本人下一步；追问已知的目标/结果或要求玩家确认是否清醒健康通常没有信息增益，改问未记录且玩家实际知道的事。',
-        '最多约650字，不复制草稿逐人长列表。'
+        context.evidence.length>=8?'信息充足时保留全部座位候选及必要名额分支，可450–1100字；别把完整性压掉，不复制冗长过程。':'最多约650字，不复制草稿逐人长列表。'
       ].filter(Boolean)},draftReport:clean(report,20000)})}
     ]};
   }
@@ -1298,7 +1410,7 @@ dialog.player-dialog{scrollbar-gutter:stable;overflow-y:auto;margin:24px auto au
     g.analysisFocus='首夜占卜“是”与7号夜死有哪些兼容解释？2号两晚信息变化需要什么前提？';
     return g;
   }
-  const api={VERSION,PROMPT_VERSION,ROLE_ALIASES,canonicalRoleName,canonicalTerms,scriptTitle,scriptCatalog,sessionDetails,declarationRole,playerPerspective,orbitLayout,analysisConversations,playerColumns,playerRoles,seedResidentScripts,libraryHasRoom,kinds,sources,distributions,GENERAL_RULES,clone,uid,clean,escape,normalizeId,builtinRole,builtinScript,normalizeRole,importScript,exportScript,createGame,phaseOrder,phaseName,activeEvents,sortEvents,saveEvent,recordDeclaration,recordDeath,savePlayerDeath,nightDeaths,confirmDawn,annotatedRole,setRoleAnnotation,setupDistribution,recordDayEnd,dayExecutions,reportReferences,isPublicOutcome,evidenceLabel,cleanReportText,formatReportInline,projectPlayers,findIssues,buildContext,buildRequest,reportReviewReasons,buildReportReview,snapshotContext,conversationHistory,contextChanges,contextDelta,requestText,createSnapshot,fingerprint,validateGame,validateWorkspace,demoGame};
+  const api={VERSION,PROMPT_VERSION,ROLE_ALIASES,canonicalRoleName,canonicalTerms,scriptTitle,scriptCatalog,sessionDetails,declarationRole,playerPerspective,orbitLayout,analysisConversations,playerColumns,playerRoles,seedResidentScripts,libraryHasRoom,kinds,sources,distributions,GENERAL_RULES,clone,uid,clean,escape,normalizeId,builtinRole,builtinScript,normalizeRole,importScript,exportScript,createGame,phaseOrder,phaseName,activeEvents,sortEvents,saveEvent,recordDeclaration,recordDeath,savePlayerDeath,nightDeaths,confirmDawn,annotatedRole,setRoleAnnotation,setupDistribution,standardTroubleBrewing,publicVirginTriggers,initialRoleAccounting,accountingSummary,recordDayEnd,dayExecutions,reportReferences,isPublicOutcome,evidenceLabel,cleanReportText,formatReportInline,projectPlayers,findIssues,buildContext,buildRequest,reportReviewReasons,buildReportReview,snapshotContext,conversationHistory,contextChanges,contextDelta,requestText,createSnapshot,fingerprint,validateGame,validateWorkspace,demoGame};
   if(typeof module!=='undefined'&&module.exports) module.exports=api; else root.ClocktowerCore=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
 
@@ -1620,7 +1732,7 @@ dialog.player-dialog{scrollbar-gutter:stable;overflow-y:auto;margin:24px auto au
 
 
   function renderRecords(g) {
-    return `<div id="records-view" role="tabpanel" aria-labelledby="tab-records" class="game-information">${g.status==='ended'?`<div class="session-ended"><span>已结束 · ${E({good:'善良获胜',evil:'邪恶获胜',unknown:'结果未定'}[g.outcome]||'结果未定')}</span>${button('new-game','再开一局','','text-only small')}</div>`:''}<div class="information-layout"><section class="players-panel" id="players-panel" aria-label="座位">${renderPlayersPanel(g)}</section><section class="panel capture-panel" id="capture-panel" aria-label="记线索">${panelHeading('02','记线索')}${renderComposer(g)}${renderClueHistory(g)}</section></div></div>`;
+    return `<div id="records-view" role="tabpanel" aria-labelledby="tab-records" class="game-information">${g.status==='ended'?`<div class="session-ended"><span>已结束 · ${E({good:'善良获胜',evil:'邪恶获胜',unknown:'结果未定'}[g.outcome]||'结果未定')}</span>${button('new-game','再开一局','','text-only small')}</div>`:''}<div class="information-layout"><section class="players-panel" id="players-panel" aria-label="座位">${renderPlayersPanel(g)}</section><section class="panel capture-panel" id="capture-panel" aria-label="记线索">${panelHeading('02','记线索',button('record-stage','补记录','clock','quiet small backfill-button'))}${renderComposer(g)}${renderClueHistory(g)}</section></div></div>`;
   }
 function renderTimeline(g) {
     const text=ui.search.trim().toLowerCase();
@@ -1698,8 +1810,9 @@ function renderTimeline(g) {
   }
 
   function openRecordStage() {
-    const r=recordDraft(game());
-    modal('记录阶段','',`<form id="record-stage-form">${errorSlot}<div class="field-grid"><label class="field">第几天／夜<input name="day" type="number" min="1" max="99" value="${r.day}" required></label><label class="field">阶段<select name="phase">${options({night:'夜晚',day:'白天'},r.phase)}</select></label></div><div class="modal-footer"><button type="submit" class="button primary">确定</button></div></form>`);
+    const g=game(),form=$('#record-form');if(form)ui.record={...recordDraft(g),...recordFromForm(form)};
+    const r=recordDraft(g);
+    modal('补记录','',`<form id="record-stage-form">${errorSlot}<div class="field-grid"><label class="field">第几天／夜<input name="day" type="number" min="1" max="99" value="${r.day}" required></label><label class="field">阶段<select name="phase">${options({night:'夜晚',day:'白天'},r.phase)}</select></label></div>${button('record-stage-current','恢复当前阶段','','text-only small')}<div class="modal-footer">${button('close-modal','返回','back','quiet')}<button type="submit" class="button primary">使用此阶段</button></div></form>`);
   }
   function openFilters() {
     const g=game(),stages=[...new Set(C.activeEvents(g).slice().reverse().map(C.phaseName))];
@@ -2162,6 +2275,7 @@ function openLibrary() {
       else if(action==='setup-roles'){captureSetup();openRoleEditor(true);}
       else if(action==='setup-custom-role'){captureSetupRoles();openCustomRole('',true);}
       else if(action==='record-stage')openRecordStage();
+      else if(action==='record-stage-current'){const form=$('#record-stage-form');form.elements.day.value=g.current.day;form.elements.phase.value=g.current.phase;}
       else if(action==='clear-record-context'){const r=recordDraft(g);ui.record={...defaultRecord(g),content:r.content,day:r.day,phase:r.phase};storeDraft();$('#record-form').outerHTML=renderComposer(g);resizeRecordInput();$('#record-content').focus({preventScroll:true});}
       else if(action==='clear-draft'){const draft=C.clone(recordDraft(g));ui.record=defaultRecord(g);storeDraft();render();toast('草稿已清空',()=>{ui.record=draft;storeDraft();render();});}
       else if(action==='filters')openFilters();
@@ -2279,7 +2393,7 @@ function openLibrary() {
         seats.forEach(seat=>C.recordDeath(game(),{seat,day,phase,note:C.clean(d.get('note'),6000)}));touch();closeModal();render();toast('已记录 '+seats.length+' 人死亡');
       }
       else if(form.id==='filters-form'){const d=new FormData(form);ui.filterSeat=d.get('seat');ui.filterKind=d.get('kind');ui.filterSource=d.get('source');ui.filterPhase=d.get('stage');ui.timelineMode=d.get('important')==='on'?'pinned':'all';closeModal();render();}
-      else if(form.id==='record-stage-form'){const d=new FormData(form),day=Number(d.get('day'));if(!Number.isInteger(day)||day<1||day>99)throw new Error('天数应在1–99之间。');ui.record={...recordDraft(game()),day,phase:d.get('phase')};storeDraft();closeModal();render();}
+      else if(form.id==='record-stage-form'){const d=new FormData(form),day=Number(d.get('day'));if(!Number.isInteger(day)||day<1||day>99)throw new Error('天数应在1–99之间。');if(C.phaseOrder({day,phase:d.get('phase')})>C.phaseOrder(game().current))throw new Error('补记录不能晚于当前阶段。');ui.record={...recordDraft(game()),day,phase:d.get('phase')};storeDraft();closeModal();render();$('#record-content')?.focus({preventScroll:true});}
       else if(form.id==='setup-form'){
         const d=captureSetup();const created=C.createGame({...d,script:d.scriptDraft||selectedScript(d.scriptId)});created.specialRules=C.clean(d.specialRules,24000);addGame(created);
       }
