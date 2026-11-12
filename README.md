@@ -27,6 +27,7 @@ clocktower/
 ├── scripts/temple-fair.json # 华灯初上角色合集，自包含技能
 ├── docs/player-reference.md # 角色资料来源、版本与输入边界
 ├── docs/script-json.md    # JSON标准与拍照识别流程
+├── docs/reading-v24.md    # 精简阅读与手机/平板/电脑布局
 ├── docs/cost-v23.md       # 费用估算与推理路由
 ├── docs/analysis-v22.md   # 统一信息与推理流程
 ├── docs/analysis-v21.md   # 紧凑报告、候选分配与有效行动
@@ -66,3 +67,5 @@ python -m http.server 8000
 
 *Design by 天*  
 *© 2026 emoboi.com*
+
+钟楼 v0.24：费用仅在报告详情末尾显示金额，精简列表、报告与设置，完善手机竖屏和平板/电脑分栏。
