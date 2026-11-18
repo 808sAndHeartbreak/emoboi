@@ -6,8 +6,8 @@
     <meta name="description" content="抽象学英语 — 单词解析">
     <meta name="theme-color" content="#0a0f1a">
     <title>英语 Lexicon | EMOBOI</title>
-    <script src="../shared/icons.js?v=33" defer></script>
-    <link rel="stylesheet" href="../shared/fonts.css?v=33">
+    <script src="../shared/icons.js?v=34" defer></script>
+    <link rel="stylesheet" href="../shared/fonts.css?v=34">
     <script src="../shared/vendor/marked.min.js?v=15.0.12" defer fetchpriority="low"></script>
     <script src="../shared/vendor/purify.min.js?v=3.2.7" defer fetchpriority="low"></script>
     <style>
@@ -151,116 +151,19 @@
         .english-nav-square [data-lucide] {
             width: 20px; height: 20px;
         }
-        .english-fs-menu {
-            position: fixed;
-            inset: 0;
-            z-index: 250;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 0.3rem;
-            background:
-                linear-gradient(35deg, transparent 0%, rgba(15, 52, 96, 0.12) 40%, transparent 100%),
-                linear-gradient(-35deg, transparent 0%, rgba(188, 254, 45, 0.05) 55%, transparent 100%),
-                rgba(0, 0, 0, 0.97);
-            padding: 3rem 1rem;
-            overflow: hidden;
-        }
-        .english-fs-menu::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(0deg, transparent 24%, rgba(188, 254, 45, 0.05) 25%, rgba(188, 254, 45, 0.05) 26%, transparent 27%, transparent 74%, rgba(188, 254, 45, 0.05) 75%, rgba(188, 254, 45, 0.05) 76%, transparent 77%, transparent),
-                linear-gradient(90deg, transparent 24%, rgba(188, 254, 45, 0.05) 25%, rgba(188, 254, 45, 0.05) 26%, transparent 27%, transparent 74%, rgba(188, 254, 45, 0.05) 75%, rgba(188, 254, 45, 0.05) 76%, transparent 77%, transparent);
-            background-size: 58px 58px;
-            opacity: 0.22;
-            pointer-events: none;
-        }
-        .english-fs-menu.active {
-            display: flex;
-        }
-        .english-fs-close {
-            position: absolute;
-            top: max(1.25rem, env(safe-area-inset-top, 0px));
-            right: max(1.25rem, env(safe-area-inset-right, 0px));
-            width: 48px; height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(188, 254, 45, 0.5);
-            background: linear-gradient(135deg, rgba(139, 0, 0, 0.28), rgba(188, 254, 45, 0.16));
-            color: rgba(188, 254, 45, 0.9);
-            cursor: pointer;
-            clip-path: polygon(0% 15%, 15% 0%, 85% 0%, 100% 20%, 100% 80%, 90% 100%, 10% 100%, 0% 85%);
-            transition: transform 0.2s, box-shadow 0.2s, color 0.2s;
-            z-index: 1;
-        }
-        .english-fs-close:hover {
-            color: #0b0f14;
-            transform: rotate(90deg) scale(1.08);
-            box-shadow: 0 0 20px rgba(188, 254, 45, 0.45);
-            background: linear-gradient(135deg, rgba(188, 254, 45, 0.9), rgba(188, 254, 45, 0.7));
-        }
-        .english-fs-close svg { width: 24px; height: 24px; }
-        .english-fs-link {
-            font-family: 'Syne', sans-serif;
-            font-size: clamp(1.65rem, 5.5vw, 3.2rem);
-            font-weight: 900;
-            font-style: italic;
-            letter-spacing: -0.03em;
-            text-transform: uppercase;
-            text-decoration: none;
-            color: #fff;
-            padding: 0.42rem 1.7rem;
-            transition: color 0.2s, text-shadow 0.2s, transform 0.2s;
-            position: relative;
-            z-index: 1;
-        }
-        a.english-fs-link:hover {
-            color: var(--lime);
-            text-shadow:
-                0 0 24px rgba(188, 254, 45, 0.55),
-                2px 0 0 rgba(255, 0, 85, 0.35),
-                -2px 0 0 rgba(0, 170, 255, 0.35);
-            transform: translateX(8px);
-        }
-        span.english-fs-link.current {
-            color: var(--lime);
-            text-shadow:
-                0 0 20px rgba(188, 254, 45, 0.7),
-                0 0 36px rgba(188, 254, 45, 0.3);
-            pointer-events: none;
-            cursor: default;
-        }
-        .english-fs-link::before {
-            content: attr(data-mark);
-            position: absolute;
-            left: -1.6rem;
-            top: 50%;
-            transform: translateY(-50%) scale(0.8);
-            font-family: 'Space Mono', monospace;
-            font-size: 0.34em;
-            color: rgba(188, 254, 45, 0.82);
-            opacity: 0;
-            transition: transform 0.2s, opacity 0.2s;
-            text-shadow: 0 0 10px rgba(188, 254, 45, 0.55);
-        }
-        a.english-fs-link:hover::before,
-        span.english-fs-link.current::before {
-            opacity: 1;
-            transform: translateY(-50%) scale(1);
-        }
-        span.english-fs-link.current::before {
-            color: var(--lime);
-            text-shadow:
-                0 0 12px rgba(188, 254, 45, 0.65),
-                0 0 20px rgba(188, 254, 45, 0.28);
-        }
-        body.english-menu-open {
-            overflow: hidden;
-        }
+
+
+
+
+
+
+
+
+
+
+
+
+
         .file-warning {
             background: rgba(120, 80, 0, 0.45);
             border: 1px solid rgba(255, 200, 100, 0.5);
@@ -1080,7 +983,9 @@
             }
         }
     </style>
-<link rel="stylesheet" href="ai-settings.css?v=33">
+<link rel="stylesheet" href="ai-settings.css?v=34">
+<link rel="stylesheet" href="../shared/site.css">
+<script defer src="../shared/site.js"></script>
 </head>
 <body>
     <div class="noise" aria-hidden="true"></div>
@@ -1092,20 +997,11 @@
         <div class="english-nav-right">
             <span class="english-nav-context">LEXICON</span><button type="button" class="english-ai-trigger" id="english-ai-open">AI 设置</button>
             <a href="../" class="english-nav-square" title="返回主页"><i data-lucide="home"></i></a>
-            <button type="button" class="english-nav-square" id="english-menu-btn" title="站点菜单" aria-expanded="false" aria-controls="english-fs-menu"><i data-lucide="menu"></i></button>
+            <button type="button" class="english-nav-square" id="english-menu-btn" data-site-menu title="站点菜单" aria-expanded="false" aria-controls="site-navigation"><i data-lucide="menu"></i></button>
         </div>
     </nav>
 
-    <div id="english-fs-menu" class="english-fs-menu" role="dialog" aria-modal="true" aria-label="站点导航" aria-hidden="true">
-        <button type="button" class="english-fs-close" id="english-fs-close" aria-label="关闭菜单"><i data-lucide="x"></i></button>
-        <a href="../" class="english-fs-link" data-mark="⌂">HOME</a>
-        <a href="../sf6/" class="english-fs-link" data-mark="✶">SF6</a>
-        <a href="../boardgames/" class="english-fs-link" data-mark="♧">桌游</a>
-        <a href="../gojuon/" class="english-fs-link" data-mark="あ">GOJUON</a>
-        <span class="english-fs-link current" aria-current="page" data-mark="⌕">LEXICON</span>
-        <a href="../gallery/" class="english-fs-link" data-mark="◈">GALLERY</a>
-        <a href="../music/" class="english-fs-link" data-mark="♫">IAMMUSIC</a>
-    </div>
+    <dialog id="site-navigation" data-site-nav aria-label="站点导航"></dialog>
 
     <div class="wrap">
         <div id="file-open-warning" class="file-warning" hidden>
@@ -1123,7 +1019,7 @@
                             id="word-input" aria-label="英文单词"
                             type="text"
                             name="word"
-                            maxlength="15"
+                            maxlength="64"
                             placeholder="请输入英文单词…"
                             autocomplete="off"
                             autocorrect="off"
@@ -1133,7 +1029,7 @@
                             inputmode="text"
                         />
                         <div class="input-actions">
-                            <span id="char-count" aria-live="polite">0/15</span>
+                            <span id="char-count" aria-live="polite">0/64</span>
                             <button type="button" id="btn-clear-input" aria-label="清空" tabindex="-1">×</button>
                         </div>
                     </div>
@@ -1207,15 +1103,15 @@
     </div>
 
     <script src="prompts.js" defer></script>
-    <script src="../shared/cost.js?v=33" defer></script>
-    <script src="../shared/deepseek-client.js?v=33" defer></script>
-    <script src="ai-settings.js?v=33" defer></script>
+    <script src="../shared/cost.js?v=34" defer></script>
+    <script src="../shared/deepseek-client.js?v=34" defer></script>
+    <script src="ai-settings.js?v=34" defer></script>
     <script>
       if (location.protocol === "file:") {
         var fe = document.getElementById("file-open-warning");
         if (fe) fe.hidden = false;
       }
     </script>
-    <script src="app.js?v=33" defer fetchpriority="high"></script>
+    <script src="app.js?v=34" defer fetchpriority="high"></script>
 </body>
 </html>

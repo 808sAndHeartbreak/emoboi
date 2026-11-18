@@ -11,7 +11,7 @@ Personal multimedia archive. Drain-core aesthetics.
 │   └── clocktower/           # 血染钟楼记录与 AI 推理
 ├── clocktower/               # 旧地址跳转，保留原剧本与文档链接
 ├── english/                  # 英语 Lexicon
-├── shared/                   # 共用 AI 客户端、本地字体和小型依赖
+├── shared/                   # 共用 AI 客户端、导航、本地字体和编译样式
 ├── sf6/                      # SF6 Frame Data Tool
 ├── gojuon/                   # Japanese Gojūon Learning
 ├── gallery/                  # Visual Gallery
@@ -42,17 +42,19 @@ workers/deepseek-proxy/ 仅为可选 BYOK 代理源码，已移除站点 Secret 
 
 桌游选择页为静态HTML/CSS，无额外框架；微动效支持减少动态偏好。狼人杀两张美术资源从656,664字节减至161,908字节。页面保留移动优先布局，兼容平板和桌面。首页菜单改为原生dialog，支持焦点约束和Escape返回。
 
+街霸、五十音、图库、音乐统一站点导航和本地字体/图标；前三者使用本地编译 Tailwind CSS。四个分类脚本独立缓存，提前发现并延迟执行，不等待全部媒体加载。图库31张预览总量从3,790,890字节降至1,298,912字节，减少65.7%，原图按需打开。音乐仅点击播放后加载音视频。指针动态只在桌面操作期间运行，静止、后台与减少动态模式停止。
+
 当前站点托管于GitHub Pages，响应缓存策略由平台控制；没有通过无效的 _headers 文件或HTML标签伪造CDN配置。
 
 ## 验证
 
-钟楼312项检查通过；狼人杀11组规则检查及1,600次随机发牌通过；网站整合7项检查通过。浏览器验证桌游路由、开局取消、发牌、英语模拟流式查询、Key跨工具共享及清除、320/390/768/1440布局。没有调用付费模型，也没有读取或修改线上用户的 Key、历史对局与词汇记录。
+钟楼312项检查通过；狼人杀11组规则检查及1,600次随机发牌通过；网站整合12项检查通过。浏览器验证桌游路由、开局取消、发牌、英语模拟流式查询、Key跨工具共享及清除、320/390/768/1440布局。没有调用付费模型，也没有读取或修改线上用户的 Key、历史对局与词汇记录。
 
 ```sh
 python -m http.server 8766 --bind 127.0.0.1
-node --test tests/site-v33.test.cjs
+node --test tests/site-v33.test.cjs tests/site-v34.test.cjs
 ```
 
-本轮详情见 [v0.33 发布说明](boardgames/docs/release-v33.md)。
+本轮详情见 [v0.34 发布说明](boardgames/docs/release-v34.md)，上一轮整合见 [v0.33](boardgames/docs/release-v33.md)。
 
 *Design by 天 · © 2026 emoboi.com*

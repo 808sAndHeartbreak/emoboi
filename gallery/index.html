@@ -7,11 +7,11 @@
     <meta name="description" content="EMOBOI Visual Gallery - Personal curated image collection">
     
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../shared/utilities.css">
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script defer src="../shared/icons.js"></script>
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Archivo+Black&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../shared/fonts.css">
     
     <style>
         :root {
@@ -454,117 +454,26 @@
         }
 
         /* ========== 全屏菜单 ========== */
-        .gallery-fullscreen-menu {
-            position: fixed;
-            inset: 0;
-            background: 
-                linear-gradient(45deg, transparent 0%, rgba(139, 0, 0, 0.03) 50%, transparent 100%),
-                linear-gradient(-45deg, transparent 0%, rgba(188, 254, 45, 0.02) 50%, transparent 100%),
-                rgba(0, 0, 0, 0.97);
-            z-index: 200;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            /* 扫描线效果 */
-            background-size: 100% 4px, 100% 100%, 100% 100%;
-            animation: menuScanline 8s linear infinite;
-        }
+
 
         @keyframes menuScanline {
             0% { background-position: 0% 0%, 0% 0%, 0% 0%; }
             100% { background-position: 0% 100%, 0% 0%, 0% 0%; }
         }
 
-        .gallery-fullscreen-menu.active {
-            display: flex;
-        }
+
 
         /* 菜单背景网格装饰 */
-        .gallery-fullscreen-menu::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: 
-                linear-gradient(0deg, transparent 24%, rgba(188, 254, 45, 0.03) 25%, rgba(188, 254, 45, 0.03) 26%, transparent 27%, transparent 74%, rgba(188, 254, 45, 0.03) 75%, rgba(188, 254, 45, 0.03) 76%, transparent 77%, transparent),
-                linear-gradient(90deg, transparent 24%, rgba(188, 254, 45, 0.03) 25%, rgba(188, 254, 45, 0.03) 26%, transparent 27%, transparent 74%, rgba(188, 254, 45, 0.03) 75%, rgba(188, 254, 45, 0.03) 76%, transparent 77%, transparent);
-            background-size: 50px 50px;
-            opacity: 0.5;
-            pointer-events: none;
-        }
+
 
         /* 关闭按钮 - punk/emo风格 */
-        .gallery-menu-close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 52px;
-            height: 52px;
-            background: transparent;
-            border: none;
-            color: rgba(188, 254, 45, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            cursor: none;
-            /* 不规则撕裂形状 */
-            clip-path: polygon(
-                0% 15%, 
-                15% 0%, 
-                85% 0%, 
-                100% 20%, 
-                100% 80%, 
-                90% 100%, 
-                10% 100%, 
-                0% 85%
-            );
-            background: linear-gradient(135deg, 
-                rgba(139, 0, 0, 0.2) 0%, 
-                rgba(188, 254, 45, 0.1) 100%);
-            box-shadow: 
-                0 0 20px rgba(188, 254, 45, 0.2),
-                inset 0 0 20px rgba(0, 0, 0, 0.5);
-        }
 
-        .gallery-menu-close-btn::before {
-            content: '';
-            position: absolute;
-            inset: 2px;
-            background: rgba(0, 0, 0, 0.9);
-            clip-path: polygon(
-                0% 15%, 
-                15% 0%, 
-                85% 0%, 
-                100% 20%, 
-                100% 80%, 
-                90% 100%, 
-                10% 100%, 
-                0% 85%
-            );
-        }
 
-        .gallery-menu-close-btn i {
-            position: relative;
-            z-index: 1;
-            width: 28px;
-            height: 28px;
-            filter: drop-shadow(0 0 8px rgba(188, 254, 45, 0.8));
-        }
 
-        .gallery-menu-close-btn:hover {
-            background: linear-gradient(135deg, 
-                var(--blood-red) 0%, 
-                var(--acid-lime) 100%);
-            color: #000;
-            box-shadow: 
-                0 0 30px rgba(188, 254, 45, 0.6),
-                0 0 50px rgba(139, 0, 0, 0.4),
-                inset 0 0 30px rgba(255, 255, 255, 0.1);
-            transform: scale(1.1) rotate(-5deg);
-            animation: glitchShake 0.3s ease infinite;
-        }
+
+
+
+
 
         @keyframes glitchShake {
             0%, 100% { transform: scale(1.1) rotate(-5deg) translate(0, 0); }
@@ -573,95 +482,20 @@
         }
 
         /* 菜单链接样式 - drain-core/punk风格 */
-        .gallery-menu-link {
-            font-family: 'Syne', sans-serif;
-            font-size: clamp(2rem, 6vw, 4rem);
-            font-weight: 900;
-            font-style: italic;
-            letter-spacing: -0.03em;
-            color: #fff;
-            text-decoration: none;
-            text-transform: uppercase;
-            transition: all 0.2s ease;
-            position: relative;
-            padding: 0.6rem 3rem;
-            cursor: none;
-            /* 不规则形状背景 */
-            clip-path: polygon(
-                0% 0%, 
-                95% 0%, 
-                100% 25%, 
-                100% 100%, 
-                5% 100%, 
-                0% 75%
-            );
-            background: linear-gradient(90deg, 
-                rgba(0, 0, 0, 0.5) 0%, 
-                rgba(139, 0, 0, 0.1) 50%, 
-                rgba(0, 0, 0, 0.5) 100%);
-        }
+
 
         /* 胶带贴纸效果 - 左侧 */
-        .gallery-menu-link::before {
-            content: '';
-            position: absolute;
-            left: -15px;
-            top: 50%;
-            transform: translateY(-50%) rotate(-45deg);
-            width: 30px;
-            height: 10px;
-            background: linear-gradient(135deg, 
-                rgba(188, 254, 45, 0.3) 0%, 
-                rgba(188, 254, 45, 0.1) 100%);
-            box-shadow: 0 0 10px rgba(188, 254, 45, 0.3);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
+
 
         /* 撕裂装饰 - 右侧 */
-        .gallery-menu-link::after {
-            content: '//';
-            position: absolute;
-            right: -25px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-family: 'Space Mono', monospace;
-            font-size: 0.4em;
-            color: var(--acid-lime);
-            opacity: 0;
-            transition: all 0.3s ease;
-            text-shadow: 0 0 10px rgba(188, 254, 45, 0.8);
-        }
+
 
         /* 悬停效果 - 故障美学 */
-        .gallery-menu-link:hover {
-            color: var(--acid-lime);
-            background: linear-gradient(90deg, 
-                rgba(139, 0, 0, 0.3) 0%, 
-                rgba(188, 254, 45, 0.15) 50%, 
-                rgba(139, 0, 0, 0.3) 100%);
-            text-shadow: 
-                0 0 20px rgba(188, 254, 45, 0.9),
-                0 0 40px rgba(188, 254, 45, 0.5),
-                3px 0 0 rgba(255, 0, 85, 0.5),
-                -3px 0 0 rgba(0, 170, 255, 0.5),
-                0 3px 0 rgba(188, 254, 45, 0.3);
-            transform: translateX(12px) skewX(-2deg);
-            box-shadow: 
-                0 0 30px rgba(188, 254, 45, 0.3),
-                inset 0 0 20px rgba(188, 254, 45, 0.1);
-            animation: glitchText 0.5s ease-in-out infinite;
-        }
 
-        .gallery-menu-link:hover::before {
-            opacity: 1;
-            animation: tapeFlicker 1s ease infinite;
-        }
 
-        .gallery-menu-link:hover::after {
-            opacity: 1;
-            animation: slashBlink 0.7s ease infinite;
-        }
+
+
+
 
         @keyframes glitchText {
             0%, 100% {
@@ -691,37 +525,11 @@
         }
 
         /* 当前页面 - 极度高亮 */
-        .gallery-menu-link.current {
-            color: var(--acid-lime);
-            background: linear-gradient(90deg, 
-                rgba(139, 0, 0, 0.4) 0%, 
-                rgba(188, 254, 45, 0.2) 50%, 
-                rgba(139, 0, 0, 0.4) 100%);
-            text-shadow: 
-                0 0 20px rgba(188, 254, 45, 1),
-                0 0 40px rgba(188, 254, 45, 0.7),
-                0 0 60px rgba(188, 254, 45, 0.4),
-                3px 0 0 rgba(255, 0, 85, 0.6),
-                -3px 0 0 rgba(0, 170, 255, 0.6);
-            box-shadow: 
-                0 0 40px rgba(188, 254, 45, 0.5),
-                inset 0 0 30px rgba(188, 254, 45, 0.2);
-            pointer-events: none;
-            cursor: default;
-            animation: currentPagePulse 2s ease-in-out infinite;
-        }
 
-        .gallery-menu-link.current::before {
-            opacity: 1;
-            animation: tapeFlicker 1.5s ease infinite;
-        }
 
-        .gallery-menu-link.current::after {
-            opacity: 1;
-            content: '▶';
-            font-size: 0.5em;
-            animation: playPulse 1.5s ease-in-out infinite;
-        }
+
+
+
 
         @keyframes currentPagePulse {
             0%, 100% {
@@ -743,36 +551,17 @@
 
         /* 移动端优化 */
         @media (max-width: 640px) {
-            .gallery-menu-close-btn {
-                width: 46px;
-                height: 46px;
-                top: 16px;
-                right: 16px;
-            }
 
-            .gallery-menu-close-btn i {
-                width: 24px;
-                height: 24px;
-            }
 
-            .gallery-menu-link {
-                padding: 0.5rem 2rem;
-                font-size: clamp(1.6rem, 8vw, 3rem);
-            }
 
-            .gallery-menu-link::before {
-                width: 20px;
-                height: 8px;
-                left: -10px;
-            }
 
-            .gallery-menu-link::after {
-                right: -18px;
-            }
 
-            .gallery-menu-link:hover {
-                transform: translateX(8px) skewX(-1deg);
-            }
+
+
+
+
+
+
         }
 
         /* ========== 滚动条 ========== */
@@ -856,6 +645,13 @@
             .category-tab { font-size: 12px; padding: 0.7rem 1.2rem; }
         }
     </style>
+<link rel="stylesheet" href="../shared/site.css">
+<script defer src="../shared/site.js"></script>
+<style>
+#lightbox{margin:0;border:0;padding:24px;width:100%;max-width:none;height:100%;max-height:none;background:#080808f5;color:#fff}#lightbox:not([open]){display:none}#lightbox[open]{display:flex}#lightbox img{max-width:100%;max-height:calc(100svh - 120px);object-fit:contain}#lightbox .img-info{pointer-events:none}.gallery-item:focus-visible .info{transform:none;opacity:1}.gallery-item:focus-visible .overlay{opacity:1}.gallery-item img{height:auto}@media(hover:none){.gallery-item .info{transform:none;opacity:1;padding:8px}.gallery-item .info .category-badge{display:none}.gallery-item .overlay{opacity:.55}}
+</style><style>
+.category-tabs{display:flex;flex-wrap:nowrap;gap:6px;margin:20px 0 0}.gallery-count{margin-left:auto;font-size:10px;color:#b9b8ad}.category-tab{flex:1;padding:11px 5px;font-size:10px;letter-spacing:.01em;white-space:nowrap;color:#c5c5bc;min-height:44px}.category-tab .count{font-size:9px;margin-left:3px;color:inherit;opacity:.7}.category-tab.active{color:#111}.gallery-item .category-badge{color:#c2db94}.gallery-item .info .title{max-width:100%;overflow-wrap:anywhere}
+</style><script defer src="app.js" fetchpriority="high"></script>
 </head>
 <body>
 
@@ -878,24 +674,14 @@
             <a href="../" class="p-2.5 border border-zinc-800 hover:bg-white hover:text-black transition-all flex items-center gap-2" title="返回主页">
                 <i data-lucide="home" class="w-5 h-5"></i>
             </a>
-            <button id="gallery-menu-btn" class="p-2.5 border border-zinc-800 hover:bg-white hover:text-black transition-all" title="菜单">
+            <button id="gallery-menu-btn" data-site-menu class="p-2.5 border border-zinc-800 hover:bg-white hover:text-black transition-all" title="菜单">
                 <i data-lucide="menu" class="w-5 h-5"></i>
             </button>
         </div>
     </nav>
 
     <!-- 全屏菜单 -->
-    <div class="gallery-fullscreen-menu" id="gallery-fullscreen-menu">
-        <button class="gallery-menu-close-btn" id="gallery-close-menu">
-            <i data-lucide="x" class="w-6 h-6"></i>
-        </button>
-        <a href="../" class="gallery-menu-link">HOME</a>
-        <a href="../sf6/" class="gallery-menu-link">SF6</a>
-        <a href="../gojuon/" class="gallery-menu-link">GOJUON</a>
-        <a href="../english/" class="gallery-menu-link">LEXICON</a>
-        <a href="./" class="gallery-menu-link current">GALLERY</a>
-        <a href="../music/" class="gallery-menu-link">IAMMUSIC</a>
-    </div>
+    <dialog id="site-navigation" data-site-nav aria-label="站点导航"></dialog>
 
     <!-- Hero Banner -->
     <section class="hero-banner">
@@ -915,22 +701,6 @@
     <main class="px-4 md:px-6 pb-16">
         <div class="max-w-7xl mx-auto">
             
-            <!-- 统计信息条 -->
-            <div class="stats-bar">
-                <div class="stat-item">
-                    <span class="value" id="total-count">33</span>
-                    <span class="label">Total Images</span>
-                </div>
-                <div class="stat-item">
-                    <span class="value">4</span>
-                    <span class="label">Categories</span>
-                </div>
-                <div class="stat-item">
-                    <span class="value" id="visible-count">33</span>
-                    <span class="label">Showing</span>
-                </div>
-            </div>
-
             <!-- 分类标签 -->
             <div class="category-tabs" id="category-tabs">
                 <button class="category-tab active" data-category="all">
@@ -953,7 +723,7 @@
             <!-- 当前筛选状态 -->
             <div class="flex items-center gap-4 py-4">
                 <div class="w-12 h-px bg-lime-400"></div>
-                <span class="mono text-sm text-zinc-500 uppercase tracking-wide" id="current-filter">FILTER: ALL_ARCHIVE</span>
+                <span class="mono text-sm text-zinc-500 uppercase tracking-wide" id="current-filter">ALL ARCHIVE</span><span class="gallery-count mono"><span id="visible-count">31</span> IMAGES</span>
             </div>
 
             <!-- 画廊网格 -->
@@ -964,7 +734,7 @@
                 <!-- 故障坐着的女孩 -->
                 <div class="gallery-item" data-category="art">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/glitch-girl-sitting.jpg" alt="GIRL_SITTING" loading="lazy">
+                    <img src="../asset/gallery-preview/glitch-girl-sitting.webp" data-full="../asset/glitch-girl-sitting.jpg" width="736" height="736" decoding="async" alt="GIRL_SITTING" loading="eager" fetchpriority="high">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">GIRL_SITTING</span>
@@ -975,7 +745,7 @@
                 <!-- Slow Damage 塔 -->
                 <div class="gallery-item" data-category="anime">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/slowdamage-towa.jpg" alt="TOWA" loading="lazy">
+                    <img src="../asset/gallery-preview/slowdamage-towa.webp" data-full="../asset/slowdamage-towa.jpg" width="736" height="736" decoding="async" alt="TOWA" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">TOWA</span>
@@ -988,7 +758,7 @@
                 <!-- 故障天使 -->
                 <div class="gallery-item" data-category="art">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/glitch-angel.jpg" alt="GLITCH_ANGEL" loading="lazy">
+                    <img src="../asset/gallery-preview/glitch-angel.webp" data-full="../asset/glitch-angel.jpg" width="720" height="721" decoding="async" alt="GLITCH_ANGEL" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">GLITCH_ANGEL</span>
@@ -999,7 +769,7 @@
                 <!-- 像素天使 -->
                 <div class="gallery-item" data-category="art">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/pixel-angel.jpg" alt="PIXEL_ANGEL" loading="lazy">
+                    <img src="../asset/gallery-preview/pixel-angel.webp" data-full="../asset/pixel-angel.jpg" width="736" height="736" decoding="async" alt="PIXEL_ANGEL" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">PIXEL_ANGEL</span>
@@ -1010,7 +780,7 @@
                 <!-- 日语拼贴 -->
                 <div class="gallery-item" data-category="anime">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/deathnote-light-yagami-glitch.jpg" alt="LIGHT_YAGAMI_GLITCH" loading="lazy">
+                    <img src="../asset/gallery-preview/deathnote-light-yagami-glitch.webp" data-full="../asset/deathnote-light-yagami-glitch.jpg" width="500" height="477" decoding="async" alt="LIGHT_YAGAMI_GLITCH" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">LIGHT YAGAMI</span>
@@ -1021,7 +791,7 @@
                 <!-- Death Note 夜神月 -->
                 <div class="gallery-item" data-category="anime">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/deathnote-light-yagami.jpg" alt="LIGHT_YAGAMI" loading="lazy">
+                    <img src="../asset/gallery-preview/deathnote-light-yagami.webp" data-full="../asset/deathnote-light-yagami.jpg" width="1200" height="1200" decoding="async" alt="LIGHT_YAGAMI" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">LIGHT YAGAMI</span>
@@ -1032,7 +802,7 @@
                 <!-- L的头发 -->
                 <div class="gallery-item" data-category="anime">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/deathnote-l-hair.jpg" alt="L_HAIR" loading="lazy">
+                    <img src="../asset/gallery-preview/deathnote-l-hair.webp" data-full="../asset/deathnote-l-hair.jpg" width="750" height="1200" decoding="async" alt="L_HAIR" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">L_HAIR</span>
@@ -1043,7 +813,7 @@
                 <!-- L和Misa咖啡厅 -->
                 <div class="gallery-item" data-category="anime">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/deathnote-l-misa-cafe.jpg" alt="L_MISA_CAFE" loading="lazy">
+                    <img src="../asset/gallery-preview/deathnote-l-misa-cafe.webp" data-full="../asset/deathnote-l-misa-cafe.jpg" width="713" height="713" decoding="async" alt="L_MISA_CAFE" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">L_MISA_CAFE</span>
@@ -1054,7 +824,7 @@
                 <!-- Misa条纹 -->
                 <div class="gallery-item" data-category="anime">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/deathnote-misa-striped.jpg" alt="MISA_STRIPED" loading="lazy">
+                    <img src="../asset/gallery-preview/deathnote-misa-striped.webp" data-full="../asset/deathnote-misa-striped.jpg" width="564" height="750" decoding="async" alt="MISA_STRIPED" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">MISA_STRIPED</span>
@@ -1065,7 +835,7 @@
                 <!-- 寄生兽 -->
                 <div class="gallery-item" data-category="anime">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/parasyte-izumi.jpg" alt="PARASYTE" loading="lazy">
+                    <img src="../asset/gallery-preview/parasyte-izumi.webp" data-full="../asset/parasyte-izumi.jpg" width="600" height="915" decoding="async" alt="PARASYTE" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">PARASYTE</span>
@@ -1076,7 +846,7 @@
                 <!-- 我爱罗 -->
                 <div class="gallery-item" data-category="anime">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/naruto-gaara-ai.jpg" alt="GAARA_AI" loading="lazy">
+                    <img src="../asset/gallery-preview/naruto-gaara-ai.webp" data-full="../asset/naruto-gaara-ai.jpg" width="721" height="1100" decoding="async" alt="GAARA_AI" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">GAARA_AI</span>
@@ -1087,7 +857,7 @@
                 <!-- 日语拼贴 -->
                 <div class="gallery-item" data-category="art">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/nihongo-collage.jpg" alt="NIHONGO_COLLAGE" loading="lazy">
+                    <img src="../asset/gallery-preview/nihongo-collage.webp" data-full="../asset/nihongo-collage.jpg" width="720" height="720" decoding="async" alt="NIHONGO_COLLAGE" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">NIHONGO_COLLAGE</span>
@@ -1098,7 +868,7 @@
                 <!-- Misa翅膀 -->
                 <div class="gallery-item" data-category="anime">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/deathnote-misa-wings.png" alt="MISA_WINGS" loading="lazy">
+                    <img src="../asset/gallery-preview/deathnote-misa-wings.webp" data-full="../asset/deathnote-misa-wings.png" width="1152" height="2048" decoding="async" alt="MISA_WINGS" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">MISA_WINGS</span>
@@ -1111,7 +881,7 @@
                 <!-- Lil Peep -->
                 <div class="gallery-item" data-category="artist">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/artist-lil-peep.jpg" alt="LIL_PEEP" loading="lazy">
+                    <img src="../asset/gallery-preview/artist-lil-peep.webp" data-full="../asset/artist-lil-peep.jpg" width="736" height="1309" decoding="async" alt="LIL_PEEP" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">LIL_PEEP</span>
@@ -1122,7 +892,7 @@
                 <!-- Ecco2k -->
                 <div class="gallery-item" data-category="artist">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/logo-e.jpg" alt="ECCO2K_E" loading="lazy">
+                    <img src="../asset/gallery-preview/logo-e.webp" data-full="../asset/logo-e.jpg" width="736" height="662" decoding="async" alt="ECCO2K_E" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">ECCO2K_E</span>
@@ -1135,7 +905,7 @@
                 <!-- 哥特猫 -->
                 <div class="gallery-item" data-category="meow">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/cat-goth.jpg" alt="GOTH_CAT" loading="lazy">
+                    <img src="../asset/gallery-preview/cat-goth.webp" data-full="../asset/cat-goth.jpg" width="736" height="1042" decoding="async" alt="GOTH_CAT" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">GOTH_CAT</span>
@@ -1146,7 +916,7 @@
                 <!-- 小猫 -->
                 <div class="gallery-item" data-category="meow">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/cat-kitten.jpg" alt="KITTEN" loading="lazy">
+                    <img src="../asset/gallery-preview/cat-kitten.webp" data-full="../asset/cat-kitten.jpg" width="473" height="631" decoding="async" alt="KITTEN" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">KITTEN</span>
@@ -1157,7 +927,7 @@
                 <!-- 双猫 -->
                 <div class="gallery-item" data-category="meow">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/cat-twin.jpg" alt="TWIN_CATS" loading="lazy">
+                    <img src="../asset/gallery-preview/cat-twin.webp" data-full="../asset/cat-twin.jpg" width="736" height="712" decoding="async" alt="TWIN_CATS" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">TWIN_CATS</span>
@@ -1170,7 +940,7 @@
                 <!-- 哥特横幅 -->
                 <div class="gallery-item" data-category="art">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/goth-banner.jpg" alt="GOTH_BANNER" loading="lazy">
+                    <img src="../asset/gallery-preview/goth-banner.webp" data-full="../asset/goth-banner.jpg" width="736" height="278" decoding="async" alt="GOTH_BANNER" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">GOTH_BANNER</span>
@@ -1181,7 +951,7 @@
                 <!-- 眼中灵魂 -->
                 <div class="gallery-item" data-category="art">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/eye-soul.jpg" alt="EYE_SOUL" loading="lazy">
+                    <img src="../asset/gallery-preview/eye-soul.webp" data-full="../asset/eye-soul.jpg" width="549" height="455" decoding="async" alt="EYE_SOUL" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">EYE_SOUL</span>
@@ -1192,7 +962,7 @@
                 <!-- L I AM MUSIC -->
                 <div class="gallery-item" data-category="anime">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/deathnote-l-iammusic.jpg" alt="L_IAMMUSIC" loading="lazy">
+                    <img src="../asset/gallery-preview/deathnote-l-iammusic.webp" data-full="../asset/deathnote-l-iammusic.jpg" width="736" height="920" decoding="async" alt="L_IAMMUSIC" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">L_IAMMUSIC</span>
@@ -1203,7 +973,7 @@
                 <!-- 故障小猫 -->
                 <div class="gallery-item" data-category="meow">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/cat-kitten-glitch.jpg" alt="KITTEN_GLITCH" loading="lazy">
+                    <img src="../asset/gallery-preview/cat-kitten-glitch.webp" data-full="../asset/cat-kitten-glitch.jpg" width="1031" height="1037" decoding="async" alt="KITTEN_GLITCH" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">KITTEN_GLITCH</span>
@@ -1214,7 +984,7 @@
                 <!-- 故障头晕女孩 -->
                 <div class="gallery-item" data-category="art">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/glitch-girl-dizzy.jpg" alt="DIZZY_GIRL" loading="lazy">
+                    <img src="../asset/gallery-preview/glitch-girl-dizzy.webp" data-full="../asset/glitch-girl-dizzy.jpg" width="736" height="736" decoding="async" alt="DIZZY_GIRL" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">DIZZY_GIRL</span>
@@ -1225,7 +995,7 @@
                 <!-- 故障错误头 -->
                 <div class="gallery-item" data-category="art">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/glitch-error-head.jpg" alt="ERROR_HEAD" loading="lazy">
+                    <img src="../asset/gallery-preview/glitch-error-head.webp" data-full="../asset/glitch-error-head.jpg" width="736" height="736" decoding="async" alt="ERROR_HEAD" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">ERROR_HEAD</span>
@@ -1236,7 +1006,7 @@
                 <!-- Kanye & Ryuk -->
                 <div class="gallery-item" data-category="art">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/kanye-ryuk.jpg" alt="KANYE_RYUK" loading="lazy">
+                    <img src="../asset/gallery-preview/kanye-ryuk.webp" data-full="../asset/kanye-ryuk.jpg" width="977" height="1200" decoding="async" alt="KANYE_RYUK" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">KANYE_RYUK</span>
@@ -1247,7 +1017,7 @@
                 <!-- 朋克男孩故障 -->
                 <div class="gallery-item" data-category="art">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/punk-boy-glitch.jpg" alt="PUNK_BOY" loading="lazy">
+                    <img src="../asset/gallery-preview/punk-boy-glitch.webp" data-full="../asset/punk-boy-glitch.jpg" width="736" height="803" decoding="async" alt="PUNK_BOY" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">PUNK_BOY</span>
@@ -1258,7 +1028,7 @@
                 <!-- 摇滚男孩 -->
                 <div class="gallery-item" data-category="art">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/rockstar-boy.jpg" alt="ROCKSTAR_BOY" loading="lazy">
+                    <img src="../asset/gallery-preview/rockstar-boy.webp" data-full="../asset/rockstar-boy.jpg" width="828" height="1436" decoding="async" alt="ROCKSTAR_BOY" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">ROCKSTAR_BOY</span>
@@ -1269,7 +1039,7 @@
                 <!-- Opium I AM MUSIC -->
                 <div class="gallery-item" data-category="artist">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/opium-iammusic.jpg" alt="OPIUM_IAMMUSIC" loading="lazy">
+                    <img src="../asset/gallery-preview/opium-iammusic.webp" data-full="../asset/opium-iammusic.jpg" width="736" height="736" decoding="async" alt="OPIUM_IAMMUSIC" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">OPIUM_IAMMUSIC</span>
@@ -1280,7 +1050,7 @@
                 <!-- 中村佐和 -->
                 <div class="gallery-item" data-category="art">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/nakamura-sawa.jpg" alt="NAKAMURA_SAWA" loading="lazy">
+                    <img src="../asset/gallery-preview/nakamura-sawa.webp" data-full="../asset/nakamura-sawa.jpg" width="643" height="1079" decoding="async" alt="NAKAMURA_SAWA" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">NAKAMURA_SAWA</span>
@@ -1291,7 +1061,7 @@
                 <!-- 混沌武士仁 -->
                 <div class="gallery-item" data-category="anime">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/amuraichamploo-jin.jpg" alt="JIN" loading="lazy">
+                    <img src="../asset/gallery-preview/amuraichamploo-jin.webp" data-full="../asset/amuraichamploo-jin.jpg" width="736" height="1104" decoding="async" alt="JIN" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">JIN</span>
@@ -1302,7 +1072,7 @@
                 <!-- 骷髅女孩 -->
                 <div class="gallery-item" data-category="art">
                     <div class="glitch-badge"></div>
-                    <img src="../asset/skeleton-girl.jpg" alt="SKELETON_GIRL" loading="lazy">
+                    <img src="../asset/gallery-preview/skeleton-girl.webp" data-full="../asset/skeleton-girl.jpg" width="750" height="750" decoding="async" alt="SKELETON_GIRL" loading="lazy">
                     <div class="overlay"></div>
                     <div class="info">
                         <span class="title">SKELETON_GIRL</span>
@@ -1322,14 +1092,14 @@
     </main>
 
     <!-- Lightbox -->
-    <div id="lightbox">
-        <button class="close-btn" onclick="closeLightbox()">
+    <dialog id="lightbox" aria-label="图片查看">
+        <button class="close-btn" aria-label="关闭图片" onclick="closeLightbox()">
             <i data-lucide="x" class="w-5 h-5"></i>
         </button>
-        <button class="nav-btn prev" onclick="prevImage()">
+        <button class="nav-btn prev" aria-label="上一张" onclick="prevImage()">
             <i data-lucide="chevron-left" class="w-5 h-5"></i>
         </button>
-        <button class="nav-btn next" onclick="nextImage()">
+        <button class="nav-btn next" aria-label="下一张" onclick="nextImage()">
             <i data-lucide="chevron-right" class="w-5 h-5"></i>
         </button>
         <img id="lightbox-img" src="" alt="">
@@ -1337,7 +1107,7 @@
             <span id="lightbox-title" class="mono text-sm text-white"></span>
             <p id="lightbox-counter" class="mono text-[10px] text-zinc-500 mt-1"></p>
         </div>
-    </div>
+    </dialog>
 
     <!-- Footer -->
     <footer class="py-6 px-4 md:px-6 border-t border-zinc-900/50" style="font-family: 'Syne', sans-serif;">
@@ -1353,194 +1123,6 @@
         <i data-lucide="arrow-up" class="w-5 h-5"></i>
     </button>
 
-    <script>
-        // ==================== 自定义光标 ====================
-        const cursorDot = document.getElementById('cursor-dot');
-        const cursorRing = document.getElementById('cursor-ring');
-        
-        let mouseX = 0, mouseY = 0;
-        let dotX = 0, dotY = 0;
-        let ringX = 0, ringY = 0;
 
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
-
-        function animateCursor() {
-            dotX += (mouseX - dotX) * 0.3;
-            dotY += (mouseY - dotY) * 0.3;
-            ringX += (mouseX - ringX) * 0.15;
-            ringY += (mouseY - ringY) * 0.15;
-
-            cursorDot.style.transform = `translate3d(${dotX - 5}px, ${dotY - 5}px, 0)`;
-            cursorRing.style.transform = `translate3d(${ringX - 20}px, ${ringY - 20}px, 0)`;
-
-            requestAnimationFrame(animateCursor);
-        }
-        animateCursor();
-
-        // 悬停交互
-        function setupHoverEffects() {
-            document.querySelectorAll('button, a, .gallery-item, .category-tab').forEach(el => {
-                el.addEventListener('mouseenter', () => cursorRing.classList.add('hover'));
-                el.addEventListener('mouseleave', () => cursorRing.classList.remove('hover'));
-            });
-        }
-
-        // ==================== 分类筛选 ====================
-        const categoryTabs = document.querySelectorAll('.category-tab');
-        const galleryItems = document.querySelectorAll('.gallery-item');
-        const currentFilterEl = document.getElementById('current-filter');
-        const visibleCountEl = document.getElementById('visible-count');
-
-        const categoryNames = {
-            'all': 'ALL_ARCHIVE',
-            'anime': 'ANIME',
-            'artist': 'ARTIST',
-            'meow': 'MEOW',
-            'art': 'ART'
-        };
-
-        let currentFilter = 'all';
-
-        categoryTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const category = tab.dataset.category;
-                filterGallery(category);
-            });
-        });
-
-        function filterGallery(category) {
-            currentFilter = category;
-            
-            // 更新标签状态
-            categoryTabs.forEach(tab => {
-                if (tab.dataset.category === category) {
-                    tab.classList.add('active');
-                } else {
-                    tab.classList.remove('active');
-                }
-            });
-
-            // 筛选图片
-            let visibleCount = 0;
-            galleryItems.forEach(item => {
-                if (category === 'all' || item.dataset.category === category) {
-                    item.classList.remove('hidden');
-                    visibleCount++;
-                } else {
-                    item.classList.add('hidden');
-                }
-            });
-
-            // 更新显示信息
-            currentFilterEl.textContent = `FILTER: ${categoryNames[category] || category.toUpperCase()}`;
-            visibleCountEl.textContent = visibleCount;
-        }
-
-        // ==================== Lightbox ====================
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImg = document.getElementById('lightbox-img');
-        const lightboxTitle = document.getElementById('lightbox-title');
-        const lightboxCounter = document.getElementById('lightbox-counter');
-
-        let currentImageIndex = 0;
-        let visibleImages = [];
-
-        function updateVisibleImages() {
-            visibleImages = Array.from(document.querySelectorAll('.gallery-item:not(.hidden)'));
-        }
-
-        galleryItems.forEach(item => {
-            item.addEventListener('click', () => {
-                updateVisibleImages();
-                currentImageIndex = visibleImages.indexOf(item);
-                showImage(currentImageIndex);
-                lightbox.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            });
-        });
-
-        function showImage(index) {
-            const item = visibleImages[index];
-            const img = item.querySelector('img');
-            const title = item.querySelector('.info .title').textContent;
-            
-            lightboxImg.src = img.src;
-            lightboxTitle.textContent = title;
-            lightboxCounter.textContent = `${index + 1} / ${visibleImages.length}`;
-        }
-
-        function closeLightbox() {
-            lightbox.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        function prevImage() {
-            currentImageIndex = (currentImageIndex - 1 + visibleImages.length) % visibleImages.length;
-            showImage(currentImageIndex);
-        }
-
-        function nextImage() {
-            currentImageIndex = (currentImageIndex + 1) % visibleImages.length;
-            showImage(currentImageIndex);
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (!lightbox.classList.contains('active')) return;
-            if (e.key === 'Escape') closeLightbox();
-            if (e.key === 'ArrowLeft') prevImage();
-            if (e.key === 'ArrowRight') nextImage();
-        });
-
-        lightbox.addEventListener('click', (e) => {
-            if (e.target === lightbox) closeLightbox();
-        });
-
-        // ==================== 回到顶部按钮 ====================
-        const backToTopBtn = document.getElementById('back-to-top');
-        
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 400) {
-                backToTopBtn.classList.add('visible');
-            } else {
-                backToTopBtn.classList.remove('visible');
-            }
-        });
-
-        // ==================== 全屏菜单 ====================
-        const galleryMenuBtn = document.getElementById('gallery-menu-btn');
-        const galleryCloseMenuBtn = document.getElementById('gallery-close-menu');
-        const galleryFullscreenMenu = document.getElementById('gallery-fullscreen-menu');
-
-        galleryMenuBtn.addEventListener('click', () => {
-            galleryFullscreenMenu.classList.add('active');
-        });
-
-        galleryCloseMenuBtn.addEventListener('click', closeGalleryMenu);
-
-        function closeGalleryMenu() {
-            galleryFullscreenMenu.classList.remove('active');
-        }
-
-        // ESC 键关闭菜单
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && galleryFullscreenMenu.classList.contains('active')) {
-                closeGalleryMenu();
-            }
-        });
-
-        // ==================== 初始化 Lucide 图标 ====================
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-        });
-
-        // ==================== 初始化 ====================
-        window.addEventListener('load', () => {
-            updateVisibleImages();
-            setupHoverEffects();
-        });
-    </script>
 </body>
 </html>

@@ -7,9 +7,9 @@
     <meta name="description" content="EMOBOI Music Player - Personal music collection">
     
     <!-- Lucide Icons (锁定版本) -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script defer src="../shared/icons.js"></script>
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Archivo+Black&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../shared/fonts.css">
     
     <style>
         :root {
@@ -359,39 +359,12 @@
         }
 
         /* ========== 全屏菜单 ========== */
-        #fullscreen-menu {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.97);
-            z-index: 9995;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 1.5rem;
-        }
 
-        #fullscreen-menu.active {
-            display: flex;
-        }
+
+
 
         /* 关闭按钮 - 右上角 */
-        #close-menu {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            width: 44px;
-            height: 44px;
-            background: transparent;
-            border: 1px solid #333;
-            color: #777;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            z-index: 10;
-        }
+
 
         @media (max-width: 768px) {
             body { cursor: auto; }
@@ -400,139 +373,46 @@
             .track-item { cursor: pointer; }
         }
 
-        #close-menu:hover {
-            color: var(--acid-lime);
-            border-color: var(--acid-lime);
-            background: rgba(188, 254, 45, 0.08);
-        }
 
-        #close-menu i {
-            width: 24px;
-            height: 24px;
-        }
+
+
 
         /* 菜单链接容器 */
-        .menu-links-container {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            align-items: center;
-        }
+
 
         /* 菜单链接样式 */
-        .menu-link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            font-family: 'Syne', sans-serif;
-            font-size: clamp(1.8rem, 6vw, 3.5rem);
-            font-weight: 900;
-            font-style: italic;
-            letter-spacing: -0.02em;
-            color: #fff;
-            text-decoration: none;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-            position: relative;
-            padding: 0.5rem 2rem;
-            cursor: none;
-        }
+
 
         /* 悬停效果 */
-        .menu-link:hover {
-            color: var(--acid-lime);
-            text-shadow: 
-                0 0 20px rgba(188, 254, 45, 0.8),
-                0 0 40px rgba(188, 254, 45, 0.4),
-                2px 2px 0 rgba(255, 0, 85, 0.3),
-                -2px -2px 0 rgba(0, 170, 255, 0.3);
-            transform: translateX(10px);
-        }
+
 
         /* 装饰线条 */
-        .menu-link::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, 
-                var(--acid-lime), 
-                rgba(188, 254, 45, 0.3));
-            transform: translateY(-50%);
-            transition: width 0.3s ease;
-            box-shadow: 0 0 8px rgba(188, 254, 45, 0.6);
-        }
 
-        .menu-link:hover::before {
-            width: 20px;
-        }
+
+
 
         /* 当前页面高亮 */
-        .menu-link.current {
-            color: var(--acid-lime);
-            text-shadow: 
-                0 0 15px rgba(188, 254, 45, 0.8),
-                0 0 30px rgba(188, 254, 45, 0.4);
-            pointer-events: none;
-            cursor: default;
-        }
+
 
         /* 当前页面播放标记 - 左侧 */
-        .menu-link.current::before {
-            content: '▶';
-            position: absolute;
-            left: -40px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: auto;
-            height: auto;
-            background: none;
-            color: var(--acid-lime);
-            font-size: 0.5em;
-            animation: pulse 2s ease-in-out infinite;
-            box-shadow: none;
-        }
+
 
         /* 移动端优化 */
         @media (max-width: 640px) {
-            .menu-link {
-                padding: 0.4rem 1.5rem;
-                gap: 0.75rem;
-            }
 
-            .menu-link::before {
-                display: none; /* 小屏幕隐藏装饰线 */
-            }
 
-            .menu-link:hover {
-                transform: translateX(5px);
-            }
+
+
+
             
             /* 移动端当前页面标记调整位置 */
-            .menu-link.current::before {
-                left: -30px;
-            }
+
         }
 
         /* ========== 全屏菜单 ========== */
-        #fullscreen-menu {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.97);
-            z-index: 9995;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 1.5rem;
-        }
 
-        #fullscreen-menu.active {
-            display: flex;
-        }
+
+
 
         /* ========== 进度条 ========== */
         .progress-bar {
@@ -1270,6 +1150,9 @@
              }
          }
     </style>
+<link rel="stylesheet" href="../shared/site.css">
+<script defer src="../shared/site.js"></script>
+<script defer src="app.js" fetchpriority="high"></script>
 </head>
 <body>
 
@@ -1292,38 +1175,14 @@
             <a href="../" class="p-2.5 border border-zinc-800 text-white hover:bg-white hover:text-black transition-all flex items-center gap-2" title="返回主页">
                 <i data-lucide="home" class="w-5 h-5"></i>
             </a>
-            <button id="menu-btn" class="p-2.5 border border-zinc-800 text-white hover:bg-white hover:text-black transition-all" title="菜单">
+            <button id="menu-btn" data-site-menu class="p-2.5 border border-zinc-800 text-white hover:bg-white hover:text-black transition-all" title="菜单">
                 <i data-lucide="menu" class="w-5 h-5"></i>
             </button>
         </div>
     </nav>
 
     <!-- 全屏菜单 -->
-    <div id="fullscreen-menu" class="fixed inset-0 hidden items-center justify-content" style="background: rgba(0,0,0,0.97); z-index: 9995;">
-        <button id="close-menu">
-            <i data-lucide="x"></i>
-        </button>
-        <div class="menu-links-container" style="z-index: 5;">
-            <a href="../" onclick="closeMenu()" class="menu-link">
-                <span>HOME</span>
-            </a>
-            <a href="../sf6/" onclick="closeMenu()" class="menu-link">
-                <span>SF6</span>
-            </a>
-            <a href="../gojuon/" onclick="closeMenu()" class="menu-link">
-                <span>GOJUON</span>
-            </a>
-            <a href="../english/" onclick="closeMenu()" class="menu-link">
-                <span>LEXICON</span>
-            </a>
-            <a href="../gallery/" onclick="closeMenu()" class="menu-link">
-                <span>GALLERY</span>
-            </a>
-            <div class="menu-link current">
-                <span>IAMMUSIC</span>
-            </div>
-        </div>
-    </div>
+    <dialog id="site-navigation" data-site-nav aria-label="站点导航"></dialog>
 
     <!-- Hero Banner -->
     <section class="hero-banner">
@@ -1363,7 +1222,7 @@
 
                     <!-- 视频播放器容器 (视频模式) -->
                     <div id="video-container" class="video-container media-content" style="display: none;">
-                        <video id="video-player" preload="metadata">
+                        <video id="video-player" preload="none" poster="covers/bowser-poster.webp">
                             您的浏览器不支持视频播放
                         </video>
                         <!-- 视频控制按钮 -->
@@ -1371,7 +1230,7 @@
                             <button id="exit-video-btn" class="video-control-btn" title="退出视频 (ESC)">
                                 <i data-lucide="x" class="w-5 h-5"></i>
                             </button>
-                            <button id="fullscreen-btn" class="video-control-btn" title="全屏">
+                            <button id="fullscreen-btn" aria-label="切换全屏" class="video-control-btn" title="全屏">
                                 <i data-lucide="maximize" class="w-5 h-5"></i>
                             </button>
                         </div>
@@ -1385,7 +1244,7 @@
 
                 <!-- 进度条 -->
                 <div class="mb-6 space-y-2 px-3">
-                    <div id="progress-bar" class="progress-bar">
+                    <div id="progress-bar" role="slider" tabindex="0" aria-label="播放进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" class="progress-bar">
                         <div id="progress-fill" class="progress-fill"></div>
                     </div>
                     <div class="flex justify-between mono text-[10px] text-zinc-600">
@@ -1397,24 +1256,24 @@
                 <!-- 控制按钮 -->
                 <div id="player-controls" class="player-controls">
                     <!-- 左侧: 上一曲 -->
-                    <button id="prev-btn" class="control-btn text-zinc-600 hover:text-lime-400 transition-all duration-300 hover:scale-110" style="filter: drop-shadow(0 0 10px rgba(188, 254, 45, 0));">
+                    <button id="prev-btn" aria-label="上一曲" class="control-btn text-zinc-600 hover:text-lime-400 transition-all duration-300 hover:scale-110" style="filter: drop-shadow(0 0 10px rgba(188, 254, 45, 0));">
                         <i data-lucide="skip-back" class="w-7 h-7"></i>
                     </button>
                     
                     <!-- 中心: 播放按钮 (绝对居中) -->
-                    <button id="play-btn" class="control-btn w-16 h-16 bg-white text-black rounded-full flex items-center justify-center hover:bg-lime-400 transition-all hover:scale-110 relative" style="box-shadow: 0 0 20px rgba(188, 254, 45, 0.3), 0 0 40px rgba(188, 254, 45, 0.1);">
+                    <button id="play-btn" aria-label="播放 / 暂停" class="control-btn w-16 h-16 bg-white text-black rounded-full flex items-center justify-center hover:bg-lime-400 transition-all hover:scale-110 relative" style="box-shadow: 0 0 20px rgba(188, 254, 45, 0.3), 0 0 40px rgba(188, 254, 45, 0.1);">
                         <span id="play-icon" class="flex items-center justify-center"></span>
                         <!-- 脉冲效果 -->
                         <div class="absolute inset-0 rounded-full border-2 border-lime-400 opacity-0 animate-ping" style="animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
                     </button>
                     
                     <!-- 右侧: 下一曲 -->
-                    <button id="next-btn" class="control-btn text-zinc-600 hover:text-lime-400 transition-all duration-300 hover:scale-110" style="filter: drop-shadow(0 0 10px rgba(188, 254, 45, 0));">
+                    <button id="next-btn" aria-label="下一曲" class="control-btn text-zinc-600 hover:text-lime-400 transition-all duration-300 hover:scale-110" style="filter: drop-shadow(0 0 10px rgba(188, 254, 45, 0));">
                         <i data-lucide="skip-forward" class="w-7 h-7"></i>
                     </button>
                     
                     <!-- 随机播放 -->
-                    <button id="shuffle-btn" class="control-btn shuffle-btn text-zinc-600 hover:text-lime-400 transition-all duration-300 hover:scale-110 relative" title="随机播放">
+                    <button id="shuffle-btn" aria-pressed="false" aria-label="随机播放" class="control-btn shuffle-btn text-zinc-600 hover:text-lime-400 transition-all duration-300 hover:scale-110 relative" title="随机播放">
                         <i data-lucide="shuffle" class="w-6 h-6"></i>
                         <span class="shuffle-indicator"></span>
                     </button>
@@ -1433,17 +1292,17 @@
                                 <span class="text-lime-400 text-sm">▸</span>
                                 Playlist
                             </h3>
-                            <button id="toggle-playlist" class="p-1.5 text-zinc-600 hover:text-lime-400 transition-colors" title="折叠/展开歌单">
+                            <button id="toggle-playlist" aria-expanded="true" aria-controls="playlist" class="p-1.5 text-zinc-600 hover:text-lime-400 transition-colors" title="折叠/展开歌单">
                                 <i data-lucide="chevron-up" class="w-4 h-4"></i>
                             </button>
                         </div>
                         <div class="flex items-center gap-3 flex-wrap">
                             <!-- 音量控制 -->
                             <div class="flex items-center gap-2">
-                                <button id="volume-btn" class="text-zinc-600 hover:text-white transition-colors">
+                                <button id="volume-btn" aria-label="静音 / 取消静音" class="text-zinc-600 hover:text-white transition-colors">
                                     <span id="volume-icon" class="flex items-center justify-center w-6 h-6"></span>
                                 </button>
-                                <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="33">
+                                <input type="range" id="volume-slider" aria-label="音量" class="volume-slider" min="0" max="100" value="33">
                             </div>
                             <span class="mono text-[10px] text-zinc-600 px-2 py-1" style="border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3);" id="track-count">0 TRACKS</span>
                         </div>
@@ -1467,686 +1326,15 @@
     </footer>
 
     <!-- 回到顶部按钮 -->
-    <button id="back-to-top" class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <button id="back-to-top" aria-label="回到顶部" class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
         <i data-lucide="arrow-up" class="w-5 h-5"></i>
     </button>
 
     <!-- 隐藏的 Audio 元素 -->
-    <audio id="audio-player" preload="metadata"></audio>
+    <p id="media-status" role="status" style="text-align:center;color:#bbb;font-size:12px"></p>
+    <audio id="audio-player" preload="none"></audio>
 
-    <script>
-        // ==================== 自定义光标 ====================
-        const cursorDot = document.getElementById('cursor-dot');
-        const cursorRing = document.getElementById('cursor-ring');
-        
-        let mouseX = 0, mouseY = 0;
-        let dotX = 0, dotY = 0;
-        let ringX = 0, ringY = 0;
 
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
-
-        function animateCursor() {
-            dotX += (mouseX - dotX) * 0.3;
-            dotY += (mouseY - dotY) * 0.3;
-            ringX += (mouseX - ringX) * 0.15;
-            ringY += (mouseY - ringY) * 0.15;
-
-            cursorDot.style.transform = `translate3d(${dotX - 5}px, ${dotY - 5}px, 0)`;
-            cursorRing.style.transform = `translate3d(${ringX - 20}px, ${ringY - 20}px, 0)`;
-
-            requestAnimationFrame(animateCursor);
-        }
-        animateCursor();
-
-        // 悬停交互
-        const interactiveElements = document.querySelectorAll('button, a, .track-item, input');
-        interactiveElements.forEach(el => {
-            el.addEventListener('mouseenter', () => cursorRing.classList.add('hover'));
-            el.addEventListener('mouseleave', () => cursorRing.classList.remove('hover'));
-        });
-
-        // ==================== 音乐播放器 ====================
-        const audio = document.getElementById('audio-player');
-        const video = document.getElementById('video-player');
-        const playBtn = document.getElementById('play-btn');
-        const playIcon = document.getElementById('play-icon');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const shuffleBtn = document.getElementById('shuffle-btn');
-        const volumeBtn = document.getElementById('volume-btn');
-        const volumeIcon = document.getElementById('volume-icon');
-        const volumeSlider = document.getElementById('volume-slider');
-        const trackTitle = document.getElementById('track-title');
-        const trackArtist = document.getElementById('track-artist');
-        const albumCover = document.getElementById('album-cover');
-        const albumCoverContainer = document.getElementById('album-cover-container');
-        const videoTrackTitle = document.getElementById('video-track-title');
-        const videoTrackArtist = document.getElementById('video-track-artist');
-        const nowPlayingInfo = document.getElementById('now-playing-info');
-        const videoContainer = document.getElementById('video-container');
-        const progressBar = document.getElementById('progress-bar');
-        const progressFill = document.getElementById('progress-fill');
-        const currentTimeEl = document.getElementById('current-time');
-        const durationEl = document.getElementById('duration');
-        const playlistEl = document.getElementById('playlist');
-        const trackCountEl = document.getElementById('track-count');
-
-        let currentPlayer = audio; // 当前活动的媒体元素
-        let currentMediaType = 'audio'; // 当前媒体类型
-
-        // 播放列表配置 - 支持音频(MP3)和视频(MP4)
-        const playlist = [
-            // 视频区域
-            { 
-                title: "BOWSER", 
-                artist: "Lil Tracy",
-                src: "videos/Lil Tracy - BOWSER .mp4",
-                type: "video",
-                duration: "2:04"
-            },
-            { 
-                title: "jeans", 
-                artist: "2hollis",
-                src: "videos/2hollis - jeans.mp4",
-                type: "video",
-                duration: "3:01"
-            },
-            { 
-                title: "Bamb", 
-                artist: "fakemink",
-                src: "videos/fakemink - Bamb.mp4",
-                type: "video",
-                duration: "2:17"
-            },
-            { 
-                title: "Bad Enough", 
-                artist: "Corey Lingo",
-                src: "videos/Corey Lingo - Bad Enough.mp4",
-                type: "video",
-                duration: "2:20"
-            },
-            // 音频区域
-            { 
-                title: "either on or off the drugs", 
-                artist: "JPEGMAFIA",
-                src: "tracks/JPEGMAFIA - either on or off the drugs.mp3",
-                type: "audio",
-                cover: "covers/JPEGMAFIA - either on or off the drugs.jpg",
-                duration: "3:16"
-            },
-            { 
-                title: "Acura Integurl", 
-                artist: "Frank Ocean",
-                src: "tracks/Acura Integurl - Frank Ocean.mp3",
-                type: "audio",
-                cover: "covers/Acura Integurl - Frank Ocean.jpg",
-                duration: "3:08"
-            },
-            { 
-                title: "Suspended", 
-                artist: "Sampha",
-                src: "tracks/Suspended - Sampha.mp3",
-                type: "audio",
-                cover: "covers/Sampha - Suspended.jpg",
-                duration: "4:43"
-            },
-            { 
-                title: "Street Lights", 
-                artist: "Kanye West",
-                src: "tracks/Street Lights-Kanye West.mp3",
-                type: "audio",
-                cover: "covers/Street Lights-Kanye West.jpg",
-                duration: "3:09"
-            }
-        ];
-
-        let currentTrack = 0;
-        let isPlaying = false;
-        let isMuted = false;
-        let isShuffleMode = false; // 随机播放模式
-
-        // 初始化
-        function initPlayer() {
-            updateTrackInfo();
-            renderPlaylist();
-            audio.volume = volumeSlider.value / 100;
-            video.volume = volumeSlider.value / 100;
-            trackCountEl.textContent = `${playlist.length} TRACKS`;
-            
-            // 设置初始播放图标
-            playIcon.style.marginLeft = '5px'; // 播放图标视觉居中偏移
-            playIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
-            
-            // 设置初始音量图标
-            volumeIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>';
-        }
-
-        // 更新曲目信息并切换媒体类型
-        function updateTrackInfo() {
-            const track = playlist[currentTrack];
-            const isVideo = track.type === 'video';
-            
-            // 停止当前播放
-            currentPlayer.pause();
-            currentPlayer.currentTime = 0;
-            
-            // 切换媒体类型
-            currentMediaType = track.type;
-            
-            if (isVideo) {
-                // 切换到视频模式
-                currentPlayer = video;
-                video.src = track.src;
-                
-                // 显示视频,隐藏音频信息
-                nowPlayingInfo.style.display = 'none';
-                videoContainer.style.display = 'block';
-                
-                // 更新视频叠加层信息
-                videoTrackTitle.textContent = track.title;
-                videoTrackArtist.textContent = track.artist;
-            } else {
-                // 切换到音频模式
-                currentPlayer = audio;
-                audio.src = track.src;
-                
-                // 显示音频信息,隐藏视频
-                nowPlayingInfo.style.display = 'block';
-                videoContainer.style.display = 'none';
-                
-                // 更新音频信息
-                trackTitle.textContent = track.title;
-                trackArtist.textContent = track.artist;
-                
-                // 更新专辑封面
-                if (track.cover) {
-                    albumCover.src = track.cover;
-                    albumCover.style.display = 'block';
-                    albumCoverContainer.style.display = 'flex';
-                } else {
-                    // 没有封面时隐藏
-                    albumCover.style.display = 'none';
-                    albumCoverContainer.style.display = 'none';
-                }
-            }
-            
-            // 加载新媒体
-            currentPlayer.load();
-            
-            // 重新设置事件监听器
-            setupMediaListeners();
-            
-            // 更新播放列表高亮
-            renderPlaylist();
-        }
-
-        // 渲染播放列表
-        function renderPlaylist() {
-            playlistEl.innerHTML = '';
-            playlist.forEach((track, i) => {
-                const div = document.createElement('div');
-                div.className = `track-item flex justify-between items-center cursor-pointer py-3 ${currentTrack === i ? 'active' : 'text-zinc-600'}`;
-                
-                // 为视频添加图标
-                const videoIcon = track.type === 'video' 
-                    ? '<i data-lucide="video" class="w-3.5 h-3.5 mr-1.5 inline-block" style="vertical-align: -2px;"></i>' 
-                    : '';
-                
-                div.innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <span class="mono text-xs w-6">${String(i + 1).padStart(2, '0')}</span>
-                        <div>
-                            <span class="text-base font-bold italic tracking-tighter uppercase block">${track.title}</span>
-                            <span class="mono text-xs text-zinc-400">${track.artist}</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        ${videoIcon}
-                        <span class="mono text-[10px]">${track.duration}</span>
-                    </div>
-                `;
-                div.addEventListener('click', () => {
-                    currentTrack = i;
-                    updateTrackInfo();
-                    playTrack();
-                });
-                playlistEl.appendChild(div);
-            });
-            
-            // 重新渲染图标
-            lucide.createIcons();
-        }
-
-        // 播放
-        function playTrack() {
-            // 使用当前活动的媒体元素播放
-            const playPromise = currentPlayer.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    // UI更新由 play 事件监听器自动处理
-                }).catch(err => {
-                    alert('播放失败!\n\n错误: ' + err.message);
-                });
-            }
-        }
-
-        // 暂停
-        function pauseTrack() {
-            currentPlayer.pause();
-            // UI更新由 pause 事件监听器自动处理
-        }
-
-        // 播放/暂停切换
-        playBtn.addEventListener('click', () => {
-            if (isPlaying) {
-                pauseTrack();
-            } else {
-                playTrack();
-            }
-        });
-
-        // 上一曲
-        prevBtn.addEventListener('click', () => {
-            currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
-            updateTrackInfo();
-            if (isPlaying) playTrack();
-        });
-
-        // 下一曲 (支持随机模式)
-        nextBtn.addEventListener('click', () => {
-            playNextTrack();
-        });
-
-        // 随机播放切换
-        shuffleBtn.addEventListener('click', () => {
-            isShuffleMode = !isShuffleMode;
-            shuffleBtn.classList.toggle('active');
-        });
-
-        // 播放下一曲 (考虑随机模式)
-        function playNextTrack() {
-            if (isShuffleMode) {
-                // 随机模式: 随机选择一首不同的歌曲
-                let nextIndex;
-                do {
-                    nextIndex = Math.floor(Math.random() * playlist.length);
-                } while (nextIndex === currentTrack && playlist.length > 1);
-                currentTrack = nextIndex;
-            } else {
-                // 顺序模式: 下一首
-                currentTrack = (currentTrack + 1) % playlist.length;
-            }
-            updateTrackInfo();
-            if (isPlaying) playTrack();
-        }
-
-        // 静音切换
-        volumeBtn.addEventListener('click', () => {
-            isMuted = !isMuted;
-            audio.muted = isMuted;
-            video.muted = isMuted;
-            
-            if (isMuted) {
-                // 静音图标 (带斜杠)
-                volumeIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>';
-            } else {
-                // 正常音量图标
-                volumeIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>';
-            }
-        });
-
-        // 音量滑块
-        volumeSlider.addEventListener('input', (e) => {
-            const volume = e.target.value / 100;
-            audio.volume = volume;
-            video.volume = volume;
-            
-            // 如果音量为0,显示静音图标
-            if (volume === 0) {
-                volumeIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>';
-            } else {
-                // 正常音量图标
-                volumeIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>';
-                // 如果之前是静音状态,取消静音
-                if (isMuted) {
-                    isMuted = false;
-                    audio.muted = false;
-                    video.muted = false;
-                }
-            }
-        });
-        
-        // 音量滑块触摸增强 - 添加触摸反馈
-        volumeSlider.addEventListener('touchstart', (e) => {
-            volumeSlider.style.transform = 'scaleY(1.2)';
-            volumeSlider.style.transition = 'transform 0.1s ease';
-        });
-        
-        volumeSlider.addEventListener('touchend', (e) => {
-            volumeSlider.style.transform = 'scaleY(1)';
-        });
-        
-        volumeSlider.addEventListener('touchcancel', (e) => {
-            volumeSlider.style.transform = 'scaleY(1)';
-        });
-
-        // 更新播放按钮UI为播放状态（显示暂停图标）
-        function updatePlayButtonUI() {
-            isPlaying = true;
-            playIcon.style.marginLeft = '0'; // 暂停图标居中,不需要偏移
-            playIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
-        }
-
-        // 更新播放按钮UI为暂停状态（显示播放图标）
-        function updatePauseButtonUI() {
-            isPlaying = false;
-            playIcon.style.marginLeft = '5px'; // 播放图标需要偏移
-            playIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
-        }
-
-        // 处理媒体播放事件（包括外部控制）
-        function handleMediaPlay() {
-            updatePlayButtonUI();
-        }
-
-        // 处理媒体暂停事件（包括外部控制）
-        function handleMediaPause() {
-            updatePauseButtonUI();
-        }
-
-        // 进度条更新 - 监听当前播放器
-        function setupMediaListeners() {
-            // 移除旧的监听器
-            audio.removeEventListener('timeupdate', updateProgress);
-            audio.removeEventListener('loadedmetadata', updateDuration);
-            audio.removeEventListener('error', handleMediaError);
-            audio.removeEventListener('ended', handleMediaEnded);
-            audio.removeEventListener('play', handleMediaPlay);
-            audio.removeEventListener('pause', handleMediaPause);
-            video.removeEventListener('timeupdate', updateProgress);
-            video.removeEventListener('loadedmetadata', updateDuration);
-            video.removeEventListener('error', handleMediaError);
-            video.removeEventListener('ended', handleMediaEnded);
-            video.removeEventListener('play', handleMediaPlay);
-            video.removeEventListener('pause', handleMediaPause);
-            
-            // 添加新的监听器到当前播放器
-            currentPlayer.addEventListener('timeupdate', updateProgress);
-            currentPlayer.addEventListener('loadedmetadata', updateDuration);
-            currentPlayer.addEventListener('error', handleMediaError);
-            currentPlayer.addEventListener('ended', handleMediaEnded);
-            currentPlayer.addEventListener('play', handleMediaPlay);
-            currentPlayer.addEventListener('pause', handleMediaPause);
-        }
-
-        function updateProgress() {
-            if (currentPlayer.duration) {
-                const progress = (currentPlayer.currentTime / currentPlayer.duration) * 100;
-                progressFill.style.width = progress + '%';
-                currentTimeEl.textContent = formatTime(currentPlayer.currentTime);
-            }
-        }
-
-        function updateDuration() {
-            durationEl.textContent = formatTime(currentPlayer.duration);
-        }
-
-        function handleMediaError(e) {
-            alert('无法加载媒体!\n请确认:\n1. 使用本地服务器访问\n2. 媒体文件存在');
-        }
-
-        function handleMediaEnded() {
-            playNextTrack();
-        }
-
-        // 初始化时设置监听器
-        setupMediaListeners();
-
-        // 点击进度条跳转 (支持音频和视频)
-        progressBar.addEventListener('click', (e) => {
-            const rect = progressBar.getBoundingClientRect();
-            const percent = (e.clientX - rect.left) / rect.width;
-            if (currentPlayer.duration) {
-                currentPlayer.currentTime = percent * currentPlayer.duration;
-            }
-        });
-
-        // 进度条拖动功能 (支持鼠标和触摸)
-        let isDragging = false;
-
-        // 鼠标事件
-        progressBar.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            progressBar.style.transform = 'scaleY(1.3)';
-            progressBar.style.transition = 'transform 0.1s ease';
-            updateProgressFromMouse(e);
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                updateProgressFromMouse(e);
-            }
-        });
-
-        document.addEventListener('mouseup', () => {
-            if (isDragging) {
-            isDragging = false;
-                progressBar.style.transform = 'scaleY(1)';
-            }
-        });
-
-        // 触摸事件
-        progressBar.addEventListener('touchstart', (e) => {
-            isDragging = true;
-            progressBar.style.transform = 'scaleY(1.3)';
-            progressBar.style.transition = 'transform 0.1s ease';
-            updateProgressFromTouch(e);
-            e.stopPropagation(); // 防止事件冒泡
-        }, { passive: false });
-
-        document.addEventListener('touchmove', (e) => {
-            if (isDragging) {
-                updateProgressFromTouch(e);
-            }
-        }, { passive: false });
-
-        document.addEventListener('touchend', () => {
-            if (isDragging) {
-                isDragging = false;
-                progressBar.style.transform = 'scaleY(1)';
-            }
-        });
-        
-        document.addEventListener('touchcancel', () => {
-            if (isDragging) {
-                isDragging = false;
-                progressBar.style.transform = 'scaleY(1)';
-            }
-        });
-
-        function updateProgressFromMouse(e) {
-            const rect = progressBar.getBoundingClientRect();
-            let percent = (e.clientX - rect.left) / rect.width;
-            percent = Math.max(0, Math.min(1, percent)); // 限制在 0-1 之间
-            
-            if (currentPlayer.duration) {
-                currentPlayer.currentTime = percent * currentPlayer.duration;
-            }
-        }
-
-        function updateProgressFromTouch(e) {
-            e.preventDefault(); // 防止页面滚动
-            const touch = e.touches[0] || e.changedTouches[0];
-            if (!touch) return;
-            
-            const rect = progressBar.getBoundingClientRect();
-            let percent = (touch.clientX - rect.left) / rect.width;
-            percent = Math.max(0, Math.min(1, percent)); // 限制在 0-1 之间
-            
-            if (currentPlayer.duration && !isNaN(currentPlayer.duration)) {
-                currentPlayer.currentTime = percent * currentPlayer.duration;
-            }
-        }
-
-        // 格式化时间
-        function formatTime(seconds) {
-            if (isNaN(seconds)) return '0:00';
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
-        }
-
-        // ==================== 视频控制 ====================
-        const exitVideoBtn = document.getElementById('exit-video-btn');
-        const fullscreenBtn = document.getElementById('fullscreen-btn');
-
-        // 退出视频 - 跳到下一首音频
-        exitVideoBtn.addEventListener('click', () => {
-            // 找到下一首非视频曲目
-            let nextIndex = (currentTrack + 1) % playlist.length;
-            let attempts = 0;
-            while (playlist[nextIndex].type === 'video' && attempts < playlist.length) {
-                nextIndex = (nextIndex + 1) % playlist.length;
-                attempts++;
-            }
-            
-            if (playlist[nextIndex].type === 'audio') {
-                currentTrack = nextIndex;
-                updateTrackInfo();
-                if (isPlaying) playTrack();
-            } else {
-                // 如果全是视频,就暂停并停留在当前
-                pauseTrack();
-            }
-        });
-
-        // 全屏切换
-        fullscreenBtn.addEventListener('click', () => {
-            if (!document.fullscreenElement) {
-                videoContainer.requestFullscreen().catch(err => {
-                    // 静默失败，某些浏览器不支持全屏
-                });
-            } else {
-                document.exitFullscreen();
-            }
-        });
-
-        // 监听全屏变化,更新图标
-        document.addEventListener('fullscreenchange', () => {
-            const icon = fullscreenBtn.querySelector('i');
-            if (document.fullscreenElement) {
-                icon.setAttribute('data-lucide', 'minimize');
-            } else {
-                icon.setAttribute('data-lucide', 'maximize');
-            }
-            lucide.createIcons();
-        });
-
-        // ==================== 菜单 ====================
-        const menuBtn = document.getElementById('menu-btn');
-        const closeMenuBtn = document.getElementById('close-menu');
-        const fullscreenMenu = document.getElementById('fullscreen-menu');
-
-        menuBtn.addEventListener('click', () => {
-            fullscreenMenu.style.display = 'flex';
-            // 确保图标正确渲染
-            setTimeout(() => lucide.createIcons(), 0);
-        });
-
-        closeMenuBtn.addEventListener('click', closeMenu);
-
-        function closeMenu() {
-            fullscreenMenu.style.display = 'none';
-        }
-
-        // ==================== 全局快捷键 ====================
-        document.addEventListener('keydown', (e) => {
-            // ESC - 关闭菜单或退出视频
-            if (e.key === 'Escape') {
-                if (fullscreenMenu.style.display === 'flex') {
-                    closeMenu();
-                } else if (currentMediaType === 'video' && videoContainer.style.display !== 'none') {
-                    // 退出视频播放
-                    exitVideoBtn.click();
-                }
-            }
-            
-            // 空格 - 播放/暂停 (防止页面滚动)
-            if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
-                e.preventDefault();
-                if (isPlaying) {
-                    pauseTrack();
-                } else {
-                    playTrack();
-                }
-            }
-            
-            // 左箭头 - 上一曲
-            if (e.key === 'ArrowLeft' && e.target.tagName !== 'INPUT') {
-                e.preventDefault();
-                prevBtn.click();
-            }
-            
-            // 右箭头 - 下一曲
-            if (e.key === 'ArrowRight' && e.target.tagName !== 'INPUT') {
-                e.preventDefault();
-                nextBtn.click();
-            }
-        });
-
-        // ==================== 播放列表折叠 ====================
-        const togglePlaylistBtn = document.getElementById('toggle-playlist');
-        let playlistExpanded = true;
-
-        togglePlaylistBtn.addEventListener('click', () => {
-            playlistExpanded = !playlistExpanded;
-            const chevronIcon = togglePlaylistBtn.querySelector('i');
-            
-            if (playlistExpanded) {
-                playlistEl.style.maxHeight = '500px';
-                playlistEl.style.opacity = '1';
-                chevronIcon.setAttribute('data-lucide', 'chevron-up');
-            } else {
-                playlistEl.style.maxHeight = '0';
-                playlistEl.style.opacity = '0';
-                chevronIcon.setAttribute('data-lucide', 'chevron-down');
-            }
-            
-            // 重新渲染图标
-            lucide.createIcons();
-        });
-
-        // ==================== 回到顶部按钮 ====================
-        const backToTopBtn = document.getElementById('back-to-top');
-        
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                backToTopBtn.classList.add('visible');
-            } else {
-                backToTopBtn.classList.remove('visible');
-            }
-        });
-
-        // ==================== 初始化 Lucide 图标 ====================
-        // 立即初始化一次图标
-        lucide.createIcons();
-        
-        // DOM加载完成后再初始化一次，确保所有图标都正确渲染
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-        });
-
-        // ==================== 初始化 ====================
-        window.addEventListener('load', () => {
-            initPlayer();
-            // 页面完全加载后再次初始化图标，确保没有遗漏
-            lucide.createIcons();
-        });
-    </script>
 </body>
 </html>
 

@@ -7,7 +7,7 @@
   const MAX_HISTORY = 50;
   const MD_STREAM_THROTTLE_MS = 180;
   const STREAM_BOTTOM_THRESHOLD_PX = 24;
-  const MAX_WORD_LEN = 15;
+  const MAX_WORD_LEN = 64;
 
 
 
@@ -486,7 +486,7 @@
     el.streamMd.innerHTML = "";
     if (el.streamHdrLabel) el.streamHdrLabel.textContent = "实时分析中";
     if (el.thinkingLabel) {
-      el.thinkingLabel.textContent = "快速分析中…";
+      el.thinkingLabel.textContent = AI.getSettings().thinking ? "正在思考…" : "正在分析…";
     }
     el.status.textContent = "";
 
@@ -709,16 +709,7 @@
     }
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Escape") return;
-      const menu = document.getElementById("english-fs-menu");
-      const menuBtn = document.getElementById("english-menu-btn");
-      if (menu && menu.classList.contains("active")) {
-        menu.classList.remove("active");
-        menu.setAttribute("aria-hidden", "true");
-        if (menuBtn) menuBtn.setAttribute("aria-expanded", "false");
-        document.body.classList.remove("english-menu-open");
-        e.preventDefault();
-        return;
-      }
+      if(document.querySelector("dialog[open]")) return;
       if (el.resultPanel && !el.resultPanel.hidden) {
         closeResult();
         e.preventDefault();
@@ -755,36 +746,7 @@
 
     if (window.lucide) window.lucide.createIcons();
 
-    (function initSiteMenu() {
-      const btn = document.getElementById("english-menu-btn");
-      const panel = document.getElementById("english-fs-menu");
-      const closeBtn = document.getElementById("english-fs-close");
-      if (!btn || !panel || !closeBtn) return;
 
-      function openMenu() {
-        panel.classList.add("active");
-        panel.setAttribute("aria-hidden", "false");
-        btn.setAttribute("aria-expanded", "true");
-        document.body.classList.add("english-menu-open");
-        if (window.lucide) window.lucide.createIcons();
-      }
-
-      function closeMenu() {
-        panel.classList.remove("active");
-        panel.setAttribute("aria-hidden", "true");
-        btn.setAttribute("aria-expanded", "false");
-        document.body.classList.remove("english-menu-open");
-      }
-
-      btn.addEventListener("click", function () {
-        if (panel.classList.contains("active")) closeMenu();
-        else openMenu();
-      });
-      closeBtn.addEventListener("click", closeMenu);
-      panel.querySelectorAll('a.english-fs-link').forEach(function (a) {
-        a.addEventListener("click", closeMenu);
-      });
-    })();
   }
 
   if (document.readyState === "loading") {

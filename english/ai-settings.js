@@ -12,10 +12,9 @@
   window.openEnglishAISettings=open;
   document.querySelector('#english-ai-open').addEventListener('click',open);
   dialog.querySelector('#ai-close').addEventListener('click',()=>dialog.close());
-  dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});
   dialog.querySelector('#ai-paste').addEventListener('click',async()=>{try{const value=await navigator.clipboard.readText();input.value=value.trim();input.focus();status.textContent='';}catch(_){input.focus();status.textContent='请在输入框内长按或按 Ctrl/Cmd + V 粘贴。';}});
   dialog.querySelector('#ai-clear').addEventListener('click',()=>{ai.clearKey();input.value='';input.placeholder='粘贴 API Key';status.textContent='已从英语工具与钟楼清除。';notify();});
   dialog.querySelector('#ai-model-refresh').addEventListener('click',async e=>{const button=e.currentTarget,current=select.value,pendingThinking=thinking.checked;button.disabled=true;status.textContent='读取模型…';try{await ai.testConnection(input.value.trim()?{apiKey:input.value.trim()}:{});modelOptions();if([...select.options].some(o=>o.value===current))select.value=current;thinking.checked=pendingThinking;status.textContent='模型已更新';}catch(err){status.textContent=err.message;}finally{button.disabled=false;}});
   dialog.querySelector('form').addEventListener('submit',e=>{e.preventDefault();try{const patch={model:select.value,thinking:thinking.checked,rememberKey:true};if(input.value.trim())patch.apiKey=input.value.trim();const saved=ai.configure(patch);if(!saved.storageAvailable){status.textContent='浏览器无法保存，仅当前页面可用。';return;}input.value='';notify();dialog.close();}catch(err){status.textContent=err.message;}});
-  window.addEventListener('storage',e=>{if(e.key?.startsWith('emoboi.deepseek.key.v1'))notify();});
+  window.addEventListener('storage',e=>{if(e.key===null||e.key?.startsWith('emoboi.deepseek.key.v1')){input.placeholder=ai.available?'已配置；留空保持':'粘贴 API Key';notify();}});
 })();
