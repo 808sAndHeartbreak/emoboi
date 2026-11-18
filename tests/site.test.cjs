@@ -13,9 +13,9 @@ test('新文档引用与实际文件内容一致的CSS和JS版本，避免新旧
  }
 });
 test('美术资源预算与钟楼离线包体积不回退，保留标题字体和嵌入图片',()=>{
- const file=fs.readFileSync(path.join(root,'boardgames/clocktower/index.html'),'utf8');assert.ok(Buffer.byteLength(file)<1400000);assert.ok(file.includes('data:image/webp;base64,'));assert.ok(file.includes('Notebook Serif'));assert.ok(!file.includes("font-family:'Notebook Sans';font-style"));
+ const file=fs.readFileSync(path.join(root,'boardgames/clocktower/index.html'),'utf8');assert.ok(Buffer.byteLength(file)<1950000);assert.ok(file.includes('data:image/webp;base64,'));assert.ok(file.includes('Notebook Serif'));assert.ok(file.includes("app-and-role character subset"));
  assert.ok(fs.statSync(path.join(root,'asset/edition/reliquary-small.webp')).size<30000);assert.ok(fs.statSync(path.join(root,'shared/fonts/unifrakturcook-latin.woff2')).size<25000);
- const home=fs.readFileSync(path.join(root,'index.html'),'utf8');assert.match(home,/<picture class="home-art"/);assert.match(home,/fetchpriority="high"/);assert.ok(!home.includes('requestAnimationFrame'));
+ const home=fs.readFileSync(path.join(root,'index.html'),'utf8');assert.equal((home.match(/class="collage-img/g)||[]).length,27);assert.ok(home.includes('id="motion-toggle"'));
 });
 }
 {
@@ -32,7 +32,7 @@ test('桌游及英语静态依赖可解析，部署不依赖第三方运行脚�
  }
 });
 test('网页主入口和菜单进入桌游，隐藏旅游入口未公开',()=>{
- const html=read('index.html');assert.equal((html.match(/href="boardgames\/"/g)||[]).length,1);assert.ok(read('shared/site.js').includes('/boardgames/'));assert.ok(!html.includes('href="clocktower/"'));assert.ok(!/href="(?:\.\/)?vn\//.test(html));assert.ok(!/id="preloader"/.test(html));
+ const html=read('index.html');assert.equal((html.match(/href="boardgames\/"/g)||[]).length,2);assert.ok(read('shared/site.js').includes('/boardgames/'));assert.ok(!html.includes('href="clocktower/"'));assert.ok(!/href="(?:\.\/)?vn\//.test(html));assert.ok(!/id="preloader"/.test(html));
 });
 test('旧钟楼URL仅跳转，新地址保留原工作区和Key，不自动新建对局',()=>{
  const old=read('clocktower/index.html'),app=read('boardgames/clocktower/index.html');assert.match(old,/location\.replace\('\/boardgames\/clocktower\/'\+location.search\+location.hash\)/);assert.ok(app.includes("const STORAGE = 'clocktower-notebook.v1'"));assert.ok(app.includes('if(tabletopPage&&!game()&&!rawRecovery)openSetup()'));assert.ok(app.includes('emoboi.deepseek.key.v1'));

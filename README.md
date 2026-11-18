@@ -38,13 +38,15 @@ workers/deepseek-proxy/ 仅为可选 BYOK 代理源码，已移除站点 Secret 
 
 ## 性能与视觉
 
-当前 v0.35：原创银色哥特主视觉，黑纸、纸白与血红；哥特字仅用于品牌 / 拉丁标题，正文用系统黑体。首页精简为单图与六个入口。各工具统一导航、按钮、文字层级，保留角色与结果等必要语义颜色。美术资源、授权和生图提示词见 [ART.md](asset/edition/ART.md)。
+当前 v0.36：恢复原站 Syne、Archivo Black、Space Mono、Major Mono 等字体与 E 标志，恢复首页拼贴、反白切片入口、全屏红色菜单。各工具保留自己的字体、配色和交互，不再套用统一哥特字体。精简重复说明，同时保留纸张、印刷错位与悬停响应。
 
-钟楼独立 HTML 从2,879,002字节降至1,273,369字节，减少55.8%，保留离线打开。新版手机主视觉23,500字节，标题字体20,716字节。CSS / JS 按内容生成版本，发布前运行 `node scripts/stamp-assets.cjs`，防止新旧资源混用。普通正文无需下载字体；去除自动横幅、反复脉冲和自定义光标循环。
+钟楼恢复原正文字体和城镇美术，保留离线打开；字体按应用与角色资料字符做子集，保留400–600可变字重。独立 HTML 为1,818,489字节，比v0.34减少36.8%；字体子集375,228字节，城镇WebP为60,564字节。CSS / JS 按内容生成版本，发布前运行 `node scripts/stamp-assets.cjs`，防止新旧资源混用。
+
+当前视觉入口是 `shared/home-refinement.css`、`shared/home-art.js`、`shared/refinement.css` 和 `boardgames/restored.css`。钟楼源项目使用 `restoration.css`，狼人杀使用原有样式。v0.35的 `shared/edition.css`、`shared/home.css`、`boardgames/hub.css` 和银色哥特美术保留在历史资源中，页面不再引用。
 
 以下为此前资源优化记录：
 
-v0.33 的27张拼贴装饰图使用派生 WebP，总量从3,477,999字节降至411,968字节（减少88.2%），原图保留。手机减少装饰密度；取消等待全部资源的遮罩，字体、图标不再依赖第三方运行时。拉丁字体自托管、按需使用并保持 font-display:swap，图标使用小型本地SVG。
+v0.33 的27张拼贴装饰图使用派生 WebP，总量从3,477,999字节降至411,968字节（减少88.2%），原图保留。v0.36手机保留8张拼贴，桌面选择少量图层浮动与指针视差；可以暂停，并遵循减少动态偏好。取消等待全部资源的遮罩，字体、图标不再依赖第三方运行时。拉丁字体自托管、按需使用并保持 font-display:swap，图标使用小型本地SVG。
 
 桌游选择页为静态HTML/CSS，无额外框架；微动效支持减少动态偏好。狼人杀两张美术资源从656,664字节减至161,908字节。页面保留移动优先布局，兼容平板和桌面。首页菜单改为原生dialog，支持焦点约束和Escape返回。
 
@@ -62,6 +64,6 @@ node scripts/stamp-assets.cjs
 node --test tests/site.test.cjs
 ```
 
-本轮详情见 [v0.35 发布说明](boardgames/docs/release-v35.md)。历史：[v0.34](boardgames/docs/release-v34.md) · [v0.33](boardgames/docs/release-v33.md)。
+本轮详情见 [v0.36 发布说明](boardgames/docs/release-v36.md)。历史：[v0.35](boardgames/docs/release-v35.md) · [v0.34](boardgames/docs/release-v34.md) · [v0.33](boardgames/docs/release-v33.md)。
 
 *Design by 天 · © 2026 emoboi.com*

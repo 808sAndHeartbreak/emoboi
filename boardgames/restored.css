@@ -1,0 +1,10 @@
+/* Original paper collage; no added instructions around the two choices. */
+.masthead-caption{display:none}
+.game-copy h2{margin-top:0;margin-bottom:12px}
+.game-link:focus-visible{outline:2px solid #f34b5f;outline-offset:6px}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+ .game-link:hover .game-art::before{transform:scale(1.055)}
+ .game-link:hover .enter-arrow{transform:translateX(4px) rotate(0)}
+}
+@media(max-width:760px){.masthead{display:block;padding-bottom:6px}.edition{margin-bottom:22px}.game-copy h2{margin-bottom:10px}}
+@media(max-width:359px){.game-copy h2{font-size:1.7rem}}

@@ -1,18 +1,17 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="description" content="日语五十音图学习工具 - 包含平假名、片假名、罗马字及字源对照">
     <meta name="theme-color" content="#080808">
     <title>五十音 | Gojūon</title>
-<link rel="preload" as="font" href="../shared/fonts/unifrakturcook-latin.woff2" type="font/woff2" crossorigin>
     <!-- Tailwind CSS -->
-    <link rel="stylesheet" href="../shared/utilities.css?v=7bdac741d0">
+    <link rel="stylesheet" href="../shared/utilities.css?v=39382e47ca">
     <!-- Lucide Icons -->
     <script defer src="../shared/icons.js?v=a3f9536681"></script>
     <!-- Fonts -->
-
+    <link rel="stylesheet" href="../shared/fonts.css?v=c4dc5e2e06">
     <style>
         :root {
             --bg-deep: #080808;
@@ -1436,20 +1435,23 @@
         }
     </style>
 <link rel="stylesheet" href="../shared/site.css?v=a16b3e4bdb">
-<script defer src="../shared/site.js?v=6ad8e621b2"></script>
+<script defer src="../shared/site.js?v=098f81feeb"></script>
 <style>
 dialog.quiz-modal,dialog.kana-picker-overlay,dialog.modal-overlay{margin:0;border:0;width:100%;height:100%;max-width:none;max-height:none;padding:20px;background:#09090beF;color:#e5e1eb;overflow:auto}dialog.quiz-modal[open],dialog.kana-picker-overlay[open],dialog.modal-overlay[open]{display:flex}dialog.quiz-modal:not([open]),dialog.kana-picker-overlay:not([open]),dialog.modal-overlay:not([open]){display:none}.quiz-content{margin:auto;max-height:calc(100svh - 40px);overflow:auto}.quiz-modal button,.kana-picker-close{min-height:44px}
 </style><script defer src="app.js?v=e00041f354" fetchpriority="high"></script>
-<link rel="stylesheet" href="../shared/edition.css?v=cdd318cb55">
+<link rel="stylesheet" href="../shared/refinement.css?v=bb5f827f69">
 </head>
-<body data-section="gojuon">
+<body data-tool="gojuon">
     <!-- 自定义光标 -->
-
-
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
 
     <!-- 顶部导航栏 -->
-    <nav class="editorial-nav fixed top-0 left-0 w-full z-40 px-3 sm:px-5 md:px-8 flex justify-between items-center backdrop-blur-md" style="height: 52px; background: linear-gradient(180deg, rgba(10,10,10,0.98) 0%, rgba(5,5,5,0.95) 100%); border-bottom: 1px solid rgba(188,254,45,0.15); box-shadow: 0 1px 20px rgba(0,0,0,0.5), 0 1px 0 rgba(188,254,45,0.08);">
-        <a href="../" class="site-brand" aria-label="EMOBOI 首页"><span class="brand-glyph" aria-hidden="true">e</span><span class="site-wordmark">emoboi</span></a>
+    <nav class="fixed top-0 left-0 w-full z-40 px-3 sm:px-5 md:px-8 flex justify-between items-center backdrop-blur-md" style="height: 52px; background: linear-gradient(180deg, rgba(10,10,10,0.98) 0%, rgba(5,5,5,0.95) 100%); border-bottom: 1px solid rgba(188,254,45,0.15); box-shadow: 0 1px 20px rgba(0,0,0,0.5), 0 1px 0 rgba(188,254,45,0.08);">
+        <a href="../" class="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity flex-shrink-0">
+            <img src="../asset/logo-e.jpg" alt="E" class="w-7 h-7 md:w-8 md:h-8 object-contain">
+            <span class="font-black tracking-tighter text-base md:text-lg hidden sm:block" style="font-family: 'Syne', sans-serif;">EMOBOI</span>
+        </a>
         <div class="nav-center flex-shrink-0">
             <!-- 显隐下拉菜单 -->
             <div class="dropdown-container">
@@ -1495,7 +1497,7 @@ dialog.quiz-modal,dialog.kana-picker-overlay,dialog.modal-overlay{margin:0;borde
     <!-- 全屏菜单 -->
     <dialog id="site-navigation" data-site-nav aria-label="站点导航"></dialog>
 
-    <h1 class="sr-only">五十音</h1><main id="main-grid" lang="ja"></main>
+    <main id="main-grid"></main>
 
     <!-- 测试弹窗 -->
     <dialog class="quiz-modal" id="quiz-modal" aria-label="五十音测试">

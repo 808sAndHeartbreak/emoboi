@@ -395,8 +395,8 @@
             
             // 应用背景图
             const bgOverlay = document.getElementById('bgOverlay');
-            bgOverlay.style.backgroundImage = 'none';
-            bgOverlay.style.opacity = '0';
+            bgOverlay.style.backgroundImage = theme.bgImage ? `url('${theme.bgImage}')` : 'none';
+            bgOverlay.style.opacity = theme.bgImage ? '1' : '0';
             
             // 应用主题
         }

@@ -4,16 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <title>SF6 FRAME LAB - 街霸6 帧数计算器</title>
-<link rel="preload" as="font" href="../shared/fonts/unifrakturcook-latin.woff2" type="font/woff2" crossorigin>
     <meta name="description" content="Street Fighter 6 帧数压制计算工具，自动计算最优卡帧方案和投技时机">
     <meta name="keywords" content="SF6, Street Fighter 6, 街霸6, 帧数, Frame Data, 压起身, Meaty, Okizeme">
     <!-- Open Graph 社交分享 -->
     <meta property="og:title" content="SF6 FRAME LAB - 帧数计算器">
     <meta property="og:description" content="Street Fighter 6 压起身帧数计算工具">
     <meta property="og:type" content="website">
-    <link rel="stylesheet" href="../shared/utilities.css?v=7bdac741d0">
+    <link rel="stylesheet" href="../shared/utilities.css?v=39382e47ca">
     <!-- Fonts -->
-
+    <link rel="stylesheet" href="../shared/fonts.css?v=c4dc5e2e06">
     <!-- Lucide Icons -->
     <script defer src="../shared/icons.js?v=a3f9536681"></script>
     <style>
@@ -1082,6 +1081,11 @@
         
         /* 减少动画（用户偏好） */
         @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
         
         /* 高对比度模式支持 */
@@ -1879,21 +1883,24 @@
         }
     </style>
 <link rel="stylesheet" href="../shared/site.css?v=a16b3e4bdb">
-<script defer src="../shared/site.js?v=6ad8e621b2"></script>
+<script defer src="../shared/site.js?v=098f81feeb"></script>
 <script>const CHARACTER_DATA = {};</script>
 <script defer src="data/ryu.js?v=4203511faf"></script>
 <script defer src="data/blanka.js?v=6d33d92832"></script>
 <script defer src="data/sagat.js?v=a3e4ea221b"></script>
 <script defer src="data/juri.js?v=6347e866fb"></script>
 <script defer src="data/zangief_modern.js?v=0b2cc91798"></script>
-<script defer src="app.js?v=fde8810f5e" fetchpriority="high"></script>
-<link rel="stylesheet" href="../shared/edition.css?v=cdd318cb55">
+<script defer src="app.js?v=e5f148a859" fetchpriority="high"></script>
+<link rel="stylesheet" href="../shared/refinement.css?v=bb5f827f69">
 </head>
-<body class="p-4 md:p-10 sf6-body" data-section="sf6">
+<body class="p-4 md:p-10 sf6-body" data-tool="sf6">
     <!-- 顶部固定导航栏 -->
-    <nav class="editorial-nav sf6-top-nav">
+    <nav class="sf6-top-nav">
         <div class="sf6-nav-left">
-            <a href="../" class="site-brand"  aria-label="EMOBOI 首页"><span class="brand-glyph" aria-hidden="true">e</span><span class="site-wordmark">emoboi</span></a>
+            <a href="../" class="sf6-nav-logo" title="返回主页">
+                <img src="../asset/logo-e.jpg" alt="E">
+                <span>EMOBOI</span>
+            </a>
         </div>
         <div class="sf6-nav-right">
             <span class="mono text-[10px] md:text-xs uppercase hidden sm:block" style="color: var(--theme-primary);">SF6 FRAME LAB</span>
@@ -1910,7 +1917,7 @@
     <dialog id="site-navigation" data-site-nav aria-label="站点导航"></dialog>
     
     <!-- 背景氛围层 -->
-
+    <div class="ambient-layer"></div>
     
     <!-- 角色背景图层 -->
     <div id="bgOverlay" class="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-0 transition-opacity duration-500" style="background-position: center 20%;"></div>
@@ -1935,7 +1942,7 @@
         <header class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-16 border-b-2 border-zinc-800 pb-6">
                 <div class="flex flex-col">
                 <div class="flex items-center gap-3">
-                    <h1 class="impact-text text-5xl sm:text-6xl tracking-tighter title-animate glitch-hover">Frame lab</h1>
+                    <h1 class="impact-text text-5xl sm:text-6xl tracking-tighter title-animate glitch-hover">SF6 FRAME LAB</h1>
                     <button onclick="openHelpModal()" class="group px-3 py-1 ml-1 bg-gradient-to-r from-cyan-600/20 to-pink-600/20 border border-cyan-500/50 hover:border-cyan-400 text-cyan-400 hover:text-cyan-300 text-xs font-bold tracking-wider uppercase transition-all hover:shadow-[0_0_15px_rgba(0,255,255,0.3)] flex items-center gap-1 whitespace-nowrap" title="使用说明">
                         <span class="text-sm">?</span>
                         <span>说明</span>

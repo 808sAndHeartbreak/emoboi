@@ -1,0 +1,50 @@
+/* Preserve the original collage, type, slicing navigation and art direction. */
+#motion-toggle{width:40px;min-height:40px;display:grid;place-items:center;background:transparent;border:1px solid #ffffff26;color:#d6d6d0;font:600 13px/1 'Syne',sans-serif;cursor:pointer;margin-left:auto;margin-right:12px}
+#motion-toggle:hover{color:#bcfe2d;border-color:#bcfe2d80}
+#motion-toggle:focus-visible{outline:2px solid #bcfe2d;outline-offset:4px}
+body>nav{padding-inline:clamp(18px,3vw,40px)!important}
+#menu-btn,#close-menu{display:grid;place-items:center;width:44px;min-width:44px;min-height:44px;padding:10px;box-sizing:border-box}
+#menu-btn svg,#close-menu svg{width:22px;height:22px}
+.nav-item:focus-visible{outline:2px solid #bcfe2d;outline-offset:-4px}
+.nav-item:focus-visible .nav-bg,.nav-item:active .nav-bg{transform:translateX(0)}
+.nav-item:focus-visible h2{font-style:italic;transform:translateX(20px)}
+.nav-with-boardgames .nav-item{animation:none}
+.collage-img{animation:none!important;translate:var(--art-x,0px) var(--art-y,0px);transition:opacity .3s,filter .3s;will-change:auto}
+.collage-img.art-near{filter:contrast(1.16);opacity:.62!important}
+.collage-img.art-far{opacity:.23!important}
+.floating-ascii:empty{display:none}
+.glitch-text,.scanline{animation:none}
+.menu-link:hover,.menu-link:hover .menu-title,.menu-link:hover .cross-symbol{animation:none!important}
+.blood-pulse-layer,.menu-particle{animation:none!important}
+#fullscreen-menu:modal{overscroll-behavior:contain}#fullscreen-menu::backdrop{overflow:hidden;overscroll-behavior:contain}
+@media(prefers-reduced-motion:no-preference){
+ .collage-img.art-float{animation:collage-drift 9s ease-in-out infinite alternate!important;animation-delay:var(--art-delay,0s)!important}
+ .nav-content{transition:transform .26s cubic-bezier(.2,.7,.3,1)}
+ .nav-item:active .nav-content{transform:translateX(5px)}
+ @keyframes collage-drift{from{transform:translateY(0) rotate(var(--rotate,0deg))}to{transform:translateY(-8px) rotate(calc(var(--rotate,0deg) + 1.5deg))}}
+}
+.motion-paused :is(.collage-img,.floating-ascii,.marquee-track){animation-play-state:paused!important}
+.motion-paused .collage-img{translate:0 0}
+@media(max-width:640px){
+ #motion-toggle{width:36px;min-height:40px;margin-right:8px}
+ .nav-with-boardgames .nav-item,.nav-with-boardgames .nav-item:hover{padding-block:clamp(17px,2.6svh,25px);padding-inline:6%}
+ .nav-with-boardgames .nav-item h2{font-size:clamp(1.65rem,6.8vw,2rem)}
+ .nav-item .pinyin{font-size:clamp(.6rem,2.25vw,.75rem);letter-spacing:.1em}
+ .nav-container::before{background:linear-gradient(90deg,#0003,#0009 25%,#0008 70%,#0004)}
+ .nav-item h2,.pinyin{text-shadow:0 2px 12px #000}
+ body>.collage-img{display:none!important}
+ body>.collage-img[data-art-index="0"]{display:block!important;top:7%!important;left:0!important;right:auto!important;width:100%!important;opacity:.45!important}
+ body>.collage-img[data-art-index="3"]{display:block!important;top:21%!important;right:-8%!important;left:auto!important;width:155px!important;opacity:.7!important}
+ body>.collage-img[data-art-index="4"]{display:block!important;top:38%!important;left:-9%!important;right:auto!important;width:140px!important;opacity:.68!important}
+ body>.collage-img[data-art-index="13"]{display:block!important;top:53%!important;right:-5%!important;left:auto!important;width:140px!important;opacity:.64!important}
+ body>.collage-img[data-art-index="16"]{display:block!important;top:70%!important;left:3%!important;right:auto!important;width:165px!important;opacity:.55!important}
+ body>.collage-img[data-art-index="21"]{display:block!important;top:76%!important;right:-5%!important;left:auto!important;width:150px!important;opacity:.56!important}
+ body>.collage-img[data-art-index="2"]{display:block!important;top:16%!important;left:10%!important;right:auto!important;width:74px!important;opacity:.4!important}
+ body>.collage-img[data-art-index="8"]{display:block!important;top:10%!important;right:9%!important;left:auto!important;width:65px!important;opacity:.48!important}
+ .floating-ascii{opacity:.08!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .collage-img,.floating-ascii,.marquee-track,.nav-item{animation:none!important;translate:none;transition:none}
+ .nav-bg{transition:none}.nav-content{transition:none}#fullscreen-menu.menu-entering,#fullscreen-menu.menu-leaving,#fullscreen-menu .menu-link{animation:none}
+}
+@media(max-width:359px){#fullscreen-menu .menu-title{font-size:2rem!important}#fullscreen-menu .menu-link{padding-block:14px}}
