@@ -1,4 +1,4 @@
-/* DeepSeek 代理：Secret DEEPSEEK_API_KEY；[vars] ALLOWED_ORIGINS 或 ALLOWED_ORIGIN；* 放行任意 Origin */
+/* Optional BYOK proxy. Never falls back to a site-owned credential. */
 
 const UPSTREAM = "https://api.deepseek.com/v1/chat/completions";
 
@@ -99,11 +99,12 @@ export default {
       });
     }
 
-    const key = env.DEEPSEEK_API_KEY;
+    const authorization = request.headers.get("Authorization") || "";
+    const key = /^Bearer ([^\s]{1,512})$/.exec(authorization)?.[1];
     if (!key) {
       return new Response(
-        JSON.stringify({ error: "Worker 未配置 DEEPSEEK_API_KEY" }),
-        { status: 500, headers: { ...h, "Content-Type": "application/json" } }
+        JSON.stringify({ error: "请提供自己的 API Key" }),
+        { status: 401, headers: { ...h, "Content-Type": "application/json" } }
       );
     }
 

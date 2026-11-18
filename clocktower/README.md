@@ -1,6 +1,6 @@
 # 血染钟楼推理工具
 
-[打开工具](https://emoboi.com/clocktower/) · [当前推理架构](docs/reasoning-v32.md)
+[打开工具](https://emoboi.com/boardgames/clocktower/) · [当前推理架构](docs/reasoning-v32.md)
 
 手机优先，兼容平板和电脑。首页开局后，在游戏信息页记录自称、发言、行动、生死及个人标记；推理分析页调用DeepSeek并查看报告。
 
@@ -32,3 +32,5 @@ v0.32新增瓦釜雷鸣、夜半狂欢，复核两板51个角色页；选板时�
 静态暗流有界搜索与完整原文分析按覆盖范围切换；不把有限样例当穷举或统计概率。下载本目录`index.html`即可离线记录；AI需网络，手机系统回收网页可能中断，已有输出会保留。
 
 字体为Noto Serif SC与Noto Sans SC，许可随站点提供。角色与游戏内容属于各自权利方。
+
+入口已整合至[桌游](https://emoboi.com/boardgames/)。英语与本工具可共用在本机记住的个人 Key；模型偏好分别保留。

@@ -7,9 +7,9 @@
     <meta name="description" content="EMOBOI - 天的QQ空间.">
     
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Archivo+Black&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="shared/fonts.css?v=33">
     
     <style>
         :root {
@@ -51,8 +51,7 @@
             position: fixed;
             inset: 0;
             background: 
-                radial-gradient(circle at 50% 30%, rgba(188, 254, 45, 0.03) 0%, transparent 50%),
-                url('https://www.transparenttextures.com/patterns/stardust.png');
+                radial-gradient(circle at 50% 30%, rgba(188, 254, 45, 0.03) 0%, transparent 50%);
             z-index: -1;
             opacity: 0.7;
             pointer-events: none;
@@ -1071,15 +1070,21 @@
         }
 
         /* Keep six destinations visible at different viewport heights. */
-        .nav-with-clocktower .nav-item,
-        .nav-with-clocktower .nav-item:hover {
+        .nav-with-boardgames .nav-item,
+        .nav-with-boardgames .nav-item:hover {
             padding-top: clamp(12px, 2.4vh, 30px);
             padding-bottom: clamp(12px, 2.4vh, 30px);
         }
-        .nav-with-clocktower .nav-item h2 {
+        .nav-with-boardgames .nav-item h2 {
             font-size: clamp(1.5rem, 6.5vmin, 5rem);
         }
-    </style>
+
+        .collage-img{height:auto}body{cursor:auto}.custom-pointer,.custom-pointer a,.custom-pointer button{cursor:none}#cursor-dot,#cursor-ring{display:none}.custom-pointer #cursor-dot,.custom-pointer #cursor-ring{display:block}
+        @media(max-width:640px){.collage-img:nth-of-type(n+11){display:none}.noise-overlay{opacity:.025}.scanline{display:none}.vhs-overlay{display:none}}
+        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.scanline{display:none}}
+
+        #fullscreen-menu{width:100vw;max-width:none;height:100svh;max-height:none;padding:0;margin:0;border:0;color:#fff}#fullscreen-menu::backdrop{background:#0009}#fullscreen-menu.menu-entering{animation-duration:.23s}#fullscreen-menu.menu-leaving{animation-duration:.18s}#fullscreen-menu.menu-entering .menu-link{animation-duration:.22s}#fullscreen-menu.menu-entering .menu-link:nth-child(1){animation-delay:0s}#fullscreen-menu.menu-entering .menu-link:nth-child(2){animation-delay:.025s}#fullscreen-menu.menu-entering .menu-link:nth-child(3){animation-delay:.05s}#fullscreen-menu.menu-entering .menu-link:nth-child(4){animation-delay:.075s}#fullscreen-menu.menu-entering .menu-link:nth-child(5){animation-delay:.1s}#fullscreen-menu.menu-entering .menu-link:nth-child(6){animation-delay:.125s}.vhs-noise-layer{animation:none;opacity:.035}
+</style>
 </head>
 <body>
 
@@ -1092,27 +1097,24 @@
     <div class="noise-overlay"></div>
     <div class="scanline"></div>
 
-    <!-- 预加载器 -->
-    <div id="preloader">
-        <div class="loader-symbol" style="position: relative;">℮</div>
-    </div>
+
 
     <!-- 浮动 ASCII 装饰 -->
-    <div class="floating-ascii" style="top: 100px; left: 30px;">
+    <div class="floating-ascii" aria-hidden="true" style="top: 100px; left: 30px;">
 †††††††††††††
 †  EMOBOI   †
 †††††††††††††</div>
 
-    <div class="floating-ascii" style="bottom: 100px; right: 30px;">
+    <div class="floating-ascii" aria-hidden="true" style="bottom: 100px; right: 30px;">
 (╯°□°）╯︵ ┻━┻
 [SYSTEM_DRAINED]</div>
 
-    <div class="floating-ascii" style="top: 45%; left: 15px;">
+    <div class="floating-ascii" aria-hidden="true" style="top: 45%; left: 15px;">
 ░▒▓█ DRAIN █▓▒░</div>
 
     <!-- 底部跑马灯 -->
     <div class="fixed bottom-0 w-full py-1.5 overflow-hidden z-50 text-xs font-bold uppercase tracking-wider" style="background: rgba(30, 30, 30, 0.85); color: #555; border-top: 1px solid rgba(255,255,255,0.06);">
-        <div class="marquee-track">
+        <div class="marquee-track" aria-hidden="true">
             <span class="marquee-content">EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ </span>
             <span class="marquee-content">EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ EMOBOI.COM ★ DRAINED ★ GOTHBOICLIQUE ★ OPIUM ★ </span>
         </div>
@@ -1121,16 +1123,16 @@
     <!-- 导航栏 -->
     <nav class="fixed top-0 left-0 w-full z-40 px-5 md:px-8 flex justify-between items-center backdrop-blur-md" style="height: 52px; background: linear-gradient(180deg, rgba(10,10,10,0.98) 0%, rgba(5,5,5,0.95) 100%); border-bottom: 1px solid rgba(188,254,45,0.15); box-shadow: 0 1px 20px rgba(0,0,0,0.5), 0 1px 0 rgba(188,254,45,0.08); padding-right: 2rem;">
         <div class="flex items-center gap-2 md:gap-3">
-            <img src="asset/logo-e.jpg" alt="E" class="w-7 h-7 md:w-8 md:h-8 object-contain">
+            <img src="asset/logo-e.jpg" alt="E" width="32" height="32" decoding="async" class="w-7 h-7 md:w-8 md:h-8 object-contain">
             <span class="font-black tracking-tighter text-base md:text-lg">EMOBOI</span>
         </div>
-        <button id="menu-btn" class="p-2.5 border border-zinc-800 hover:bg-white hover:text-black transition-all">
+        <button id="menu-btn" aria-label="站点菜单" aria-expanded="false" aria-controls="fullscreen-menu" class="p-2.5 border border-zinc-800 hover:bg-white hover:text-black transition-all">
             <i data-lucide="menu" class="w-6 h-6"></i>
         </button>
     </nav>
 
     <!-- 全屏菜单 -->
-    <div id="fullscreen-menu" class="fixed inset-0 hidden items-center justify-center" style="background: radial-gradient(ellipse at center, rgba(20,5,8,0.98) 0%, rgba(0,0,0,0.99) 100%); z-index: 9995;">
+    <dialog aria-label="站点菜单" id="fullscreen-menu" class="fixed inset-0 hidden items-center justify-center" style="background: radial-gradient(ellipse at center, rgba(20,5,8,0.98) 0%, rgba(0,0,0,0.99) 100%); z-index: 9995;">
         
         <!-- VHS噪点层 -->
         <div class="vhs-noise-layer"></div>
@@ -1164,7 +1166,7 @@
         <!-- 底部血管装饰线 -->
         <div class="absolute bottom-0 left-0 w-full h-1" style="background: linear-gradient(90deg, transparent, var(--sick-purple), var(--sharp-red), transparent); opacity: 0.35; box-shadow: 0 0 25px rgba(26, 10, 26, 0.6); animation: pulseBlood 3s ease-in-out infinite; animation-delay: -1.5s;"></div>
         
-        <button id="close-menu" class="absolute top-6 right-6 p-3 border-2 transition-all drain-close-btn" style="z-index: 10; background: rgba(0, 0, 0, 0.8); border-color: #600; color: #999;">
+        <button id="close-menu" aria-label="关闭菜单" class="absolute top-6 right-6 p-3 border-2 transition-all drain-close-btn" style="z-index: 10; background: rgba(0, 0, 0, 0.8); border-color: #600; color: #999;">
             <i data-lucide="x" class="w-6 h-6"></i>
         </button>
         
@@ -1174,10 +1176,10 @@
                 <span class="cross-symbol">✝</span>
                 <span class="menu-title text-4xl md:text-7xl font-black italic tracking-tighter uppercase" style="font-family: 'Syne', sans-serif;">SF6</span>
             </a>
-            <a href="clocktower/" onclick="closeMenu()" class="menu-link group flex items-center justify-center" aria-label="钟楼手记，血染钟楼记录与推理">
+            <a href="boardgames/" onclick="closeMenu()" class="menu-link group flex items-center justify-center" aria-label="桌游">
                 <span class="menu-scanline"></span>
                 <span class="cross-symbol">♧</span>
-                <span class="menu-title text-4xl md:text-7xl font-black italic tracking-tighter uppercase" style="font-family: 'Syne', sans-serif;">CLOCKTOWER</span>
+                <span class="menu-title text-4xl md:text-7xl font-black italic tracking-tighter uppercase" style="font-family: 'Syne', sans-serif;">桌游</span>
             </a>
             <a href="gojuon/" onclick="closeMenu()" class="menu-link group flex items-center justify-center">
                 <span class="menu-scanline"></span>
@@ -1200,120 +1202,120 @@
                 <span class="menu-title text-4xl md:text-7xl font-black italic tracking-tighter uppercase" style="font-family: 'Syne', sans-serif;">IAMMUSIC</span>
             </a>
         </div>
-    </div>
+    </dialog>
 
     <!-- ========== 拼贴装饰图片 (27张，优化布局 - 左中右均衡分布) ========== -->
     
     <!-- 上方横幅 - 哥特吊灯横幅 -->
-    <img src="asset/goth-banner.jpg" alt="goth-banner" class="collage-img" loading="lazy"
-         style="top: 56px; left: 50%; transform: translateX(-50%) rotate(1deg); width: 340px; opacity: 0.48;">
+    <img src="asset/thumbs/goth-banner.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="top: 56px; left: 50%; transform: translateX(-50%) rotate(1deg); width: 340px; opacity: 0.48;" width="480" height="181">
     
     <!-- === 左侧区域 === -->
     <!-- 左上角 - 混沌武士仁 -->
-    <img src="asset/amuraichamploo-jin.jpg" alt="jin" class="collage-img" loading="lazy"
-         style="top: 14%; left: 5%; width: 105px; transform: rotate(-10deg); opacity: 0.42; filter: invert(1);">
+    <img src="asset/thumbs/amuraichamploo-jin.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="top: 14%; left: 5%; width: 105px; transform: rotate(-10deg); opacity: 0.42; filter: invert(1);" width="280" height="420">
     
     <!-- 左上中 - 眼中人 -->
-    <img src="asset/eye-soul.jpg" alt="eye-soul" class="collage-img" loading="lazy"
-         style="top: 10%; left: 18%; width: 95px; transform: rotate(-5deg); opacity: 0.4; filter: invert(1);">
+    <img src="asset/thumbs/eye-soul.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="top: 10%; left: 18%; width: 95px; transform: rotate(-5deg); opacity: 0.4; filter: invert(1);" width="340" height="282">
     
     <!-- 左上中区域 - Misa条纹 -->
-    <img src="asset/deathnote-misa-striped.jpg" alt="misa-striped" class="collage-img" loading="lazy"
-         style="top: 28%; left: 12%; width: 95px; transform: rotate(12deg); opacity: 0.4; filter: invert(1);">
+    <img src="asset/thumbs/deathnote-misa-striped.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="top: 28%; left: 12%; width: 95px; transform: rotate(12deg); opacity: 0.4; filter: invert(1);" width="316" height="420">
     
     <!-- 左侧中间 - L头发 -->
-    <img src="asset/deathnote-l-hair.jpg" alt="L-hair" class="collage-img" loading="lazy"
-         style="top: 42%; left: 3%; width: 85px; transform: rotate(-12deg); opacity: 0.45; filter: invert(1);">
+    <img src="asset/thumbs/deathnote-l-hair.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="top: 42%; left: 3%; width: 85px; transform: rotate(-12deg); opacity: 0.45; filter: invert(1);" width="262" height="420">
     
     <!-- 左侧偏下 - 我爱罗愛字 -->
-    <img src="asset/naruto-gaara-ai.jpg" alt="gaara-ai" class="collage-img" loading="lazy"
-         style="top: 48%; left: 13%; width: 100px; transform: rotate(18deg); opacity: 0.38; filter: invert(1);">
+    <img src="asset/thumbs/naruto-gaara-ai.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="top: 48%; left: 13%; width: 100px; transform: rotate(18deg); opacity: 0.38; filter: invert(1);" width="275" height="420">
     
     <!-- 左下区域 - 双猫 -->
-    <img src="asset/cat-twin.jpg" alt="twin-cats" class="collage-img" loading="lazy"
-         style="bottom: 28%; left: 6%; width: 90px; transform: rotate(3deg); opacity: 0.38; filter: invert(1);">
+    <img src="asset/thumbs/cat-twin.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="bottom: 28%; left: 6%; width: 90px; transform: rotate(3deg); opacity: 0.38; filter: invert(1);" width="340" height="329">
     
     <!-- 左中下区域 - L和Misa咖啡厅 -->
-    <img src="asset/deathnote-l-misa-cafe.jpg" alt="l-misa-cafe" class="collage-img" loading="lazy"
-         style="bottom: 16%; left: 16%; width: 125px; transform: rotate(-5deg); opacity: 0.4; filter: invert(1);">
+    <img src="asset/thumbs/deathnote-l-misa-cafe.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="bottom: 16%; left: 16%; width: 125px; transform: rotate(-5deg); opacity: 0.4; filter: invert(1);" width="340" height="340">
     
     <!-- 左下角 - Lil Peep -->
-    <img src="asset/artist-lil-peep.jpg" alt="lil-peep" class="collage-img" loading="lazy"
-         style="bottom: 5%; left: 3%; width: 100px; transform: rotate(-6deg); opacity: 0.65; filter: grayscale(100%) contrast(1.3);">
+    <img src="asset/thumbs/artist-lil-peep.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="bottom: 5%; left: 3%; width: 100px; transform: rotate(-6deg); opacity: 0.65; filter: grayscale(100%) contrast(1.3);" width="236" height="420">
     
     <!-- === 中间区域 === -->
     <!-- 上方中左 - 骷髅女孩 -->
-    <img src="asset/skeleton-girl.jpg" alt="skeleton-girl" class="collage-img" loading="lazy"
-         style="top: 16%; left: 38%; width: 98px; transform: rotate(-2deg); opacity: 0.35; filter: invert(1);">
+    <img src="asset/thumbs/skeleton-girl.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="top: 16%; left: 38%; width: 98px; transform: rotate(-2deg); opacity: 0.35; filter: invert(1);" width="340" height="340">
     
     <!-- 上方中右 - 朋克男孩故障 -->
-    <img src="asset/punk-boy-glitch.jpg" alt="punk-boy-glitch" class="collage-img" loading="lazy"
-         style="top: 22%; right: 38%; width: 105px; transform: rotate(-5deg); opacity: 0.35; filter: invert(1);">
+    <img src="asset/thumbs/punk-boy-glitch.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="top: 22%; right: 38%; width: 105px; transform: rotate(-5deg); opacity: 0.35; filter: invert(1);" width="340" height="371">
     
     <!-- 中间偏上 - 日语拼贴 -->
-    <img src="asset/nihongo-collage.jpg" alt="nihongo-collage" class="collage-img" loading="lazy"
-         style="top: 38%; left: 45%; width: 155px; transform: rotate(8deg); opacity: 0.32; filter: invert(1);">
+    <img src="asset/thumbs/nihongo-collage.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="top: 38%; left: 45%; width: 155px; transform: rotate(8deg); opacity: 0.32; filter: invert(1);" width="340" height="340">
     
     <!-- 中间 - 寄生兽 -->
-    <img src="asset/parasyte-izumi.jpg" alt="parasyte" class="collage-img" loading="lazy"
-         style="top: 52%; left: 38%; width: 95px; transform: rotate(5deg); opacity: 0.4; filter: invert(1);">
+    <img src="asset/thumbs/parasyte-izumi.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="top: 52%; left: 38%; width: 95px; transform: rotate(5deg); opacity: 0.4; filter: invert(1);" width="275" height="420">
     
     <!-- 下方中左 - 故障小猫 -->
-    <img src="asset/cat-kitten-glitch.jpg" alt="cat-kitten-glitch" class="collage-img" loading="lazy"
-         style="bottom: 18%; left: 32%; width: 110px; transform: rotate(10deg); opacity: 0.4; filter: invert(1);">
+    <img src="asset/thumbs/cat-kitten-glitch.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="bottom: 18%; left: 32%; width: 110px; transform: rotate(10deg); opacity: 0.4; filter: invert(1);" width="340" height="342">
     
     <!-- 下方中间 - L穿I AM MUSIC -->
-    <img src="asset/deathnote-l-iammusic.jpg" alt="l-iammusic" class="collage-img" loading="lazy"
-         style="bottom: 12%; left: 42%; width: 130px; transform: rotate(5deg); opacity: 0.38; filter: invert(1);">
+    <img src="asset/thumbs/deathnote-l-iammusic.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="bottom: 12%; left: 42%; width: 130px; transform: rotate(5deg); opacity: 0.38; filter: invert(1);" width="336" height="420">
     
     <!-- 下方中右 - 故障头部 -->
-    <img src="asset/glitch-error-head.jpg" alt="errorhead" class="collage-img" loading="lazy"
-         style="bottom: 8%; right: 42%; width: 120px; transform: rotate(-9deg); opacity: 0.4; filter: invert(1);">
+    <img src="asset/thumbs/glitch-error-head.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="bottom: 8%; right: 42%; width: 120px; transform: rotate(-9deg); opacity: 0.4; filter: invert(1);" width="340" height="340">
     
     <!-- === 右侧区域 === -->
     <!-- 右上角 - Misa翅膀 -->
-    <img src="asset/deathnote-misa-wings.png" alt="misa-wings" class="collage-img" loading="lazy"
-         style="top: 12%; right: 4%; width: 115px; transform: rotate(7deg); opacity: 0.45; filter: invert(1);">
+    <img src="asset/thumbs/deathnote-misa-wings.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="top: 12%; right: 4%; width: 115px; transform: rotate(7deg); opacity: 0.45; filter: invert(1);" width="236" height="420">
     
     <!-- 右上中 - 故障头晕女孩 -->
-    <img src="asset/glitch-girl-dizzy.jpg" alt="dizzygirl" class="collage-img" loading="lazy"
-         style="top: 18%; right: 20%; width: 135px; transform: rotate(-7deg); opacity: 0.4; filter: invert(1);">
+    <img src="asset/thumbs/glitch-girl-dizzy.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="top: 18%; right: 20%; width: 135px; transform: rotate(-7deg); opacity: 0.4; filter: invert(1);" width="340" height="340">
     
     <!-- 右上偏中 - 小猫剪影 -->
-    <img src="asset/cat-kitten.jpg" alt="kitten" class="collage-img" loading="lazy"
-         style="top: 28%; right: 12%; width: 110px; transform: rotate(-8deg); opacity: 0.42; filter: invert(1);">
+    <img src="asset/thumbs/cat-kitten.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="top: 28%; right: 12%; width: 110px; transform: rotate(-8deg); opacity: 0.42; filter: invert(1);" width="315" height="420">
     
     <!-- 右侧上部 - 哥特猫 -->
-    <img src="asset/cat-goth.jpg" alt="goth-cat" class="collage-img invert" loading="lazy"
-         style="top: 38%; right: 3%; width: 100px; transform: rotate(-8deg); opacity: 0.52;">
+    <img src="asset/thumbs/cat-goth.webp" alt="" aria-hidden="true" class="collage-img invert" loading="lazy" decoding="async" fetchpriority="low"
+         style="top: 38%; right: 3%; width: 100px; transform: rotate(-8deg); opacity: 0.52;" width="297" height="420">
     
     <!-- 右侧中上 - 夜神月 -->
-    <img src="asset/deathnote-light-yagami.jpg" alt="light-yagami" class="collage-img" loading="lazy"
-         style="top: 48%; right: 22%; width: 150px; transform: rotate(4deg); opacity: 0.55;">
+    <img src="asset/thumbs/deathnote-light-yagami.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="top: 48%; right: 22%; width: 150px; transform: rotate(4deg); opacity: 0.55;" width="340" height="340">
     
     <!-- 右侧中部 - 故障坐着的女孩 -->
-    <img src="asset/glitch-girl-sitting.jpg" alt="glitch-girl-sitting" class="collage-img" loading="lazy"
-         style="top: 58%; right: 3%; width: 145px; transform: rotate(2deg); opacity: 0.45; filter: invert(1);">
+    <img src="asset/thumbs/glitch-girl-sitting.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="top: 58%; right: 3%; width: 145px; transform: rotate(2deg); opacity: 0.45; filter: invert(1);" width="340" height="340">
     
     <!-- 右下中 - 像素天使 -->
-    <img src="asset/pixel-angel.jpg" alt="pixel-angel" class="collage-img" loading="lazy"
-         style="bottom: 28%; right: 32%; width: 112px; transform: rotate(-4deg); opacity: 0.5;">
+    <img src="asset/thumbs/pixel-angel.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="bottom: 28%; right: 32%; width: 112px; transform: rotate(-4deg); opacity: 0.5;" width="340" height="340">
     
     <!-- 右下区域 - 祈祷男孩 -->
-    <img src="asset/slowdamage-towa.jpg" alt="towa" class="collage-img" loading="lazy"
-         style="bottom: 18%; right: 12%; width: 120px; transform: rotate(-3deg); opacity: 0.48;">
+    <img src="asset/thumbs/slowdamage-towa.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="bottom: 18%; right: 12%; width: 120px; transform: rotate(-3deg); opacity: 0.48;" width="340" height="340">
     
     <!-- 右下中 - 故障天使 -->
-    <img src="asset/glitch-angel.jpg" alt="glitch-angel" class="collage-img" loading="lazy"
-         style="bottom: 10%; right: 24%; width: 126px; transform: rotate(3deg); opacity: 0.65;">
+    <img src="asset/thumbs/glitch-angel.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="bottom: 10%; right: 24%; width: 126px; transform: rotate(3deg); opacity: 0.65;" width="340" height="340">
     
     <!-- 右下角 - 故障夜神月 -->
-    <img src="asset/deathnote-light-yagami-glitch.jpg" alt="light-yagami-glitch" class="collage-img" loading="lazy"
-         style="bottom: 4%; right: 5%; width: 130px; transform: rotate(6deg); opacity: 0.6;">
+    <img src="asset/thumbs/deathnote-light-yagami-glitch.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="bottom: 4%; right: 5%; width: 130px; transform: rotate(6deg); opacity: 0.6;" width="340" height="324">
     
     <!-- 右侧中下 - 摇滚男孩 (移到右下) -->
-    <img src="asset/rockstar-boy.jpg" alt="rockstar-boy" class="collage-img" loading="lazy"
-         style="bottom: 32%; right: 12%; width: 145px; transform: rotate(7deg); opacity: 0.38; filter: invert(1);">
+    <img src="asset/thumbs/rockstar-boy.webp" alt="" aria-hidden="true" class="collage-img" loading="lazy" decoding="async" fetchpriority="low"
+         style="bottom: 32%; right: 12%; width: 145px; transform: rotate(7deg); opacity: 0.38; filter: invert(1);" width="242" height="420">
 
     <!-- ==================== HERO SECTION ==================== -->
     <section id="hero" class="relative h-screen flex flex-col items-center justify-center px-6">
@@ -1324,7 +1326,7 @@
 
         <div class="relative z-10 text-center flex flex-col items-center">
             <!-- 6个核心入口 -->
-            <nav class="nav-container nav-with-clocktower">
+            <nav class="nav-container nav-with-boardgames">
                 <a href="sf6/" class="nav-item">
                     <div class="nav-bg"></div>
                     <div class="nav-content">
@@ -1332,11 +1334,11 @@
                         <div class="pinyin">SF6 Frame Lab</div>
                     </div>
                 </a>
-                <a href="clocktower/" class="nav-item" aria-label="钟楼手记，血染钟楼记录与推理" title="钟楼手记 · 血染钟楼记录与推理">
+                <a href="boardgames/" class="nav-item" aria-label="桌游" title="桌游 · 狼人杀与血染钟楼">
                     <div class="nav-bg"></div>
                     <div class="nav-content">
-                        <h2>钟楼</h2>
-                        <div class="pinyin">Clocktower</div>
+                        <h2>桌游</h2>
+                        <div class="pinyin">Board Games</div>
                     </div>
                 </a>
                 <a href="gojuon/" class="nav-item">
@@ -1388,9 +1390,12 @@
         let rafId = null;
         let isMoving = false;
         let idleTimeout = null;
+        const pointerEffects=matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches;
+        if(pointerEffects)document.body.classList.add('custom-pointer');
 
         // 使用 passive 事件监听器优化性能
         document.addEventListener('mousemove', (e) => {
+            if(!pointerEffects||document.hidden)return;
             mouseX = e.clientX;
             mouseY = e.clientY;
             isMoving = true;
@@ -1433,6 +1438,7 @@
             const ringPosY = Math.round(ringY - 20);
 
             // 使用 transform 的 translate3d 触发 GPU 加速
+            if(document.hidden||!pointerEffects){rafId=null;return;}
             cursorDot.style.transform = `translate3d(${dotPosX}px, ${dotPosY}px, 0)`;
             cursorRing.style.transform = `translate3d(${ringPosX}px, ${ringPosY}px, 0)`;
             
@@ -1455,7 +1461,7 @@
         }
         
         // 启动动画
-        animateCursor();
+        // The cursor wakes on pointer movement only.
 
         // 悬停交互
         document.querySelectorAll('button, a').forEach(el => {
@@ -1469,25 +1475,17 @@
             });
         });
 
-        // ==================== 初始化 Lucide 图标 ====================
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-        });
-
-        // ==================== 预加载器 ====================
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('preloader').classList.add('hidden');
-            }, 300);
-        });
-
+        document.addEventListener('visibilitychange',()=>{if(document.hidden&&rafId){cancelAnimationFrame(rafId);rafId=null;}});
         // ==================== 菜单 ====================
         const menuBtn = document.getElementById('menu-btn');
         const closeMenuBtn = document.getElementById('close-menu');
         const fullscreenMenu = document.getElementById('fullscreen-menu');
 
         menuBtn.addEventListener('click', () => {
+            if(!fullscreenMenu.open)fullscreenMenu.showModal();
             fullscreenMenu.style.display = 'flex';
+            menuBtn.setAttribute('aria-expanded','true');
+            closeMenuBtn.focus();
             // 触发进入动画
             requestAnimationFrame(() => {
                 fullscreenMenu.classList.add('menu-entering');
@@ -1496,29 +1494,28 @@
             // 移除进入动画类，但保留visible类
             setTimeout(() => {
                 fullscreenMenu.classList.remove('menu-entering');
-            }, 600);
+            }, 360);
         });
 
         closeMenuBtn.addEventListener('click', closeMenu);
 
         function closeMenu() {
+            if(!fullscreenMenu.open)return;
             // 移除visible类
             fullscreenMenu.classList.remove('menu-visible');
             // 触发退出动画
             fullscreenMenu.classList.add('menu-leaving');
             // 动画完成后隐藏
             setTimeout(() => {
+                fullscreenMenu.close();
                 fullscreenMenu.style.display = 'none';
+                menuBtn.setAttribute('aria-expanded','false');
+                menuBtn.focus();
                 fullscreenMenu.classList.remove('menu-leaving');
-            }, 400);
+            }, 180);
         }
 
-        // ESC 键关闭菜单
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && fullscreenMenu.style.display === 'flex') {
-                closeMenu();
-            }
-        });
+        fullscreenMenu.addEventListener('cancel',e=>{e.preventDefault();closeMenu();});
     </script>
 </body>
 </html>

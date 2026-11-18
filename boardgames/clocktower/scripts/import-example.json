@@ -1,0 +1,22 @@
+[
+  {
+    "id": "_meta",
+    "name": "我的剧本",
+    "specialRules": ""
+  },
+  {
+    "id": "washerwoman"
+  },
+  {
+    "id": "monk"
+  },
+  {
+    "id": "imp"
+  },
+  {
+    "id": "custom_nightwatch",
+    "name": "巡夜者（自制示例）",
+    "team": "townsfolk",
+    "ability": "每个夜晚，你会得知当晚是否有玩家改变了阵营。"
+  }
+]

@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const cfg = window.ENGLISH_LEXICON_CONFIG || {};
+  const AI = window.EnglishAI;
   const SYSTEM_PROMPT = window.ENGLISH_LEXICON_SYSTEM_PROMPT || "";
   const STORAGE_KEY = "english_lexicon_history_v1";
   const MAX_HISTORY = 50;
@@ -9,7 +9,7 @@
   const STREAM_BOTTOM_THRESHOLD_PX = 24;
   const MAX_WORD_LEN = 15;
 
-  const MODEL_FAST = "deepseek-chat";
+
 
   const $ = (sel) => document.querySelector(sel);
   const el = {
@@ -61,33 +61,6 @@
       var fn = console.warn || console.log;
       fn.call(console, LEXICON_LOG, tag, detail || "");
     } catch (_) {}
-  }
-
-  function apiBase() {
-    const b = (cfg.apiBase || "").trim().replace(/\/$/, "");
-    return b || null;
-  }
-
-  function hostLooksLikeWorkersDev(base) {
-    try {
-      return /\.workers\.dev$/i.test(new URL(base).hostname);
-    } catch (_) {
-      return String(base).indexOf("workers.dev") !== -1;
-    }
-  }
-
-  function isLikelyNetworkFailure(e, msg) {
-    if (!e || e.name === "AbortError") return false;
-    if (e.name === "TypeError") return true;
-    var m = (msg || "").toLowerCase();
-    return (
-      m.indexOf("failed to fetch") !== -1 ||
-      m.indexOf("networkerror") !== -1 ||
-      m.indexOf("load failed") !== -1 ||
-      m.indexOf("timed out") !== -1 ||
-      m.indexOf("err_connection") !== -1 ||
-      m.indexOf("network") !== -1
-    );
   }
 
   function showConfigError() {
@@ -462,106 +435,14 @@
     updateSuggestionsVisibility();
   }
 
-  async function streamChat({ model, userWord, signal, onDelta }) {
-    const base = apiBase();
-    if (!base) throw new Error("未配置 API：请编辑 english/config.js 中的 apiBase");
-
-    const url = base + "/v1/chat/completions";
-    const t0 = typeof performance !== "undefined" ? performance.now() : 0;
-    logApi("fetch:start", {
-      url: url,
-      pageOrigin: location.origin,
-      pageUrl: location.href,
-      workersDevHost: hostLooksLikeWorkersDev(base),
-    });
-
-    let res;
-    try {
-      res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model,
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            { role: "user", content: userWord },
-          ],
-          stream: true,
-        }),
-        signal,
-      });
-    } catch (err) {
-      var elapsed =
-        typeof performance !== "undefined" ? Math.round(performance.now() - t0) : -1;
-      logApi("fetch:error", {
-        url: url,
-        elapsedMs: elapsed,
-        name: err && err.name,
-        message: err && err.message,
-        tip: "打开 F12 → Network，找到上述 url，查看 Status / (blocked) / 是否长时间 Pending。",
-      });
-      throw err;
-    }
-
-    logApi("fetch:response", {
-      url: url,
-      status: res.status,
-      ok: res.ok,
-      elapsedMs:
-        typeof performance !== "undefined" ? Math.round(performance.now() - t0) : -1,
-    });
-
-    if (!res.ok) {
-      const t = await res.text();
-      let msg = t || res.statusText;
-      try {
-        const j = JSON.parse(t);
-        if (j.error) msg = typeof j.error === "string" ? j.error : j.error.message || msg;
-      } catch (_) {}
-      throw new Error(msg || "请求失败 " + res.status);
-    }
-
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-    let full = "";
-    const processSseLine = (line) => {
-      const trimmed = line.trim();
-      if (!trimmed.startsWith("data:")) return;
-      const data = trimmed.slice(5).trim();
-      if (data === "[DONE]") return;
-      try {
-        const json = JSON.parse(data);
-        if (json.error) {
-          const err = json.error;
-          throw new Error(typeof err === "string" ? err : err.message || JSON.stringify(err));
-        }
-        const delta = json.choices && json.choices[0] && json.choices[0].delta;
-        const piece = (delta && delta.content) || "";
-        if (piece) {
-          full += piece;
-          onDelta(piece, full);
-        }
-      } catch (e) {
-        if (e instanceof SyntaxError) return;
-        throw e;
-      }
-    };
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split("\n");
-      buffer = lines.pop() || "";
-
-      for (const line of lines) {
-        processSseLine(line);
-      }
-    }
-    if (buffer.trim()) processSseLine(buffer);
-
-    return full;
+  async function streamChat({model,userWord,signal,onDelta}) {
+    let previous='';
+    const result=await AI.analyze({messages:[{role:'system',content:SYSTEM_PROMPT},{role:'user',content:userWord}]},{signal,onProgress:p=>{
+      if(p.phase==='thinking'&&el.thinkingLabel)el.thinkingLabel.textContent='正在思考…';
+      if(p.phase==='answer'&&p.content!==previous){const full=p.content||'';onDelta(full.slice(previous.length),full);previous=full;}
+    }});
+    if(result.truncated)throw new Error('输出超过当前上限，请换用其他模型或重新查询。');
+    return result.content;
   }
 
   let busy = false;
@@ -573,9 +454,10 @@
       setError(v.msg);
       return;
     }
-    if (!apiBase()) {
+    if (!AI.available) {
       showConfigError();
-      setError("请先在 config.js 中填写 Worker 地址");
+      setError("请先填写自己的 DeepSeek API Key。");
+      window.openEnglishAISettings();
       return;
     }
     hideConfigError();
@@ -611,7 +493,7 @@
     updateHelpVisibility();
     updateSuggestionsVisibility();
 
-    const model = MODEL_FAST;
+    const model = AI.getSettings().model;
 
     try {
       const fullText = await streamChat({
@@ -653,33 +535,7 @@
         setError("已中止");
       } else {
         const msg = (e && e.message) || String(e);
-        if (isLikelyNetworkFailure(e, msg)) {
-          const base = apiBase() || "";
-          const online = location.protocol === "https:" || location.protocol === "http:";
-          const workersDev = hostLooksLikeWorkersDev(base);
-          let lines = [];
-          if (online) {
-            lines.push(
-              "无法连上 API 服务器（浏览器报网络/超时）。你当前是在线页面，不是 file:// 的问题。"
-            );
-          } else {
-            lines.push(
-              "无法连接 API。若当前是本地文件打开，请改用 https://emoboi.com/english/ 或本地 http 服务。"
-            );
-          }
-          if (workersDev) {
-            lines.push(
-              "你的 apiBase 指向 *.workers.dev：在国内网络下经常出现连接超时。根治：在 Cloudflare 给该 Worker 绑定自定义域（如 https://api.emoboi.com），把 english/config.js 里 apiBase 改成该域名（见 workers/deepseek-proxy/README.md）。临时：换手机热点或 VPN。"
-            );
-          } else {
-            lines.push(
-              "请检查 config.js 的 apiBase 是否正确、本机网络与 DNS；仍失败可换网络或 VPN。F12 → Console 搜索 「English Lexicon API」 查看详细日志。"
-            );
-          }
-          setError(lines.join(" "));
-        } else {
-          setError(msg || "分析失败");
-        }
+        setError(msg || "分析失败");
       }
       el.thinking.hidden = true;
       flushMdStream();
@@ -775,7 +631,9 @@
     if (!SYSTEM_PROMPT) {
       setError("提示词未加载，请检查 prompts.js");
     }
-    if (!apiBase()) showConfigError();
+    function updateCredentialHint(){if(AI.available)hideConfigError();else showConfigError();}
+    updateCredentialHint();
+    window.addEventListener("english-ai-change",updateCredentialHint);
 
     loadHistory();
     renderHistory();

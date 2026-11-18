@@ -6,10 +6,10 @@
     <meta name="description" content="抽象学英语 — 单词解析">
     <meta name="theme-color" content="#0a0f1a">
     <title>英语 Lexicon | EMOBOI</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Syne:wght@400;700;800&family=Space+Mono&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+    <script src="../shared/icons.js?v=33" defer></script>
+    <link rel="stylesheet" href="../shared/fonts.css?v=33">
+    <script src="../shared/vendor/marked.min.js?v=15.0.12" defer fetchpriority="low"></script>
+    <script src="../shared/vendor/purify.min.js?v=3.2.7" defer fetchpriority="low"></script>
     <style>
         :root {
             --panel: rgba(13, 13, 15, 0.84);
@@ -1080,6 +1080,7 @@
             }
         }
     </style>
+<link rel="stylesheet" href="ai-settings.css?v=33">
 </head>
 <body>
     <div class="noise" aria-hidden="true"></div>
@@ -1089,7 +1090,7 @@
             <span>EMOBOI</span>
         </a>
         <div class="english-nav-right">
-            <span class="english-nav-context">LEXICON</span>
+            <span class="english-nav-context">LEXICON</span><button type="button" class="english-ai-trigger" id="english-ai-open">AI 设置</button>
             <a href="../" class="english-nav-square" title="返回主页"><i data-lucide="home"></i></a>
             <button type="button" class="english-nav-square" id="english-menu-btn" title="站点菜单" aria-expanded="false" aria-controls="english-fs-menu"><i data-lucide="menu"></i></button>
         </div>
@@ -1099,6 +1100,7 @@
         <button type="button" class="english-fs-close" id="english-fs-close" aria-label="关闭菜单"><i data-lucide="x"></i></button>
         <a href="../" class="english-fs-link" data-mark="⌂">HOME</a>
         <a href="../sf6/" class="english-fs-link" data-mark="✶">SF6</a>
+        <a href="../boardgames/" class="english-fs-link" data-mark="♧">桌游</a>
         <a href="../gojuon/" class="english-fs-link" data-mark="あ">GOJUON</a>
         <span class="english-fs-link current" aria-current="page" data-mark="⌕">LEXICON</span>
         <a href="../gallery/" class="english-fs-link" data-mark="◈">GALLERY</a>
@@ -1107,10 +1109,10 @@
 
     <div class="wrap">
         <div id="file-open-warning" class="file-warning" hidden>
-            当前是 <strong>本地文件 (file://)</strong> 打开方式，浏览器会拦截跨域请求，无法调用 AI。请使用：<strong>https://emoboi.com/english/</strong>，或在仓库根目录执行 <code>npx serve english -p 8765</code> 后用 <strong>http://127.0.0.1:8765</strong> 访问（需在 Worker 的 <code>ALLOWED_ORIGINS</code> 中加入该地址并重新 deploy）。
+            本地文件可能无法连接 AI。请通过 <a href="https://emoboi.com/english/">线上页面</a>使用。
         </div>
         <div id="config-banner" hidden>
-            请先在 <code>english/config.js</code> 里填写 <code>apiBase</code>（Cloudflare Worker 地址），详见仓库 <code>workers/deepseek-proxy/README.md</code>。
+            请在右上角“AI 设置”填写自己的 Key；与血染钟楼共用。
         </div>
 
         <form id="lexicon-query-form" novalidate>
@@ -1118,7 +1120,7 @@
                 <div class="input-shell" id="input-shell">
                     <div class="input-row-inner">
                         <input
-                            id="word-input"
+                            id="word-input" aria-label="英文单词"
                             type="text"
                             name="word"
                             maxlength="15"
@@ -1188,7 +1190,7 @@
                 <h2>📖 搜索历史</h2>
                 <button type="button" id="btn-clear-history">清空历史</button>
             </div>
-            <input id="history-search" type="search" placeholder="搜索历史…" maxlength="20" enterkeyhint="search" />
+            <input id="history-search" aria-label="搜索历史" type="search" placeholder="搜索历史…" maxlength="20" enterkeyhint="search" />
             <div id="history-list"></div>
         </div>
     </div>
@@ -1204,14 +1206,16 @@
         <div id="result-md-wrap" class="lexicon-md"></div>
     </div>
 
-    <script src="prompts.js"></script>
-    <script src="config.js"></script>
+    <script src="prompts.js" defer></script>
+    <script src="../shared/cost.js?v=33" defer></script>
+    <script src="../shared/deepseek-client.js?v=33" defer></script>
+    <script src="ai-settings.js?v=33" defer></script>
     <script>
       if (location.protocol === "file:") {
         var fe = document.getElementById("file-open-warning");
         if (fe) fe.hidden = false;
       }
     </script>
-    <script src="app.js"></script>
+    <script src="app.js?v=33" defer fetchpriority="high"></script>
 </body>
 </html>
