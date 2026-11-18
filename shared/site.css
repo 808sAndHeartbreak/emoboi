@@ -22,4 +22,4 @@ html:not(.site-pointer) #cursor-dot,html:not(.site-pointer) #cursor-ring{display
 html:not(.site-pointer) body,html:not(.site-pointer) a,html:not(.site-pointer) button,html:not(.site-pointer) input,html:not(.site-pointer) [role=button],html:not(.site-pointer) .char-unit{cursor:auto}
 @media(max-width:479px){dialog[data-site-nav] nav a{gap:12px;padding-block:17px}dialog[data-site-nav] small{font-size:10px}dialog[data-site-nav]{padding:18px}}
 @media(prefers-reduced-motion:no-preference){dialog[data-site-nav][open]{animation:site-nav-in .2s ease-out}@keyframes site-nav-in{from{opacity:0;translate:0 8px}to{opacity:1;translate:0 0}}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+@media(prefers-reduced-motion:reduce){dialog[data-site-nav][open]{animation:none}dialog[data-site-nav] nav a{transition:color .18s}}

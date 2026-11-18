@@ -2,14 +2,15 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="description" content="抽象学英语 — 单词解析">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="description" content="EMOBOI 英语 · 单词解析">
     <meta name="theme-color" content="#0a0f1a">
     <title>英语 Lexicon | EMOBOI</title>
-    <script src="../shared/icons.js?v=34" defer></script>
-    <link rel="stylesheet" href="../shared/fonts.css?v=34">
-    <script src="../shared/vendor/marked.min.js?v=15.0.12" defer fetchpriority="low"></script>
-    <script src="../shared/vendor/purify.min.js?v=3.2.7" defer fetchpriority="low"></script>
+<link rel="preload" as="font" href="../shared/fonts/unifrakturcook-latin.woff2" type="font/woff2" crossorigin>
+    <script src="../shared/icons.js?v=a3f9536681" defer></script>
+
+    <script src="../shared/vendor/marked.min.js?v=3e7e7d7feb" defer fetchpriority="low"></script>
+    <script src="../shared/vendor/purify.min.js?v=40cff492b5" defer fetchpriority="low"></script>
     <style>
         :root {
             --panel: rgba(13, 13, 15, 0.84);
@@ -26,11 +27,6 @@
         * { box-sizing: border-box; }
         html { scrollbar-gutter: stable; }
         @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
         }
         body {
             margin: 0;
@@ -983,17 +979,15 @@
             }
         }
     </style>
-<link rel="stylesheet" href="ai-settings.css?v=34">
-<link rel="stylesheet" href="../shared/site.css">
-<script defer src="../shared/site.js"></script>
+<link rel="stylesheet" href="ai-settings.css?v=00dcf7af43">
+<link rel="stylesheet" href="../shared/site.css?v=a16b3e4bdb">
+<script defer src="../shared/site.js?v=6ad8e621b2"></script>
+<link rel="stylesheet" href="../shared/edition.css?v=cdd318cb55">
 </head>
-<body>
+<body data-section="english">
     <div class="noise" aria-hidden="true"></div>
-    <nav class="english-site-nav" aria-label="站点">
-        <a href="../" class="english-nav-brand">
-            <img src="../asset/logo-e.jpg" alt="E" width="32" height="32">
-            <span>EMOBOI</span>
-        </a>
+    <nav class="editorial-nav english-site-nav" aria-label="站点">
+        <a href="../" class="site-brand" aria-label="EMOBOI 首页"><span class="brand-glyph" aria-hidden="true">e</span><span class="site-wordmark">emoboi</span></a>
         <div class="english-nav-right">
             <span class="english-nav-context">LEXICON</span><button type="button" class="english-ai-trigger" id="english-ai-open">AI 设置</button>
             <a href="../" class="english-nav-square" title="返回主页"><i data-lucide="home"></i></a>
@@ -1003,12 +997,12 @@
 
     <dialog id="site-navigation" data-site-nav aria-label="站点导航"></dialog>
 
-    <div class="wrap">
+    <div class="wrap"><header class="tool-heading"><h1>Lexicon</h1><span>英语</span></header>
         <div id="file-open-warning" class="file-warning" hidden>
             本地文件可能无法连接 AI。请通过 <a href="https://emoboi.com/english/">线上页面</a>使用。
         </div>
         <div id="config-banner" hidden>
-            请在右上角“AI 设置”填写自己的 Key；与血染钟楼共用。
+            填写 API Key 后开始查询。
         </div>
 
         <form id="lexicon-query-form" novalidate>
@@ -1083,7 +1077,7 @@
 
         <div class="history-block">
             <div class="history-head">
-                <h2>📖 搜索历史</h2>
+                <h2>搜索历史</h2>
                 <button type="button" id="btn-clear-history">清空历史</button>
             </div>
             <input id="history-search" aria-label="搜索历史" type="search" placeholder="搜索历史…" maxlength="20" enterkeyhint="search" />
@@ -1102,16 +1096,16 @@
         <div id="result-md-wrap" class="lexicon-md"></div>
     </div>
 
-    <script src="prompts.js" defer></script>
-    <script src="../shared/cost.js?v=34" defer></script>
-    <script src="../shared/deepseek-client.js?v=34" defer></script>
-    <script src="ai-settings.js?v=34" defer></script>
+    <script src="prompts.js?v=577057f653" defer></script>
+    <script src="../shared/cost.js?v=27e3eaf1be" defer></script>
+    <script src="../shared/deepseek-client.js?v=ceb89809c2" defer></script>
+    <script src="ai-settings.js?v=10245c9374" defer></script>
     <script>
       if (location.protocol === "file:") {
         var fe = document.getElementById("file-open-warning");
         if (fe) fe.hidden = false;
       }
     </script>
-    <script src="app.js?v=34" defer fetchpriority="high"></script>
+    <script src="app.js?v=cac576af92" defer fetchpriority="high"></script>
 </body>
 </html>

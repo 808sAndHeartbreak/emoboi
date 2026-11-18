@@ -1,0 +1,10 @@
+/* The private atlas retains its own paper-and-map palette. */
+:root{--sans:-apple-system,BlinkMacSystemFont,'Helvetica Neue','Segoe UI','PingFang SC','Microsoft YaHei',sans-serif}
+body,button,input,select,textarea{font-family:var(--sans)}
+button,a,input,select,textarea{touch-action:manipulation}
+:is(button,a,input,select,textarea):focus-visible{outline:2px solid #b7412c;outline-offset:4px}
+.journey-board,.route-node,.drawer-panel,.tool-panel{box-shadow:none}
+.route-node h2,.drawer-panel h2{letter-spacing:-.02em}
+.route-node p,.drawer-panel p{line-height:1.8;overflow-wrap:anywhere}
+@media(max-width:600px){input,select,textarea{font-size:1rem}.tool-actions button{min-height:44px}}
+@media(prefers-reduced-motion:reduce){.route-node,.drawer,.tool-panel,.map-marker{animation:none;transition:none}}

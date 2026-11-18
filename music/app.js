@@ -598,15 +598,14 @@
         togglePlaylistBtn.addEventListener('click', () => {
             playlistExpanded = !playlistExpanded;
             togglePlaylistBtn.setAttribute('aria-expanded',String(playlistExpanded));
+            playlistEl.inert=!playlistExpanded;
+            playlistEl.setAttribute('aria-hidden',String(!playlistExpanded));
+            document.getElementById('playlist-shell').classList.toggle('is-collapsed',!playlistExpanded);
             const chevronIcon = togglePlaylistBtn.querySelector('[data-lucide]');
             
             if (playlistExpanded) {
-                playlistEl.style.maxHeight = '500px';
-                playlistEl.style.opacity = '1';
                 chevronIcon.setAttribute('data-lucide', 'chevron-up');
             } else {
-                playlistEl.style.maxHeight = '0';
-                playlistEl.style.opacity = '0';
                 chevronIcon.setAttribute('data-lucide', 'chevron-down');
             }
             

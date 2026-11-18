@@ -1,6 +1,6 @@
 # EMOBOI.COM
 
-Personal multimedia archive. Drain-core aesthetics.
+Personal archive & tools. Gothic / punk / draincore.
 
 ## Structure
 
@@ -38,7 +38,13 @@ workers/deepseek-proxy/ 仅为可选 BYOK 代理源码，已移除站点 Secret 
 
 ## 性能与视觉
 
-首页保留原拼贴风格，27张装饰图使用派生 WebP，总量从3,477,999字节降至411,968字节（减少88.2%），原图保留。手机减少装饰密度；取消等待全部资源的遮罩，字体、图标不再依赖第三方运行时。拉丁字体自托管、按需使用并保持 font-display:swap，图标使用小型本地SVG。
+当前 v0.35：原创银色哥特主视觉，黑纸、纸白与血红；哥特字仅用于品牌 / 拉丁标题，正文用系统黑体。首页精简为单图与六个入口。各工具统一导航、按钮、文字层级，保留角色与结果等必要语义颜色。美术资源、授权和生图提示词见 [ART.md](asset/edition/ART.md)。
+
+钟楼独立 HTML 从2,879,002字节降至1,273,369字节，减少55.8%，保留离线打开。新版手机主视觉23,500字节，标题字体20,716字节。CSS / JS 按内容生成版本，发布前运行 `node scripts/stamp-assets.cjs`，防止新旧资源混用。普通正文无需下载字体；去除自动横幅、反复脉冲和自定义光标循环。
+
+以下为此前资源优化记录：
+
+v0.33 的27张拼贴装饰图使用派生 WebP，总量从3,477,999字节降至411,968字节（减少88.2%），原图保留。手机减少装饰密度；取消等待全部资源的遮罩，字体、图标不再依赖第三方运行时。拉丁字体自托管、按需使用并保持 font-display:swap，图标使用小型本地SVG。
 
 桌游选择页为静态HTML/CSS，无额外框架；微动效支持减少动态偏好。狼人杀两张美术资源从656,664字节减至161,908字节。页面保留移动优先布局，兼容平板和桌面。首页菜单改为原生dialog，支持焦点约束和Escape返回。
 
@@ -48,13 +54,14 @@ workers/deepseek-proxy/ 仅为可选 BYOK 代理源码，已移除站点 Secret 
 
 ## 验证
 
-钟楼312项检查通过；狼人杀11组规则检查及1,600次随机发牌通过；网站整合12项检查通过。浏览器验证桌游路由、开局取消、发牌、英语模拟流式查询、Key跨工具共享及清除、320/390/768/1440布局。没有调用付费模型，也没有读取或修改线上用户的 Key、历史对局与词汇记录。
+钟楼312项检查通过；狼人杀11组规则检查及1,600次随机发牌通过；网站整合14项检查通过。浏览器验证桌游路由、开局取消、发牌、英语模拟流式查询、Key跨工具共享及清除、320/390/768/1440布局。没有调用付费模型，也没有读取或修改线上用户的 Key、历史对局与词汇记录。
 
 ```sh
 python -m http.server 8766 --bind 127.0.0.1
-node --test tests/site-v33.test.cjs tests/site-v34.test.cjs
+node scripts/stamp-assets.cjs
+node --test tests/site.test.cjs
 ```
 
-本轮详情见 [v0.34 发布说明](boardgames/docs/release-v34.md)，上一轮整合见 [v0.33](boardgames/docs/release-v33.md)。
+本轮详情见 [v0.35 发布说明](boardgames/docs/release-v35.md)。历史：[v0.34](boardgames/docs/release-v34.md) · [v0.33](boardgames/docs/release-v33.md)。
 
 *Design by 天 · © 2026 emoboi.com*

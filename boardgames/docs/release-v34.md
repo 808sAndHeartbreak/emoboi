@@ -35,7 +35,7 @@
 ```sh
 npx --yes --package tailwindcss@3.4.17 tailwindcss -c scripts/tailwind.config.cjs -i scripts/utilities.input.css -o shared/utilities.css --minify
 python scripts/build-gallery-previews.py
-node --test tests/site-v33.test.cjs tests/site-v34.test.cjs
+node --test tests/site.test.cjs
 ```
 
 改动分类 HTML / app.js 中的工具类后重新编译 CSS。钟楼和狼人杀继续先构建同工作区源码，再运行 scripts/sync-game-tools.cjs；不要只修改发布的生成文件。

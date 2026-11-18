@@ -1087,6 +1087,33 @@ body[data-screen=game][data-game-tab=notes] main,body[data-screen=game][data-gam
 @media(prefers-reduced-motion:reduce){.status-switch.just-changed>i:after{animation:none}}
 
 .collection-return{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 10px;color:var(--paper-bright);font-size:13px;text-decoration:none;border:1px solid #7b6c5b}.collection-return:focus-visible{outline:3px solid var(--red);outline-offset:3px}
+
+/* Edition 35: paper hands, red actions, quiet grey interfaces. */
+:root{--bg:#ebe7df;--paper:#e9e5dc;--paper-bright:#f3efe7;--black:#171718;--red:#cf3546;--accent:#b82e3d;--accent-soft:#ead7d7;--muted:#6e6862;--line:#c5bfb5;--body-font:-apple-system,BlinkMacSystemFont,'Helvetica Neue','Segoe UI','PingFang SC','Microsoft YaHei',sans-serif}
+body{font-family:var(--body-font);background:#101011;background-image:none}
+body::before,body::after{display:none}.app{box-shadow:none}
+#app-header{background:#171718;box-shadow:none;border-bottom:1px solid #ffffff20}
+.brand{font-weight:600;letter-spacing:-.03em;font-size:1rem}.brand-icon{box-shadow:none;transform:none;clip-path:none;background:transparent;color:#eb7885}
+.top-button{box-shadow:none!important;border-color:#ffffff30!important;border-radius:0}
+.game-poster{box-shadow:none;border:0;background:#171718}.game-poster::before{display:none}
+.poster-heading{min-height:150px;padding:26px 22px}.poster-heading h1{font-family:'Songti SC','STSong','SimSun',serif;font-size:3rem;font-weight:800;letter-spacing:.04em}
+.poster-heading h1::after{height:4px;bottom:-4px;right:12px}.poster-art{opacity:.4;filter:none}
+.poster-modes{padding-inline:22px}.poster-modes button{min-height:76px}.poster-modes button strong{font-family:var(--body-font);font-size:1.25rem;font-weight:650;letter-spacing:-.03em}.mode-meta small{font-size:.8rem;color:#bcb5ac}.mode-meta i,.mode-meta svg{transform:none}
+.resume-main{box-shadow:none;border-color:#bcb5ac}.resume-symbol{background:transparent!important;color:#b73141!important;box-shadow:none!important;transform:none!important}.resume-copy strong{font-weight:650}
+.primary,.secondary{box-shadow:none;transform:none;border-radius:2px;min-height:54px;font-size:.95rem;font-weight:600}.primary::after,.secondary::after{display:none}.primary:active:not(:disabled),.secondary:active:not(:disabled){transform:translateY(1px);box-shadow:none}
+.icon-button{border-radius:2px;box-shadow:none}.segmented,.tabs,.mode-switch{box-shadow:none;border-radius:2px}.segmented button,.tabs button{border-radius:1px}
+.role-row,.setting-row,.journal-entry,.phase-fold{border-color:#c7c0b7;box-shadow:none}.role-name-label{font-weight:600;letter-spacing:-.02em}
+.deal-grid .seat,.roster-seat{box-shadow:none;border-color:#bdb5ab;border-radius:2px}.deal-grid .seat strong,.roster-seat .seat-number{font-family:var(--body-font);font-weight:700;font-variant-numeric:tabular-nums}
+.sheet{background:#ece7de;box-shadow:0 -15px 80px #0006;border-radius:2px 2px 0 0}.sheet-head{border-color:#c6bdb1}.sheet-head h2{font-family:var(--body-font);font-weight:650;letter-spacing:-.03em}
+.handoff-card{box-shadow:none;border-color:#6b5c58}.handoff-card::before{display:none}.owner-sticker::before{transform:rotate(-2deg);box-shadow:none}
+.identity{background:#f0eae0;box-shadow:none}.identity.lower{background:#e2dcd2}.identity-title-row>strong{font-family:'Songti SC','STSong',serif;letter-spacing:.02em}.identity-skill p{font-family:var(--body-font);font-size:1rem;line-height:1.85;color:#48443e}.identity-strip>small{color:#746d64}
+.role-seal{color:#ab3342;background:transparent;clip-path:none;box-shadow:none}.identity-stack{gap:14px}
+.reveal .primary,.reveal .secondary{box-shadow:none}.mode-ink,.tab-indicator{background-image:none}
+#dock{box-shadow:none;border-color:#bfb7ac;background:#eee9e0f7;backdrop-filter:none}
+.journal-entry-open,.journal-entry-text{padding-block:12px}.journal-entry strong{font-family:var(--body-font);font-size:.9rem;font-weight:600}.entry-kind{background:transparent!important;color:#7c5255!important;border-color:#c5aaa9}
+@media(min-width:700px){.app{max-width:600px;box-shadow:none}.game-poster{margin-top:10px}.poster-heading{min-height:180px}.poster-heading h1{font-size:3.5rem}}
+@media(max-width:359px){.poster-heading{min-height:126px}.poster-heading h1{font-size:2.65rem}.poster-modes{padding-inline:18px}.poster-modes button{min-height:70px}}
+@media(prefers-reduced-motion:reduce){.game-poster,.sheet,.identity,.role-seal{animation:none;transition:none}.primary:active:not(:disabled),.secondary:active:not(:disabled){transform:none}}
 </style>
 </head>
 <body>

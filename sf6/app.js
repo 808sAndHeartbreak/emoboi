@@ -395,13 +395,8 @@
             
             // 应用背景图
             const bgOverlay = document.getElementById('bgOverlay');
-            if (theme.bgImage) {
-                bgOverlay.style.backgroundImage = `url('${theme.bgImage}')`;
-                bgOverlay.style.opacity = '1';
-            } else {
-                bgOverlay.style.backgroundImage = 'none';
-                bgOverlay.style.opacity = '0';
-            }
+            bgOverlay.style.backgroundImage = 'none';
+            bgOverlay.style.opacity = '0';
             
             // 应用主题
         }
@@ -1206,7 +1201,7 @@
             applyTheme(char);
             
             // 更新UI - 只更新图标
-            document.getElementById('currentCharIcon').textContent = getCharIcon(char);
+            document.getElementById('currentCharIcon').textContent = char;
             
             // 加载角色数据 (moves + scenarios)
             loadCharacterData(char);
@@ -6597,7 +6592,7 @@
                 savedCharacter = 'JURI';
             }
             state.currentCharacter = savedCharacter;
-            document.getElementById('currentCharIcon').textContent = getCharIcon(savedCharacter);
+            document.getElementById('currentCharIcon').textContent = savedCharacter;
             
             // 应用角色主题
             applyTheme(savedCharacter);
