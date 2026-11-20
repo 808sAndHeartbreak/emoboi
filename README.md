@@ -26,7 +26,7 @@ Personal archive & tools. Gothic / punk / draincore.
 
 [血染钟楼](https://emoboi.com/boardgames/clocktower/)无活动对局时直接打开开局窗口，取消回到桌游页；已有对局继续使用，不自动新建或清空数据。旧 /clocktower/ 保留查询参数和片段跳转到新地址。当前同源路径保证对局、剧本和 API Key 延续使用，不迁移浏览器存储。
 
-钟楼独立HTML仍由 clocktower-notebook/scripts/build-single.cjs 生成。官三及六份常驻剧本、JSON导入导出、玩家线索、独立新分析与增量追问均保留。推理内核见 [联合约束架构](boardgames/clocktower/docs/reasoning-v39.md)及[既有路由](boardgames/clocktower/docs/reasoning-v32.md)。
+钟楼独立HTML仍由 clocktower-notebook/scripts/build-single.cjs 生成。官三及六份常驻剧本、JSON导入导出、玩家线索、独立新分析与增量追问均保留。推理内核见 [观察语义与联合核验](boardgames/clocktower/docs/reasoning-v41.md)、[通用名额约束](boardgames/clocktower/docs/reasoning-v39.md)及[知识路由](boardgames/clocktower/docs/reasoning-v32.md)。
 
 ## 个人 AI 设置
 
@@ -38,7 +38,7 @@ workers/deepseek-proxy/ 仅为可选 BYOK 代理源码，已移除站点 Secret 
 
 ## 性能与视觉
 
-v0.40统一报告操作状态：请求JSON随时可导出，报告完成才启用复制与MD导出。推理只交付采信后的结论，行动须确实缺失、玩家可知且能区分分支；本地清理重复反馈和隐藏醉毒追问，精简重复提示与请求元数据。详见 [v0.40](boardgames/docs/release-v40.md)。v0.39联合约束、v0.38格式修复及15分钟总预算继续保留。
+v0.41补齐观察解析和关键机制输入，在通用名额约束后联合核验身份、技能反馈、误登记和投毒时序；压缩条件结果后交给模型，不按少量样例或分支数量估概率。增加完整身份表及配套机制复核，未通过的报告不标完成。详见 [v0.41](boardgames/docs/release-v41.md)。v0.40报告按钮与精简表达、v0.39名额约束、v0.38格式修复及15分钟总预算继续保留。
 
 当前 v0.36：恢复原站 Syne、Archivo Black、Space Mono、Major Mono 等字体与 E 标志，恢复首页拼贴、反白切片入口、全屏红色菜单。各工具保留自己的字体、配色和交互，不再套用统一哥特字体。精简重复说明，同时保留纸张、印刷错位与悬停响应。
 
@@ -58,7 +58,7 @@ v0.33 的27张拼贴装饰图使用派生 WebP，总量从3,477,999字节降至4
 
 ## 验证
 
-钟楼340项检查通过，包括140组容量匹配与完全枚举对照；狼人杀此前11组规则检查及1,600次随机发牌通过；网站整合14项检查通过。此前浏览器验证桌游路由、开局取消、发牌、英语模拟流式查询、Key跨工具共享及清除、320/390/768/1440布局。本次另验证报告生成前后按钮状态和生成中下载请求；使用本地案例与模拟接口，没有新增付费模型评测，也没有读取或修改线上用户的Key、历史对局与词汇记录。
+钟楼349项检查通过，包括140组容量匹配枚举对照、9组独立联合枚举对照及环形旋转/镜像不变性；狼人杀此前11组规则检查及1,600次随机发牌通过；网站整合14项检查通过。此前浏览器验证桌游路由、发牌、英语模拟查询、Key共享及320/390/768/1440布局。本次另验证390px手机下真实请求准备、导出和模拟报告完成。没有新增付费模型评测，也没有读取或修改线上用户的Key、历史对局与词汇记录。
 
 ```sh
 python -m http.server 8766 --bind 127.0.0.1
@@ -66,6 +66,6 @@ node scripts/stamp-assets.cjs
 node --test tests/site.test.cjs
 ```
 
-本轮详情见 [v0.40 发布说明](boardgames/docs/release-v40.md)。历史：[v0.39](boardgames/docs/release-v39.md) · [v0.37](boardgames/docs/release-v37.md) · [v0.36](boardgames/docs/release-v36.md) · [v0.35](boardgames/docs/release-v35.md) · [v0.34](boardgames/docs/release-v34.md) · [v0.33](boardgames/docs/release-v33.md)。
+本轮详情见 [v0.41 发布说明](boardgames/docs/release-v41.md)。历史：[v0.40](boardgames/docs/release-v40.md) · [v0.39](boardgames/docs/release-v39.md) · [v0.37](boardgames/docs/release-v37.md) · [v0.36](boardgames/docs/release-v36.md) · [v0.35](boardgames/docs/release-v35.md) · [v0.34](boardgames/docs/release-v34.md) · [v0.33](boardgames/docs/release-v33.md)。
 
 *Design by 天 · © 2026 emoboi.com*
