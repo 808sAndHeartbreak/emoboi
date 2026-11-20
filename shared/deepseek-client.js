@@ -2,6 +2,7 @@
 (function (root) {
   'use strict';
   const API_BASE='https://api.deepseek.com';
+  const MAX_DURATION_MS=15*60*1000;
   const Cost=typeof module!=='undefined'&&module.exports?require('./cost.js'):root.ClocktowerCost;
   const MODELS=[{id:'deepseek-v4-pro',name:'DeepSeek V4 Pro',description:'推荐'},{id:'deepseek-flash',name:'DeepSeek Flash',description:'轻量分析'}];
   const DEFAULT_SETTINGS={model:'deepseek-v4-pro',thinking:false,rememberKey:false,context:true,maxTokens:32768,timeoutSeconds:300,stream:true};
@@ -33,7 +34,7 @@
       if(!/^[a-zA-Z0-9_.:/-]{1,120}$/.test(model))throw new DeepSeekError('请选择有效模型。');
       if(!Number.isInteger(maxTokens)||maxTokens<1024||maxTokens>393216)throw new DeepSeekError('输出上限应在 1024–393216 tokens 之间。');
       if(!Number.isInteger(timeoutSeconds)||timeoutSeconds<30||timeoutSeconds>900)throw new DeepSeekError('等待时间应在 30–900 秒之间。');
-      return {model,thinking:raw.thinking!==false,rememberKey:!!raw.rememberKey,context:raw.context!==false,maxTokens,timeoutSeconds,stream:raw.stream!==false};
+      return {model,thinking:raw.thinking===true,rememberKey:!!raw.rememberKey,context:raw.context!==false,maxTokens,timeoutSeconds,stream:raw.stream!==false};
     }
     function safeText(value,credential=key){let text=String(value||'');if(credential)text=text.split(credential).join('[已隐藏密钥]');return text.replace(/sk-[A-Za-z0-9_-]{8,}/g,'[已隐藏密钥]').slice(0,600);}
     function getSettings(){refreshKey();return {...settings,hasKey:!!key,storageAvailable,models:models.map(m=>({...m}))};}
@@ -58,12 +59,13 @@
       if(signal?.aborted)throw new DOMException('已取消','AbortError');
       if(root.navigator?.onLine===false)throw new DeepSeekError('设备当前离线，联网后可重试。',{code:'offline'});
       const controller=new AbortController(),visibility=options.visibilityTarget??root.document;
-      const idleMs=options.timeoutMs??settings.timeoutSeconds*1000,totalMs=requestDurationMs??options.maxDurationMs??Math.max(60000,idleMs*(body?.thinking?.type==='enabled'?2:1));
+      const totalMs=Math.min(MAX_DURATION_MS,requestDurationMs??options.maxDurationMs??MAX_DURATION_MS);
+      const idleMs=options.timeoutMs??(body?.thinking?.type==='enabled'?totalMs:settings.timeoutSeconds*1000);
       let timedOut=false,timeoutKind='timeout',partial='',reader,connected=false,sawThinking=false,idleTimer,totalTimer,trailerTimer;
       let model=body?.model,usage=null,reasoningEstimate=0,lastActivityAt=Date.now(),lastOutputAt=0,connectedAt=0,reasoning='';
       const startedAt=Date.now();
       const timeout=(kind='timeout')=>{if(controller.signal.aborted)return;timedOut=true;timeoutKind=kind;controller.abort();};
-      const armIdle=()=>{lastActivityAt=Date.now();clearTimeout(idleTimer);idleTimer=setTimeout(timeout,idleMs);};
+      const armIdle=()=>{lastActivityAt=Date.now();clearTimeout(idleTimer);idleTimer=setTimeout(()=>timeout(Date.now()-startedAt>=totalMs?'duration':'timeout'),idleMs);};
       const onVisibility=()=>{
         if(visibility?.visibilityState==='hidden')return;
         if(Date.now()-startedAt>=totalMs)timeout('duration');
@@ -160,7 +162,9 @@
         Object.assign(call,{model:error.model||call.model,pricing:Cost.quote(error.model||call.model,call.startedAt),connected:error.connected,usage:error.usage||call.usage,status:error.name==='AbortError'?'cancelled':'error',rejected:[400,401,402,403,404,422,429].includes(error.status),outputEstimate:Cost.tokens(error.partialContent||'')+(error.reasoningEstimate||0),finishedAt:new Date().toISOString()});error.billingCall=call;throw error;
       }
     }
-    return {name:'DeepSeek',get available(){refreshKey();return !!key;},getSettings,configure,clearKey,testConnection,analyze,createClient,MODELS,API_BASE,progressState};
+    // A new Clocktower visit requires consent again; saved model and Key are unaffected.
+    if(options.requireThinkingConsent)settings.thinking=false;
+    return {name:'DeepSeek',get available(){refreshKey();return !!key;},getSettings,configure,clearKey,testConnection,analyze,createClient,MODELS,API_BASE,MAX_DURATION_MS,progressState};
   }
   function progressState(job,now=Date.now()){
     const elapsed=Math.max(0,Math.floor((now-job.startedAt)/1000)),silent=Math.max(0,Math.floor((now-(job.activityAt||job.startedAt))/1000));
@@ -168,5 +172,5 @@
     const stalled=job.phase!=='preparing'&&silent>=45;
     return {elapsed,stalled,label:stalled?'暂未收到新内容':labels[job.phase]||'正在分析',detail:stalled?silent+'秒未收到新内容，可继续等待或停止重试':job.phase==='connecting'?'正在建立连接':job.phase==='waiting'?'已连接，等待模型开始分析':job.phase==='reviewing'?'正在核对报告格式':'',showThinking:job.phase==='thinking'&&!stalled&&!!job.thinkingText};
   }
-  if(typeof module!=='undefined'&&module.exports)module.exports={createClient,MODELS,DEFAULT_SETTINGS,API_BASE,DeepSeekError,progressState};else root.ClocktowerAI=createClient();
+  if(typeof module!=='undefined'&&module.exports)module.exports={createClient,MODELS,DEFAULT_SETTINGS,API_BASE,MAX_DURATION_MS,DeepSeekError,progressState};else root.ClocktowerAI=createClient({requireThinkingConsent:true});
 })(globalThis);

@@ -38,6 +38,8 @@ workers/deepseek-proxy/ 仅为可选 BYOK 代理源码，已移除站点 Secret 
 
 ## 性能与视觉
 
+v0.37更新钟楼分析等待与反馈核对：深度默认关闭，开启需确认；显式采用较轻思考强度，主分析与纠错共用15分钟总预算。区分邪恶／爪牙／恶魔，补上共情重复追问与厨师信息边界检查，新分析和追问共用检查。详见 [v0.37](boardgames/docs/release-v37.md)。
+
 当前 v0.36：恢复原站 Syne、Archivo Black、Space Mono、Major Mono 等字体与 E 标志，恢复首页拼贴、反白切片入口、全屏红色菜单。各工具保留自己的字体、配色和交互，不再套用统一哥特字体。精简重复说明，同时保留纸张、印刷错位与悬停响应。
 
 钟楼恢复原正文字体和城镇美术，保留离线打开；字体按应用与角色资料字符做子集，保留400–600可变字重。独立 HTML 为1,818,489字节，比v0.34减少36.8%；字体子集375,228字节，城镇WebP为60,564字节。CSS / JS 按内容生成版本，发布前运行 `node scripts/stamp-assets.cjs`，防止新旧资源混用。
@@ -56,7 +58,7 @@ v0.33 的27张拼贴装饰图使用派生 WebP，总量从3,477,999字节降至4
 
 ## 验证
 
-钟楼312项检查通过；狼人杀11组规则检查及1,600次随机发牌通过；网站整合14项检查通过。浏览器验证桌游路由、开局取消、发牌、英语模拟流式查询、Key跨工具共享及清除、320/390/768/1440布局。没有调用付费模型，也没有读取或修改线上用户的 Key、历史对局与词汇记录。
+钟楼318项检查通过；狼人杀此前11组规则检查及1,600次随机发牌通过；网站整合14项检查通过。浏览器验证桌游路由、开局取消、发牌、英语模拟流式查询、Key跨工具共享及清除、320/390/768/1440布局。没有调用付费模型，也没有读取或修改线上用户的 Key、历史对局与词汇记录。
 
 ```sh
 python -m http.server 8766 --bind 127.0.0.1
@@ -64,6 +66,6 @@ node scripts/stamp-assets.cjs
 node --test tests/site.test.cjs
 ```
 
-本轮详情见 [v0.36 发布说明](boardgames/docs/release-v36.md)。历史：[v0.35](boardgames/docs/release-v35.md) · [v0.34](boardgames/docs/release-v34.md) · [v0.33](boardgames/docs/release-v33.md)。
+本轮详情见 [v0.37 发布说明](boardgames/docs/release-v37.md)。历史：[v0.36](boardgames/docs/release-v36.md) · [v0.35](boardgames/docs/release-v35.md) · [v0.34](boardgames/docs/release-v34.md) · [v0.33](boardgames/docs/release-v33.md)。
 
 *Design by 天 · © 2026 emoboi.com*
