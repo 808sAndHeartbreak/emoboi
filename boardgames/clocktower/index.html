@@ -356,7 +356,6 @@ textarea:focus,input:focus,select:focus{outline:2px solid #c8495d;outline-offset
 .snapshot-heading .pill{font-size:10px;white-space:nowrap;padding:5px 7px;min-height:0}
 .analysis-question{font-size:14px;line-height:1.75;background:#2a2228;border-left:2px solid #c0445a;padding:11px 13px;color:#e7d6d7;margin:12px 0}
 .inline-update{font-size:12px;line-height:1.7;color:#e5b9bd;margin:12px 0}
-.report-parent{display:inline-flex;align-items:center;gap:6px;min-height:36px;background:none;border:0;padding:0;color:#d5b7c2;font-size:12px}
 .report-body{color:#292429;background:#e8dfd0;border:1px solid #a59990;font:400 15.5px/1.85 var(--font-body);padding:2px 20px 15px;box-shadow:3px 3px 0 #080607;counter-reset:report-section}
 .report-body:empty{display:none}
 .report-section{padding:17px 0 3px;counter-increment:report-section;scroll-margin-top:74px}
@@ -1048,6 +1047,10 @@ dialog::backdrop{overflow:hidden;overscroll-behavior:contain}
 .player-header-controls .player-role-button{color:#eeece4;background:#29292a;border-color:#ffffff42}
 .player-header-controls .player-role-button:hover{color:#fff;background:#343435}
 .player-dialog .modal-header h2,.session-open .event-content,.report-body{font-family:var(--font-body)}
+.report-dialog .modal-header>.icon-button{flex:none;min-inline-size:44px;min-block-size:44px}
+.report-pagination{display:flex;justify-content:space-between;gap:8px;margin-block:0 12px}
+.report-pagination>.button{min-block-size:44px;white-space:nowrap}
+.report-dialog .analysis-top-actions{margin-block:12px 0}
 .session-open .event-content{line-height:1.8}
 .report-body{line-height:1.8}
 .report-body p{line-height:1.8}
@@ -3748,6 +3751,7 @@ reasoningPreparation.reportClasses是局部核验的条件划分，不规定全�
   const $ = selector => document.querySelector(selector), E = C.escape;
   const STORAGE = 'clocktower-notebook.v1';
   const pageScroll=new Map();
+  const forwardReport=new Map();
   const tabletopPage=/\/boardgames\/clocktower(?:\/|\/index\.html)?$/.test(location.pathname);
   const hostedPage=/^https?:$/.test(location.protocol)&&/\/clocktower(?:\/|\/index\.html)?$/.test(location.pathname);
   const paths = {
@@ -3936,7 +3940,7 @@ reasoningPreparation.reportClasses是局部核验的条件划分，不规定全�
   }
   function renderReasoning(g) {
     const a=window.ClocktowerAI.getSettings(),job=ui.aiJob?.gameId===g.id?ui.aiJob:null,groups=C.analysisConversations(g);
-    return `<section class="new-analysis"><div class="analysis-options"><label class="model-picker"><span class="sr-only">推理模型</span><select id="analysis-model" aria-label="推理模型"${ui.aiBusy?' disabled':''}>${a.models.map(m=>opt(m.id,m.name.replace(/^DeepSeek\s+/,''),a.model)).join('')}</select></label><label class="check-field analysis-thinking" title="开启深度思考与角色进阶资料"><input id="analysis-thinking" type="checkbox"${a.thinking?' checked':''}${ui.aiBusy?' disabled':''}>深度思考</label></div><label class="sr-only" for="analysis-focus">重点问题</label><textarea id="analysis-focus" class="analysis-focus" rows="3" maxlength="4000" placeholder="重点问题（选填）">${E(g.analysisFocus)}</textarea><div class="new-analysis-footer">${job?`<div class="compact-ai-progress"><span class="loading-ring"></span><span data-ai-progress>正在连接…</span>${button('cancel-ai','停止','','text-only small')}</div>${button('open-analysis','查看进度','arrow','analysis-cta',`data-id="${E(job.snapshotId)}"`)}`:button('analyze-now','开始分析','spark','analysis-cta',ui.aiBusy?'disabled':'')}</div></section><section class="conversation-history" aria-labelledby="conversation-title"${groups.length?'':' hidden'}><div class="conversation-heading"><h2 id="conversation-title">历史对话</h2>${groups.length?`<span>${groups.length}</span>`:''}</div>${groups.length?conversationRows(g,groups.slice(0,8))+(groups.length>8?`<details class="older-conversations"><summary>更早的对话 · ${groups.length-8}${icon('down',13)}</summary>${conversationRows(g,groups.slice(8))}</details>`:''):'<p class="conversation-empty">暂无对话</p>'}</section>`;
+    return `<section class="new-analysis"><div class="analysis-options"><label class="model-picker"><span class="sr-only">推理模型</span><select id="analysis-model" aria-label="推理模型"${ui.aiBusy?' disabled':''}>${a.models.map(m=>opt(m.id,m.name.replace(/^DeepSeek\s+/,''),a.model)).join('')}</select></label><label class="check-field analysis-thinking" title="开启深度思考与角色进阶资料"><input id="analysis-thinking" type="checkbox"${a.thinking?' checked':''}${ui.aiBusy?' disabled':''}>深度思考</label></div><label class="sr-only" for="analysis-focus">重点问题</label><textarea id="analysis-focus" class="analysis-focus" rows="3" maxlength="4000" placeholder="重点问题（选填）">${E(g.analysisFocus)}</textarea><div class="new-analysis-footer">${job?`<div class="compact-ai-progress"><span class="loading-ring"></span><span data-ai-progress>正在连接…</span>${button('cancel-ai',job.phase==='stopping'?'停止中':'停止','','text-only small',`data-id="${E(job.snapshotId)}"${job.phase==='stopping'?' disabled':''}`)}</div>${button('open-analysis','查看进度','arrow','analysis-cta',`data-id="${E(job.snapshotId)}"`)}`:button('analyze-now','开始分析','spark','analysis-cta',ui.aiBusy?'disabled':'')}</div></section><section class="conversation-history" aria-labelledby="conversation-title"${groups.length?'':' hidden'}><div class="conversation-heading"><h2 id="conversation-title">历史对话</h2>${groups.length?`<span>${groups.length}</span>`:''}</div>${groups.length?conversationRows(g,groups.slice(0,8))+(groups.length>8?`<details class="older-conversations"><summary>更早的对话 · ${groups.length-8}${icon('down',13)}</summary>${conversationRows(g,groups.slice(8))}</details>`:''):'<p class="conversation-empty">暂无对话</p>'}</section>`;
   }
   function renderReasoningPage(g) {
     return `<div id="reasoning-view" role="tabpanel" aria-labelledby="tab-reasoning" class="reasoning-view"><div id="reasoning-panel">${renderReasoning(g)}</div></div>`;
@@ -3949,7 +3953,17 @@ reasoningPreparation.reportClasses是局部核验的条件划分，不规定全�
   function openAnalysis() {
     const g=game(),snapshot=selectedSnapshot(g);
     const el=$('#modal'),same=el.open&&el.dataset.snapshotId===snapshot?.id,top=same?el.scrollTop:0,foldKey=d=>(d.closest('[data-report-section]')?.dataset.reportSection||'')+':'+d.querySelector('summary')?.textContent,opened=new Set(same?[...el.querySelectorAll('#live-report details[open]')].map(foldKey):[]);
-    modal(snapshot?snapshot.stage+' · '+(snapshot.kind==='followup'?'追问':'分析'):'推理报告','',renderAnalysis(g),'report-dialog',button('report-to-records','记线索','','report-record-button quiet small'));el.dataset.snapshotId=snapshot?.id||'';for(const d of el.querySelectorAll('#live-report details'))if(opened.has(foldKey(d)))d.open=true;if(same)el.scrollTop=top;updateAIProgress();
+    const title=snapshot?snapshot.stage+' · '+(snapshot.kind==='followup'?'追问':'分析'):'推理报告';
+    const parentId=snapshot?.parentId||snapshot?.request?.parentId;
+    if(parentId)forwardReport.set(parentId,snapshot.id);
+    if(el.open&&el.classList.contains('report-dialog')){
+      if($('#modal-title').textContent!==title)$('#modal-title').textContent=title;
+      el.dataset.viewTitle=title;
+      el.querySelector('.modal-body').innerHTML=renderAnalysis(g);
+    }else modal(title,'',renderAnalysis(g),'report-dialog',button('report-to-records','记线索','','report-record-button quiet small'));
+    el.dataset.snapshotId=snapshot?.id||'';
+    for(const d of el.querySelectorAll('#live-report details'))if(opened.has(foldKey(d)))d.open=true;
+    el.scrollTop=top;updateAIProgress();
   }
 
 
@@ -4002,22 +4016,29 @@ function renderTimeline(g) {
   }
   function officialURL(id) {const title=id==='pit_hag'?'Pit-Hag':id==='devils_advocate'?"Devil's_Advocate":id.split('_').map(x=>x.charAt(0).toUpperCase()+x.slice(1)).join('_');return 'https://wiki.bloodontheclocktower.com/'+encodeURIComponent(title);}
   function selectedSnapshot(g) {return g.snapshots.find(s=>s.id===ui.snapshotId)||g.snapshots[0];}
+  function renderReportNavigation(g,snapshot) {
+    const previous=g.snapshots.find(s=>s.id!==snapshot.id&&s.id===(snapshot.parentId||snapshot.request?.parentId));
+    const children=g.snapshots.filter(s=>s.id!==snapshot.id&&(s.parentId||s.request?.parentId)===snapshot.id&&s.status!=='draft');
+    const next=children.find(s=>s.id===forwardReport.get(snapshot.id))||children[0];
+    if(!previous&&!next)return '';
+    return `<nav class="report-pagination" aria-label="对话轮次">${button('select-snapshot','上一轮报告','back','quiet small',`data-turn="previous" ${previous?`data-id="${E(previous.id)}"`:'disabled'}`)}${button('select-snapshot','下一轮报告','arrow','quiet small',`data-turn="next" ${next?`data-id="${E(next.id)}"`:'disabled'}`)}</nav>`;
+  }
   function renderAnalysis(g) {
-    const snapshot=selectedSnapshot(g),stale=snapshot&&snapshot.fingerprint!==C.fingerprint(g),a=window.ClocktowerAI.getSettings(),job=ui.aiJob?.gameId===g.id?ui.aiJob:null,busy=!!job,issues=C.findIssues(g).filter(i=>i.level==='warning');
+    const snapshot=selectedSnapshot(g),stale=snapshot&&snapshot.fingerprint!==C.fingerprint(g),a=window.ClocktowerAI.getSettings(),job=ui.aiJob?.gameId===g.id?ui.aiJob:null,issues=C.findIssues(g).filter(i=>i.level==='warning');
     const snapshotModel=snapshot?.model||(/^deepseek-[a-z0-9.-]+/.exec(snapshot?.reportOrigin||'')||[])[0],modelId=snapshotModel||(!snapshot?.report?a.model:''),modelLabel=modelId?(a.models.find(m=>m.id===modelId)?.name||String(modelId)).replace(/^DeepSeek\s+/,''):'外部报告';
     const history=`<div class="snapshot-list">${g.snapshots.map(s=>`<button type="button" class="snapshot-button ${snapshot?.id===s.id?'active':''}" data-action="select-snapshot" data-id="${E(s.id)}"><span class="snapshot-dot ${s.status==='complete'||(!s.status&&s.report)?'ready':''}"></span><div><span>${s.kind==='followup'?'追问':s.request.mode==='analysis'?'独立分析':'历史分析'} · ${E(s.stage)} <i class="mono">${s.evidenceCount}条</i></span><p>${formatDate(s.createdAt)}</p></div><span class="small muted">${E({running:'生成中',error:'失败',cancelled:'已停止',partial:'未完成',draft:'资料'}[s.status]||(s.report?'报告':'待分析'))}</span></button>`).join('')}</div>`;
     const selectedBusy=job&&snapshot?.id===job.snapshotId;
     let content='';
     if(snapshot){
       const stateLabel=snapshot.status==='cancelled'?'已停止':snapshot.status==='partial'?'未完成':snapshot.status==='error'?'调用失败':'';
-      const headingStatus=selectedBusy?`<div class="report-generation"><div class="report-generation-actions"><span class="mono" data-ai-elapsed>0秒</span>${button('cancel-ai','停止','','quiet small')}</div></div>`:stateLabel?`<span class="pill warning">${stateLabel}</span>`:'';
-      content=`<div class="snapshot-heading"><div><p>${formatDate(snapshot.createdAt)} · ${E(modelLabel)}${stale&&!selectedBusy?'<span class="report-updated">可重新分析</span>':''}</p></div>${headingStatus}</div>${snapshot.parentId?`<button type="button" class="report-parent" data-action="select-snapshot" data-id="${E(snapshot.parentId)}">${icon('back',13)} 上一轮报告</button>`:''}${snapshot.question?`<p class="analysis-question">${E(snapshot.question)}</p>`:''}${snapshot.validationIssues?.length?`<details class="report-check-warning"><summary>部分结论待核对 ${icon('down',12)}</summary><ul>${snapshot.validationIssues.map(reason=>`<li>${E(reason)}</li>`).join('')}</ul></details>`:''}${snapshot.reviewNotice?`<div class="inline-update">${E(snapshot.reviewNotice)}</div>`:''}${snapshot.error?`<div class="notice warning api-report-error">${E(snapshot.error)}${snapshot.errorDetail?`<details class="quiet-detail"><summary>详细信息</summary><p>${E(snapshot.errorDetail)}</p></details>`:''}</div>`:''}<div id="live-report" class="report-body${selectedBusy?' is-processing':''}" aria-busy="${!!selectedBusy}">${selectedBusy?renderAnalysisWait():renderSnapshotReport(snapshot.report,snapshot,false)}</div>${selectedBusy?'':reportSources(snapshot.report,snapshot.id)}${!snapshot.report&&!selectedBusy?`<div class="report-empty">${icon('file',28)}<h3>${snapshot.status==='error'?'这次未生成报告':'还没有报告'}</h3></div>`:''}`;
+      const headingStatus=selectedBusy?`<div class="report-generation"><div class="report-generation-actions"><span class="mono" data-ai-elapsed>0秒</span>${button('cancel-ai',job.phase==='stopping'?'停止中':'停止','','quiet small',`data-id="${E(snapshot.id)}"${job.phase==='stopping'?' disabled':''}`)}</div></div>`:stateLabel?`<span class="pill warning">${stateLabel}</span>`:'';
+      content=`<div class="snapshot-heading"><div><p>${formatDate(snapshot.createdAt)} · ${E(modelLabel)}${stale&&!selectedBusy?'<span class="report-updated">可重新分析</span>':''}</p></div>${headingStatus}</div>${renderReportNavigation(g,snapshot)}${snapshot.question?`<p class="analysis-question">${E(snapshot.question)}</p>`:''}${snapshot.validationIssues?.length?`<details class="report-check-warning"><summary>部分结论待核对 ${icon('down',12)}</summary><ul>${snapshot.validationIssues.map(reason=>`<li>${E(reason)}</li>`).join('')}</ul></details>`:''}${snapshot.reviewNotice?`<div class="inline-update">${E(snapshot.reviewNotice)}</div>`:''}${snapshot.error?`<div class="notice warning api-report-error">${E(snapshot.error)}${snapshot.errorDetail?`<details class="quiet-detail"><summary>详细信息</summary><p>${E(snapshot.errorDetail)}</p></details>`:''}</div>`:''}<div id="live-report" class="report-body${selectedBusy?' is-processing':''}" aria-busy="${!!selectedBusy}">${selectedBusy?renderAnalysisWait():renderSnapshotReport(snapshot.report,snapshot,false)}</div>${selectedBusy?'':reportSources(snapshot.report,snapshot.id)}${!snapshot.report&&!selectedBusy&&snapshot.status!=='cancelled'?`<div class="report-empty">${icon('file',28)}<h3>${snapshot.status==='error'?'这次未生成报告':'还没有报告'}</h3></div>`:''}`;
     }else content=`<section class="analysis-start"><h2>分析当前局势</h2><p><span class="mono">${C.activeEvents(g).length}</span> 条线索 · ${g.script.roles.length} 个可能角色</p><label class="sr-only" for="analysis-focus">重点问题</label><textarea id="analysis-focus" class="analysis-focus" rows="2" maxlength="4000" placeholder="有想重点分析的问题吗？可留空。">${E(g.analysisFocus)}</textarea><div class="analysis-actions">${button(a.hasKey?'analyze-now':'app-settings',a.hasKey?'开始分析':'设置 API Key','','primary',ui.aiBusy?'disabled':'')}</div></section>`;
     const canFollow=snapshot?.report&&(!snapshot.status||snapshot.status==='complete')&&!!C.snapshotContext(snapshot);
     const questionForm=canFollow&&!selectedBusy?`<form id="followup-form" class="followup-form" data-parent-id="${E(snapshot.id)}"><div class="followup-heading"><strong>继续追问</strong></div><label class="sr-only" for="followup-question">继续追问</label><textarea id="followup-question" name="question" rows="2" maxlength="4000" placeholder="继续追问…" required>${E(g.followupDrafts?.[snapshot.id]||(snapshot.id===g.snapshots[0]?.id?g.followupDraft:'')||'')}</textarea><button class="button primary" type="submit"${ui.aiBusy?' disabled':''}>追问</button></form>`:'';
-    const reportTools=snapshot?`<div class="report-actions" role="group" aria-label="当前报告操作">${button('download-request','导出请求json','','quiet small',`data-id="${E(snapshot.id)}"`)}${button('download-report','导出报告md','','quiet small',`data-id="${E(snapshot.id)}"${!C.reportReady(snapshot,selectedBusy)?' disabled title="报告完成后可用"':''}`)}${button('copy-report','复制报告全文','','quiet small',`data-id="${E(snapshot.id)}"${!C.reportReady(snapshot,selectedBusy)?' disabled title="报告完成后可用"':''}`)}</div><div class="report-copy-fallback" data-snapshot-id="${E(snapshot.id)}" hidden></div>`:'';
+    const reportTools=snapshot?`<div class="report-actions" role="group" aria-label="当前报告操作">${button('download-request','导出请求json','','quiet small',`data-id="${E(snapshot.id)}"`)}${button('download-report','导出报告md','','quiet small',`aria-label="导出报告md（完整对话）" data-id="${E(snapshot.id)}"${!C.reportReady(snapshot,selectedBusy)?' disabled title="报告完成后可用"':''}`)}${button('copy-report','复制报告全文','','quiet small',`data-id="${E(snapshot.id)}"${!C.reportReady(snapshot,selectedBusy)?' disabled title="报告完成后可用"':''}`)}</div><div class="report-copy-fallback" data-snapshot-id="${E(snapshot.id)}" hidden></div>`:'';
     const tools=`<details class="analysis-tools"><summary>历史与资料 <span class="mono">${g.snapshots.length}</span>${icon('down',12)}</summary>${history}</details>`;
-    return `<div class="analysis-shell"><section class="analysis-content">${snapshot&&!selectedBusy&&['error','partial','cancelled'].includes(snapshot.status)?`<div class="analysis-top-actions">${button(a.hasKey?'retry-ai':'app-settings',a.hasKey?(snapshot.kind==='followup'?'重试追问':'重试分析'):'设置 API Key','','primary small',`data-id="${E(snapshot.id)}"${ui.aiBusy?' disabled':''}`)}</div>`:''}${content}${questionForm}${canFollow&&!selectedBusy?button('analyze-now','重新分析','spark','report-restart',ui.aiBusy?'disabled':''):''}${issues.length?`<details class="preflight"><summary>${icon('alert',14)}${issues.length} 项信息待核对${icon('down',12)}</summary><div class="issue-list">${issues.map(i=>`<p class="issue">${E(i.text)}</p>`).join('')}</div></details>`:''}${reportTools}${tools}${snapshot?renderCostFootnote(snapshot):''}</section></div>`;
+    return `<div class="analysis-shell"><section class="analysis-content">${content}${snapshot&&!selectedBusy&&['error','partial','cancelled'].includes(snapshot.status)?`<div class="analysis-top-actions">${button(a.hasKey?'retry-ai':'app-settings',a.hasKey?(snapshot.kind==='followup'?'重试追问':'重试分析'):'设置 API Key','','primary small',`data-id="${E(snapshot.id)}"${ui.aiBusy?' disabled':''}`)}</div>`:''}${questionForm}${canFollow&&!selectedBusy?button('analyze-now','重新分析','spark','report-restart',ui.aiBusy?'disabled':''):''}${issues.length?`<details class="preflight"><summary>${icon('alert',14)}${issues.length} 项信息待核对${icon('down',12)}</summary><div class="issue-list">${issues.map(i=>`<p class="issue">${E(i.text)}</p>`).join('')}</div></details>`:''}${reportTools}${tools}${snapshot?renderCostFootnote(snapshot):''}</section></div>`;
   }
   function reportContext(snapshotId) {
     const s=game()?.snapshots.find(s=>s.id===snapshotId);if(!s)return null;
@@ -4072,6 +4093,20 @@ function renderTimeline(g) {
     decisionFacts(tree).forEach(fact => lines.push('- ' + fact));
     tree.children.forEach(child => append(child, 0));
     return report + '\n\n' + lines.join('\n');
+  }
+  function exportConversationReport(g,snapshot) {
+    const conversation=C.analysisConversations(g).find(group=>group.members.some(s=>s.id===snapshot.id));
+    const turns=(conversation?.members||[snapshot]).filter(s=>C.reportReady(s)).reverse();
+    const numbers=new Map(turns.map((s,index)=>[s.id,index+1]));
+    return turns.map((s,index)=>{
+      const parent=numbers.get(s.parentId||s.request?.parentId);
+      const question=s.question||C.snapshotContext(s)?.question;
+      const lines=['# 第 '+(index+1)+' 轮 · '+(s.kind==='followup'?'追问':'分析')];
+      if(parent&&parent!==index)lines.push('接续第 '+parent+' 轮');
+      if(question)lines.push('**我的提问**\n\n'+question.split(/\r?\n/).map(line=>'> '+line).join('\n'));
+      lines.push(exportSnapshotReport(s));
+      return lines.join('\n\n');
+    }).join('\n\n---\n\n');
   }
   function renderDecisionTree(snapshot) {
     const tree = decisionTreeFor(snapshot);
@@ -4254,6 +4289,7 @@ function renderTimeline(g) {
       document.querySelectorAll('[data-cost-snapshot]').forEach(el=>{if(el.dataset.costSnapshot===snapshot.id){const value=costText(snapshot);el.textContent=value;el.setAttribute('aria-label','本轮预估费用 '+value);}});
     }
     const progress=window.ClocktowerAI.progressState(job);
+    if(job.phase==='stopping')Object.assign(progress,{label:'正在停止',detail:'',showThinking:false});
     document.querySelectorAll('[data-ai-elapsed]').forEach(el=>el.textContent=progress.elapsed+'秒');
     document.querySelectorAll('[data-ai-progress]').forEach(el=>{if(el.textContent!==progress.label)el.textContent=progress.label;});
     document.querySelectorAll('[data-ai-detail]').forEach(el=>{el.hidden=!progress.detail;if(el.textContent!==progress.detail)el.textContent=progress.detail;});
@@ -4562,6 +4598,16 @@ function openLibrary() {
     else render();
     $('#record-content')?.focus({preventScroll:true});$('#record-form')?.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
   }
+  function stopAnalysis(snapshotId) {
+    const job=ui.aiJob;
+    if(!job||job.snapshotId!==snapshotId||job.phase==='stopping')return;
+    job.phase='stopping';job.thinkingText='';
+    document.querySelectorAll('[data-action="cancel-ai"]').forEach(el=>{
+      el.textContent='停止中';el.disabled=true;
+    });
+    updateAIProgress();
+    abortController?.abort();
+  }
   function addGame(g) {
     if(ui.aiBusy){toast('先停止当前分析，再开始新的一局。');return false;}if(rawRecovery){toast('请先导出原始数据并建立新的工作区。');return false;}
     if(state.games.length>=100){toast('已达 100 局上限，请先导出备份。');return false;}
@@ -4576,11 +4622,13 @@ function openLibrary() {
     snapshot.executionThinking=route.thinking;snapshot.executionEffort=route.reasoningEffort;snapshot.model=config.model;snapshot.thinking=config.thinking;snapshot.billingCalls=[];snapshot.status='running';snapshot.startedAt=new Date().toISOString();snapshot.error='';
     ui.snapshotId=snapshot.id;ui.aiBusy=true;ui.aiJob={gameId:g.id,snapshotId:snapshot.id,content:'',phase:'connecting',startedAt:Date.now()};
     const controller=new AbortController();abortController=controller;touch(g);
+    const checkStopped=()=>{if(controller.signal.aborted)throw new DOMException('已停止','AbortError');};
     if(ui.page!=='reasoning')navigatePage('reasoning');else refreshReasoning();
     openAnalysis();$('#modal').scrollTop=0;
     void keepScreenAwake();
     const timer=setInterval(updateAIProgress,1000),deadline=ui.aiJob.startedAt+window.ClocktowerAI.MAX_DURATION_MS;let lastProgress=0;
     async function invoke(request,kind,overrides,onProgress){
+      checkStopped();
       const remaining=deadline-Date.now();
       if(remaining<=0)throw Object.assign(new Error('本次分析已达到15分钟等待上限，已保留收到的内容。'),{code:'duration'});
       const index=snapshot.billingCalls.push(K.newCall(request,{model:config.model,thinking:overrides.thinking??config.thinking,kind}))-1;
@@ -4596,12 +4644,18 @@ function openLibrary() {
       if(window.ClocktowerReasoner){
         ui.aiJob.phase='preparing';updateAIProgress();
         joint=await window.ClocktowerReasoner.jointAudit(frozenGame,{signal:controller.signal});
-        if(joint){snapshot.request=C.buildCurrentRequest(frozenGame,{mode:question?'followup':'analysis',question,parentId,thinking:config.thinking,jointAudit:await window.ClocktowerReasoner.compactJointAudit(joint,{signal:controller.signal})});touch(g);}
+        checkStopped();
+        if(joint){
+          const audit=await window.ClocktowerReasoner.compactJointAudit(joint,{signal:controller.signal});
+          checkStopped();
+          snapshot.request=C.buildCurrentRequest(frozenGame,{mode:question?'followup':'analysis',question,parentId,thinking:config.thinking,jointAudit:audit});touch(g);
+        }
         else packet=await window.ClocktowerReasoner.prepare(frozenGame,{signal:controller.signal,thinking:config.thinking,question});
+        checkStopped();
         if(packet){snapshot.request=window.ClocktowerReasoner.buildRequest(packet,{parent:parentId?frozenGame.snapshots.find(s=>s.id===parentId):null,question});touch(g);}
       }
       const displayProgress=progress=>{
-        if(!ui.aiJob||ui.aiJob.snapshotId!==snapshot.id)return;
+        if(controller.signal.aborted||ui.aiJob?.snapshotId!==snapshot.id)return;
         const text=packet?'':progress.content||'';
         ui.aiJob.phase=progress.phase==='answer'?'formatting':progress.phase;ui.aiJob.rawContent=progress.content||'';ui.aiJob.content=text;ui.aiJob.thinkingText=progress.phase==='thinking'?(progress.reasoning||''):'';ui.aiJob.receivedAt=progress.receivedAt;ui.aiJob.activityAt=progress.lastOutputAt||progress.connectedAt||ui.aiJob.startedAt;checkpointAI();
         if(Date.now()-lastProgress>160){updateAIProgress();lastProgress=Date.now();}
@@ -4609,6 +4663,7 @@ function openLibrary() {
       let result=await invoke(C.clone(snapshot.request),snapshot.kind,{thinking:route.thinking,reasoningEffort:route.reasoningEffort},progress=>{
         displayProgress(progress);
       });
+      checkStopped();
       if(!packet&&!result.truncated)result.content=C.conciseReport(snapshot.request,result.content);
       const reviewReasons=!result.truncated?(packet?window.ClocktowerReasoner.parse(result.content,C.snapshotContext(snapshot)).errors:[...C.reportReviewPlan(snapshot.request,result.content,{thinking:route.thinking}).reasons,...(joint?window.ClocktowerReasoner.reviewJointReport(frozenGame,joint,result.content):[])]):[];
       if(reviewReasons.length){
@@ -4617,12 +4672,19 @@ function openLibrary() {
           snapshot.reviewThinking=false;snapshot.reviewEffort='none';
           const reviewRequest=packet?{mode:'review',messages:[...snapshot.request.messages,{role:'assistant',content:first.content},{role:'user',content:'输出格式尚有问题：'+reviewReasons.join('；')+'。请重新输出完整合法的JSON Lines，只引用最新目录中的编号，不增加自由身份表。'}]}:C.buildReportReview(snapshot.request,first.content,reviewReasons);
           const reviewed=await invoke(reviewRequest,'review',{thinking:snapshot.reviewThinking,reasoningEffort:snapshot.reviewEffort,maxDurationMs:60000},progress=>{
-            if(!ui.aiJob||ui.aiJob.snapshotId!==snapshot.id)return;ui.aiJob.phase='reviewing';ui.aiJob.receivedAt=progress.receivedAt;ui.aiJob.activityAt=progress.lastOutputAt||progress.connectedAt||ui.aiJob.activityAt;checkpointAI();if(Date.now()-lastProgress>160){updateAIProgress();lastProgress=Date.now();}
+            if(controller.signal.aborted||ui.aiJob?.snapshotId!==snapshot.id)return;ui.aiJob.phase='reviewing';ui.aiJob.receivedAt=progress.receivedAt;ui.aiJob.activityAt=progress.lastOutputAt||progress.connectedAt||ui.aiJob.activityAt;checkpointAI();if(Date.now()-lastProgress>160){updateAIProgress();lastProgress=Date.now();}
           });
+          checkStopped();
           result=reviewed;snapshot.reviewStatus=reviewed.truncated?'partial':'complete';snapshot.reviewUsage=reviewed.usage;
           if(first.usage&&reviewed.usage){result.usage=K.mergeUsage(first.usage,reviewed.usage);snapshot.usageFormat='sum-v2';}
           if(!reviewed.truncated)delete snapshot.unreviewedReport;
-        }catch(error){snapshot.reviewStatus=error.name==='AbortError'?'cancelled':'error';snapshot.reviewError=error.message;if(error.partialContent)snapshot.reviewPartial=error.partialContent;result=first;snapshot.reviewNotice='复核未完成，已保留首次报告';}
+        }catch(error){
+          const stopped=controller.signal.aborted||error.name==='AbortError';
+          snapshot.reviewStatus=stopped?'cancelled':'error';snapshot.reviewError=error.message;
+          if(error.partialContent)snapshot.reviewPartial=error.partialContent;
+          if(stopped)throw Object.assign(new DOMException('已停止','AbortError'),{partialContent:first.content});
+          result=first;snapshot.reviewNotice='复核未完成，已保留首次报告';
+        }
       }
       if(packet){snapshot.rawReport=result.content;snapshot.reportFormat='verified-frames';const formatted=window.ClocktowerReasoner.render(result.content,C.snapshotContext(snapshot),{partial:result.truncated});snapshot.validationIssues=formatted.errors;snapshot.report=formatted.markdown;if(!snapshot.report)throw new Error('未收到可展示的有效报告，请重试。');}
       snapshot.model=result.model||config.model;if(!packet)snapshot.report=C.conciseReport(snapshot.request,result.content);snapshot.reportOrigin=(result.model||config.model)+' · API';snapshot.reportAt=new Date().toISOString();snapshot.status=result.truncated||packet&&snapshot.validationIssues.length?'partial':'complete';snapshot.usage=result.usage;snapshot.finishReason=result.finishReason;if(!packet)snapshot.validationIssues=result.truncated?[]:[...new Set([...C.reportReviewReasons(snapshot.request,snapshot.report),...(joint?window.ClocktowerReasoner.reviewJointReport(frozenGame,joint,snapshot.report):[])] )].slice(0,6);
@@ -4632,7 +4694,13 @@ function openLibrary() {
       if(snapshot.status==='complete'&&question){if(g.followupDrafts?.[parentId]===question)delete g.followupDrafts[parentId];if(g.followupDraft===question)g.followupDraft='';}
       toast(result.truncated?'已保留未完成的报告':snapshot.validationIssues.length?'报告已生成，部分结论待核对':'分析完成');
     }catch(error){
-      snapshot.report=packet?(error.partialContent?window.ClocktowerReasoner.render(error.partialContent,C.snapshotContext(snapshot),{partial:true}).markdown:ui.aiJob?.content||snapshot.report||''):error.partialContent||ui.aiJob?.content||'';if(packet&&error.partialContent)snapshot.rawReport=error.partialContent;snapshot.status=error.name==='AbortError'?'cancelled':'error';snapshot.error=error.name==='AbortError'?'已停止，已生成的内容仍然保留。':error.message;snapshot.errorCode=error.code||'';snapshot.errorDetail=error.detail||'';snapshot.reportOrigin=config.model+' · '+(error.name==='AbortError'?'已停止':'未完成');snapshot.reportAt=new Date().toISOString();toast(snapshot.error);
+      const stopped=controller.signal.aborted||error.name==='AbortError';
+      snapshot.report=packet?(error.partialContent?window.ClocktowerReasoner.render(error.partialContent,C.snapshotContext(snapshot),{partial:true}).markdown:ui.aiJob?.content||snapshot.report||''):error.partialContent||ui.aiJob?.content||'';
+      if(packet&&error.partialContent)snapshot.rawReport=error.partialContent;
+      snapshot.status=stopped?'cancelled':'error';snapshot.error=stopped?'':error.message;
+      snapshot.errorCode=error.code||'';snapshot.errorDetail=error.detail||'';
+      snapshot.reportOrigin=config.model+' · '+(stopped?'已停止':'未完成');snapshot.reportAt=new Date().toISOString();
+      toast(stopped?'已停止分析':snapshot.error);
     }finally{
       clearInterval(timer);snapshot.finishedAt=new Date().toISOString();touch(g);ui.aiBusy=false;ui.aiJob=null;abortController=null;void releaseScreen();
       if(game()?.id===g.id){refreshReasoning();if($('#modal').open&&$('#modal').classList.contains('report-dialog')&&selectedSnapshot(g)?.id===snapshot.id)openAnalysis();}updateSaveIndicators();
@@ -4768,15 +4836,22 @@ function openLibrary() {
         if(g.snapshots.length>=200)return toast('本局已有 200 份快照，请导出备份后新建一局。');
         const thinking=window.ClocktowerAI.getSettings().thinking,frozen=C.clone(g),s=C.createSnapshot(g,{profile:'current',thinking}),packet=await window.ClocktowerReasoner?.prepare(frozen,{thinking});if(packet)s.request=window.ClocktowerReasoner.buildRequest(packet);ui.snapshotId=s.id;ui.analysisTab='snapshot';touch(g);refreshReasoning();openAnalysis();toast('分析资料已固定到此快照');
       }
-      else if(action==='select-snapshot'){ui.snapshotId=target.dataset.id;openAnalysis();$('#modal').scrollTop=0;}
+      else if(action==='select-snapshot'){
+        const turn=target.dataset.turn,keyboard=event.detail===0;
+        ui.snapshotId=target.dataset.id;openAnalysis();
+        if(keyboard&&turn){
+          const controls=[...$('#modal').querySelectorAll('[data-turn]:not(:disabled)')];
+          (controls.find(el=>el.dataset.turn===turn)||controls[0])?.focus({preventScroll:true});
+        }
+      }
       else if(action==='copy-report'){const s=g?.snapshots.find(s=>s.id===target.dataset.id)||selectedSnapshot(g);if(C.reportReady(s,ui.aiJob?.snapshotId===s?.id))await copyText(exportSnapshotReport(s),{success:'报告全文已复制',timeoutMs:2000,onFailure:text=>reportCopyFallback(s.id,text)});}
       else if(action==='copy-current'){const packet=await window.ClocktowerReasoner?.prepare(g,{thinking:window.ClocktowerAI.getSettings().thinking});await copyText(C.requestText(packet?window.ClocktowerReasoner.buildRequest(packet):C.buildRequest(g,{profile:'current'})));}
       else if(action==='copy-snapshot'){const s=selectedSnapshot(g);if(s)await copyText(C.requestText(s.request));}
       else if(action==='download-request'){const s=g?.snapshots.find(s=>s.id===target.dataset.id)||selectedSnapshot(g);if(s)download('钟楼分析请求-'+s.id.slice(0,8)+'.json',JSON.stringify(s.request,null,2));}
-      else if(action==='download-report'){const s=g?.snapshots.find(s=>s.id===target.dataset.id)||selectedSnapshot(g);if(C.reportReady(s,ui.aiJob?.snapshotId===s?.id))download('钟楼分析报告-'+s.id.slice(0,8)+'.md',exportSnapshotReport(s)+'\n','text/markdown');}
+      else if(action==='download-report'){const s=g?.snapshots.find(s=>s.id===target.dataset.id)||selectedSnapshot(g);if(C.reportReady(s,ui.aiJob?.snapshotId===s?.id))download('钟楼分析报告-'+s.id.slice(0,8)+'.md',exportConversationReport(g,s)+'\n','text/markdown');}
       else if(action==='paste-report')openPasteReport();
       else if(action==='call-ai')await runAI();
-      else if(action==='cancel-ai'){abortController?.abort();toast('已请求取消分析');}
+      else if(action==='cancel-ai')stopAnalysis(target.dataset.id);
       else if(action==='export-backup'){
         if(rawRecovery)return download('钟楼手记-待恢复原始数据.json',rawRecovery);
         download('钟楼手记-完整备份-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(state,null,2));toast('完整备份已导出');
