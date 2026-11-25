@@ -1233,13 +1233,23 @@ dialog::backdrop{overflow:hidden;overscroll-behavior:contain}
 /* Shared inference contract. Domains are conservative bounds, never sample frequencies. */
 (function(root){
   'use strict';
-  const VERSION='inference-42';
+  const VERSION='inference-43';
   const CONSTRAINT_POLICY='先做约束传播，再决定从哪里分支：联合各类型名额、角色唯一性、本人私有信息、公开能力交互、角色声明和逐夜反馈；每得到一个身份或必在/不在场角色就回代其他信息，直到不能继续缩窄。不能只抄配比表或给每人同一套泛泛候选。constraintAudit.hard是其scope内的结构结论；disclosure是“当前阶段自知且无隐瞒理由的善良已如实报身份”的可检验条件模型，邪恶仍可假跳。先看发言是否闭合及角色是否自知、有疯狂/暴露风险/特殊胜利或变化；条件成立时应明确认下其新推导，并用于后续剪枝，不能仅因抽象的“好人也可能撒谎”拒绝锁身份。若有反证，明确最小需放松的前提并重算，不能把条件判断冒充无条件规则。优先选择能打断最多关键约束或缩窄恶魔范围的未知量分支，不固定先盘某两个角色，也不为某剧本预设主线。数量结论、角色真伪与反馈是否有效分开：认下角色不保证未醉毒；异常反馈先比较持续酒鬼、具体夜次失能、误登记和假报，并联立相应来源、容量与名额。';
   const ALIGNMENT_SCOPE='邪恶是阵营，爪牙与恶魔是不同角色类型、同属邪恶且通常目标一致。查验邪恶涵盖两者，查验恶魔不涵盖普通爪牙；非恶魔不推出善良，邪恶也不直接推出恶魔。逐条按技能的探测对象和合法登记解释；善良通常要消灭全部恶魔，不必消灭全部爪牙，胜负例外按本局规则。';
-  const ACTION_POLICY='行动可整段省略。最多1–2项，须同时满足：原话确实缺失、被问者能获知、答案能区分当前分支。已记角色/目标/数字不再问是否确实；仅具体冲突才请求更正。醉毒、干扰项等通常是隐藏状态，不让玩家确认是否可能中毒/醉酒；由分析者联立来源、时点和容量，明确告知的例外按事实。共情“昨夜依旧开0”是新反馈，邻居由历史生死座次计算。厨师仅首夜获邪恶邻座对数，首尾相邻，自己计算，不索要更新或具体哪对邪恶。';
+  const ACTION_POLICY='行动可整段省略。最多1–2项，须同时满足：原始观测确实缺失、被问者确有渠道知道、答案能区分当前分支。只问未记录的原话、本人选择或明确收到的提示。已记反馈、公开死亡和可计算的座次/技能时序自行处理；仅具体冲突才请求更正。不要问收到命题的人哪条真、为何得到该答案，或是否受隐藏的醉毒、酒鬼、干扰项和其他角色影响。没有明确告知，收到反馈、没收到反馈或没感觉异常都不是能力正常的证据。共情“昨夜依旧开0”是新反馈；厨师仅首夜获得总对数。';
   const OUTPUT_POLICY='只交付采信后的结论和必要分支，不展示先怀疑、后推翻的过程。联合约束已推出的身份，用一句短前提认下并回代；不再以无依据的“也可能邪恶假跳/善良藏身份”自我否定。仅在已有线索支持破坏前提或用户专问反例时，写具体反证及影响。内部仍核验反例，不把高可信条件说成规则必然。已有身份表不再打印名额过程；省掉空章节、重复信息与被否定的尝试。';
   const SOURCE_POLICY='分开“玩家是否如实转述”“真实角色是什么”“当次能力是否有效”“登记是否等于实际身份”。酒鬼可诚实报告被模拟的信息，不因此是邪恶撒谎者；健康能力也可因合法误登记产生误导。间谍全知与邪恶共谋可制造相互印证的假报，醉鬼反馈也可能配合局面；同源或协同信息不独立计权。不能让间谍改变别人的登记，只能按其本人技能解释具体互动。';
   const JOINT_POLICY='jointAudit是本地联合核验结果：acceptRoles只接受真实角色，不认证其反馈未醉毒；子类承接上级身份与时序。正常无需失能也可有误登记，酒鬼与暂时中毒分开，邪恶假跳不等于每个数字取反。views按实际信息生成条件查询，不是概率样本或必须照抄的报告目录。先结合独立支持与本人已知事实确定可用信息，再选能缩小恶魔范围的分组；无独立支持的身份不硬认。静态分配不覆盖未记录传位，未解析动作仍需原文核对；只有complete且同一scope/basis内的无解才允许剪枝。输出压缩后的推导，不展示核验步骤或状态码。';
+  function worldPolicy(context){
+    const feedback=context.recordedAbilityInformation;
+    return [
+      context.hiddenDrunkChecks&&'检验关键声明者为隐藏酒鬼的分支：保留其善良外来者身份，撤销冒用技能的反馈约束，按slotAudit的合法配比及其设置角色重新填坑。用同一个完整身份组合回代所有仍采信的线索，再比较真角色失能、假报与强制错误。',
+      feedback?.historicalTypeTests&&'类型查验只约束反馈时的目标类型。目标后来死亡不改历史查验；当时死者能否被选中或查出按卡面判断。typeFeedbackBounds仅在所列前提内参考。',
+      feedback?.savantPairs&&'每个候选同时评价一组命题的两句话。正常一真一假时，未知真值不等于两句都能采信。允许双真的相克只在必须给错误反馈的分支适用。涉及存活人数，按命题获得时点计算。',
+      (context.executionAbilityTimeline||context.linkedDeathReports)&&'继承或模拟反馈不能认证原角色。用事先明确记录的指向、时序和触发条件检验死亡关联。满足条件可提高可信度，仍比较独立杀人、替死、额外刀和邪恶共谋。缺少绑定、反馈或具体时点则保持未知，不从后来死亡补造。',
+      context.evidence?.some(e=>/无人死亡|没有人死亡/.test(e.content))&&'无人死亡只约束结果。排查与实际恶魔技能相容的原因；需要选人的技能不能默认跳过。假跳可任意编造自报信息，不能据此单独加权。',
+    ].filter(Boolean).join('\n');
+  }
   const PROSE_POLICY=[
     '线索是玩家筛选过的速记，允许片段、缩写、数字和多次转述。表达的正式程度、省略无关细节或未按完整发言格式填写，不影响采信。明确的角色、目标、数字和更正直接应用；只把真正影响结论且无法确定的含义保留为未知。未记录不代表未发生，也不等于某玩家没提供信息。',
     '默认报告先用“## 优先前提”呈现改变局势判断的确定结论和高可信判断，两者标明依据层级，下面再给“## 可能A …”。仅当能改变恶魔范围、关键反馈采信或处决决策时分组。允许把多个相容前提组合成一类，例如某两种失真来源均不在场；区分角色不存在、能力未起效与某晚无需其解释。各类继承共同前提，以一句结论开头。固定两人同为爪牙时，写出其中必有的角色和另一人的合法候选，座位互换不另立分支，除非来源存活、时序或行动因此改变。必要细节用三级标题或 :::fold 短标题 和 :::endfold，重点结论留在折叠外。信心无法区分时不硬编权重。全场身份仅在具体组合有助于判断时列出，公共身份沿用上文。',
@@ -1249,14 +1259,14 @@ dialog::backdrop{overflow:hidden;overscroll-behavior:contain}
     ALIGNMENT_SCOPE,
     CONSTRAINT_POLICY,
     OUTPUT_POLICY,
-    '先联合来源、夜次、生死与技能，再交叉关键前提、剪枝并合并组合。角色池不等于在场；起始名额、唯一角色、酒鬼及设置变化在内部核验。死者仍占起始身份名额；所有分支的角色数量须同时成立。初始真实角色、后来角色、所获能力和当前阵营分别建模；无神论等实际在场才适用的特殊设置另开分支。',
+    '联合来源、夜次、生死与技能。区分开局、反馈时、当前。开局名额约束全体含死者，除非明确指定当前存活人数。初始真实角色、后来角色、所获能力和当时阵营分别建模。无神论等特殊设置须以实际在场为条件。',
     '正常信息指采信真实角色、所报原始反馈且对应时点未失能，仍允许合法误登记。真角色不自动等于正常反馈；醉毒或假报不表示数字必错，也不直接认证邪恶。',
     '把不依赖中毒与需要中毒的解释分开；后者必须落实本局致毒角色在场、候选位置、作用夜次及受影响反馈，同夜容量须同时满足。酒鬼不等于中毒，不强加投毒者；合法误登记不等于失能。死亡后的新能力、历史邻居及传位按实际时间线处理。未知或未解析记录保留原话，不当作没有提供。',
     '硬结论需有规则约束支持。少假设、夜死和偏信只影响排序，不作认证。有限样例能证明存在或提供反例，不能由没找到排除，也不能由样例频率计算概率。',
     '排坑要联立全部采信信息与身份数量：邪恶假跳会占用好人声明坑位，超额或冲突说明哪些声明不能同时为真，不直接证明其中某人邪恶。善良可早期挡刀、隐藏落难少女或应对疯狂而假报；晚期更正后按最新明确声明建工作分支，但改口本身不认证善良，邪恶也能报真信息。claimLedger保留历史；手动标注与最新发言冲突时不默默覆盖。酒鬼所见、哲学家/食人族所获能力不另占同名真实角色坑。',
     '善良视角优先找当前恶魔，其次爪牙：先用联合约束收窄邪恶范围，再按恶魔位置与关键失真来源分类；当前结论不能无条件沿用变角或转阵营前的排除。由数量约束能证明某组座位必含几名恶魔/爪牙时直接给出范围结论，不能从几个样例冒充必然。报告按互斥前提分类并继承条件；不影响恶魔位置、信息有效性及中毒来源的爪牙互换合并，不另开分支。不要把各座位独立可行候选写成能任意拼接的组合。后续只写变化，不复述本人状态、公开时间线、配额检查、无关例外或固定收尾。',
     ACTION_POLICY,
-    '新分析独立使用最新完整资料。追问沿所选对话并更新变化，旧报告不是证据；更正及撤回优先，失去前提的旧结论不能保留。'
+    '新分析独立使用最新完整资料。追问沿所选对话并更新变化；用户明确补充的观察或裁定单独采用，明确假设只在该分支采用。旧报告不是证据，追问可推翻旧身份结论；更正及撤回优先，最终篇幅和任务以最新提问为准。'
   ];
   const evil=r=>r&&['minion','demon'].includes(r.type),roleType=r=>r?.type;
   function matchesRole(p,id,roles){const r=roles.get(id);let yes=(!p.role||id===p.role)&&(!p.team||(p.team==='evil'?evil(r):p.team==='good'?!evil(r):roleType(r)===p.team));return p.not?!yes:yes;}
@@ -1313,7 +1323,7 @@ dialog::backdrop{overflow:hidden;overscroll-behavior:contain}
     if(packet.search?.kernel==='static-tb-v1'&&!setupFeasible(packet,domains,roles))return {conflict:true,domains:domains.map(d=>[...d])};
     return {conflict:false,domains:domains.map(d=>[...d])};
   }
-  const api={VERSION,PRINCIPLES,ALIGNMENT_SCOPE,ACTION_POLICY,CONSTRAINT_POLICY,OUTPUT_POLICY,SOURCE_POLICY,JOINT_POLICY,PROSE_POLICY,policy:()=>PRINCIPLES.join('\n'),derive,matchesRole};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.ClocktowerInference=api;
+  const api={VERSION,PRINCIPLES,ALIGNMENT_SCOPE,ACTION_POLICY,CONSTRAINT_POLICY,OUTPUT_POLICY,SOURCE_POLICY,JOINT_POLICY,PROSE_POLICY,policy:(context={})=>[...PRINCIPLES,worldPolicy(context)].filter(Boolean).join('\n'),derive,matchesRole};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.ClocktowerInference=api;
 })(globalThis);
 
 </script>
@@ -2202,8 +2212,102 @@ ${catalog.map(row=>JSON.stringify(row)).join('\n')}`;
     const raw=String(label||'').replace(/^第|[夜天晚]$/g,''),cn={'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9};
     return /^\d+$/.test(raw)?Number(raw):raw.includes('十')?(raw.startsWith('十')?1:cn[raw[0]])*10+(cn[raw.at(-1)]||0):cn[raw];
   }
-  function recordedAbilityInformation(game) {
-    const players=projectPlayers(game),events=analysisEvents(game).filter(e=>phaseOrder(e)<=phaseOrder(game.current)&&e.source!=='hypothesis'),fortune=[],slayer=[];
+  function reportedLogic(game,players,events) {
+    const roles=new Map(game.script.roles.map(r=>[r.id,r])),pairs=[],typeTests=[];
+    const canReport=e=>e.source!=='hypothesis'&&['claim','statement','feedback'].includes(e.kind)&&phaseOrder(e)<=phaseOrder(game.current);
+    for(const e of events.filter(canReport)){
+      const player=players[e.seat-1],role=roles.get(e.roleId||player?.claimRoleId);
+      if(role?.team!=='townsfolk'||!player)continue;
+      if(role.id==='savant'&&standardRole(game,role.id)){
+        const text=e.content;
+        const header=text.match(/(前|连续)?([一二三四五六七八九十\d]+)天(?:的)?(?:信息|反馈)(?:依次|分别)(?:是|为)?[ \t：:]*\n/);
+        if(!header)continue;
+        const days=recordedNight(header[2]),lines=text.slice(header.index+header[0].length).split('\n').map(s=>s.trim()).filter(Boolean);
+        if(days<1||days>e.day||days!==e.day&&header[1]!=='前'||lines.length!==days*2)continue;
+        for(let i=0;i<days;i++){
+          const statements=lines.slice(2*i,2*i+2);
+          const counts=statements.flatMap((line,index)=>{
+            const count=line.match(/^只有([一二三四五六七八九十\d]+)(?:名|个)(?:邪恶|红方)(?:玩家)?(?:仍然|还)?存活[。！!]?$/);
+            return count?[{statement:index+1,asOfDay:i+1,alignedEvilAlive:recordedNight(count[1])}]:[];
+          });
+          pairs.push({seat:e.seat,role:role.name,ref:e.ref,day:i+1,statements,...(counts.length?{counts}:{})});
+        }
+        continue;
+      }
+      const text=numericInformation(e.content);
+      // Match the actual skill, so imported versions need no special role ID or name.
+      if(!/每(?:个)?夜晚/.test(role.ability)||!/一对邻座的其他玩家/.test(role.ability))continue;
+      const type=role.ability.match(/(?:他们|两人)(?:之中|中)是否有(爪牙|恶魔)/)?.[1];
+      if(!type)continue;
+      const samples=[];
+      for(const m of text.matchAll(/(首[夜晚]|次[夜晚]|第[一二三四五六七八九十\d]+[夜天晚]|昨[夜晚])\s*(?:又|再)?(?:去)?\s*(?:验了?|查了?|看了?)?\s*(?:(?:了)\s*)?([\d/、和与跟及,，+.号 ]+?)\s*(没有|无|有|否|是)(?:爪牙|恶魔)?(?=\s|[，,。；;]|$)/g)){
+        const [,label,raw,result]=m;
+        const options=fortuneTargetPairs(raw,game.count).filter(([a,b])=>a!==e.seat&&b!==e.seat&&(b-a===1||b-a===game.count-1));
+        if(options.length!==1)continue;
+        const night=/^昨/.test(label)?e.day-(e.phase==='night'?1:0):recordedNight(label);
+        if(!night||night>e.day||night>game.current.day)continue;
+        samples.push({targets:options[0],positive:['有','是'].includes(result),...(/天$/.test(label)?{reportedByDay:night}:{night})});
+      }
+      if(samples.length)typeTests.push({seat:e.seat,role:role.name,targetType:type,ref:e.ref,samples});
+    }
+    const localException=/博学者[^。\n]{0,48}(?:错误信息|错误反馈)\s*可以(?:是|为|有)(?:两条正确|两条都对|双真)/.test(game.specialRules+'\n'+game.generalRules);
+    return {...(pairs.length?{
+      savantPairs:pairs,
+      savantTruthRule:{normal:[[true,false],[false,true]],...((standardRole(game,'vortox'))?{activeVortox:localException?[[false,false],[true,true]]:[[false,false]]}:{}),scope:'每对两句按获得信息的当天计算，玩家未获知哪条对错。失能/酒鬼或假报的模拟反馈一般不限制真值；若仍有强制产错规则或本局裁定，额外应用其明确限制。允许双真的相克只在需要给错误反馈时适用。'}
+    }:{}),...(typeTests.length?{historicalTypeTests:typeTests}:{})};
+  }
+  function executionAbilityTimeline(game,players,events) {
+    if(game.ownRoleId!=='cannibal'||!standardRole(game,'cannibal'))return null;
+    const executions=events.filter(e=>e.kind==='execution'&&e.effect==='dead'&&isPublicOutcome(e)&&phaseOrder(e)<=phaseOrder(game.current));
+    if(!executions.length)return null;
+    return {
+      executions:executions.map(e=>({seat:e.seat,day:e.day,ref:e.ref,...(players[e.seat-1]?.claimRoleId?{latestClaim:game.script.roles.find(r=>r.id===players[e.seat-1].claimRoleId)?.name}:{})})),
+      scope:'死亡时的实际阵营决定能否获得有效能力。善良给实际角色的能力；邪恶使本人中毒且可被模拟，直到下一次善良玩家死于处决。不告知所获角色或醉毒，单凭处决、自称、收到或没收到提示均不能认证死者。逐次替换；先检查本人当时能否持有或发动。首夜角色原持有者的历史行动与食人族后来新获得能力的时机独立，不能把后一次取得能力倒推为原持有者没行动，也不能默认复制其旧目标。'
+    };
+  }
+  function linkedDeathReports(game,players,events) {
+    const roles=game.script.roles.filter(r=>/首个?夜晚/.test(r.ability)&&/你或他死亡之后[，,]另一人随时可能死亡/.test(r.ability));
+    if(!roles.length)return [];
+    const deaths=events.filter(e=>e.effect==='dead'&&isPublicOutcome(e)&&phaseOrder(e)<=phaseOrder(game.current));
+    const withRole=players.filter(p=>roles.some(r=>r.id===p.claimRoleId));
+    const later=(a,b)=>phaseOrder(a)>phaseOrder(b)||phaseOrder(a)===phaseOrder(b)&&a.order!=null&&b.order!=null&&a.order>b.order;
+    return events.flatMap(e=>{
+      const player=withRole.find(p=>p.seat===e.seat);
+      if(!player||e.source==='hypothesis'||!['claim','statement','feedback'].includes(e.kind)||phaseOrder(e)>phaseOrder(game.current))return [];
+      const text=numericInformation(e.content),target=text.match(/(?:绑定了?|连了|连的是|选了|选择了?)\s*(\d{1,2})(?:\s*号|(?=\s|[，,。]|$))/);
+      if(!target||/(?:若|如果|假设|猜测|也许|可能|没有|没选|没连)/.test(text))return [];
+      const linked=Number(target[1]),start=deaths.find(d=>d.seat===e.seat);
+      if(linked<1||linked>game.count||linked===e.seat||!start)return [];
+      const end=deaths.find(d=>d.seat===linked&&later(d,start));
+      return [{seat:e.seat,target:linked,role:roles.find(r=>r.id===player.claimRoleId).name,claimRef:e.ref,claimBeforeTargetDeath:!!end&&!later(e,end)&&(phaseOrder(e)<phaseOrder(end)||later(end,e)),firstDeath:phaseName(start),...(end?{targetDeath:phaseName(end)}:{})}];
+    });
+  }
+  function typeFeedbackBounds(game,tests,setup) {
+    if(!tests?.length||!setup.baseline||setup.unmodeledSetupRoles.length||game.travelerSeats?.length)return null;
+    const seats=game.players.map(p=>p.seat),own=game.script.roles.find(r=>r.id===game.ownRoleId);
+    const groups=new Map();
+    for(const row of tests){
+      const key=row.seat+':'+row.role+':'+row.targetType;
+      if(!groups.has(key))groups.set(key,{seat:row.seat,role:row.role,targetType:row.targetType,samples:[]});
+      groups.get(key).samples.push(...row.samples);
+    }
+    return {
+      scope:'仅在该玩家确为此镇民且如实转述、相关角色类型从开局到各次查验不变、无误登记、配比适用的分支使用。用全体座位（含后来死亡）联立。正常分支采信每条；有效涡流分支只取真假二选的反面，并须各次确实受涡流约束且无本局例外。这里只核验目标类型，不证明分支或整局身份可行。',
+      byClaim:[...groups.values()].map(({seat,role,targetType,samples})=>{
+        const team=targetType==='爪牙'?'minion':'demon',slot=team==='minion'?2:3;
+        const pools=combinations(seats.filter(s=>s!==seat&&(!own||own.team===team||s!==game.ownSeat)),setup.baseline[slot]).filter(set=>!own||own.team!==team||set.includes(game.ownSeat));
+        const resolve=inverted=>{
+          const possible=pools.filter(set=>samples.every(s=>s.targets.some(n=>set.includes(n))===(inverted?!s.positive:s.positive)));
+          if(!possible.length)return {feasible:false};
+          return {feasible:true,required:possible[0].filter(n=>possible.every(set=>set.includes(n))),candidates:seats.filter(n=>possible.some(set=>set.includes(n))),...(possible.length<=8?{combinations:possible}:{})};
+        };
+        return {seat,role,targetType,normal:resolve(false),...(standardRole(game,'vortox')?{vortox:resolve(true)}:{})};
+      })
+    };
+  }
+  function recordedAbilityInformation(game,{players=projectPlayers(game),events=analysisEvents(game)}={}) {
+    const fortune=[],slayer=[];
+    events=events.filter(e=>phaseOrder(e)<=phaseOrder(game.current)&&e.source!=='hypothesis');
     const original=id=>standardRole(game,id);
     for(const e of events){
       const p=players.find(p=>p.seat===e.seat);if(!p)continue;
@@ -2223,7 +2327,7 @@ ${catalog.map(row=>JSON.stringify(row)).join('\n')}`;
     const parsed=original('empath')||original('chef')?normalTBInformation(game).checks:[];
     const empath=original('empath')?parsed.filter(c=>c.type==='empath').map(c=>({seat:c.seat,night:c.day,number:c.number,neighbors:c.neighbors,refs:c.refs})):[];
     const chef=original('chef')?parsed.filter(c=>c.type==='chef').map(c=>({seat:c.seat,night:1,pairs:c.number,refs:c.refs})):[];
-    return {scope:'仅整理已记录的声明/尝试和可计算的号码，不认证角色、不认证反馈正常，也不补造未记录行动。原文优先。',...(fortune.length?{fortuneFeedback:fortune}:{}),...(empath.length?{empathWindows:empath}:{}),...(chef.length?{chefFeedback:chef}:{}),...(slayer.length?{publicSlayerAttempts:slayer}:{})};
+    return {scope:'仅整理已记录的声明/尝试和可计算的号码，不认证角色、不认证反馈正常，也不补造未记录行动。原文优先。',...(fortune.length?{fortuneFeedback:fortune}:{}),...(empath.length?{empathWindows:empath}:{}),...(chef.length?{chefFeedback:chef}:{}),...(slayer.length?{publicSlayerAttempts:slayer}:{}),...reportedLogic(game,players,events)};
   }
   function normalTBInformation(game) {
     const players=projectPlayers(game),events=analysisEvents(game).filter(e=>phaseOrder(e)<=phaseOrder(game.current)&&e.source!=='hypothesis'),checks=[],ambiguous=[],unparsed=[];
@@ -2440,6 +2544,8 @@ ${catalog.map(row=>JSON.stringify(row)).join('\n')}`;
   function buildContext(game,options={}) {
     const events=analysisEvents(game), players=projectPlayers(game);
     const currentProfile=options.profile==='current',standardTB=standardTroubleBrewing(game),triggers=publicVirginTriggers(game),accounting=currentProfile?null:accountingSummary(game);
+    const executionTransfer=currentProfile?executionAbilityTimeline(game,players,events):null;
+    const links=currentProfile?linkedDeathReports(game,players,events):[];
     return {
       schemaVersion:VERSION, promptVersion:PROMPT_VERSION, rulesVersion:Data.version,
       ...(!currentProfile?{constraintAudit:constraintAudit(game)}:{}),
@@ -2449,7 +2555,9 @@ ${catalog.map(row=>JSON.stringify(row)).join('\n')}`;
       ...(accounting?.normalInformationBranch?{conditionalAnchor:conditionalAnchor(game,accounting.normalInformationBranch)}:{}),
       nightOrderReference:nightOrderReference(game),
       abilityAvailability:abilityAvailability(game),
-      recordedAbilityInformation:recordedAbilityInformation(game),
+      recordedAbilityInformation:recordedAbilityInformation(game,{players,events}),
+      ...(executionTransfer?{executionAbilityTimeline:executionTransfer}:{}),
+      ...(links.length?{linkedDeathReports:links}:{}),
       ...(standardTB&&!currentProfile?{reasoningPreparation:reasoningPreparation(game)}:{}),
       ...(triggers.length?{confirmedVirginTriggers:triggers}:{}),
       ...(accounting?{localRoleAccounting:compactAccounting(accounting)}:{}),
@@ -2555,10 +2663,20 @@ reasoningPreparation.reportClasses是局部核验的条件划分，不规定全�
   // Historical builders below remain for old snapshots; current app requests use this contract.
   function buildCurrentRequest(game,options={}) {
     const full=buildContext(game,{...options,profile:'current'}),context={};
-    for(const key of ['game','perspective','scriptRoles','baselineDistribution','fixedMechanics','seatAdjacency','nightOrderReference','abilityAvailability','recordedAbilityInformation','knowledgeBoundaries','essentialMechanics','mechanismChecks','confirmedVirginTriggers','specialRules','generalRules','seats','evidence','roleReference','scriptComposition'])if(full[key]!==undefined)context[key]=full[key];
+    for(const key of ['game','perspective','scriptRoles','baselineDistribution','fixedMechanics','seatAdjacency','nightOrderReference','abilityAvailability','recordedAbilityInformation','executionAbilityTimeline','linkedDeathReports','knowledgeBoundaries','essentialMechanics','mechanismChecks','confirmedVirginTriggers','specialRules','generalRules','seats','evidence','roleReference','scriptComposition'])if(full[key]!==undefined)context[key]=full[key];
     if(!context.essentialMechanics?.roles?.length&&!context.essentialMechanics?.scriptGuide?.length)delete context.essentialMechanics;
     context.claimLedger=claimLedger(game);context.slotAudit=slotAudit(game,context.claimLedger);context.constraintAudit=constraintAudit(game,{ledger:context.claimLedger,setup:context.slotAudit});
     delete context.constraintAudit.policy;
+    context.livingSeats=context.seats.filter(p=>p.observedState==='公开存活').map(p=>p.seat);
+    const feedback=context.recordedAbilityInformation;
+    const typeBounds=typeFeedbackBounds(game,feedback.historicalTypeTests,context.slotAudit);
+    if(typeBounds)context.typeFeedbackBounds=typeBounds;
+    if(standardRole(game,'drunk')&&(feedback.historicalTypeTests||feedback.savantPairs)){
+      const candidates=[...new Set([...(feedback.historicalTypeTests||[]),...(feedback.savantPairs||[])].map(r=>r.seat))]
+        .filter(seat=>seat!==game.ownSeat&&!context.confirmedVirginTriggers?.some(t=>t.nominator===seat||t.target===seat)&&!context.constraintAudit.hard?.fixed?.some(r=>r.seat===seat&&r.roleId!=='drunk'));
+      const remainingOutside=[...new Set(context.slotAudit.conditionalSetups.map(s=>s.counts[1]).filter(n=>n>0))].sort((a,b)=>a-b);
+      if(candidates.length&&remainingOutside.length)context.hiddenDrunkChecks={candidates,claimedOutsiders:context.slotAudit.claimsByType.outsider,slotsBySetup:remainingOutside.map(outsiders=>({outsiders,otherOutsiderSlots:outsiders-1}))};
+    }
     const changed=context.claimLedger.some(c=>c.seat!==game.ownSeat&&(c.changed||c.annotationConflict));
     const compiled=changed?null:informationRelations(game);if(compiled){context.information=compiled.relations;context.unresolved=compiled.unresolved;}
     if(changed)context.claimInterpretation='有改口、撤回或手动标注冲突。以claimLedger与完整evidence逐时点判定哪些声明/反馈仍被采信，不把旧角色信息套给最新自称；不沿用静态身份核验。';
@@ -2574,7 +2692,7 @@ reasoningPreparation.reportClasses是局部核验的条件划分，不规定全�
         for(const branch of ['hard','disclosure'])for(const field of ['fixed','groupCardinalities','roleExceptions','counterconditions','presenceComplete'])delete context.constraintAudit?.[branch]?.[field];
       }
     }
-    const system=Inference.policy()+'\n'+Inference.SOURCE_POLICY+'\n'+Inference.PROSE_POLICY+(context.jointAudit?'\n'+Inference.JOINT_POLICY:'')+'\n按本局技能、裁定和夜序分析。死亡通常失去能力，处决不自动翻牌。有question只答该问题，信息少就短答。有相对可信依据时可在标题加粗略百分比，不按样例数赋权。号码、角色、关键术语清晰，不打印内部引用编号。\n'+REPORT_PROSE_STYLE;
+    const system=Inference.policy(context)+'\n'+Inference.SOURCE_POLICY+'\n'+Inference.PROSE_POLICY+(context.jointAudit?'\n'+Inference.JOINT_POLICY:'')+'\n按本局技能、裁定和夜序分析。死亡通常失去能力，处决不自动翻牌。有question只答该问题，信息少就短答。有相对可信依据时可在标题加粗略百分比，不按样例数赋权。号码、角色、关键术语清晰，不打印内部引用编号。\n'+REPORT_PROSE_STYLE;
     const mode=options.mode==='followup'?'followup':'analysis';let messages=[{role:'system',content:system},{role:'user',content:JSON.stringify(context)}],historyCount=0,parent;
     if(mode==='followup'){
       if(!context.question)throw new Error('请填写追问内容。');parent=game.snapshots.find(s=>s.id===options.parentId);if(!parent?.report?.trim()||parent.status&&parent.status!=='complete')throw new Error('请选择一份已完成的报告再追问。');
@@ -2672,7 +2790,10 @@ reasoningPreparation.reportClasses是局部核验的条件划分，不规定全�
     for(const seat of askedSeats){
       const p=context.seats?.find(p=>p.seat===seat),claim=p?.latestClaim?.role,role=context.scriptRoles?.find(r=>r.name===claim);
       const privateAwareness=/你(?:会)?(?:得知|知道).{0,20}(?:醉酒|中毒|干扰项)/.test(role?.ability||'');
-      if(!privateAwareness&&/(?:是否|有无|有没有|知道|确认|核对)[^。；;\n]{0,24}(?:中毒|投毒|醉酒|吃毒|干扰项)/.test(plain))issues.push(seat+'号通常不知道自身隐藏醉毒或干扰项状态，删除让其确认是否可能醉毒的建议；由分析者联立本局来源和时序，没有有效替代就省略行动。');
+      if(!privateAwareness&&/(?:是否|有无|有没有|知道|确认|核对|考虑过|会不会|是不是)[^。；;\n]{0,26}(?:中毒|投毒|醉酒|酒鬼|吃毒|干扰项|受.{0,12}影响)/.test(plain))issues.push(seat+'号通常不知道自身隐藏醉毒、酒鬼、干扰项或反馈受其他角色影响，删除这类建议。若本局有外部明确告知，写清来源；否则由分析者联立。');
+      if(role?.id==='savant'&&role.version==='内置整理版'&&/(?:哪[一两二]?[条个][^。；;\n]{0,10}(?:真|假|正确|错误)|两条(?:都|均)(?:对|错|真|假|正确|错误))/.test(plain))issues.push(seat+'号即使真是博学者，也只知道两句话，没有真值标签。已记录就由分析者逐分支联立，不问本人哪条真或是否都正确。');
+      const knownDeaths=[...plain.matchAll(/(?:知道|确认|知晓)[^\d。；;\n]{0,8}(\d{1,2})号[^。；;\n]{0,8}(?:已死|已经死|死亡|被处决)/g)];
+      if(knownDeaths.some(m=>context.seats?.some(p=>p.seat===Number(m[1])&&p.observedState==='公开死亡')))issues.push('公开死亡及发生时间由分析者读取。不要问查验者是否知道某人已死，先比较查验和死亡的时点及技能目标条件。');
       const nights=[...plain.matchAll(/(?:第[一二三四五六七八九十\d]+[夜晚天]|首夜|首晚|次夜|次晚)/g)].map(m=>recordedNight(m[0]));
       const known=relations.filter(r=>r.seat===seat&&(nights.length?nights.includes(r.night):false));
       const explicitConflict=/(?:矛盾|冲突|两版|两种|更正|改口|误记)/.test(plain)&&(context.unresolved||[]).some(r=>r.seat===seat);
@@ -2695,7 +2816,7 @@ reasoningPreparation.reportClasses是局部核验的条件划分，不规定全�
         if(/^\s*(?:[-*+] |\d+[.)] )/.test(lines[j]))while(j+1<lines.length&&/^\s{2,}\S/.test(lines[j+1]))chunk.push(lines[++j]);
         if(!redundantActionIssues(context,chunk.join('\n')).length)kept.push(...chunk);
       }
-      if(kept.some(line=>line.trim()))out.push(heading,...kept);
+      if(kept.some(line=>line.trim()&&!/^\s*(?:[-*_]\s*){3,}$/.test(line)))out.push(heading,...kept);
       i=j-1;
     }
     return out.join('\n').replace(/\n{3,}/g,'\n\n').trim();
@@ -2726,6 +2847,74 @@ reasoningPreparation.reportClasses是局部核验的条件划分，不规定全�
     }
     return [...new Set(reasons)];
   }
+  function reportMechanicIssues(context,text,mode) {
+    const plain=text.replace(/\*\*/g,'').normalize('NFKC'),issues=[];
+    const living=context.livingSeats||context.seats?.filter(p=>p.observedState==='公开存活').map(p=>p.seat);
+    const pairs=context.recordedAbilityInformation?.savantPairs||[],tests=context.recordedAbilityInformation?.historicalTypeTests||[];
+    if(living?.length){
+      for(const match of plain.matchAll(/(?:(?:当前|现有|目前|现在|结合)\s*)?存活\s*([一二三四五六七八九十\d]+)\s*(?:名玩家|人)(?=[中之，,。\s（(：:]|$)/g)){
+        const count=recordedNight(match[1]);
+        const start=Math.max(plain.lastIndexOf('\n',match.index),plain.lastIndexOf('。',match.index))+1;
+        const clause=plain.slice(start,match.index);
+        if(count!==living.length&&!/(?:第[一二三四五六七八九十\d]+[天夜]|如果|假设|若|剩到|降到|时点)/.test(clause))issues.push('报告写错当前存活人数。使用公开座位 '+living.join('、')+'（'+living.length+'人），所有恶魔范围和存活邪恶数据此重算。');
+      }
+      if(/(?:起始|开局)配[置比][^\n。]*(?:[。\n]\s*){1,2}当前存活[^\n。]*所以[^\n。]*(?:恰好|必须|固定)[^\n。]*(?:恶魔|爪牙)/.test(plain))issues.push('开局爪牙与恶魔名额被错套给当前存活者。先考虑死者与可能传位，再在正确时点联合判断博学者命题；除非用户明确指当前存活，否则只用开局配比。');
+      for(const line of plain.split('\n')){
+        const row=line.match(/^\s*(?:[-*]\s*)?(当前|目前|现在)存活的?(爪牙|恶魔)\s*[:：]\s*(.+)$/);
+        if(!row)continue;
+        const dead=[...reportSeatNumbers(row[3],context.game.playerCount)].filter(n=>!living.includes(n));
+        if(dead.length)issues.push('报告把已公开死亡的'+dead.join('、')+'号列为当前存活'+row[2]+'，重算组合和对应命题。');
+      }
+    }
+    if(context.scriptRoles?.some(r=>r.id==='savant'&&r.version==='内置整理版')&&/(?:一真一假|恰好一真一假)[^。\n]{0,28}(?:或|但|也)[^。\n]{0,18}(?:两条|双条)(?:都|均)?(?:真|正确)|(?:特殊规则|相克规则)[^。\n]{0,45}意味着[^。\n]{0,24}不能[^。\n]{0,12}一真一假/.test(plain))issues.push('健康真博学者的普通反馈仍是一真一假。只有进入失能或必须产错的条件时，本局相克才适用；逐日同时评价两句，将角色真实性与反馈状态分开。');
+    const executed=context.executionAbilityTimeline?.executions||[];
+    if(executed.length&&plain.split(/[。\n]/).some(line=>/(?:获得|拿到|吃到)[^。；;]{0,18}能力/.test(line)&&/(?:处决|因此|所以|当前能力)/.test(line)&&/(?:我|食人族)/.test(line)&&!/若|如果|假设|可能|能否|不能|未必/.test(line)))issues.push('食人族没有靠处决或死者自称确认具体能力。重新区分真实技能、邪恶处决的隐藏中毒和可能的模拟反馈；后续换餐不能倒推前一餐。只有具体独立证据才加权。');
+    if(plain.split(/[。\n]/).some(line=>/(?:无人|没人|无玩家)死亡[^。\n]{0,14}(?:说明|意味着|证明|就表示)[^。\n]{0,16}(?:选择不杀|选择不刀|空刀|主动跳过|没有攻击)/.test(line)&&!/不(?:能|足以|代表|一定)/.test(line)))issues.push('无人死亡只说明没有观察到死亡。按实际恶魔与本局规则核验能否不选人，比较保护、选中已死目标等合法原因，不把主动跳过杀人写成已经证实的解释。');
+    const deathBySeat=new Map(context.abilityAvailability?.dead?.map(p=>[p.seat,p.death])||[]);
+    const count=context.game.playerCount;
+    for(const line of plain.split('\n')){
+      const stated=line.match(/第\s*([一二三四五六七八九十\d]+)\s*[夜晚]\s*(?:验|查|看)(?:了)?\s*([\d/、和与跟及,，+.号 ]+)/);
+      if(!stated||/(?:误写|误记|更正|写成)/.test(line))continue;
+      const targets=fortuneTargetPairs(stated[2],count);
+      if(targets.length!==1)continue;
+      const namedSeat=line.slice(0,stated.index).match(/\b(\d{1,2})\s*号/);
+      const sameTargets=s=>s.targets?.length===2&&targets[0].every(seat=>s.targets.includes(seat));
+      const matching=tests.filter(t=>!namedSeat||t.seat===Number(namedSeat[1])).flatMap(t=>t.samples.filter(sameTargets).map(s=>({...s,seat:t.seat})));
+      if(!namedSeat&&context.recordedAbilityInformation?.fortuneFeedback?.some(r=>r.results.some(sameTargets)))continue;
+      if(matching.length===1&&matching[0].night&&matching[0].night!==recordedNight(stated[1]))issues.push(matching[0].seat+'号所报查验 '+targets[0].join('、')+' 有明确反馈夜次：第'+matching[0].night+'夜。核对原始记录的“昨晚”和记录当天，不要沿用旧草稿的夜次。');
+    }
+    for(const test of tests)for(const sample of test.samples){
+      if(!sample.positive||!living)continue;
+      const [a,b]=sample.targets;
+      const dead=living.includes(a)?b:a,other=dead===a?b:a,phase=sample.night||sample.reportedByDay;
+      if(!living.includes(other)||living.includes(dead)||!(deathBySeat.get(dead)?.day>=phase))continue;
+      const deadMention=new RegExp('\\b'+dead+'\\s*号[^。\\n]{0,8}(?:已死|死了|死亡|被处决)');
+      const forcedOther=new RegExp('\\b'+other+'(?!\\d)\\s*号?[^。\\n]{0,12}(?:必|只能|一定)[^。\\n]{0,8}'+test.targetType);
+      if(plain.split(/\n\n/).some(paragraph=>deadMention.test(paragraph)&&forcedOther.test(paragraph)))issues.push(test.role+'的阳性只要求查验当时两人至少一名'+test.targetType+'。'+dead+'号后来死亡不排除其当时或开局的角色；不能因此锁'+other+'号，除非有独立证据排除另一人。');
+    }
+    const feedback=[...tests,...pairs];
+    for(const section of plain.split(/(?=^#{1,6}\s*(?:可能|分支))/m)){
+      const heading=section.split('\n',1)[0];
+      if(!/^#+\s*(?:可能|分支)/.test(heading))continue;
+      const candidates=section.split('\n').flatMap(line=>{
+        const row=line.match(/^\s*(?:[-*]\s*)?(?:恶魔候选|恶魔范围|恶魔)\s*[:：]\s*([\d号、,，\/或和及与\s]+)(?=中|[。；;（(]|$)/);
+        return row?.[1].match(/\d+/g)?.map(Number)||[];
+      });
+      for(const {seat,role} of feedback){
+        if(!candidates.includes(seat)||!/^[^\n]*真/.test(heading))continue;
+        const known=new RegExp('\\b'+seat+'\\s*号\\s*(?:是|为)?(?:真的?|真是)?'+role.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?:是真|为真|真实)?');
+        if(known.test(heading)&&!/真假|真伪|是否|不是真|不为真|真(?:或|与|还是)假/.test(heading))issues.push('同一分支采信'+seat+'号是真'+role+'，不能又把其列为恶魔。该号假跳或是酒鬼时另算，不能保留其真实技能约束。');
+      }
+    }
+    const broad=mode==='analysis'&&!context.question||/(?:几种|各种|所有|枚举|分别|分支|哪些可能)/.test(context.question||'');
+    if(broad)for(const seat of context.hiddenDrunkChecks?.candidates||[]){
+      const fixed=new RegExp('(?:先假设|假设|只盘|已确认|确定)\\s*'+seat+'\\s*号[^。\\n，,]{0,18}(?:是真|为真|真[\\u4e00-\\u9fa5])');
+      if(fixed.test(context.question||''))continue;
+      const checked=plain.split(/[。\n；;？?]/).some(line=>line.includes('酒鬼')&&reportSeatNumbers(line,context.game.playerCount).has(seat)&&!/(?:追问|询问|确认自己|考虑过自己|是不是|是否知道)/.test(line));
+      if(!checked)issues.push('该回答要求给可能性，但未检验'+seat+'号为隐藏酒鬼这一合法失真来源。用外来者坑位和本局调整检验；可行再保留，可简并，不把缺少真技能当邪恶证据。');
+    }
+    return [...new Set(issues)];
+  }
   function reportReviewReasons(request,report) {
     const context=snapshotContext({request});if(!context)return [];
     const text=cleanReportText(report),reasons=[];
@@ -2749,6 +2938,7 @@ reasoningPreparation.reportClasses是局部核验的条件划分，不规定全�
       if(prepared.reportClasses?.length>1&&/^#{1,4}\s*可能[^\n]*(?:至少一个|至少一人|至少有一|均失真或)/m.test(plainReport))reasons.push('顶层“至少一个假跳/均失真或”与其他类重叠。严格采用reportClasses互斥组合；成员P/D/E/G放入所属类，不能跨类偷换或把已自证矛盾的子例继续列为有效可能。');
     }
     reasons.push(...reportActionIssues(context,text));
+    reasons.push(...reportMechanicIssues(context,text,request.mode));
     // A focused follow-up must not inherit full-roster requirements, but still obey evidence standards.
     if(request.mode!=='analysis'||context.question)return reasons;
     const audit=context.constraintAudit,d=audit?.disclosure;
@@ -2781,7 +2971,7 @@ reasoningPreparation.reportClasses是局部核验的条件划分，不规定全�
     }
     if(has('slayer')&&/真猎手[^。\n]{0,60}(?:只能为?爪牙|仍可为爪牙)/.test(text))reasons.push('报告把真猎手与爪牙混在同一条件中；真猎手是善良镇民，邪恶候选只能是假跳分支。');
     if(has('fortune_teller')&&/(?:恶魔候选集中在|恶魔在[0-9/、]{2,}附近|阳性目标[^。\n]{0,12}必含恶魔)/.test(text))reasons.push('复核占卜阳性范围：同一固定善良干扰项或陌客可独自解释多个阳性，恶魔可在这些目标外；标题与正文不能一边锁范围、一边否定该范围。');
-    if(context.evidence.length>=8&&request.promptVersion!==Inference.VERSION){
+    if(context.evidence.length>=8&&!request.promptVersion?.startsWith('inference-')){
       for(const branch of reportBranchCoverage(context,text))if(branch.missing.length)reasons.push(branch.label+'遗漏'+branch.missing.map(n=>n+'号').join('、')+'；每个可能类内补齐全场候选，包括死者，未知者按类型合并剩余人数与角色池，不只给一份混合总名单。');
     }
     if(context.fixedMechanics&&!context.evidence.some(e=>e.kind==='身份变化')){
@@ -2830,7 +3020,19 @@ reasoningPreparation.reportClasses是局部核验的条件划分，不规定全�
     return {critical,fallback:lines.join('\n')+'\n\n仅列本地已核验的条件约束，尚未完成全部技能与逐夜世界枚举。'};
   }
   function buildReportReview(request,report,reasons=reportReviewReasons(request,report)) {
-    if(request.promptVersion===Inference.VERSION){const context=snapshotContext({request});return {mode:'review',promptVersion:Inference.VERSION,messages:[{role:'system',content:Inference.policy()+'\n'+Inference.SOURCE_POLICY+'\n'+Inference.PROSE_POLICY+(context.jointAudit?'\n'+Inference.JOINT_POLICY:'')+'\n修正所列具体矛盾及受影响的组合，只输出最终精简Markdown；只答question的范围，不提复核过程。'},{role:'user',content:JSON.stringify({context,draftReport:clean(report,20000),issues:reasons})}]};}
+    if(request.promptVersion?.startsWith('inference-')){
+      const context=snapshotContext({request});
+      const priorQuestions=request.messages.filter(m=>m.role==='user').slice(1,-1).slice(-8).flatMap(m=>{
+        try{
+          const q=JSON.parse(m.content.slice(m.content.indexOf('{')));
+          return q.requestType==='followup'&&q.question?[q.question]:[];
+        }catch(_){return [];}
+      });
+      return {mode:'review',promptVersion:Inference.VERSION,messages:[
+        {role:'system',content:Inference.policy(context)+'\n'+Inference.SOURCE_POLICY+'\n'+Inference.PROSE_POLICY+(context.jointAudit?'\n'+Inference.JOINT_POLICY:'')+'\n原始线索、有效裁定和用户的明确更正优先。priorQuestions只供保留之前追加的观察与更正；任务、格式和范围以context.question为准。草稿不作证据。修正全部受影响组合，只输出最终精简Markdown，每类只写一次结论。'},
+        {role:'user',content:JSON.stringify({context,...(priorQuestions.length?{priorQuestions}:{}),draftReport:clean(report,20000),issues:[...new Set(reasons)]})}
+      ]};
+    }
     const context=snapshotContext({request});if(!context)throw new Error('报告缺少原始资料，无法核对。');
     const has=id=>context.scriptRoles.some(r=>r.id===id&&r.version==='内置整理版'),focused=request.mode==='followup'||!!context.question;
     return {mode:'review',promptVersion:PROMPT_VERSION,messages:[
@@ -4664,7 +4866,6 @@ function openLibrary() {
         displayProgress(progress);
       });
       checkStopped();
-      if(!packet&&!result.truncated)result.content=C.conciseReport(snapshot.request,result.content);
       const reviewReasons=!result.truncated?(packet?window.ClocktowerReasoner.parse(result.content,C.snapshotContext(snapshot)).errors:[...C.reportReviewPlan(snapshot.request,result.content,{thinking:route.thinking}).reasons,...(joint?window.ClocktowerReasoner.reviewJointReport(frozenGame,joint,result.content):[])]):[];
       if(reviewReasons.length){
         const first=result;snapshot.unreviewedReport=first.content;snapshot.usage=first.usage;snapshot.reviewStatus='running';snapshot.reviewReasons=reviewReasons;touch(g);ui.aiJob.phase='reviewing';ui.aiJob.thinkingText='';ui.aiJob.activityAt=Date.now();ui.aiJob.content=packet?window.ClocktowerReasoner.render(first.content,C.snapshotContext(snapshot),{partial:true}).markdown:first.content;updateAIProgress();
